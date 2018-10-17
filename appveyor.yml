@@ -1,6 +1,6 @@
 version: 0.1.{build}
 image: Visual Studio 2017
-platform: Any CPU
+platform: AnyCPU
 configuration: Release
 build:
   project: Source
