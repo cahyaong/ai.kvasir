@@ -7,6 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.AI.Kvasir.Client", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2C7AE126-FBD3-43C3-B91F-B2034D4EB611}"
 	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
 		Kvasir.Shared\GlobalAssemblyInfo.tt = Kvasir.Shared\GlobalAssemblyInfo.tt
 	EndProjectSection
 EndProject

@@ -1,0 +1,8 @@
+version: 0.1.{build}
+image: Visual Studio 2017
+platform: Any CPU
+configuration: Release
+build:
+  project: Source
+  parallel: true
+  verbosity: minimal
