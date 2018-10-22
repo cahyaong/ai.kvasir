@@ -26,9 +26,27 @@
 // <creation_timestamp>Wednesday, 17 October 2018 8:15:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Linq;
+using System.Windows;
+using System.Windows.Media;
+using FirstFloor.ModernUI.Presentation;
+using nGratis.Cop.Core.Wpf;
+
 namespace nGratis.AI.Kvasir.Client
 {
     public partial class App
     {
+        protected override void OnStartup(StartupEventArgs args)
+        {
+            var expectedTheme = MahApps.Metro.ThemeManager.GetAppTheme("BaseDark");
+            var expectedAccent = MahApps.Metro.ThemeManager.Accents.First(accent => accent.Name == "Cobalt");
+            MahApps.Metro.ThemeManager.ChangeAppStyle(Application.Current, expectedAccent, expectedTheme);
+
+            var accentColor = (Color)this.Resources["AccentColor"];
+            AppearanceManager.Current.AccentColor = accentColor;
+            this.AdjustAccentColor(accentColor);
+
+            base.OnStartup(args);
+        }
     }
 }

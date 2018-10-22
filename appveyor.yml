@@ -1,6 +1,8 @@
 version: 0.1.{build}
 image: Visual Studio 2017
 configuration: Release
+before_build:
+  - cmd: appveyor_prebuild.cmd
 build:
   project: Source
   parallel: true

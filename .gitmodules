@@ -1,0 +1,3 @@
+[submodule "cop.core"]
+	path = External/cop.core
+	url = https://github.com/cahyaong/cop.core

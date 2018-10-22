@@ -35,6 +35,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FirstFloor.ModernUI, Version=1.0.9.0, Culture=neutral, PublicKeyToken=bc9b0c37bf06c6a9, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ModernUI.WPF\lib\net45\FirstFloor.ModernUI.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=2018.2.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\JetBrains.Annotations\lib\portable40-net40+sl5+win8+wp8+wpa81\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MahApps.Metro\lib\net47\MahApps.Metro.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -50,7 +62,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainView.xaml">
+    <Page Include="AppView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -61,8 +73,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainView.xaml.cs">
-      <DependentUpon>MainView.xaml</DependentUpon>
+    <Compile Include="AppView.xaml.cs">
+      <DependentUpon>AppView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -73,6 +85,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj">
+      <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
+      <Name>nGratis.Cop.Core.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Theme\nGratis.Cop.Core.Theme.csproj">
+      <Project>{2b8de19c-be3d-4516-aecb-01fc709f8ed8}</Project>
+      <Name>nGratis.Cop.Core.Theme</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj">
+      <Project>{199487eb-64e4-4d48-9e9a-3afdddadf041}</Project>
+      <Name>nGratis.Cop.Core.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core\nGratis.Cop.Core.csproj">
+      <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
+      <Name>nGratis.Cop.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

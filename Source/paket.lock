@@ -1,0 +1,13 @@
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    ControlzEx (3.0.2.4)
+    JetBrains.Annotations (2018.2.1)
+      System.Runtime (>= 4.1) - restriction: && (< net10) (>= netstandard1.0) (< netstandard2.0)
+    MahApps.Metro (1.6.5)
+      ControlzEx (>= 3.0.2.4 < 4.0)
+    Microsoft.NETCore.Platforms (2.1.1) - restriction: || (&& (>= dnxcore50) (>= netstandard1.0)) (&& (< monoandroid) (< monotouch) (< net10) (>= netstandard1.5) (< netstandard2.0) (< win8) (< wpa81) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net10) (>= netstandard1.0) (< netstandard1.2) (< win8) (< wp8)) (&& (< monoandroid) (< net10) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< monoandroid) (< net10) (>= netstandard1.3) (< netstandard1.5) (< win8) (< wpa81))
+    Microsoft.NETCore.Targets (2.1) - restriction: || (&& (>= dnxcore50) (>= netstandard1.0)) (&& (< monoandroid) (< monotouch) (< net10) (>= netstandard1.5) (< netstandard2.0) (< win8) (< wpa81) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net10) (>= netstandard1.0) (< netstandard1.2) (< win8) (< wp8)) (&& (< monoandroid) (< net10) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< monoandroid) (< net10) (>= netstandard1.3) (< netstandard1.5) (< win8) (< wpa81))
+    ModernUI.WPF (1.0.9)
+    System.Runtime (4.3) - restriction: && (< net10) (>= netstandard1.0) (< netstandard2.0)
+      Microsoft.NETCore.Platforms (>= 1.1) - restriction: || (>= dnxcore50) (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.5) (< win8) (< wpa81) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net45) (>= netstandard1.0) (< netstandard1.2) (< win8) (< wp8)) (&& (< monoandroid) (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< monoandroid) (< net45) (>= netstandard1.3) (< netstandard1.5) (< win8) (< wpa81))
+      Microsoft.NETCore.Targets (>= 1.1) - restriction: || (>= dnxcore50) (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.5) (< win8) (< wpa81) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net45) (>= netstandard1.0) (< netstandard1.2) (< win8) (< wp8)) (&& (< monoandroid) (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< monoandroid) (< net45) (>= netstandard1.3) (< netstandard1.5) (< win8) (< wpa81))

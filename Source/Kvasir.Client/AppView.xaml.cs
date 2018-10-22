@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MainView.xaml.cs" company="nGratis">
+// <copyright file="AppView.xaml.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -28,9 +28,9 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
-    public partial class MainView
+    public partial class AppView
     {
-        public MainView()
+        public AppView()
         {
             this.InitializeComponent();
         }

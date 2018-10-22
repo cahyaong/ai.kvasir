@@ -1,0 +1,5 @@
+source https://api.nuget.org/v3/index.json
+
+nuget JetBrains.Annotations
+nuget MahApps.Metro
+nuget ModernUI.WPF
