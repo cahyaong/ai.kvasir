@@ -39,7 +39,7 @@ namespace nGratis.AI.Kvasir.Client
         protected override void OnStartup(StartupEventArgs args)
         {
             var expectedTheme = MahApps.Metro.ThemeManager.GetAppTheme("BaseDark");
-            var expectedAccent = MahApps.Metro.ThemeManager.Accents.First(accent => accent.Name == "Cobalt");
+            var expectedAccent = MahApps.Metro.ThemeManager.Accents.Single(accent => accent.Name == "Lime");
             MahApps.Metro.ThemeManager.ChangeAppStyle(Application.Current, expectedAccent, expectedTheme);
 
             var accentColor = (Color)this.Resources["AccentColor"];

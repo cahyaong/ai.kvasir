@@ -8,5 +8,16 @@
   Title="AI.KVASIR"
   Width="1280"
   Height="720"
+  ContentLoader="{StaticResource CaliburnContentLoader}"
   IsTitleVisible="True"
-  mc:Ignorable="d" />
+  mc:Ignorable="d">
+  <mui:ModernWindow.MenuLinkGroups>
+    <mui:LinkGroupCollection>
+      <mui:LinkGroup DisplayName="Library">
+        <mui:LinkGroup.Links>
+          <mui:Link DisplayName="Card" Source="/nGratis.AI.Kvasir.Client;component/CardLibraryView.xaml" />
+        </mui:LinkGroup.Links>
+      </mui:LinkGroup>
+    </mui:LinkGroupCollection>
+  </mui:ModernWindow.MenuLinkGroups>
+</mui:ModernWindow>

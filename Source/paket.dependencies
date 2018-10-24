@@ -1,5 +1,9 @@
 source https://api.nuget.org/v3/index.json
 
+nuget Caliburn.Micro
 nuget JetBrains.Annotations
+nuget Lamar
 nuget MahApps.Metro
 nuget ModernUI.WPF
+nuget OxyPlot.Wpf
+nuget ReactiveUI

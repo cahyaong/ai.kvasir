@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="CardLibraryView.xaml.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,17 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 17 October 2018 8:32:16 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 23 October 2018 11:32:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Windows;
-
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Client")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("22dd6cdb-87ca-4cc5-9dd5-317d6b142fad")]
-[assembly: CLSCompliant(false)]
-[assembly: ThemeInfo(ResourceDictionaryLocation.ExternalAssembly, ResourceDictionaryLocation.ExternalAssembly)]
+namespace nGratis.AI.Kvasir.Client
+{
+    public partial class CardLibraryView
+    {
+        public CardLibraryView()
+        {
+            this.InitializeComponent();
+        }
+    }
+}

@@ -2,11 +2,28 @@
   x:Class="nGratis.AI.Kvasir.Client.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client"
   xmlns:core="http://schemas.ngratis.com/2014/core"
-  StartupUri="AppView.xaml">
+  xmlns:mui="http://firstfloorsoftware.com/ModernUI">
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary>
+          <client:AppBootstrapper x:Key="Bootstrapper" />
+          <core:CaliburnContentLoader x:Key="CaliburnContentLoader" />
+        </ResourceDictionary>
+        <core:SharedResourceDictionary Source="/nGratis.Cop.Core.Wpf;component/Cop.Converter.xaml" />
+        <ResourceDictionary>
+          <Style TargetType="mui:ModernWindow">
+            <Setter Property="ContentLoader" Value="{StaticResource CaliburnContentLoader}" />
+          </Style>
+          <Style TargetType="mui:ModernFrame">
+            <Setter Property="ContentLoader" Value="{StaticResource CaliburnContentLoader}" />
+          </Style>
+          <Style TargetType="mui:ModernTab">
+            <Setter Property="ContentLoader" Value="{StaticResource CaliburnContentLoader}" />
+          </Style>
+        </ResourceDictionary>
         <core:SharedResourceDictionary Source="/nGratis.Cop.Core.Theme;component/Cop.Theme.Dark.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
