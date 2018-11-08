@@ -44,7 +44,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithSuccessfulResponse("https://mtgjson.com/v4/sets.html", "raw_MTGJSON4_CardSets.html");
+                    .WithSuccessfulResponse("https://mtgjson.com/v4/sets.html", "raw_MTGJSON4");
 
                 var magicFetcher = new MagicJsonFetcher(stubHandler);
 

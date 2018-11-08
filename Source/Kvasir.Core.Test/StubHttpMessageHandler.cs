@@ -30,12 +30,15 @@ namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.IO.Compression;
+    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core;
     using nGratis.Cop.Core.Contract;
 
     internal class StubHttpMessageHandler : HttpMessageHandler
@@ -52,14 +55,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             return new StubHttpMessageHandler();
         }
 
-        public StubHttpMessageHandler WithSuccessfulResponse(string targetUrl, string resourceKey)
+        public StubHttpMessageHandler WithSuccessfulResponse(string targetUrl, string sessionKey)
         {
             Guard
                 .Require(targetUrl, nameof(targetUrl))
                 .Is.Not.Empty();
 
             Guard
-                .Require(resourceKey, nameof(resourceKey))
+                .Require(sessionKey, nameof(sessionKey))
                 .Is.Not.Empty();
 
             var targetUri = new Uri(targetUrl);
@@ -73,14 +76,37 @@ namespace nGratis.AI.Kvasir.Core.Test
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
 
-            this._responseMessageLookup.Add(
-                targetUri,
-                new HttpResponseMessage(HttpStatusCode.OK)
+            var sessionStream = Assembly
+                .GetExecutingAssembly()
+                .GetManifestResourceStream($"nGratis.AI.Kvasir.Core.Test.Session.{sessionKey}.ngts");
+
+            if (sessionStream == null)
+            {
+                throw new KvasirTestingException($"Session [{sessionKey}] must be embedded!");
+            }
+
+            using (sessionStream)
+            using (var zipArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
+            {
+                var entryName = targetUri.Segments.Last();
+
+                var foundEntry = zipArchive
+                    .Entries
+                    .SingleOrDefault(entry => entry.Name == entryName);
+
+                if (foundEntry == null)
                 {
-                    Content = new StreamContent(Assembly
-                        .GetExecutingAssembly()
-                        .GetManifestResourceStream($"nGratis.AI.Kvasir.Core.Test.Session.{resourceKey}"))
-                });
+                    throw new KvasirTestingException($"Response for [{entryName}] is missing from [{sessionKey}]!");
+                }
+
+                using (var entryStream = foundEntry.Open())
+                {
+                    this._responseMessageLookup[targetUri] = new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(entryStream.AsString())
+                    };
+                }
+            }
 
             return this;
         }

@@ -56,6 +56,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -93,6 +94,10 @@
       <Project>{b199217e-4103-44a9-afb9-65287a52d06f}</Project>
       <Name>nGratis.Cop.Core.Testing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core\nGratis.Cop.Core.csproj">
+      <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
+      <Name>nGratis.Cop.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
       <Project>{35D185C9-F565-4ABD-B1A7-D84A14277673}</Project>
       <Name>nGratis.AI.Kvasir.Contract</Name>
@@ -104,9 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Session\raw_MTGJSON4_CardSets.html" />
+    <EmbeddedResource Include="Session\raw_MTGJSON4.ngts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
