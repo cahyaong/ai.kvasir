@@ -64,22 +64,6 @@ namespace Lucene.Net
             return DirectoryReader.Open(directory);
         }
 
-        public static bool HasLuceneIndex(this Uri rootFolderUri, string indexName)
-        {
-            Guard
-                .Require(rootFolderUri, nameof(rootFolderUri))
-                .Is.Not.Null()
-                .Is.Folder();
-
-            indexName = indexName.Replace(" ", "_");
-
-            Guard
-                .Require(indexName, nameof(indexName))
-                .Is.Not.Empty();
-
-            return System.IO.Directory.Exists(System.IO.Path.Combine(rootFolderUri.LocalPath, indexName));
-        }
-
         public static Directory CreateLuceneDirectory(this Uri rootFolderUri, string indexName)
         {
             Guard
@@ -101,6 +85,22 @@ namespace Lucene.Net
             }
 
             return FSDirectory.Open(indexFolderPath);
+        }
+
+        private static bool HasLuceneIndex(this Uri rootFolderUri, string indexName)
+        {
+            Guard
+                .Require(rootFolderUri, nameof(rootFolderUri))
+                .Is.Not.Null()
+                .Is.Folder();
+
+            indexName = indexName.Replace(" ", "_");
+
+            Guard
+                .Require(indexName, nameof(indexName))
+                .Is.Not.Empty();
+
+            return System.IO.Directory.Exists(System.IO.Path.Combine(rootFolderUri.LocalPath, indexName));
         }
     }
 }
