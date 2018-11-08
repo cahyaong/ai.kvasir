@@ -30,76 +30,115 @@ namespace nGratis.AI.Kvasir.Client
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Windows;
     using Caliburn.Micro;
-    using Lamar;
-    using Lamar.Scanning;
-    using Lamar.Scanning.Conventions;
-    using Microsoft.Extensions.DependencyInjection;
+    using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
+    using Unity;
+    using Unity.Injection;
+    using Unity.Lifetime;
+    using Unity.RegistrationByConvention;
 
     internal class AppBootstrapper : BootstrapperBase
     {
-        private Container container;
+        private readonly IUnityContainer _unityContainer;
 
         public AppBootstrapper()
         {
+            this._unityContainer = new UnityContainer();
+
             this.Initialize();
         }
 
         protected override void Configure()
         {
-            this.container = new Container(registry =>
-            {
-                registry.AddSingleton<IWindowManager, WindowManager>();
+            var dataFolderPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "NGRATIS",
+                "ai.kvasir");
 
-                registry.Scan(scanner =>
-                {
-                    scanner.TheCallingAssembly();
-                    scanner.Convention<ViewModelConvention>();
-                });
-            });
+            if (!Directory.Exists(dataFolderPath))
+            {
+                Directory.CreateDirectory(dataFolderPath);
+            }
+
+            var dataFolderUri = new Uri(dataFolderPath);
+
+            this._unityContainer
+                .RegisterInfrastructure()
+                .RegisterRepository(dataFolderUri)
+                .RegisterViewModels();
         }
 
         protected override object GetInstance(Type type, string key)
         {
-            return !string.IsNullOrEmpty(key)
-                ? this.container.GetInstance(type, key)
-                : this.container.GetInstance(type);
+            return this._unityContainer.Resolve(type, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type type)
         {
-            return this
-                .container
-                .GetAllInstances(type)
-                .Cast<object>();
+            return this._unityContainer.ResolveAll(type);
         }
 
         protected override void OnStartup(object sender, StartupEventArgs args)
         {
             this.DisplayRootViewFor<AppViewModel>();
         }
+    }
 
-        private class ViewModelConvention : IRegistrationConvention
+    internal static class UnityExtensions
+    {
+        public static IUnityContainer RegisterInfrastructure(this IUnityContainer unityContainer)
         {
-            public void ScanTypes(TypeSet typeSet, ServiceRegistry serviceRegistry)
-            {
-                Guard
-                    .Require(typeSet, nameof(typeSet))
-                    .Is.Not.Null();
+            Guard
+                .Require(unityContainer, nameof(unityContainer))
+                .Is.Not.Null();
 
-                Guard
-                    .Require(serviceRegistry, nameof(serviceRegistry))
-                    .Is.Not.Null();
+            unityContainer.RegisterType<IWindowManager, WindowManager>();
 
-                typeSet
-                    .FindTypes(TypeClassification.Concretes)
-                    .Where(type => !string.IsNullOrEmpty(type.Name))
-                    .Where(type => type.Name.EndsWith("ViewModel"))
-                    .ForEach(type => serviceRegistry.AddSingleton(type));
-            }
+            return unityContainer;
+        }
+
+        public static IUnityContainer RegisterRepository(this IUnityContainer unityContainer, Uri dataFolderUri)
+        {
+            Guard
+                .Require(unityContainer, nameof(unityContainer))
+                .Is.Not.Null();
+
+            Guard
+                .Require(dataFolderUri, nameof(dataFolderUri))
+                .Is.Not.Null()
+                .Is.Folder()
+                .Is.Exist();
+
+            unityContainer.RegisterType<IMagicFetcher, MagicJsonFetcher>(new ContainerControlledLifetimeManager());
+
+            unityContainer.RegisterType<IMagicRepository, MagicRepository>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(dataFolderUri, new ResolvedParameter<IMagicFetcher>()));
+
+            return unityContainer;
+        }
+
+        public static IUnityContainer RegisterViewModels(this IUnityContainer unityContainer)
+        {
+            Guard
+                .Require(unityContainer, nameof(unityContainer))
+                .Is.Not.Null();
+
+            unityContainer.RegisterTypes(
+                AllClasses
+                    .FromAssemblies(false, Assembly.GetEntryAssembly())
+                    .Where(type => type.FullName?.EndsWith("ViewModel") == true),
+                WithMappings.None,
+                WithName.Default,
+                WithLifetime.ContainerControlled);
+
+            return unityContainer;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardLibraryViewModel.cs" company="nGratis">
+// <copyright file="MockExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,50 +23,50 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 23 October 2018 11:37:00 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 5 November 2018 8:02:55 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Core.Test
 {
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
-    using System.Windows.Input;
-    using JetBrains.Annotations;
+    using Moq;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
-    using ReactiveUI;
 
-    [UsedImplicitly]
-    public class CardLibraryViewModel : ReactiveObject
+    public static class MockExtensions
     {
-        private readonly IMagicRepository _magicRepository;
-
-        private IEnumerable<CardSet> _cardSets;
-
-        public CardLibraryViewModel(IMagicRepository magicRepository)
+        public static Mock<IMagicFetcher> WithCardSets(this Mock<IMagicFetcher> mockFetcher, params CardSet[] cardSets)
         {
             Guard
-                .Require(magicRepository, nameof(magicRepository))
+                .Require(mockFetcher, nameof(mockFetcher))
                 .Is.Not.Null();
 
-            this._magicRepository = magicRepository;
+            Guard
+                .Require(cardSets, nameof(cardSets))
+                .Is.Not.Null()
+                .Is.Not.Empty();
 
-            this.CardSets = Enumerable.Empty<CardSet>();
-            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSets());
+            mockFetcher
+                .Setup(mock => mock.GetCardSetsAsync())
+                .Returns(Task.FromResult<IReadOnlyCollection<CardSet>>(cardSets))
+                .Verifiable();
+
+            return mockFetcher;
         }
 
-        public IEnumerable<CardSet> CardSets
+        public static Mock<IMagicFetcher> WithoutCardSets(this Mock<IMagicFetcher> mockFetcher)
         {
-            get => this._cardSets;
-            private set => this.RaiseAndSetIfChanged(ref this._cardSets, value);
-        }
+            Guard
+                .Require(mockFetcher, nameof(mockFetcher))
+                .Is.Not.Null();
 
-        public ICommand PopulateCardSetsCommand { get; }
+            mockFetcher
+                .Setup(mock => mock.GetCardSetsAsync())
+                .Returns(Task.FromResult<IReadOnlyCollection<CardSet>>(new CardSet[0]))
+                .Verifiable();
 
-        private async Task PopulateCardSets()
-        {
-            this.CardSets = await this._magicRepository.GetCardSetsAsync();
+            return mockFetcher;
         }
     }
 }

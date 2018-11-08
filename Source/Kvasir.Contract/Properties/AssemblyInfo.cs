@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardLibraryViewModel.cs" company="nGratis">
+// <copyright file="AssemblyInfo.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,50 +23,13 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 23 October 2018 11:37:00 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows.Input;
-    using JetBrains.Annotations;
-    using nGratis.AI.Kvasir.Contract.Magic;
-    using nGratis.Cop.Core.Contract;
-    using ReactiveUI;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-    [UsedImplicitly]
-    public class CardLibraryViewModel : ReactiveObject
-    {
-        private readonly IMagicRepository _magicRepository;
-
-        private IEnumerable<CardSet> _cardSets;
-
-        public CardLibraryViewModel(IMagicRepository magicRepository)
-        {
-            Guard
-                .Require(magicRepository, nameof(magicRepository))
-                .Is.Not.Null();
-
-            this._magicRepository = magicRepository;
-
-            this.CardSets = Enumerable.Empty<CardSet>();
-            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSets());
-        }
-
-        public IEnumerable<CardSet> CardSets
-        {
-            get => this._cardSets;
-            private set => this.RaiseAndSetIfChanged(ref this._cardSets, value);
-        }
-
-        public ICommand PopulateCardSetsCommand { get; }
-
-        private async Task PopulateCardSets()
-        {
-            this.CardSets = await this._magicRepository.GetCardSetsAsync();
-        }
-    }
-}
+[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
+[assembly: Guid("35d185c9-f565-4abd-b1a7-d84a14277673")]

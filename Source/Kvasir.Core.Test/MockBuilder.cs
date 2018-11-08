@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardLibraryViewModel.cs" company="nGratis">
+// <copyright file="MockBuilder.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,50 +23,28 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 23 October 2018 11:37:00 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 5 November 2018 8:08:49 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Core.Test
 {
-    using System.Collections.Generic;
+    using System;
     using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows.Input;
-    using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract.Magic;
-    using nGratis.Cop.Core.Contract;
-    using ReactiveUI;
 
-    [UsedImplicitly]
-    public class CardLibraryViewModel : ReactiveObject
+    internal class MockBuilder : Moq.MockBuilder
     {
-        private readonly IMagicRepository _magicRepository;
-
-        private IEnumerable<CardSet> _cardSets;
-
-        public CardLibraryViewModel(IMagicRepository magicRepository)
+        public static CardSet[] CreateCardSets(ushort count)
         {
-            Guard
-                .Require(magicRepository, nameof(magicRepository))
-                .Is.Not.Null();
-
-            this._magicRepository = magicRepository;
-
-            this.CardSets = Enumerable.Empty<CardSet>();
-            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSets());
-        }
-
-        public IEnumerable<CardSet> CardSets
-        {
-            get => this._cardSets;
-            private set => this.RaiseAndSetIfChanged(ref this._cardSets, value);
-        }
-
-        public ICommand PopulateCardSetsCommand { get; }
-
-        private async Task PopulateCardSets()
-        {
-            this.CardSets = await this._magicRepository.GetCardSetsAsync();
+            return Enumerable
+                .Range(0, count)
+                .Select(index => new CardSet
+                {
+                    Code = $"[_MOCK_CODE_{index:D2}_]",
+                    Name = $"[_MOCK_NAME_{index:D2}_]",
+                    ReleasedTimestamp = new DateTime(2000, 1, 1)
+                })
+                .ToArray();
         }
     }
 }

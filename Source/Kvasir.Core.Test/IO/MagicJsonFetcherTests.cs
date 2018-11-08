@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardLibraryViewModel.cs" company="nGratis">
+// <copyright file="MagicJsonFetcherTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,50 +23,57 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 23 October 2018 11:37:00 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, 3 November 2018 9:03:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Core.Test
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    using System;
     using System.Threading.Tasks;
-    using System.Windows.Input;
-    using JetBrains.Annotations;
-    using nGratis.AI.Kvasir.Contract.Magic;
-    using nGratis.Cop.Core.Contract;
-    using ReactiveUI;
+    using FluentAssertions;
+    using Xunit;
 
-    [UsedImplicitly]
-    public class CardLibraryViewModel : ReactiveObject
+    public class MagicJsonFetcherTests
     {
-        private readonly IMagicRepository _magicRepository;
-
-        private IEnumerable<CardSet> _cardSets;
-
-        public CardLibraryViewModel(IMagicRepository magicRepository)
+        public class GetCardAsyncMethod
         {
-            Guard
-                .Require(magicRepository, nameof(magicRepository))
-                .Is.Not.Null();
+            [Fact]
+            public async Task WhenGettingSuccessfulResponse_ShouldParseHtml()
+            {
+                // Arrange.
 
-            this._magicRepository = magicRepository;
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithSuccessfulResponse("https://mtgjson.com/v4/sets.html", "raw_MTGJSON4_CardSets.html");
 
-            this.CardSets = Enumerable.Empty<CardSet>();
-            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSets());
-        }
+                var magicFetcher = new MagicJsonFetcher(stubHandler);
 
-        public IEnumerable<CardSet> CardSets
-        {
-            get => this._cardSets;
-            private set => this.RaiseAndSetIfChanged(ref this._cardSets, value);
-        }
+                // Act.
 
-        public ICommand PopulateCardSetsCommand { get; }
+                var cardSets = await magicFetcher.GetCardSetsAsync();
 
-        private async Task PopulateCardSets()
-        {
-            this.CardSets = await this._magicRepository.GetCardSetsAsync();
+                // Assert.
+
+                cardSets
+                    .Should().NotBeNull()
+                    .And.HaveCountGreaterThan(0);
+
+                foreach (var cardSet in cardSets)
+                {
+                    cardSet
+                        .Name
+                        .Should().NotBeNullOrWhiteSpace();
+
+                    cardSet
+                        .Code
+                        .Should().NotBeNullOrEmpty()
+                        .And.MatchRegex(@"\w");
+
+                    cardSet
+                        .ReleasedTimestamp
+                        .Should().BeAfter(new DateTime(1993, 1, 1));
+                }
+            }
         }
     }
 }

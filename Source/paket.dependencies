@@ -1,9 +1,27 @@
-source https://api.nuget.org/v3/index.json
+group Build
 
-nuget Caliburn.Micro
-nuget JetBrains.Annotations
-nuget Lamar
-nuget MahApps.Metro
-nuget ModernUI.WPF
-nuget OxyPlot.Wpf
-nuget ReactiveUI
+    framework: net472
+    source https://api.nuget.org/v3/index.json
+
+    nuget Caliburn.Micro
+    nuget JetBrains.Annotations
+    nuget HtmlAgilityPack
+    nuget Lucene.Net >= 4.8.0-beta00001
+    nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
+    nuget MahApps.Metro
+    nuget ModernUI.WPF
+    nuget OxyPlot.Wpf
+    nuget ReactiveUI
+    nuget ReactiveUI.WPF
+    nuget System.Threading.Tasks.Extensions ~> 4.3.0
+    nuget Unity
+
+group Test
+
+    framework: net472
+    source https://api.nuget.org/v3/index.json
+
+    nuget FluentAssertions
+    nuget Moq ~> 4.8.2.0
+    nuget System.Threading.Tasks.Extensions ~> 4.3.0
+    nuget xUnit

@@ -2,6 +2,43 @@
   x:Class="nGratis.AI.Kvasir.Client.CardLibraryView"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  mc:Ignorable="d" />
+  d:DataContext="{d:DesignInstance client:CardLibraryViewModel}"
+  mc:Ignorable="d">
+  <i:Interaction.Triggers>
+    <i:EventTrigger EventName="Loaded">
+      <i:InvokeCommandAction Command="{Binding PopulateCardSetsCommand, Mode=OneWay}" />
+    </i:EventTrigger>
+  </i:Interaction.Triggers>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+    <StackPanel
+      Grid.Row="0"
+      HorizontalAlignment="Right"
+      Orientation="Horizontal">
+      <Border BorderBrush="{StaticResource Cop.Brush.Accent}" BorderThickness="0,0,4,0">
+        <StackPanel
+          Margin="0,0,10,0"
+          HorizontalAlignment="Right"
+          Orientation="Vertical">
+          <TextBlock
+            FontSize="12"
+            Foreground="{StaticResource Cop.Brush.Accent}"
+            Style="{StaticResource Cop.TextBlock.Base}"
+            Text="# CARD SETS" />
+          <TextBlock
+            HorizontalAlignment="Right"
+            FontSize="28"
+            Style="{StaticResource Cop.TextBlock.Base}"
+            Text="{Binding CardSets, Mode=OneWay, Converter={StaticResource Cop.Converter.EnumerableToCountConverter}}" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </Grid>
+</UserControl>
