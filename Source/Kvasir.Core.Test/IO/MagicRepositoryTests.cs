@@ -37,7 +37,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class MagicRepositoryTests
     {
-        public class GetCardAsyncMethod
+        public class GetCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()

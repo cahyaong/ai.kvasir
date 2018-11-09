@@ -35,7 +35,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class MagicJsonFetcherTests
     {
-        public class GetCardAsyncMethod
+        public class GetCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingSuccessfulResponse_ShouldParseHtml()
