@@ -36,6 +36,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Net.Http.Headers;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
+    using System.Web;
     using HtmlAgilityPack;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
@@ -76,20 +77,11 @@ namespace nGratis.AI.Kvasir.Core
                 var document = new HtmlDocument();
                 document.LoadHtml(content);
 
-                var datedCardSets = document
+                return document
                     .DocumentNode
-                    .SelectNodes("//table[1]//tbody//tr//td")
+                    .SelectNodes("//table//tbody//tr//td")
                     .Where(node => node.ChildNodes.Any())
-                    .Select(MagicJsonFetcher.ConvertToDatedCardSet);
-
-                var undatedCardSets = document
-                    .DocumentNode
-                    .SelectNodes("//table[2]//tbody//tr//td")
-                    .Where(node => node.ChildNodes.Any())
-                    .Select(MagicJsonFetcher.ConvertToUndatedCardSet);
-
-                return datedCardSets
-                    .Append(undatedCardSets)
+                    .Select(MagicJsonFetcher.ConvertToCardSet)
                     .ToArray();
             }
             else
@@ -100,7 +92,7 @@ namespace nGratis.AI.Kvasir.Core
             }
         }
 
-        private static CardSet ConvertToDatedCardSet(HtmlNode rootNode)
+        private static CardSet ConvertToCardSet(HtmlNode rootNode)
         {
             var nameNode = rootNode
                 .ChildNodes
@@ -122,56 +114,29 @@ namespace nGratis.AI.Kvasir.Core
                 throw new KvasirException("Card set code and released timestamp are not found!");
             }
 
-            return new CardSet
+            var releasedTimestamp = DateTime.MaxValue;
+
+            if (foundMatch.Groups["timestamp"].Success)
             {
-                Name = nameNode.InnerText,
-                Code = foundMatch.Groups["code"].Value,
-                ReleasedTimestamp = DateTime.ParseExact(
+                releasedTimestamp = DateTime.ParseExact(
                     foundMatch.Groups["timestamp"].Value,
                     "yyyy-MM-dd",
                     CultureInfo.InvariantCulture,
-                    DateTimeStyles.AdjustToUniversal)
-            };
-        }
-
-        private static CardSet ConvertToUndatedCardSet(HtmlNode rootNode)
-        {
-            var nameNode = rootNode
-                .ChildNodes
-                .SingleOrDefault(node => node.Name == "strong");
-
-            if (nameNode == null)
-            {
-                throw new KvasirException("Card set name is not found!");
-            }
-
-            var foundMatch = rootNode
-                .ChildNodes
-                .Where(node => node.Name == "#text")
-                .Select(node => Pattern.Code.Match(node.InnerText))
-                .SingleOrDefault(match => match.Success);
-
-            if (foundMatch == null)
-            {
-                throw new KvasirException("Card set code is not found!");
+                    DateTimeStyles.AdjustToUniversal);
             }
 
             return new CardSet
             {
-                Name = nameNode.InnerText,
+                Name = HttpUtility.HtmlDecode(nameNode.InnerText),
                 Code = foundMatch.Groups["code"].Value,
-                ReleasedTimestamp = DateTime.MaxValue
+                ReleasedTimestamp = releasedTimestamp
             };
         }
 
         private static class Pattern
         {
             public static readonly Regex CodeWithReleasedTimestamp = new Regex(
-                @"^(?<code>\w{3,5}) — (?<timestamp>\d{4}-\d{2}-\d{2})$",
-                RegexOptions.Compiled);
-
-            public static readonly Regex Code = new Regex(
-                @"^(?<code>\w{3,6})$",
+                @"^(?<code>\w{3,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
                 RegexOptions.Compiled);
         }
     }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardSet.cs" company="nGratis">
+// <copyright file="Constant.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,21 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 8 November 2018 8:27:59 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 9 November 2018 10:30:02 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract.Magic
+namespace nGratis.AI.Kvasir.Contract
 {
     using System;
-    using System.Diagnostics;
 
-    [DebuggerDisplay("[{this.Code}] {this.Name}")]
-    public class CardSet
+    public static class Constant
     {
-        public string Code { get; set; }
-
-        public string Name { get; set; }
-
-        public DateTime ReleasedTimestamp { get; set; }
+        public static readonly DateTime EpochTimestamp = new DateTime(1993, 1, 1);
     }
 }

@@ -28,12 +28,14 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
     using ReactiveUI;
 
@@ -66,7 +68,21 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSets()
         {
-            this.CardSets = await this._magicRepository.GetCardSetsAsync();
+            var cardSets = await this._magicRepository.GetCardSetsAsync();
+
+            await Task.Run(() =>
+            {
+                // TODO: Implement custom sorter in <DataGrid> instead of here!
+
+                cardSets = cardSets
+                    .OrderByDescending(cardSet => cardSet.ReleasedTimestamp.IsDated()
+                        ? cardSet.ReleasedTimestamp
+                        : DateTime.MinValue)
+                    .ThenBy(cardSet => cardSet.Name)
+                    .ToArray();
+            });
+
+            this.CardSets = cardSets;
         }
     }
 }

@@ -56,13 +56,14 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 cardSets
                     .Should().NotBeNull()
-                    .And.HaveCountGreaterThan(0);
+                    .And.HaveCountGreaterOrEqualTo(428);
 
                 foreach (var cardSet in cardSets)
                 {
                     cardSet
                         .Name
-                        .Should().NotBeNullOrWhiteSpace();
+                        .Should().NotBeNullOrWhiteSpace()
+                        .And.NotMatchRegex(";");
 
                     cardSet
                         .Code

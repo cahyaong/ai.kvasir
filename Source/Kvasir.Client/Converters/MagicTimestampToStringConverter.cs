@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardSet.cs" company="nGratis">
+// <copyright file="MagicTimestampToStringConverter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,21 +23,37 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 8 November 2018 8:27:59 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 9 November 2018 9:38:11 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract.Magic
+namespace nGratis.AI.Kvasir.Client
 {
     using System;
-    using System.Diagnostics;
+    using System.Globalization;
+    using System.Windows.Data;
+    using nGratis.AI.Kvasir.Core;
+    using nGratis.Cop.Core.Contract;
 
-    [DebuggerDisplay("[{this.Code}] {this.Name}")]
-    public class CardSet
+    [ValueConversion(typeof(DateTime), typeof(string))]
+    internal class MagicTimestampToStringConverter : IValueConverter
     {
-        public string Code { get; set; }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is DateTime timestamp)
+            {
+                return !timestamp.IsDated()
+                    ? "-"
+                    : timestamp
+                        .ToString("dd-MMM-yyyy")
+                        .ToUpperInvariant();
+            }
 
-        public string Name { get; set; }
+            return Text.Unknown;
+        }
 
-        public DateTime ReleasedTimestamp { get; set; }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
     }
 }

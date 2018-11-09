@@ -18,8 +18,14 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
     <StackPanel
       Grid.Row="0"
+      Grid.Column="0"
+      Grid.ColumnSpan="2"
       HorizontalAlignment="Right"
       Orientation="Horizontal">
       <Border BorderBrush="{StaticResource Cop.Brush.Accent}" BorderThickness="0,0,4,0">
@@ -40,5 +46,16 @@
         </StackPanel>
       </Border>
     </StackPanel>
+    <DataGrid
+      Grid.Row="1"
+      Grid.Column="0"
+      AutoGenerateColumns="False"
+      ItemsSource="{Binding Path=CardSets, Mode=OneWay}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Binding="{Binding Code, Mode=OneWay}" Header="Code" />
+        <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" Header="Name" />
+        <DataGridTextColumn Binding="{Binding ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
+      </DataGrid.Columns>
+    </DataGrid>
   </Grid>
 </UserControl>

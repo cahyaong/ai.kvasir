@@ -25,6 +25,9 @@
           </Style>
         </ResourceDictionary>
         <core:SharedResourceDictionary Source="/nGratis.Cop.Core.Theme;component/Cop.Theme.Dark.xaml" />
+        <ResourceDictionary>
+          <client:MagicTimestampToStringConverter x:Key="Kvasir.Converter.MagicTimestampToStringConverter" />
+        </ResourceDictionary>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
