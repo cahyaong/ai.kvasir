@@ -35,7 +35,7 @@ namespace nGratis.AI.Kvasir.Client
     using System.Reflection;
     using System.Windows;
     using Caliburn.Micro;
-    using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
     using Unity;
@@ -115,11 +115,18 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Folder()
                 .Is.Exist();
 
-            unityContainer.RegisterType<IMagicFetcher, MagicJsonFetcher>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IMagicFetcher, MagicJsonFetcher>(
+                new ContainerControlledLifetimeManager());
+
+            unityContainer.RegisterType<IIndexManager, IndexManager>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(dataFolderUri));
 
             unityContainer.RegisterType<IMagicRepository, MagicRepository>(
                 new ContainerControlledLifetimeManager(),
-                new InjectionConstructor(dataFolderUri, new ResolvedParameter<IMagicFetcher>()));
+                new InjectionConstructor(
+                    new ResolvedParameter<IIndexManager>(),
+                    new ResolvedParameter<IMagicFetcher>()));
 
             return unityContainer;
         }

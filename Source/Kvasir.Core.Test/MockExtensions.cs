@@ -30,12 +30,92 @@ namespace nGratis.AI.Kvasir.Core.Test
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Lucene.Net.Analysis.Core;
+    using Lucene.Net.Index;
+    using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using Moq;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
     public static class MockExtensions
     {
+        public static Mock<IIndexManager> WithDefaultIndexWriter(
+            this Mock<IIndexManager> mockManager,
+            IndexKind indexKind)
+        {
+            Guard
+                .Require(mockManager, nameof(mockManager))
+                .Is.Not.Null();
+
+            Guard
+                .Require(indexKind, nameof(indexKind))
+                .Is.Not.Default();
+
+            var writerConfiguration = new IndexWriterConfig(
+                LuceneVersion.LUCENE_48,
+                new SimpleAnalyzer(LuceneVersion.LUCENE_48));
+
+            var mockWriter = MockBuilder
+                .CreateMock<IndexWriter>(new RAMDirectory(), writerConfiguration);
+
+            mockManager
+                .Setup(mock => mock.CreateIndexWriter(indexKind))
+                .Returns(mockWriter.Object)
+                .Verifiable();
+
+            return mockManager;
+        }
+
+        public static Mock<IIndexManager> WithDefaultIndexReader(
+            this Mock<IIndexManager> mockManager,
+            IndexKind indexKind)
+        {
+            Guard
+                .Require(mockManager, nameof(mockManager))
+                .Is.Not.Null();
+
+            Guard
+                .Require(indexKind, nameof(indexKind))
+                .Is.Not.Default();
+
+            var mockReader = MockBuilder
+                .CreateMock<AtomicReader>();
+
+            mockManager
+                .Setup(mock => mock.CreateIndexReader(indexKind))
+                .Returns(mockReader.Object)
+                .Verifiable();
+
+            return mockManager;
+        }
+
+        public static Mock<IIndexManager> WithExistingCardSets(
+            this Mock<IIndexManager> mockManager,
+            params CardSet[] cardSets)
+        {
+            Guard
+                .Require(mockManager, nameof(mockManager))
+                .Is.Not.Null();
+
+            mockManager
+                .Setup(mock => mock.HasIndex(IndexKind.CardSet))
+                .Returns(true)
+                .Verifiable();
+
+            var stubDirectory = StubDirectory
+                .Create()
+                .WithCardSets(cardSets);
+
+            mockManager
+                .Setup(mock => mock.CreateIndexReader(IndexKind.CardSet))
+                .Returns(DirectoryReader.Open(stubDirectory))
+                .Verifiable();
+
+            return mockManager;
+        }
+
         public static Mock<IMagicFetcher> WithCardSets(this Mock<IMagicFetcher> mockFetcher, params CardSet[] cardSets)
         {
             Guard

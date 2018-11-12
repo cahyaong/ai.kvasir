@@ -34,6 +34,7 @@ namespace nGratis.AI.Kvasir.Client
     using System.Threading.Tasks;
     using System.Windows.Input;
     using JetBrains.Annotations;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
@@ -73,6 +74,7 @@ namespace nGratis.AI.Kvasir.Client
             await Task.Run(() =>
             {
                 // TODO: Implement custom sorter in <DataGrid> instead of here!
+                // TODO: Implement pagination on <DataGrid> to improve rendering performance!
 
                 cardSets = cardSets
                     .OrderByDescending(cardSet => cardSet.ReleasedTimestamp.IsDated()

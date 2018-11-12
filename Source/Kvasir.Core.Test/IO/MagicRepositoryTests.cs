@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Threading.Tasks;
     using FluentAssertions;
     using Moq;
-    using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.AI.Kvasir.Contract;
     using Xunit;
 
     public class MagicRepositoryTests
@@ -44,14 +44,16 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var mockFetcher = MockBuilder
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefaultIndexReader(IndexKind.CardSet)
+                    .WithDefaultIndexWriter(IndexKind.CardSet);
+
+                var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithCardSets(MockBuilder.CreateCardSets(3));
 
-                var stubDirectory = StubDirectory
-                    .Create();
-
-                var magicRepository = new MagicRepository(stubDirectory, mockFetcher.Object);
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
 
                 // Act.
 
@@ -67,15 +69,21 @@ namespace nGratis.AI.Kvasir.Core.Test
                         !string.IsNullOrEmpty(set.Name) &&
                         set.ReleasedTimestamp > DateTime.MinValue);
 
-                stubDirectory
-                    .HasValidIndex
-                    .Should().BeTrue();
+                mockIndexManager.Verify(
+                    mock => mock.HasIndex(IndexKind.CardSet),
+                    Times.Once);
 
-                stubDirectory
-                    .ListAll()
-                    .Should().NotBeNullOrEmpty();
+                mockIndexManager.Verify(
+                    mock => mock.CreateIndexReader(IndexKind.CardSet),
+                    Times.Never);
 
-                mockFetcher.Verify(mock => mock.GetCardSetsAsync(), Times.Once);
+                mockIndexManager.Verify(
+                    mock => mock.CreateIndexWriter(IndexKind.CardSet),
+                    Times.Once);
+
+                mockMagicFetcher.Verify(
+                    mock => mock.GetCardSetsAsync(),
+                    Times.Once);
             }
 
             [Fact]
@@ -83,15 +91,16 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var mockFetcher = MockBuilder
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefaultIndexWriter(IndexKind.CardSet)
+                    .WithExistingCardSets(MockBuilder.CreateCardSets(3));
+
+                var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithoutCardSets();
 
-                var stubDirectory = StubDirectory
-                    .Create()
-                    .WithCardSets(MockBuilder.CreateCardSets(3));
-
-                var magicRepository = new MagicRepository(stubDirectory, mockFetcher.Object);
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
 
                 // Act.
 
@@ -107,7 +116,21 @@ namespace nGratis.AI.Kvasir.Core.Test
                         !string.IsNullOrEmpty(set.Name) &&
                         set.ReleasedTimestamp > DateTime.MinValue);
 
-                mockFetcher.Verify(mock => mock.GetCardSetsAsync(), Times.Never);
+                mockIndexManager.Verify(
+                    mock => mock.HasIndex(IndexKind.CardSet),
+                    Times.Once);
+
+                mockIndexManager.Verify(
+                    mock => mock.CreateIndexReader(IndexKind.CardSet),
+                    Times.Once);
+
+                mockIndexManager.Verify(
+                    mock => mock.CreateIndexWriter(IndexKind.CardSet),
+                    Times.Never);
+
+                mockMagicFetcher.Verify(
+                    mock => mock.GetCardSetsAsync(),
+                    Times.Never);
             }
         }
     }

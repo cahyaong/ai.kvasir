@@ -32,36 +32,30 @@ namespace nGratis.AI.Kvasir.Core
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Lucene.Net;
     using Lucene.Net.Documents;
-    using Lucene.Net.Store;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
     public class MagicRepository : IMagicRepository
     {
-        private readonly Directory _cardSetDirectory;
+        private readonly IIndexManager _indexManager;
 
         private readonly IMagicFetcher _magicFetcher;
 
         private IReadOnlyCollection<CardSet> _cardSets;
 
-        public MagicRepository(Uri rootFolderUri, IMagicFetcher magicFetcher)
-            : this(rootFolderUri.CreateLuceneDirectory(Indexing.CardSet), magicFetcher)
-        {
-        }
-
-        internal MagicRepository(Directory cardSetDirectory, IMagicFetcher magicFetcher)
+        public MagicRepository(IIndexManager indexManager, IMagicFetcher magicFetcher)
         {
             Guard
-                .Require(cardSetDirectory, nameof(cardSetDirectory))
+                .Require(indexManager, nameof(indexManager))
                 .Is.Not.Null();
 
             Guard
                 .Require(magicFetcher, nameof(magicFetcher))
                 .Is.Not.Null();
 
-            this._cardSetDirectory = cardSetDirectory;
+            this._indexManager = indexManager;
             this._magicFetcher = magicFetcher;
             this._cardSets = new CardSet[0];
         }
@@ -73,27 +67,27 @@ namespace nGratis.AI.Kvasir.Core
                 return this._cardSets;
             }
 
-            if (this._cardSetDirectory.ListAll().Any())
+            if (this._indexManager.HasIndex(IndexKind.CardSet))
             {
                 await Task.Run(() =>
                 {
-                    using (var luceneReader = this._cardSetDirectory.CreateLuceneReader())
+                    using (var indexReader = this._indexManager.CreateIndexReader(IndexKind.CardSet))
                     {
                         this._cardSets = Enumerable
-                            .Range(0, luceneReader.NumDocs)
+                            .Range(0, indexReader.NumDocs)
 
                             // ReSharper disable once AccessToDisposedClosure
-                            .Select(index => luceneReader.Document(index))
+                            .Select(index => indexReader.Document(index))
                             .Select(document => new CardSet
                             {
                                 Code = document
-                                    .GetField(Indexing.Field.Code)
+                                    .GetField(Index.Field.Code)
                                     .GetStringValue() ?? Text.Empty,
                                 Name = document
-                                    .GetField(Indexing.Field.Name)
+                                    .GetField(Index.Field.Name)
                                     .GetStringValue() ?? Text.Empty,
                                 ReleasedTimestamp = new DateTime(document
-                                    .GetField(Indexing.Field.ReleasedTimestamp)
+                                    .GetField(Index.Field.ReleasedTimestamp)
                                     .GetInt64Value() ?? 0, DateTimeKind.Utc)
                             })
                             .ToArray();
@@ -106,24 +100,24 @@ namespace nGratis.AI.Kvasir.Core
 
                 await Task.Run(() =>
                 {
-                    using (var luceneWriter = this._cardSetDirectory.CreateLuceneWriter())
+                    using (var indexWriter = this._indexManager.CreateIndexWriter(IndexKind.CardSet))
                     {
                         foreach (var cardSet in this._cardSets)
                         {
                             var document = new Document();
 
-                            document.AddStringField(Indexing.Field.Code, cardSet.Code, Field.Store.YES);
-                            document.AddStringField(Indexing.Field.Name, cardSet.Name, Field.Store.YES);
+                            document.AddStringField(Index.Field.Code, cardSet.Code, Field.Store.YES);
+                            document.AddStringField(Index.Field.Name, cardSet.Name, Field.Store.YES);
 
                             document.AddInt64Field(
-                                Indexing.Field.ReleasedTimestamp,
+                                Index.Field.ReleasedTimestamp,
                                 cardSet.ReleasedTimestamp.Ticks,
                                 Field.Store.YES);
 
-                            luceneWriter.AddDocument(document);
+                            indexWriter.AddDocument(document);
                         }
 
-                        luceneWriter.Commit();
+                        indexWriter.Commit();
                     }
                 });
             }
@@ -131,10 +125,8 @@ namespace nGratis.AI.Kvasir.Core
             return this._cardSets;
         }
 
-        private static class Indexing
+        private static class Index
         {
-            public const string CardSet = "Lucene_CardSet";
-
             public static class Field
             {
                 public const string Code = "code";

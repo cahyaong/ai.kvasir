@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicRepository.cs" company="nGratis">
+// <copyright file="IMagicFetcher.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract.Magic
+namespace nGratis.AI.Kvasir.Contract
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract.Magic;
 
-    public interface IMagicRepository
+    public interface IMagicFetcher
     {
         Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
     }

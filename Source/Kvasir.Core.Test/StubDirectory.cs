@@ -28,10 +28,11 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
-    using Lucene.Net;
+    using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
+    using Lucene.Net.Util;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
@@ -39,21 +40,6 @@ namespace nGratis.AI.Kvasir.Core.Test
     {
         private StubDirectory()
         {
-        }
-
-        public bool HasValidIndex
-        {
-            get
-            {
-                var indexChecker = new CheckIndex(this)
-                {
-                    CrossCheckTermVectors = true
-                };
-
-                return indexChecker
-                    .DoCheckIndex()?
-                    .Clean == true;
-            }
         }
 
         public static StubDirectory Create()
@@ -68,7 +54,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Is.Not.Null()
                 .Is.Not.Empty();
 
-            using (var luceneWriter = this.CreateLuceneWriter())
+            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+
+            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+            {
+                OpenMode = OpenMode.CREATE_OR_APPEND
+            };
+
+            using (var luceneWriter = new IndexWriter(this, configuration))
             {
                 foreach (var cardSet in cardSets)
                 {

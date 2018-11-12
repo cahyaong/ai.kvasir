@@ -54,6 +54,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IO\LuceneExtensions.cs" />
+    <Compile Include="IO\IndexManager.cs" />
     <Compile Include="IO\MagicRepository.cs" />
     <Compile Include="IO\MagicJsonFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />

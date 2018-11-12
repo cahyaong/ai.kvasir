@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="LuceneExtensions.cs" company="nGratis">
+// <copyright file="IndexKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,40 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 1 November 2018 8:34:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable once CheckNamespace
-
-namespace Lucene.Net
+namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-    using Lucene.Net.Store;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
-
-    internal static class LuceneExtensions
+    public enum IndexKind
     {
-        public static Directory CreateLuceneDirectory(this Uri rootFolderUri, IndexKind indexKind)
-        {
-            Guard
-                .Require(rootFolderUri, nameof(rootFolderUri))
-                .Is.Not.Null()
-                .Is.Folder()
-                .Is.Exist();
-
-            Guard
-                .Require(indexKind, nameof(indexKind))
-                .Is.Not.Default();
-
-            var indexFolderPath = System.IO.Path.Combine(rootFolderUri.LocalPath, $"Lucene_{indexKind}");
-
-            if (!System.IO.Directory.Exists(indexFolderPath))
-            {
-                System.IO.Directory.CreateDirectory(indexFolderPath);
-            }
-
-            return FSDirectory.Open(indexFolderPath);
-        }
+        Undefined = 0,
+        CardSet,
+        Card
     }
 }

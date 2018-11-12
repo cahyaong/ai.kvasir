@@ -84,12 +84,10 @@ namespace nGratis.AI.Kvasir.Core
                     .Select(MagicJsonFetcher.ConvertToCardSet)
                     .ToArray();
             }
-            else
-            {
-                throw new KvasirException(
-                    @"Failed to reach MTGJSON4.com when trying to fetch card sets! " +
-                    $"Status Code: [{response.StatusCode}].");
-            }
+
+            throw new KvasirException(
+                @"Failed to reach MTGJSON4.com when trying to fetch card sets! " +
+                $"Status Code: [{response.StatusCode}].");
         }
 
         private static CardSet ConvertToCardSet(HtmlNode rootNode)

@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Lucene.Net, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\build\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,11 +44,14 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constant.cs" />
+    <Compile Include="IO\IIndexManager.cs" />
+    <Compile Include="IO\IndexKind.cs" />
     <Compile Include="KvasirException.cs" />
     <Compile Include="KvasirTestingException.cs" />
     <Compile Include="Magic\CardSet.cs" />
-    <Compile Include="Magic\IMagicFetcher.cs" />
-    <Compile Include="Magic\IMagicRepository.cs" />
+    <Compile Include="Magic\Card.cs" />
+    <Compile Include="IO\IMagicFetcher.cs" />
+    <Compile Include="IO\IMagicRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
