@@ -10,6 +10,7 @@ group Build
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
     nuget MahApps.Metro
     nuget ModernUI.WPF
+    nuget Newtonsoft.Json
     nuget OxyPlot.Wpf
     nuget ReactiveUI
     nuget ReactiveUI.WPF

@@ -29,8 +29,11 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
+    using System.Net;
     using System.Threading.Tasks;
     using FluentAssertions;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Contract.Magic;
     using Xunit;
 
     public class MagicJsonFetcherTests
@@ -44,7 +47,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithSuccessfulResponse("https://mtgjson.com/v4/sets.html", "raw_MTGJSON4");
+                    .WithSuccessfulResponseInSession("https://mtgjson.com/v4/sets.html", "raw_MTGJSON4");
 
                 var magicFetcher = new MagicJsonFetcher(stubHandler);
 
@@ -61,6 +64,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                 foreach (var cardSet in cardSets)
                 {
                     cardSet
+                        .Should().NotBeNull();
+
+                    cardSet
                         .Name
                         .Should().NotBeNullOrWhiteSpace()
                         .And.NotMatchRegex(";");
@@ -68,12 +74,182 @@ namespace nGratis.AI.Kvasir.Core.Test
                     cardSet
                         .Code
                         .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"\w");
+                        .And.MatchRegex(@"\w{3,6}");
 
                     cardSet
                         .ReleasedTimestamp
                         .Should().BeAfter(new DateTime(1993, 1, 1));
                 }
+            }
+
+            [Fact]
+            public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithResponse("https://mtgjson.com/v4/sets.html", HttpStatusCode.NotFound);
+
+                var magicFetcher = new MagicJsonFetcher(stubHandler);
+
+                // Act &  Assert.
+
+                magicFetcher
+                    .Awaiting(async fetcher => await fetcher.GetCardSetsAsync())
+                    .Should().Throw<KvasirException>()
+                    .WithMessage(
+                        "Failed to reach MTGJSON4.com when trying to fetch card sets! " +
+                        "Status Code: [NotFound].");
+            }
+        }
+
+        public class GetCardsAsyncMethod
+        {
+            [Fact]
+            public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
+            {
+                // Arrange.
+
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithSuccessfulResponseInSession("https://mtgjson.com/v4/json/GRN.json", "raw_MTGJSON4");
+
+                var magicFetcher = new MagicJsonFetcher(stubHandler);
+
+                var cardSet = new CardSet
+                {
+                    Code = "GRN",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                // Act.
+
+                var cards = await magicFetcher.GetCardsAsync(cardSet);
+
+                // Assert.
+
+                cards
+                    .Should().NotBeNull()
+                    .And.HaveCount(283);
+
+                foreach (var card in cards)
+                {
+                    card
+                        .Should().NotBeNull();
+
+                    card
+                        .MultiverseId
+                        .Should().BePositive();
+
+                    card
+                        .PrintingCode
+                        .Should().NotBeNullOrEmpty()
+                        .And.MatchRegex(@"\w{3,6}");
+
+                    card
+                        .Name
+                        .Should().NotBeNullOrWhiteSpace();
+
+                    card
+                        .ManaCost
+                        .Should().NotBeNull()
+                        // ReSharper disable once StringLiteralTypo
+                        .And.MatchRegex(@"(\{[\dWUBRGX/]+\})*");
+
+                    card
+                        .Type
+                        .Should().NotBeNullOrEmpty()
+                        .And.MatchRegex(@"[a-zA-Z\-\s]+");
+
+                    card
+                        .Rarity
+                        .Should().NotBeNullOrEmpty()
+                        .And.MatchRegex(@"[a-zA-Z]+");
+
+                    card
+                        .Text
+                        .Should().NotBeNull();
+
+                    card
+                        .FlavorText
+                        .Should().NotBeNull();
+
+                    card
+                        .Power
+                        .Should().NotBeNull()
+                        .And.MatchRegex(@"[\d\*]*");
+
+                    card
+                        .Toughness
+                        .Should().NotBeNull()
+                        .And.MatchRegex(@"[\d\*]*");
+
+                    card
+                        .Number
+                        .Should().BePositive();
+
+                    card
+                        .Artist
+                        .Should().NotBeNullOrEmpty()
+                        .And.MatchRegex(@"[a-zA-Z\s]+");
+                }
+            }
+
+            [Fact]
+            public void WhenGettingContentWithMissingCards_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithSuccessfulResponse("https://mtgjson.com/v4/json/X42.json", "{ }");
+
+                var magicFetcher = new MagicJsonFetcher(stubHandler);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X42",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                // Act & Assert.
+
+                magicFetcher
+                     .Awaiting(async fetcher => await fetcher.GetCardsAsync(cardSet))
+                     .Should().Throw<KvasirException>()
+                     .WithMessage("Response from MTGJSON4.com is missing cards!");
+            }
+
+            [Fact]
+            public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithResponse("https://mtgjson.com/v4/json/X42.json", HttpStatusCode.NotFound);
+
+                var magicFetcher = new MagicJsonFetcher(stubHandler);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X42",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                // Act & Assert.
+
+                magicFetcher
+                     .Awaiting(async fetcher => await fetcher.GetCardsAsync(cardSet))
+                     .Should().Throw<KvasirException>()
+                     .WithMessage(
+                        "Failed to reach MTGJSON4.com when trying to fetch cards! " +
+                        "Card Set: [[_MOCK_NAME_]]. " +
+                        "Status Code: [NotFound].");
             }
         }
     }

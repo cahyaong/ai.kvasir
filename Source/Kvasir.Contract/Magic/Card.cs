@@ -32,6 +32,26 @@ namespace nGratis.AI.Kvasir.Contract.Magic
     {
         public uint MultiverseId { get; set; }
 
+        public string PrintingCode { get; set; }
+
         public string Name { get; set; }
+
+        public string ManaCost { get; set; }
+
+        public string Type { get; set; }
+
+        public string Rarity { get; set; }
+
+        public string Text { get; set; }
+
+        public string FlavorText { get; set; }
+
+        public string Power { get; set; }
+
+        public string Toughness { get; set; }
+
+        public ushort Number { get; set; }
+
+        public string Artist { get; set; }
     }
 }

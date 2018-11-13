@@ -18,6 +18,7 @@ NUGET
     MahApps.Metro (1.6.5)
       ControlzEx (>= 3.0.2.4 < 4.0)
     ModernUI.WPF (1.0.9)
+    Newtonsoft.Json (11.0.2)
     OxyPlot.Core (1.0)
     OxyPlot.Wpf (1.0)
       OxyPlot.Core (1.0)

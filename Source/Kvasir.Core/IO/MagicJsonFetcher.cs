@@ -38,8 +38,10 @@ namespace nGratis.AI.Kvasir.Core
     using System.Threading.Tasks;
     using System.Web;
     using HtmlAgilityPack;
+    using Newtonsoft.Json.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.Cop.Core.Contract;
 
     public class MagicJsonFetcher : IMagicFetcher
     {
@@ -62,6 +64,7 @@ namespace nGratis.AI.Kvasir.Core
             this._httpClient.Timeout = TimeSpan.FromSeconds(5);
 
             this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
+            this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*", 0.8));
             this._httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
             this._httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AI.Kvasir", "0.1"));
         }
@@ -70,24 +73,66 @@ namespace nGratis.AI.Kvasir.Core
         {
             var response = await this._httpClient.GetAsync("sets.html");
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
-
-                var document = new HtmlDocument();
-                document.LoadHtml(content);
-
-                return document
-                    .DocumentNode
-                    .SelectNodes("//table//tbody//tr//td")
-                    .Where(node => node.ChildNodes.Any())
-                    .Select(MagicJsonFetcher.ConvertToCardSet)
-                    .ToArray();
+                throw new KvasirException(
+                    @"Failed to reach MTGJSON4.com when trying to fetch card sets! " +
+                    $"Status Code: [{response.StatusCode}].");
             }
 
-            throw new KvasirException(
-                @"Failed to reach MTGJSON4.com when trying to fetch card sets! " +
-                $"Status Code: [{response.StatusCode}].");
+            var content = await response.Content.ReadAsStringAsync();
+
+            var document = new HtmlDocument();
+            document.LoadHtml(content);
+
+            return document
+                .DocumentNode
+                .SelectNodes("//table//tbody//tr//td")
+                .Where(node => node.ChildNodes.Any())
+                .Select(MagicJsonFetcher.ConvertToCardSet)
+                .ToArray();
+        }
+
+        public async Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet)
+        {
+            Guard
+                .Require(cardSet, nameof(cardSet))
+                .Is.Not.Null();
+
+            // TODO: Make <CardSet> and <Card> classes immutable once constructed!
+
+            var response = await this._httpClient.GetAsync($"json/{cardSet.Code}.json");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new KvasirException(
+                    @"Failed to reach MTGJSON4.com when trying to fetch cards! " +
+                    $"Card Set: [{cardSet.Name}]. " +
+                    $"Status Code: [{response.StatusCode}].");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var cardsToken = JObject.Parse(content)["cards"];
+
+            if (cardsToken == null)
+            {
+                throw new KvasirException("Response from MTGJSON4.com is missing cards!");
+            }
+
+            return cardsToken
+                .Children()
+                .Select(token =>
+                {
+                    var card = token.ToObject<Card>();
+                    card.PrintingCode = cardSet.Code;
+                    card.ManaCost = card.ManaCost ?? string.Empty;
+                    card.FlavorText = card.FlavorText ?? string.Empty;
+                    card.Power = card.Power ?? string.Empty;
+                    card.Toughness = card.Toughness ?? string.Empty;
+
+                    return card;
+                })
+                .ToArray();
         }
 
         private static CardSet ConvertToCardSet(HtmlNode rootNode)

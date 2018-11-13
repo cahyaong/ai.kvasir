@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="Rarity.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,19 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract.Magic
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract.Magic;
-
-    public interface IMagicFetcher
+    public enum Rarity
     {
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
-
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
+        Undefined = 0,
+        Common,
+        Uncommon,
+        Rare,
+        Mythic
     }
 }

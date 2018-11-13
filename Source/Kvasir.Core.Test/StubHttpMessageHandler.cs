@@ -55,7 +55,36 @@ namespace nGratis.AI.Kvasir.Core.Test
             return new StubHttpMessageHandler();
         }
 
-        public StubHttpMessageHandler WithSuccessfulResponse(string targetUrl, string sessionKey)
+        public StubHttpMessageHandler WithSuccessfulResponse(string targetUrl, string content)
+        {
+            Guard
+                .Require(targetUrl, nameof(targetUrl))
+                .Is.Not.Empty();
+
+            Guard
+                .Require(content, nameof(content))
+                .Is.Not.Empty();
+
+            var targetUri = new Uri(targetUrl);
+
+            Guard
+                .Require(targetUri, nameof(targetUri))
+                .Is.Url();
+
+            if (this._responseMessageLookup.ContainsKey(targetUri))
+            {
+                throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
+            }
+
+            this._responseMessageLookup[targetUri] = new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(content)
+            };
+
+            return this;
+        }
+
+        public StubHttpMessageHandler WithSuccessfulResponseInSession(string targetUrl, string sessionKey)
         {
             Guard
                 .Require(targetUrl, nameof(targetUrl))
@@ -107,6 +136,31 @@ namespace nGratis.AI.Kvasir.Core.Test
                     };
                 }
             }
+
+            return this;
+        }
+
+        public StubHttpMessageHandler WithResponse(string targetUrl, HttpStatusCode statusCode, string content = null)
+        {
+            Guard
+                .Require(targetUrl, nameof(targetUrl))
+                .Is.Not.Empty();
+
+            var targetUri = new Uri(targetUrl);
+
+            Guard
+                .Require(targetUri, nameof(targetUri))
+                .Is.Url();
+
+            if (this._responseMessageLookup.ContainsKey(targetUri))
+            {
+                throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
+            }
+
+            this._responseMessageLookup[targetUri] = new HttpResponseMessage(statusCode)
+            {
+                Content = new StringContent(content ?? Text.Empty)
+            };
 
             return this;
         }
