@@ -31,18 +31,45 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.Cop.Core.Contract;
 
     internal class MockBuilder : Moq.MockBuilder
     {
         public static CardSet[] CreateCardSets(ushort count)
         {
             return Enumerable
-                .Range(0, count)
+                .Range(1, count)
                 .Select(index => new CardSet
                 {
                     Code = $"[_MOCK_CODE_{index:D2}_]",
                     Name = $"[_MOCK_NAME_{index:D2}_]",
                     ReleasedTimestamp = new DateTime(2000, 1, 1)
+                })
+                .ToArray();
+        }
+
+        public static Card[] CreteCards(string cardSetCode, ushort count)
+        {
+            Guard
+                .Require(cardSetCode, nameof(cardSetCode))
+                .Is.Not.Empty();
+
+            return Enumerable
+                .Range(1, count)
+                .Select(index => new Card
+                {
+                    MultiverseId = index,
+                    CardSetCode = cardSetCode,
+                    Name = $"[_MOCK_CODE_{index:D2}_]",
+                    ManaCost = "[_MOCK_MANA_COST_]",
+                    Type = "[_MOCK_TYPE_]",
+                    Rarity = "[_MOCK_RARITY_]",
+                    Text = "[_MOCK_TEXT_]",
+                    FlavorText = "[_MOCK_FLAVOR_TEXT_]",
+                    Power = "[_MOCK_POWER_]",
+                    Toughness = "[_MOCK_TOUGHNESS_]",
+                    Number = (short)index,
+                    Artist = "[_MOCK_ARTIST_]"
                 })
                 .ToArray();
         }

@@ -29,6 +29,7 @@
 namespace nGratis.AI.Kvasir.Core
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using Lucene.Net;
@@ -39,9 +40,15 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    public class IndexManager : IIndexManager
+    public sealed class IndexManager : IIndexManager
     {
         private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryLookup;
+
+        private readonly ConcurrentDictionary<IndexKind, IndexReader> _readerLookup;
+
+        private readonly ConcurrentDictionary<IndexKind, IndexWriter> _writerLookup;
+
+        private bool _isDisposed;
 
         public IndexManager(Uri rootFolderUri)
         {
@@ -54,6 +61,9 @@ namespace nGratis.AI.Kvasir.Core
                 .Cast<IndexKind>()
                 .Where(indexKind => indexKind != IndexKind.Undefined)
                 .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
+
+            this._readerLookup = new ConcurrentDictionary<IndexKind, IndexReader>();
+            this._writerLookup = new ConcurrentDictionary<IndexKind, IndexWriter>();
         }
 
         public bool HasIndex(IndexKind indexKind)
@@ -67,21 +77,20 @@ namespace nGratis.AI.Kvasir.Core
                 directory.ListAll().Any();
         }
 
-        public IndexReader CreateIndexReader(IndexKind indexKind)
+        public IndexReader FindIndexReader(IndexKind indexKind)
         {
             Guard
                 .Require(indexKind, nameof(indexKind))
                 .Is.Not.Default();
 
-            if (!this._directoryLookup.TryGetValue(indexKind, out var directory))
-            {
-                throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
-            }
-
-            return DirectoryReader.Open(directory);
+            return this._readerLookup.GetOrAdd(
+                indexKind,
+                _ => this
+                    .FindIndexWriter(indexKind)
+                    .GetReader(true));
         }
 
-        public IndexWriter CreateIndexWriter(IndexKind indexKind)
+        public IndexWriter FindIndexWriter(IndexKind indexKind)
         {
             Guard
                 .Require(indexKind, nameof(indexKind))
@@ -92,14 +101,39 @@ namespace nGratis.AI.Kvasir.Core
                 throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
             }
 
-            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+            return this._writerLookup.GetOrAdd(
+                indexKind,
+                _ =>
+                {
+                    var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
 
-            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+                    var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+                    {
+                        OpenMode = OpenMode.CREATE_OR_APPEND
+                    };
+
+                    return new IndexWriter(directory, configuration);
+                });
+        }
+
+        public void Dispose()
+        {
+            if (this._isDisposed)
             {
-                OpenMode = OpenMode.CREATE_OR_APPEND
-            };
+                return;
+            }
 
-            return new IndexWriter(directory, configuration);
+            this
+                ._readerLookup?
+                .Values
+                .ForEach(reader => reader.Dispose());
+
+            this
+                ._writerLookup?
+                .Values
+                .ForEach(writer => writer.Dispose());
+
+            this._isDisposed = true;
         }
     }
 }

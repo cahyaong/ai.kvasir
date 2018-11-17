@@ -6,6 +6,7 @@ group Build
     nuget Caliburn.Micro
     nuget JetBrains.Annotations
     nuget HtmlAgilityPack
+    nuget Humanizer.Core
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
     nuget MahApps.Metro

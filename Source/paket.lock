@@ -11,6 +11,7 @@ NUGET
     DynamicData (6.6.1.2507)
       System.Reactive (>= 4.0)
     HtmlAgilityPack (1.8.9)
+    Humanizer.Core (2.5.1)
     JetBrains.Annotations (2018.2.1)
     Lucene.Net (4.8.0-beta00005)
     Lucene.Net.Analysis.Common (4.8.0-beta00005)

@@ -28,11 +28,16 @@
 
 namespace nGratis.AI.Kvasir.Contract.Magic
 {
+    using System.Diagnostics;
+
+    // TODO: Make this class immutable once constructed!
+
+    [DebuggerDisplay("[{this.MultiverseId}]: {this.Name ?? \"<undefined>\"}")]
     public class Card
     {
-        public uint MultiverseId { get; set; }
+        public int MultiverseId { get; set; }
 
-        public string PrintingCode { get; set; }
+        public string CardSetCode { get; set; }
 
         public string Name { get; set; }
 
@@ -50,7 +55,7 @@ namespace nGratis.AI.Kvasir.Contract.Magic
 
         public string Toughness { get; set; }
 
-        public ushort Number { get; set; }
+        public short Number { get; set; }
 
         public string Artist { get; set; }
     }

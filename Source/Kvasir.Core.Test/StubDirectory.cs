@@ -51,7 +51,6 @@ namespace nGratis.AI.Kvasir.Core.Test
         {
             Guard
                 .Require(cardSets, nameof(cardSets))
-                .Is.Not.Null()
                 .Is.Not.Empty();
 
             var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
@@ -70,6 +69,47 @@ namespace nGratis.AI.Kvasir.Core.Test
                     document.AddStringField("code", cardSet.Code, Field.Store.YES);
                     document.AddStringField("name", cardSet.Name, Field.Store.YES);
                     document.AddInt64Field("released-timestamp", cardSet.ReleasedTimestamp.Ticks, Field.Store.YES);
+
+                    luceneWriter.AddDocument(document);
+                }
+
+                luceneWriter.Commit();
+            }
+
+            return this;
+        }
+
+        public StubDirectory WithCards(params Card[] cards)
+        {
+            Guard
+                .Require(cards, nameof(cards))
+                .Is.Not.Empty();
+
+            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+
+            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+            {
+                OpenMode = OpenMode.CREATE_OR_APPEND
+            };
+
+            using (var luceneWriter = new IndexWriter(this, configuration))
+            {
+                foreach (var card in cards)
+                {
+                    var document = new Document();
+
+                    document.AddInt32Field("multiverse-id", card.MultiverseId, Field.Store.YES);
+                    document.AddStringField("card-set-code", card.CardSetCode, Field.Store.YES);
+                    document.AddStringField("name", card.Name, Field.Store.YES);
+                    document.AddStringField("mana-cost", card.ManaCost, Field.Store.YES);
+                    document.AddStringField("type", card.Type, Field.Store.YES);
+                    document.AddStringField("rarity", card.Rarity, Field.Store.YES);
+                    document.AddStringField("text", card.Text, Field.Store.YES);
+                    document.AddStringField("flavor-text", card.FlavorText, Field.Store.YES);
+                    document.AddStringField("power", card.Power, Field.Store.YES);
+                    document.AddStringField("toughness", card.Toughness, Field.Store.YES);
+                    document.AddInt32Field("number", card.Number, Field.Store.YES);
+                    document.AddStringField("artist", card.Artist, Field.Store.YES);
 
                     luceneWriter.AddDocument(document);
                 }

@@ -144,7 +144,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().BePositive();
 
                     card
-                        .PrintingCode
+                        .CardSetCode
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"\w{3,6}");
 

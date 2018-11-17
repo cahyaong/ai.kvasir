@@ -28,14 +28,15 @@
 
 namespace nGratis.AI.Kvasir.Contract
 {
+    using System;
     using Lucene.Net.Index;
 
-    public interface IIndexManager
+    public interface IIndexManager : IDisposable
     {
         bool HasIndex(IndexKind indexKind);
 
-        IndexReader CreateIndexReader(IndexKind indexKind);
+        IndexReader FindIndexReader(IndexKind indexKind);
 
-        IndexWriter CreateIndexWriter(IndexKind indexKind);
+        IndexWriter FindIndexWriter(IndexKind indexKind);
     }
 }

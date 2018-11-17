@@ -35,7 +35,7 @@ namespace Lucene.Net
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    internal static class LuceneExtensions
+    internal static partial class LuceneExtensions
     {
         public static Directory CreateLuceneDirectory(this Uri rootFolderUri, IndexKind indexKind)
         {

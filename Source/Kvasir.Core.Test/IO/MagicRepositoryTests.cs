@@ -29,10 +29,13 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Moq;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Contract.Magic;
     using Xunit;
 
     public class MagicRepositoryTests
@@ -46,8 +49,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
-                    .WithDefaultIndexReader(IndexKind.CardSet)
-                    .WithDefaultIndexWriter(IndexKind.CardSet);
+                    .WithDefault(IndexKind.CardSet);
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
@@ -70,15 +72,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                         set.ReleasedTimestamp > DateTime.MinValue);
 
                 mockIndexManager.Verify(
-                    mock => mock.HasIndex(IndexKind.CardSet),
-                    Times.Once);
-
-                mockIndexManager.Verify(
-                    mock => mock.CreateIndexReader(IndexKind.CardSet),
+                    mock => mock.FindIndexReader(IndexKind.CardSet),
                     Times.Never);
 
                 mockIndexManager.Verify(
-                    mock => mock.CreateIndexWriter(IndexKind.CardSet),
+                    mock => mock.FindIndexWriter(IndexKind.CardSet),
                     Times.Once);
 
                 mockMagicFetcher.Verify(
@@ -93,7 +91,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
-                    .WithDefaultIndexWriter(IndexKind.CardSet)
+                    .WithDefault(IndexKind.CardSet)
                     .WithExistingCardSets(MockBuilder.CreateCardSets(3));
 
                 var mockMagicFetcher = MockBuilder
@@ -111,26 +109,240 @@ namespace nGratis.AI.Kvasir.Core.Test
                 cardSets
                     .Should().NotBeNullOrEmpty()
                     .And.HaveCount(3)
-                    .And.Contain(set =>
-                        !string.IsNullOrEmpty(set.Code) &&
-                        !string.IsNullOrEmpty(set.Name) &&
-                        set.ReleasedTimestamp > DateTime.MinValue);
+                    .And.NotContainNulls();
+
+                foreach (var cardSet in cardSets)
+                {
+                    cardSet
+                        .Code
+                        .Should().NotBeEmpty();
+
+                    cardSet
+                        .Name
+                        .Should().NotBeNullOrEmpty();
+
+                    cardSet
+                        .ReleasedTimestamp
+                        .Should().BeOnOrAfter(Constant.EpochTimestamp);
+                }
 
                 mockIndexManager.Verify(
-                    mock => mock.HasIndex(IndexKind.CardSet),
+                    mock => mock.FindIndexReader(IndexKind.CardSet),
                     Times.Once);
 
                 mockIndexManager.Verify(
-                    mock => mock.CreateIndexReader(IndexKind.CardSet),
-                    Times.Once);
-
-                mockIndexManager.Verify(
-                    mock => mock.CreateIndexWriter(IndexKind.CardSet),
+                    mock => mock.FindIndexWriter(IndexKind.CardSet),
                     Times.Never);
 
                 mockMagicFetcher.Verify(
                     mock => mock.GetCardSetsAsync(),
                     Times.Never);
+            }
+        }
+
+        public class GetCardsAsyncMethod
+        {
+            [Fact]
+            public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.Card);
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithCards(Enumerable
+                        .Empty<Card>()
+                        .Append(MockBuilder.CreteCards("X02", 2))
+                        .Append(MockBuilder.CreteCards("X03", 3))
+                        .Append(MockBuilder.CreteCards("X05", 5))
+                        .ToArray());
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X03",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                // Act.
+
+                var cards = await magicRepository.GetCardsAsync(cardSet);
+
+                // Assert.
+
+                cards
+                    .Should().NotBeEmpty()
+                    .And.HaveCount(3)
+                    .And.NotContainNulls();
+
+                foreach (var card in cards)
+                {
+                    card
+                        .MultiverseId
+                        .Should().BePositive();
+
+                    card
+                        .CardSetCode
+                        .Should().BeEquivalentTo("X03");
+
+                    card
+                        .Number
+                        .Should().BePositive();
+                }
+
+                mockIndexManager.Verify(
+                    mock => mock.FindIndexReader(IndexKind.Card),
+                    Times.Never);
+
+                mockIndexManager.Verify(
+                    mock => mock.FindIndexWriter(IndexKind.Card),
+                    Times.Once);
+
+                mockMagicFetcher.Verify(
+                    mock => mock.GetCardsAsync(Moq.It.IsAny<CardSet>()),
+                    Times.Once);
+
+                mockMagicFetcher.Verify(
+                    mock => mock.GetCardsAsync(It.IsCardSetWithCode("X03")),
+                    Times.Once);
+            }
+
+            [Fact]
+            public async Task WhenGettingNotEmptyIndex_ShouldPopulateItFromIndex()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.Card)
+                    .WithExistingCards(Enumerable
+                        .Empty<Card>()
+                        .Append(MockBuilder.CreteCards("X02", 2))
+                        .Append(MockBuilder.CreteCards("X03", 3))
+                        .Append(MockBuilder.CreteCards("X05", 5))
+                        .ToArray());
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithoutCards();
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X03",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                // Act.
+
+                var cards = await magicRepository.GetCardsAsync(cardSet);
+
+                // Assert.
+
+                cards
+                    .Should().NotBeEmpty()
+                    .And.HaveCount(3)
+                    .And.NotContainNulls();
+
+                foreach (var card in cards)
+                {
+                    card
+                        .MultiverseId
+                        .Should().BePositive();
+
+                    card
+                        .CardSetCode
+                        .Should().BeEquivalentTo("X03");
+
+                    card
+                        .Number
+                        .Should().BePositive();
+                }
+
+                mockIndexManager.Verify(
+                    mock => mock.FindIndexReader(IndexKind.Card),
+                    Times.Once);
+
+                mockIndexManager.Verify(
+                    mock => mock.FindIndexWriter(IndexKind.Card),
+                    Times.Never);
+
+                mockMagicFetcher.Verify(
+                    mock => mock.GetCardsAsync(Moq.It.IsAny<CardSet>()),
+                    Times.Never);
+            }
+
+            [Fact]
+            public async Task WhenGettingNotEmptyIndexButMissingCards_ShouldPopulateItFromFetcher()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.Card)
+                    .WithExistingCards(Enumerable
+                        .Empty<Card>()
+                        .Append(MockBuilder.CreteCards("X02", 2))
+                        .Append(MockBuilder.CreteCards("X05", 5))
+                        .ToArray());
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithCards(MockBuilder.CreteCards("X03", 3));
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X03",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                // Act.
+
+                var cards = await magicRepository.GetCardsAsync(cardSet);
+
+                // Assert.
+
+                cards
+                    .Should().NotBeEmpty()
+                    .And.HaveCount(3)
+                    .And.NotContainNulls();
+
+                foreach (var card in cards)
+                {
+                    card
+                        .MultiverseId
+                        .Should().BePositive();
+
+                    card
+                        .CardSetCode
+                        .Should().BeEquivalentTo("X03");
+
+                    card
+                        .Number
+                        .Should().BePositive();
+                }
+
+                mockIndexManager.Verify(
+                    mock => mock.FindIndexReader(IndexKind.Card),
+                    Times.Once);
+
+                mockIndexManager.Verify(
+                    mock => mock.FindIndexWriter(IndexKind.Card),
+                    Times.Once);
+
+                mockMagicFetcher.Verify(
+                    mock => mock.GetCardsAsync(Moq.It.IsAny<CardSet>()),
+                    Times.Once);
             }
         }
     }

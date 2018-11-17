@@ -29,7 +29,9 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
+    using JetBrains.Annotations;
     using Lucene.Net.Analysis.Core;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
@@ -39,8 +41,20 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
+    [PublicAPI]
     public static class MockExtensions
     {
+        public static Mock<IIndexManager> WithDefault(this Mock<IIndexManager> mockManager, IndexKind indexKind)
+        {
+            Guard
+                .Require(mockManager, nameof(mockManager))
+                .Is.Not.Null();
+
+            return mockManager
+                .WithDefaultIndexReader(indexKind)
+                .WithDefaultIndexWriter(indexKind);
+        }
+
         public static Mock<IIndexManager> WithDefaultIndexWriter(
             this Mock<IIndexManager> mockManager,
             IndexKind indexKind)
@@ -61,7 +75,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .CreateMock<IndexWriter>(new RAMDirectory(), writerConfiguration);
 
             mockManager
-                .Setup(mock => mock.CreateIndexWriter(indexKind))
+                .Setup(mock => mock.FindIndexWriter(indexKind))
                 .Returns(mockWriter.Object)
                 .Verifiable();
 
@@ -84,7 +98,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .CreateMock<AtomicReader>();
 
             mockManager
-                .Setup(mock => mock.CreateIndexReader(indexKind))
+                .Setup(mock => mock.FindIndexReader(indexKind))
                 .Returns(mockReader.Object)
                 .Verifiable();
 
@@ -109,7 +123,30 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .WithCardSets(cardSets);
 
             mockManager
-                .Setup(mock => mock.CreateIndexReader(IndexKind.CardSet))
+                .Setup(mock => mock.FindIndexReader(IndexKind.CardSet))
+                .Returns(DirectoryReader.Open(stubDirectory))
+                .Verifiable();
+
+            return mockManager;
+        }
+
+        public static Mock<IIndexManager> WithExistingCards(this Mock<IIndexManager> mockManager, params Card[] cards)
+        {
+            Guard
+                .Require(mockManager, nameof(mockManager))
+                .Is.Not.Null();
+
+            mockManager
+                .Setup(mock => mock.HasIndex(IndexKind.Card))
+                .Returns(true)
+                .Verifiable();
+
+            var stubDirectory = StubDirectory
+                .Create()
+                .WithCards(cards);
+
+            mockManager
+                .Setup(mock => mock.FindIndexReader(IndexKind.Card))
                 .Returns(DirectoryReader.Open(stubDirectory))
                 .Verifiable();
 
@@ -124,7 +161,6 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             Guard
                 .Require(cardSets, nameof(cardSets))
-                .Is.Not.Null()
                 .Is.Not.Empty();
 
             mockFetcher
@@ -147,6 +183,60 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Verifiable();
 
             return mockFetcher;
+        }
+
+        public static Mock<IMagicFetcher> WithCards(this Mock<IMagicFetcher> mockFetcher, params Card[] cards)
+        {
+            Guard
+                .Require(mockFetcher, nameof(mockFetcher))
+                .Is.Not.Null();
+
+            Guard
+                .Require(cards, nameof(cards))
+                .Is.Not.Empty();
+
+            cards
+                .GroupBy(card => card.CardSetCode)
+                .Select(grouping => new
+                {
+                    CardSetCode = grouping.Key,
+                    Cards = grouping.ToArray()
+                })
+                .ForEach(anon =>
+                {
+                    mockFetcher
+                        .Setup(mock => mock.GetCardsAsync(It.IsCardSetWithCode(anon.CardSetCode)))
+                        .Returns(Task.FromResult<IReadOnlyCollection<Card>>(anon.Cards))
+                        .Verifiable();
+                });
+
+            return mockFetcher;
+        }
+
+        public static Mock<IMagicFetcher> WithoutCards(this Mock<IMagicFetcher> mockFetcher)
+        {
+            Guard
+                .Require(mockFetcher, nameof(mockFetcher))
+                .Is.Not.Null();
+
+            mockFetcher
+                .Setup(mock => mock.GetCardsAsync(Moq.It.IsAny<CardSet>()))
+                .Returns(Task.FromResult<IReadOnlyCollection<Card>>(new Card[0]))
+                .Verifiable();
+
+            return mockFetcher;
+        }
+    }
+
+    public static class It
+    {
+        public static CardSet IsCardSetWithCode(string code)
+        {
+            Guard
+                .Require(code, nameof(code))
+                .Is.Not.Empty();
+
+            return Moq.It.Is<CardSet>(card => card.Code == code);
         }
     }
 }

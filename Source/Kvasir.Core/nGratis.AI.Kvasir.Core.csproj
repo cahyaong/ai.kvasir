@@ -35,6 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\build\HtmlAgilityPack\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="Humanizer, Version=2.5.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\build\Humanizer.Core\lib\netstandard2.0\Humanizer.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\build\JetBrains.Annotations\lib\portable40-net40+sl5+win8+wp8+wpa81\JetBrains.Annotations.dll</HintPath>
@@ -63,6 +67,9 @@
     </Compile>
     <Compile Include="IO\LuceneExtensions.cs" />
     <Compile Include="IO\IndexManager.cs" />
+    <Compile Include="IO\LuceneExtensions.Serialization.cs">
+      <DependentUpon>LuceneExtensions.cs</DependentUpon>
+    </Compile>
     <Compile Include="IO\MagicRepository.cs" />
     <Compile Include="IO\MagicJsonFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />

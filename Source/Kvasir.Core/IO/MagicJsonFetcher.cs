@@ -99,8 +99,6 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(cardSet, nameof(cardSet))
                 .Is.Not.Null();
 
-            // TODO: Make <CardSet> and <Card> classes immutable once constructed!
-
             var response = await this._httpClient.GetAsync($"json/{cardSet.Code}.json");
 
             if (!response.IsSuccessStatusCode)
@@ -124,7 +122,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Select(token =>
                 {
                     var card = token.ToObject<Card>();
-                    card.PrintingCode = cardSet.Code;
+                    card.CardSetCode = cardSet.Code;
                     card.ManaCost = card.ManaCost ?? string.Empty;
                     card.FlavorText = card.FlavorText ?? string.Empty;
                     card.Power = card.Power ?? string.Empty;

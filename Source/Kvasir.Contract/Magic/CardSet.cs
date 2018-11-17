@@ -31,7 +31,9 @@ namespace nGratis.AI.Kvasir.Contract.Magic
     using System;
     using System.Diagnostics;
 
-    [DebuggerDisplay("[{this.Code}] {this.Name}")]
+    // TODO: Make this class immutable once constructed!
+
+    [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
     public class CardSet
     {
         public string Code { get; set; }

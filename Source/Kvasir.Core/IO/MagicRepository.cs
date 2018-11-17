@@ -28,11 +28,12 @@
 
 namespace nGratis.AI.Kvasir.Core
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Lucene.Net.Documents;
+    using Lucene.Net;
+    using Lucene.Net.Index;
+    using Lucene.Net.Search;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
@@ -71,27 +72,14 @@ namespace nGratis.AI.Kvasir.Core
             {
                 await Task.Run(() =>
                 {
-                    using (var indexReader = this._indexManager.CreateIndexReader(IndexKind.CardSet))
-                    {
-                        this._cardSets = Enumerable
-                            .Range(0, indexReader.NumDocs)
+                    var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
 
-                            // ReSharper disable once AccessToDisposedClosure
-                            .Select(index => indexReader.Document(index))
-                            .Select(document => new CardSet
-                            {
-                                Code = document
-                                    .GetField(Index.Field.Code)
-                                    .GetStringValue() ?? Text.Empty,
-                                Name = document
-                                    .GetField(Index.Field.Name)
-                                    .GetStringValue() ?? Text.Empty,
-                                ReleasedTimestamp = new DateTime(document
-                                    .GetField(Index.Field.ReleasedTimestamp)
-                                    .GetInt64Value() ?? 0, DateTimeKind.Utc)
-                            })
-                            .ToArray();
-                    }
+                    this._cardSets = Enumerable
+                        .Range(0, indexReader.NumDocs)
+                        // ReSharper disable once AccessToDisposedClosure
+                        .Select(index => indexReader.Document(index))
+                        .Select(document => document.ToInstance<CardSet>())
+                        .ToArray();
                 });
             }
             else
@@ -100,41 +88,69 @@ namespace nGratis.AI.Kvasir.Core
 
                 await Task.Run(() =>
                 {
-                    using (var indexWriter = this._indexManager.CreateIndexWriter(IndexKind.CardSet))
-                    {
-                        foreach (var cardSet in this._cardSets)
-                        {
-                            var document = new Document();
+                    var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
 
-                            document.AddStringField(Index.Field.Code, cardSet.Code, Field.Store.YES);
-                            document.AddStringField(Index.Field.Name, cardSet.Name, Field.Store.YES);
+                    this._cardSets
+                        .Select(cardSet => cardSet.ToDocument())
+                        .ToList()
+                        // ReSharper disable once AccessToDisposedClosure
+                        .ForEach(indexWriter.AddDocument);
 
-                            document.AddInt64Field(
-                                Index.Field.ReleasedTimestamp,
-                                cardSet.ReleasedTimestamp.Ticks,
-                                Field.Store.YES);
-
-                            indexWriter.AddDocument(document);
-                        }
-
-                        indexWriter.Commit();
-                    }
+                    indexWriter.Commit();
                 });
             }
 
             return this._cardSets;
         }
 
-        private static class Index
+        public async Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet)
         {
-            public static class Field
+            Guard
+                .Require(cardSet, nameof(cardSet))
+                .Is.Not.Null();
+
+            var cards = default(IReadOnlyCollection<Card>);
+
+            if (this._indexManager.HasIndex(IndexKind.Card))
             {
-                public const string Code = "code";
+                await Task.Run(() =>
+                {
+                    var indexReader = this._indexManager.FindIndexReader(IndexKind.Card);
+                    var indexSearcher = new IndexSearcher(indexReader);
+                    var query = new TermQuery(new Term("card-set-code", cardSet.Code));
 
-                public const string Name = "name";
-
-                public const string ReleasedTimestamp = "released-timestamp";
+                    cards = indexSearcher
+                         .Search(query, 1000)
+                         .ScoreDocs
+                         // ReSharper disable once AccessToDisposedClosure
+                         .Select(document => indexReader.Document(document.Doc))
+                         .Select(document => document.ToInstance<Card>())
+                         .ToArray();
+                });
             }
+
+            if (cards?.Any() != true)
+            {
+                cards = await this._magicFetcher.GetCardsAsync(cardSet);
+
+                Guard
+                    .Ensure(cards, nameof(cards))
+                    .Is.Not.Null();
+
+                // ReSharper disable once ImplicitlyCapturedClosure
+                await Task.Run(() =>
+                {
+                    var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Card);
+
+                    cards
+                        .Select(card => card.ToDocument())
+                        .ForEach(indexWriter.AddDocument);
+
+                    indexWriter.Commit();
+                });
+            }
+
+            return cards;
         }
     }
 }
