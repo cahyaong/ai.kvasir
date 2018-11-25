@@ -42,7 +42,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.Cop.Core.Contract;
 
     [PublicAPI]
-    public static class MockExtensions
+    public static partial class MockExtensions
     {
         public static Mock<IIndexManager> WithDefault(this Mock<IIndexManager> mockManager, IndexKind indexKind)
         {
@@ -205,7 +205,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .ForEach(anon =>
                 {
                     mockFetcher
-                        .Setup(mock => mock.GetCardsAsync(It.IsCardSetWithCode(anon.CardSetCode)))
+                        .Setup(mock => mock.GetCardsAsync(Arg.CardSet.Is(anon.CardSetCode)))
                         .Returns(Task.FromResult<IReadOnlyCollection<Card>>(anon.Cards))
                         .Verifiable();
                 });
@@ -225,18 +225,6 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Verifiable();
 
             return mockFetcher;
-        }
-    }
-
-    public static class It
-    {
-        public static CardSet IsCardSetWithCode(string code)
-        {
-            Guard
-                .Require(code, nameof(code))
-                .Is.Not.Empty();
-
-            return Moq.It.Is<CardSet>(card => card.Code == code);
         }
     }
 }

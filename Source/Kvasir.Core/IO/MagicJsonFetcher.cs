@@ -45,12 +45,12 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicJsonFetcher : IMagicFetcher
     {
-        private static readonly Uri LandingUrl = new Uri("https://mtgjson.com/v4/");
+        private static readonly Uri LandingUri = new Uri("https://mtgjson.com/v4/");
 
         private readonly HttpClient _httpClient;
 
-        public MagicJsonFetcher()
-            : this(null)
+        public MagicJsonFetcher(IStorageManager storageManager)
+            : this(MagicJsonFetcher.CreateMessageHandler(storageManager))
         {
         }
 
@@ -60,7 +60,7 @@ namespace nGratis.AI.Kvasir.Core
                 ? new HttpClient(messageHandler)
                 : new HttpClient();
 
-            this._httpClient.BaseAddress = MagicJsonFetcher.LandingUrl;
+            this._httpClient.BaseAddress = MagicJsonFetcher.LandingUri;
             this._httpClient.Timeout = TimeSpan.FromSeconds(5);
 
             this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
@@ -131,6 +131,18 @@ namespace nGratis.AI.Kvasir.Core
                     return card;
                 })
                 .ToArray();
+        }
+
+        private static HttpMessageHandler CreateMessageHandler(IStorageManager storageManager)
+        {
+            Guard
+                .Require(storageManager, nameof(storageManager))
+                .Is.Not.Null();
+
+            var messageHandler = (HttpMessageHandler)new HttpClientHandler();
+            messageHandler = new CachingMessageHandler("Raw_MTGJSON4", storageManager, messageHandler);
+
+            return messageHandler;
         }
 
         private static CardSet ConvertToCardSet(HtmlNode rootNode)

@@ -37,6 +37,7 @@ namespace nGratis.AI.Kvasir.Client
     using Caliburn.Micro;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
+    using nGratis.Cop.Core;
     using nGratis.Cop.Core.Contract;
     using Unity;
     using Unity.Injection;
@@ -114,6 +115,10 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Not.Null()
                 .Is.Folder()
                 .Is.Exist();
+
+            unityContainer.RegisterType<IStorageManager, FileSystemStorageManager>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionConstructor(dataFolderUri));
 
             unityContainer.RegisterType<IMagicFetcher, MagicJsonFetcher>(
                 new ContainerControlledLifetimeManager());

@@ -51,6 +51,7 @@
     <Compile Include="IO\IIndexManager.cs" />
     <Compile Include="IO\IndexKind.cs" />
     <Compile Include="KvasirException.cs" />
+    <Compile Include="KvasirMime.cs" />
     <Compile Include="KvasirTestingException.cs" />
     <Compile Include="Magic\CardSet.cs" />
     <Compile Include="Magic\Card.cs" />

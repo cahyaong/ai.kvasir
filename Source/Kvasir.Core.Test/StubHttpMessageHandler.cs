@@ -43,10 +43,14 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal class StubHttpMessageHandler : HttpMessageHandler
     {
+        private readonly IDictionary<Uri, int> _invocationCountLookup;
+
         private readonly IDictionary<Uri, HttpResponseMessage> _responseMessageLookup;
 
         private StubHttpMessageHandler()
         {
+            this._invocationCountLookup = new Dictionary<Uri, int>();
+
             this._responseMessageLookup = new Dictionary<Uri, HttpResponseMessage>();
         }
 
@@ -84,14 +88,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             return this;
         }
 
-        public StubHttpMessageHandler WithSuccessfulResponseInSession(string targetUrl, string sessionKey)
+        public StubHttpMessageHandler WithSuccessfulResponseInSession(string targetUrl, string name)
         {
             Guard
                 .Require(targetUrl, nameof(targetUrl))
                 .Is.Not.Empty();
 
             Guard
-                .Require(sessionKey, nameof(sessionKey))
+                .Require(name, nameof(name))
                 .Is.Not.Empty();
 
             var targetUri = new Uri(targetUrl);
@@ -105,27 +109,27 @@ namespace nGratis.AI.Kvasir.Core.Test
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
 
-            var sessionStream = Assembly
+            var archiveStream = Assembly
                 .GetExecutingAssembly()
-                .GetManifestResourceStream($"nGratis.AI.Kvasir.Core.Test.Session.{sessionKey}.ngts");
+                .GetManifestResourceStream($"nGratis.AI.Kvasir.Core.Test.Session.{name}.ngts");
 
-            if (sessionStream == null)
+            if (archiveStream == null)
             {
-                throw new KvasirTestingException($"Session [{sessionKey}] must be embedded!");
+                throw new KvasirTestingException($"Session [{name}] must be embedded!");
             }
 
-            using (sessionStream)
-            using (var zipArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
+            using (archiveStream)
+            using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Read))
             {
-                var entryName = targetUri.Segments.Last();
+                var entryKey = targetUri.Segments.Last();
 
-                var foundEntry = zipArchive
+                var foundEntry = archive
                     .Entries
-                    .SingleOrDefault(entry => entry.Name == entryName);
+                    .SingleOrDefault(entry => entry.Name == entryKey);
 
                 if (foundEntry == null)
                 {
-                    throw new KvasirTestingException($"Response for [{entryName}] is missing from [{sessionKey}]!");
+                    throw new KvasirTestingException($"Response for [{entryKey}] is missing from [{name}]!");
                 }
 
                 using (var entryStream = foundEntry.Open())
@@ -166,19 +170,58 @@ namespace nGratis.AI.Kvasir.Core.Test
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage request,
+            HttpRequestMessage requestMessage,
             CancellationToken cancellationToken)
         {
             Guard
-                .Require(request, nameof(request))
+                .Require(requestMessage, nameof(requestMessage))
                 .Is.Not.Null();
 
-            if (this._responseMessageLookup.TryGetValue(request.RequestUri, out var responseMessage))
+            var targetUri = requestMessage.RequestUri;
+
+            if (this._invocationCountLookup.ContainsKey(targetUri))
+            {
+                this._invocationCountLookup[targetUri]++;
+            }
+            else
+            {
+                this._invocationCountLookup[targetUri] = 1;
+            }
+
+            if (this._responseMessageLookup.TryGetValue(requestMessage.RequestUri, out var responseMessage))
             {
                 return await Task.FromResult(responseMessage);
             }
 
             return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+        }
+
+        public void VerifyInvoked(string targetUrl, int expectedCount)
+        {
+            Guard
+                .Require(targetUrl, nameof(targetUrl))
+                .Is.Not.Empty();
+
+            Guard
+                .Require(expectedCount, nameof(expectedCount))
+                .Is.ZeroOrPositive();
+
+            var targetUri = new Uri(targetUrl);
+
+            Guard
+                .Require(targetUri, nameof(targetUri))
+                .Is.Url();
+
+            var isValid = this._invocationCountLookup.TryGetValue(targetUri, out var count)
+                ? expectedCount == count
+                : count <= 0;
+
+            if (!isValid)
+            {
+                throw new KvasirTestingException(
+                    $"Verification failed because URL [{targetUri}] is invoked [{count}] time(s), " +
+                    $"but expected to be invoked [{expectedCount}] time(s)!");
+            }
         }
     }
 }

@@ -208,7 +208,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockMagicFetcher.Verify(
-                    mock => mock.GetCardsAsync(It.IsCardSetWithCode("X03")),
+                    mock => mock.GetCardsAsync(Arg.CardSet.Is("X03")),
                     Times.Once);
             }
 

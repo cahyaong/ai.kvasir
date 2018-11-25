@@ -85,10 +85,18 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Arg.Cop.cs">
+      <DependentUpon>Arg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Arg.cs" />
+    <Compile Include="IO\CachingMessageHandlerTests.cs" />
     <Compile Include="IO\MagicJsonFetcherTests.cs" />
     <Compile Include="IO\MagicRepositoryTests.cs" />
     <Compile Include="MockBuilder.cs" />
     <Compile Include="MockExtensions.cs" />
+    <Compile Include="MockExtensions.StorageManager.cs">
+      <DependentUpon>MockExtensions.cs</DependentUpon>
+    </Compile>
     <Compile Include="StubDirectory.cs" />
     <Compile Include="StubHttpMessageHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
