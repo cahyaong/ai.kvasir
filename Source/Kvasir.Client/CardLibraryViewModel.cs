@@ -69,10 +69,12 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSets()
         {
-            var cardSets = await this._magicRepository.GetCardSetsAsync();
+            var cardSets = default(IEnumerable<CardSet>);
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
+                cardSets = await this._magicRepository.GetCardSetsAsync();
+
                 // TODO: Implement custom sorter in <DataGrid> instead of here!
                 // TODO: Implement pagination on <DataGrid> to improve rendering performance!
 
