@@ -44,8 +44,6 @@ namespace nGratis.AI.Kvasir.Core
     {
         private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryLookup;
 
-        private readonly ConcurrentDictionary<IndexKind, IndexReader> _readerLookup;
-
         private readonly ConcurrentDictionary<IndexKind, IndexWriter> _writerLookup;
 
         private bool _isDisposed;
@@ -62,7 +60,6 @@ namespace nGratis.AI.Kvasir.Core
                 .Where(indexKind => indexKind != IndexKind.Undefined)
                 .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
 
-            this._readerLookup = new ConcurrentDictionary<IndexKind, IndexReader>();
             this._writerLookup = new ConcurrentDictionary<IndexKind, IndexWriter>();
         }
 
@@ -83,11 +80,9 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(indexKind, nameof(indexKind))
                 .Is.Not.Default();
 
-            return this._readerLookup.GetOrAdd(
-                indexKind,
-                _ => this
-                    .FindIndexWriter(indexKind)
-                    .GetReader(true));
+            return this
+                .FindIndexWriter(indexKind)
+                .GetReader(true);
         }
 
         public IndexWriter FindIndexWriter(IndexKind indexKind)
@@ -122,11 +117,6 @@ namespace nGratis.AI.Kvasir.Core
             {
                 return;
             }
-
-            this
-                ._readerLookup?
-                .Values
-                .ForEach(reader => reader.Dispose());
 
             this
                 ._writerLookup?

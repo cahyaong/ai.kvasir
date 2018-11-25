@@ -188,7 +188,8 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                     card
                         .Number
-                        .Should().BePositive();
+                        .Should().NotBeNull()
+                        .And.MatchRegex(@"[\da-z]+");
 
                     card
                         .Artist

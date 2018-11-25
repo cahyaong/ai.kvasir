@@ -97,6 +97,7 @@ namespace nGratis.AI.Kvasir.Core
                         .ForEach(indexWriter.AddDocument);
 
                     indexWriter.Commit();
+                    indexWriter.Flush(true, true);
                 });
             }
 
@@ -142,11 +143,13 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Card);
 
-                    cards
+                    var documents = cards
                         .Select(card => card.ToDocument())
-                        .ForEach(indexWriter.AddDocument);
+                        .ToArray();
 
+                    indexWriter.AddDocuments(documents);
                     indexWriter.Commit();
+                    indexWriter.Flush(true, true);
                 });
             }
 

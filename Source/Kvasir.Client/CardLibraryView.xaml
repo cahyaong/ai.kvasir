@@ -42,7 +42,7 @@
             HorizontalAlignment="Right"
             FontSize="28"
             Style="{StaticResource Cop.TextBlock.Base}"
-            Text="{Binding CardSets, Mode=OneWay, Converter={StaticResource Cop.Converter.EnumerableToCountConverter}}" />
+            Text="{Binding CardSetViewModels, Mode=OneWay, Converter={StaticResource Cop.Converter.EnumerableToCountConverter}}" />
         </StackPanel>
       </Border>
     </StackPanel>
@@ -51,13 +51,20 @@
       Grid.Column="0"
       AutoGenerateColumns="False"
       EnableRowVirtualization="True"
-      ItemsSource="{Binding Path=CardSets, Mode=OneWay}"
-      ScrollViewer.CanContentScroll="False">
+      ItemsSource="{Binding Path=CardSetViewModels, Mode=OneWay}"
+      ScrollViewer.CanContentScroll="False"
+      SelectedItem="{Binding Path=SelectedCardSetViewModel, Mode=TwoWay}">
       <DataGrid.Columns>
-        <DataGridTextColumn Binding="{Binding Code, Mode=OneWay}" Header="Code" />
-        <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" Header="Name" />
-        <DataGridTextColumn Binding="{Binding ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
+        <DataGridTextColumn Binding="{Binding CardSet.Code, Mode=OneWay}" Header="Code" />
+        <DataGridTextColumn Binding="{Binding CardSet.Name, Mode=OneWay}" Header="Name" />
+        <DataGridTextColumn Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
       </DataGrid.Columns>
     </DataGrid>
+    <StackPanel
+      Grid.Row="1"
+      Grid.Column="1"
+      Orientation="Vertical">
+      <TextBlock />
+    </StackPanel>
   </Grid>
 </UserControl>

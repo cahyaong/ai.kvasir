@@ -86,7 +86,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockStorageManager.Verify(
                         mock => mock.SaveEntry(
                             Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>()),
+                            Arg.IsAny<System.IO.Stream>(),
+                            Arg.IsAny<bool>()),
                         Times.Once);
                 }
             }
@@ -138,7 +139,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockStorageManager.Verify(
                         mock => mock.SaveEntry(
                             Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>()),
+                            Arg.IsAny<System.IO.Stream>(),
+                            Arg.IsAny<bool>()),
                         Times.Once);
                 }
             }
@@ -190,7 +192,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockStorageManager.Verify(
                         mock => mock.SaveEntry(
                             Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>()),
+                            Arg.IsAny<System.IO.Stream>(),
+                            Arg.IsAny<bool>()),
                         Times.Never);
                 }
             }
@@ -240,7 +243,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockStorageManager.Verify(
                         mock => mock.SaveEntry(
                             Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>()),
+                            Arg.IsAny<System.IO.Stream>(),
+                            Arg.IsAny<bool>()),
                         Times.Never);
                 }
             }

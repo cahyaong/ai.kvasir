@@ -35,7 +35,6 @@ namespace nGratis.AI.Kvasir.Client
     using System.Windows.Input;
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
     using ReactiveUI;
@@ -45,7 +44,9 @@ namespace nGratis.AI.Kvasir.Client
     {
         private readonly IMagicRepository _magicRepository;
 
-        private IEnumerable<CardSet> _cardSets;
+        private IEnumerable<CardSetViewModel> _cardSetViewModels;
+
+        private CardSetViewModel _selectedCardSetViewModel;
 
         public CardLibraryViewModel(IMagicRepository magicRepository)
         {
@@ -55,38 +56,49 @@ namespace nGratis.AI.Kvasir.Client
 
             this._magicRepository = magicRepository;
 
-            this.CardSets = Enumerable.Empty<CardSet>();
-            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSets());
+            this.CardSetViewModels = Enumerable.Empty<CardSetViewModel>();
+            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSetsAsync());
         }
 
-        public IEnumerable<CardSet> CardSets
+        public IEnumerable<CardSetViewModel> CardSetViewModels
         {
-            get => this._cardSets;
-            private set => this.RaiseAndSetIfChanged(ref this._cardSets, value);
+            get => this._cardSetViewModels;
+            private set => this.RaiseAndSetIfChanged(ref this._cardSetViewModels, value);
+        }
+
+        public CardSetViewModel SelectedCardSetViewModel
+        {
+            get => this._selectedCardSetViewModel;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this._selectedCardSetViewModel, value);
+                this.SelectedCardSetViewModel.PopulateCardsCommand.Execute(null);
+            }
         }
 
         public ICommand PopulateCardSetsCommand { get; }
 
-        private async Task PopulateCardSets()
+        private async Task PopulateCardSetsAsync()
         {
-            var cardSets = default(IEnumerable<CardSet>);
+            var cardSetViewModels = Enumerable.Empty<CardSetViewModel>();
 
             await Task.Run(async () =>
             {
-                cardSets = await this._magicRepository.GetCardSetsAsync();
+                var cardSets = await this._magicRepository.GetCardSetsAsync();
 
                 // TODO: Implement custom sorter in <DataGrid> instead of here!
                 // TODO: Implement pagination on <DataGrid> to improve rendering performance!
 
-                cardSets = cardSets
+                cardSetViewModels = cardSets
                     .OrderByDescending(cardSet => cardSet.ReleasedTimestamp.IsDated()
                         ? cardSet.ReleasedTimestamp
                         : DateTime.MinValue)
                     .ThenBy(cardSet => cardSet.Name)
+                    .Select(cardSet => new CardSetViewModel(cardSet, this._magicRepository))
                     .ToArray();
             });
 
-            this.CardSets = cardSets;
+            this.CardSetViewModels = cardSetViewModels;
         }
     }
 }

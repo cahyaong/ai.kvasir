@@ -68,7 +68,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     FlavorText = "[_MOCK_FLAVOR_TEXT_]",
                     Power = "[_MOCK_POWER_]",
                     Toughness = "[_MOCK_TOUGHNESS_]",
-                    Number = (short)index,
+                    Number = index.ToString(),
                     Artist = "[_MOCK_ARTIST_]"
                 })
                 .ToArray();

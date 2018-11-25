@@ -131,7 +131,7 @@ namespace nGratis.AI.Kvasir.Core
 
                 if (isModified)
                 {
-                    this._storageManager.SaveEntry(this._cachingSpec, archiveStream);
+                    this._storageManager.SaveEntry(this._cachingSpec, archiveStream, true);
                 }
             }
             catch

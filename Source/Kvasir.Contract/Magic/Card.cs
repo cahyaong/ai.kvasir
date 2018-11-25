@@ -55,7 +55,7 @@ namespace nGratis.AI.Kvasir.Contract.Magic
 
         public string Toughness { get; set; }
 
-        public short Number { get; set; }
+        public string Number { get; set; }
 
         public string Artist { get; set; }
     }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicTimestampToStringConverter.cs" company="nGratis">
+// <copyright file="CardSetViewModel.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,37 +23,57 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 9 November 2018 9:38:11 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, 10 November 2018 5:28:38 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Client
 {
-    using System;
-    using System.Globalization;
-    using System.Windows.Data;
-    using nGratis.AI.Kvasir.Core;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows.Input;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
+    using ReactiveUI;
 
-    [ValueConversion(typeof(DateTime), typeof(string))]
-    internal class MagicTimestampToStringConverter : IValueConverter
+    public class CardSetViewModel : ReactiveObject
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is DateTime timestamp)
-            {
-                return !timestamp.IsDated()
-                    ? "-"
-                    : timestamp
-                        .ToString("yyyy-MMM-dd")
-                        .ToUpperInvariant();
-            }
+        private readonly IMagicRepository _magicRepository;
 
-            return Text.Unknown;
+        private IEnumerable<Card> _cards;
+
+        public CardSetViewModel(CardSet cardSet, IMagicRepository magicRepository)
+        {
+            Guard
+                .Require(cardSet, nameof(cardSet))
+                .Is.Not.Null();
+
+            Guard
+                .Require(magicRepository, nameof(magicRepository))
+                .Is.Not.Null();
+
+            this._magicRepository = magicRepository;
+
+            this.CardSet = cardSet;
+            this.Cards = Enumerable.Empty<Card>();
+
+            this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public CardSet CardSet { get; }
+
+        public IEnumerable<Card> Cards
         {
-            throw new NotSupportedException();
+            get => this._cards;
+            private set => this.RaiseAndSetIfChanged(ref this._cards, value);
+        }
+
+        public ICommand PopulateCardsCommand { get; }
+
+        private async Task PopulateCardsAsync()
+        {
+            this.Cards = await this._magicRepository.GetCardsAsync(this.CardSet);
         }
     }
 }

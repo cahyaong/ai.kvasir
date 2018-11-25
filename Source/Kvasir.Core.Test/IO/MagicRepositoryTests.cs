@@ -192,7 +192,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                     card
                         .Number
-                        .Should().BePositive();
+                        .Should().NotBeNullOrEmpty();
                 }
 
                 mockIndexManager.Verify(
@@ -263,7 +263,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                     card
                         .Number
-                        .Should().BePositive();
+                        .Should().NotBeNullOrEmpty();
                 }
 
                 mockIndexManager.Verify(
@@ -329,7 +329,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                     card
                         .Number
-                        .Should().BePositive();
+                        .Should().NotBeNullOrEmpty();
                 }
 
                 mockIndexManager.Verify(

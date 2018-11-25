@@ -108,7 +108,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     document.AddStringField("flavor-text", card.FlavorText, Field.Store.YES);
                     document.AddStringField("power", card.Power, Field.Store.YES);
                     document.AddStringField("toughness", card.Toughness, Field.Store.YES);
-                    document.AddInt32Field("number", card.Number, Field.Store.YES);
+                    document.AddStringField("number", card.Number, Field.Store.YES);
                     document.AddStringField("artist", card.Artist, Field.Store.YES);
 
                     luceneWriter.AddDocument(document);
