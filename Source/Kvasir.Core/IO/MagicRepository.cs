@@ -61,6 +61,16 @@ namespace nGratis.AI.Kvasir.Core
             this._cardSets = new CardSet[0];
         }
 
+        public async Task<int> GetCardCountAsync()
+        {
+            var cardCount = this
+                ._indexManager
+                .FindIndexReader(IndexKind.Card)
+                .NumDocs;
+
+            return await Task.FromResult(cardCount);
+        }
+
         public async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync()
         {
             if (this._cardSets.Any())

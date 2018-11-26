@@ -31,6 +31,7 @@ namespace nGratis.AI.Kvasir.Client
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reactive.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using JetBrains.Annotations;
@@ -43,6 +44,8 @@ namespace nGratis.AI.Kvasir.Client
     public class CardLibraryViewModel : ReactiveObject
     {
         private readonly IMagicRepository _magicRepository;
+
+        private int cardCount;
 
         private IEnumerable<CardSetViewModel> _cardSetViewModels;
 
@@ -58,6 +61,12 @@ namespace nGratis.AI.Kvasir.Client
 
             this.CardSetViewModels = Enumerable.Empty<CardSetViewModel>();
             this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardSetsAsync());
+        }
+
+        public int CardCount
+        {
+            get => this.cardCount;
+            private set => this.RaiseAndSetIfChanged(ref this.cardCount, value);
         }
 
         public IEnumerable<CardSetViewModel> CardSetViewModels
@@ -80,8 +89,6 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSetsAsync()
         {
-            var cardSetViewModels = Enumerable.Empty<CardSetViewModel>();
-
             await Task.Run(async () =>
             {
                 var cardSets = await this._magicRepository.GetCardSetsAsync();
@@ -89,16 +96,22 @@ namespace nGratis.AI.Kvasir.Client
                 // TODO: Implement custom sorter in <DataGrid> instead of here!
                 // TODO: Implement pagination on <DataGrid> to improve rendering performance!
 
-                cardSetViewModels = cardSets
+                this.CardSetViewModels = cardSets
                     .OrderByDescending(cardSet => cardSet.ReleasedTimestamp.IsDated()
                         ? cardSet.ReleasedTimestamp
                         : DateTime.MinValue)
                     .ThenBy(cardSet => cardSet.Name)
                     .Select(cardSet => new CardSetViewModel(cardSet, this._magicRepository))
                     .ToArray();
+
+                this.CardCount = await this._magicRepository.GetCardCountAsync();
             });
 
-            this.CardSetViewModels = cardSetViewModels;
+            this.CardSetViewModels
+                .Select(viewModel => viewModel.Changed)
+                .Merge()
+                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Subscribe(async _ => this.CardCount = await this._magicRepository.GetCardCountAsync());
         }
     }
 }

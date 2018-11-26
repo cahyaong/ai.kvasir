@@ -9,6 +9,9 @@
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=B0B53BADFD956D42B7F4BF3BFE88FD54/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=B0B53BADFD956D42B7F4BF3BFE88FD54/AbsolutePath/@EntryValue">E:\02_NerdWorkshop\55_nGratis_AiKvasir_GIT\External\cop.core\Source\Core.Testing\nGratis.Cop.Core.Testing.csproj.DotSettings</s:String>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=B0B53BADFD956D42B7F4BF3BFE88FD54/RelativePath/@EntryValue">..\..\External\cop.core\Source\Core.Testing\nGratis.Cop.Core.Testing.csproj.DotSettings</s:String>
+	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=BA61D33316FE8642BF429C04F03106FC/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=BA61D33316FE8642BF429C04F03106FC/AbsolutePath/@EntryValue">E:\02_NerdWorkshop\55_nGratis_AiKvasir_GIT\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=BA61D33316FE8642BF429C04F03106FC/RelativePath/@EntryValue">..\..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/AbsolutePath/@EntryValue">E:\02_NerdWorkshop\55_nGratis_AiKvasir_GIT\Source\Kvasir.Core.Test\nGratis.AI.Kvasir.Core.Test.csproj.DotSettings</s:String>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/RelativePath/@EntryValue">..\Kvasir.Core.Test\nGratis.AI.Kvasir.Core.Test.csproj.DotSettings</s:String>
@@ -18,6 +21,8 @@
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileAA5071016FEFEF45B938A55042E35CB1/RelativePriority/@EntryValue">3</s:Double>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileB0B53BADFD956D42B7F4BF3BFE88FD54/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileB0B53BADFD956D42B7F4BF3BFE88FD54/RelativePriority/@EntryValue">4</s:Double>
+	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileBA61D33316FE8642BF429C04F03106FC/@KeyIndexDefined">True</s:Boolean>
+	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileBA61D33316FE8642BF429C04F03106FC/RelativePriority/@EntryValue">5</s:Double>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileEC7AFE1149B51840B05B0DA633733E64/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=FileEC7AFE1149B51840B05B0DA633733E64/RelativePriority/@EntryValue">2</s:Double>
 	<s:String x:Key="/Default/FilterSettingsManager/AttributeFilterXml/@EntryValue">&lt;data /&gt;</s:String>

@@ -34,6 +34,8 @@ namespace nGratis.AI.Kvasir.Contract
 
     public interface IMagicRepository
     {
+        Task<int> GetCardCountAsync();
+
         Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
 
         Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
