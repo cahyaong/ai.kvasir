@@ -1,0 +1,7 @@
+﻿group Build
+    HtmlAgilityPack
+    Humanizer.Core
+    JetBrains.Annotations
+    Lucene.Net
+    Lucene.Net.Analysis.Common
+    Newtonsoft.Json

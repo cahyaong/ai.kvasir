@@ -1,0 +1,12 @@
+﻿group Build
+    JetBrains.Annotations
+    Unity
+
+group Build-UI
+    Caliburn.Micro
+    MahApps.Metro
+    ModernUI.WPF
+    OxyPlot.Wpf
+    ReactiveUI
+    ReactiveUI.WPF
+    System.Threading.Tasks.Extensions

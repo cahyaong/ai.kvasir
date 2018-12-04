@@ -1,0 +1,3 @@
+﻿group Build
+    JetBrains.Annotations
+    Lucene.Net
