@@ -39,12 +39,13 @@ namespace nGratis.AI.Kvasir.Client
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core;
     using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Core.Wpf;
     using Unity;
     using Unity.Injection;
     using Unity.Lifetime;
     using Unity.RegistrationByConvention;
 
-    internal class AppBootstrapper : BootstrapperBase
+    internal class AppBootstrapper : CopBootstrapper
     {
         private readonly IUnityContainer _unityContainer;
 

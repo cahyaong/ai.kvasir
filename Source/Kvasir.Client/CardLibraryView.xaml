@@ -33,25 +33,34 @@
       <core:AweTile Header="# Card Sets" Value="{Binding CardSetViewModels, Mode=OneWay, Converter={StaticResource Cop.Converter.EnumerableToCountConverter}}" />
       <core:AweTile Header="# Cards" Value="{Binding CardCount, Mode=OneWay}" />
     </StackPanel>
-    <DataGrid
-      Grid.Row="1"
-      Grid.Column="0"
-      AutoGenerateColumns="False"
-      EnableRowVirtualization="True"
-      ItemsSource="{Binding Path=CardSetViewModels, Mode=OneWay}"
-      ScrollViewer.CanContentScroll="False"
-      SelectedItem="{Binding Path=SelectedCardSetViewModel, Mode=TwoWay}">
-      <DataGrid.Columns>
-        <DataGridTextColumn Binding="{Binding CardSet.Code, Mode=OneWay}" Header="Code" />
-        <DataGridTextColumn Binding="{Binding CardSet.Name, Mode=OneWay}" Header="Name" />
-        <DataGridTextColumn Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
-      </DataGrid.Columns>
-    </DataGrid>
     <StackPanel
       Grid.Row="1"
-      Grid.Column="1"
-      Orientation="Vertical">
-      <TextBlock />
+      Grid.Column="0"
+      Orientation="Horizontal">
+      <DataGrid
+        AutoGenerateColumns="False"
+        EnableRowVirtualization="True"
+        ItemsSource="{Binding Path=CardSetViewModels, Mode=OneWay}"
+        ScrollViewer.CanContentScroll="False"
+        SelectedItem="{Binding Path=SelectedCardSetViewModel, Mode=TwoWay}">
+        <DataGrid.Columns>
+          <DataGridTextColumn Binding="{Binding CardSet.Code, Mode=OneWay}" Header="Code" />
+          <DataGridTextColumn Binding="{Binding CardSet.Name, Mode=OneWay}" Header="Name" />
+          <DataGridTextColumn Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
+        </DataGrid.Columns>
+      </DataGrid>
+      <DataGrid
+        Margin="40,0,0,0"
+        AutoGenerateColumns="False"
+        EnableRowVirtualization="True"
+        ItemsSource="{Binding SelectedCardSetViewModel.Cards, Mode=OneWay}"
+        ScrollViewer.CanContentScroll="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Binding="{Binding Number, Mode=OneWay}" Header="Number" />
+          <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" Header="Name" />
+          <DataGridTextColumn Binding="{Binding ManaCost, Mode=OneWay}" Header="Mana Cost" />
+        </DataGrid.Columns>
+      </DataGrid>
     </StackPanel>
   </Grid>
 </UserControl>

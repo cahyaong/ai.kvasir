@@ -45,7 +45,7 @@ namespace nGratis.AI.Kvasir.Client
     {
         private readonly IMagicRepository _magicRepository;
 
-        private int cardCount;
+        private int _cardCount;
 
         private IEnumerable<CardSetViewModel> _cardSetViewModels;
 
@@ -65,8 +65,8 @@ namespace nGratis.AI.Kvasir.Client
 
         public int CardCount
         {
-            get => this.cardCount;
-            private set => this.RaiseAndSetIfChanged(ref this.cardCount, value);
+            get => this._cardCount;
+            private set => this.RaiseAndSetIfChanged(ref this._cardCount, value);
         }
 
         public IEnumerable<CardSetViewModel> CardSetViewModels
