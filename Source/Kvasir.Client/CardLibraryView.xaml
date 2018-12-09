@@ -51,6 +51,7 @@
       </DataGrid>
       <DataGrid
         Margin="40,0,0,0"
+        core:AutoResetScroll.IsEnabled="True"
         AutoGenerateColumns="False"
         EnableRowVirtualization="True"
         ItemsSource="{Binding SelectedCardSetViewModel.Cards, Mode=OneWay}"
