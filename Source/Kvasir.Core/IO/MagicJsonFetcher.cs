@@ -88,7 +88,7 @@ namespace nGratis.AI.Kvasir.Core
             return document
                 .DocumentNode
                 .SelectNodes("//table//tbody//tr//td")
-                .Where(node => node.ChildNodes.Any())
+                .Where(node => node.ChildNodes.Count > 1)
                 .Select(MagicJsonFetcher.ConvertToCardSet)
                 .ToArray();
         }

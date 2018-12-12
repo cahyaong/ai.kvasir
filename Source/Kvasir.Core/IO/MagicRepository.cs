@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -44,8 +45,6 @@ namespace nGratis.AI.Kvasir.Core
 
         private readonly IMagicFetcher _magicFetcher;
 
-        private IReadOnlyCollection<CardSet> _cardSets;
-
         public MagicRepository(IIndexManager indexManager, IMagicFetcher magicFetcher)
         {
             Guard
@@ -58,60 +57,36 @@ namespace nGratis.AI.Kvasir.Core
 
             this._indexManager = indexManager;
             this._magicFetcher = magicFetcher;
-            this._cardSets = new CardSet[0];
+        }
+
+        public event EventHandler CardSetIndexed;
+
+        public event EventHandler CardIndexed;
+
+        public async Task<int> GetCardSetCountAsync()
+        {
+            var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
+
+            if (indexReader.NumDocs <= 0)
+            {
+                await this.RebuildCardSetAsync();
+                indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
+            }
+
+            return indexReader.NumDocs;
         }
 
         public async Task<int> GetCardCountAsync()
         {
-            var cardCount = this
+            return await Task.FromResult(this
                 ._indexManager
                 .FindIndexReader(IndexKind.Card)
-                .NumDocs;
-
-            return await Task.FromResult(cardCount);
+                .NumDocs);
         }
 
         public async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync()
         {
-            if (this._cardSets.Any())
-            {
-                return this._cardSets;
-            }
-
-            if (this._indexManager.HasIndex(IndexKind.CardSet))
-            {
-                await Task.Run(() =>
-                {
-                    var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
-
-                    this._cardSets = Enumerable
-                        .Range(0, indexReader.NumDocs)
-                        // ReSharper disable once AccessToDisposedClosure
-                        .Select(index => indexReader.Document(index))
-                        .Select(document => document.ToInstance<CardSet>())
-                        .ToArray();
-                });
-            }
-            else
-            {
-                this._cardSets = await this._magicFetcher.GetCardSetsAsync();
-
-                await Task.Run(() =>
-                {
-                    var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
-
-                    this._cardSets
-                        .Select(cardSet => cardSet.ToDocument())
-                        .ToList()
-                        // ReSharper disable once AccessToDisposedClosure
-                        .ForEach(indexWriter.AddDocument);
-
-                    indexWriter.Commit();
-                    indexWriter.Flush(true, true);
-                });
-            }
-
-            return this._cardSets;
+            return await this.GetCardSetsAsync(0, await this.GetCardSetCountAsync());
         }
 
         public async Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet)
@@ -133,7 +108,6 @@ namespace nGratis.AI.Kvasir.Core
                     cards = indexSearcher
                          .Search(query, 1000)
                          .ScoreDocs
-                         // ReSharper disable once AccessToDisposedClosure
                          .Select(document => indexReader.Document(document.Doc))
                          .Select(document => document.ToInstance<Card>())
                          .ToArray();
@@ -149,6 +123,7 @@ namespace nGratis.AI.Kvasir.Core
                     .Is.Not.Null();
 
                 // ReSharper disable once ImplicitlyCapturedClosure
+
                 await Task.Run(() =>
                 {
                     var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Card);
@@ -160,10 +135,85 @@ namespace nGratis.AI.Kvasir.Core
                     indexWriter.AddDocuments(documents);
                     indexWriter.Commit();
                     indexWriter.Flush(true, true);
+
+                    this.RaiseCardIndexed();
                 });
             }
 
             return cards;
         }
+
+        CardSet IPagingDataProvider<CardSet>.DefaultItem => default(CardSet);
+
+        async Task<int> IPagingDataProvider<CardSet>.GetCountAsync()
+        {
+            return await this.GetCardSetCountAsync();
+        }
+
+        async Task<IReadOnlyCollection<CardSet>> IPagingDataProvider<CardSet>.GetItemsAsync(
+            int pagingIndex,
+            int itemCount)
+        {
+            return await this.GetCardSetsAsync(pagingIndex, itemCount);
+        }
+
+        private async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
+        {
+            Guard
+                .Require(pagingIndex, nameof(pagingIndex))
+                .Is.ZeroOrPositive();
+
+            Guard
+                .Require(itemCount, nameof(itemCount))
+                .Is.Positive();
+
+            var cardSets = default(IReadOnlyCollection<CardSet>);
+
+            if (!this._indexManager.HasIndex(IndexKind.CardSet))
+            {
+                await this.RebuildCardSetAsync();
+            }
+
+            await Task.Run(() =>
+            {
+                var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
+
+                itemCount = Math.Min(
+                    indexReader.MaxDoc - pagingIndex * itemCount,
+                    itemCount);
+
+                cardSets = Enumerable
+                    .Range(pagingIndex * itemCount, itemCount)
+                    .Select(index => indexReader.Document(index))
+                    .Select(document => document.ToInstance<CardSet>())
+                    .ToArray();
+            });
+
+            return cardSets;
+        }
+
+        private async Task RebuildCardSetAsync()
+        {
+            var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
+            var cardSets = await this._magicFetcher.GetCardSetsAsync();
+
+            var documents = cardSets
+                .Select(cardSet => cardSet.ToDocument())
+                .ToArray();
+
+            indexWriter.AddDocuments(documents);
+            indexWriter.Commit();
+            indexWriter.Flush(true, true);
+
+            this.RaiseCardSetIndexed();
+        }
+
+        private void RaiseCardSetIndexed() => this
+            .CardSetIndexed?
+            .Invoke(this, EventArgs.Empty);
+
+        private void RaiseCardIndexed() => this
+            .CardIndexed?
+            .Invoke(this, EventArgs.Empty);
     }
 }

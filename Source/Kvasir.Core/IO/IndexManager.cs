@@ -44,7 +44,7 @@ namespace nGratis.AI.Kvasir.Core
     {
         private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryLookup;
 
-        private readonly ConcurrentDictionary<IndexKind, IndexWriter> _writerLookup;
+        private readonly ConcurrentDictionary<IndexKind, Lazy<IndexWriter>> _deferredWriterLookup;
 
         private bool _isDisposed;
 
@@ -60,7 +60,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Where(indexKind => indexKind != IndexKind.Undefined)
                 .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
 
-            this._writerLookup = new ConcurrentDictionary<IndexKind, IndexWriter>();
+            this._deferredWriterLookup = new ConcurrentDictionary<IndexKind, Lazy<IndexWriter>>();
         }
 
         public bool HasIndex(IndexKind indexKind)
@@ -96,19 +96,23 @@ namespace nGratis.AI.Kvasir.Core
                 throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
             }
 
-            return this._writerLookup.GetOrAdd(
-                indexKind,
-                _ =>
-                {
-                    var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+            return this._deferredWriterLookup
+                .GetOrAdd(
+                    indexKind,
+                    _ => new Lazy<IndexWriter>(() => IndexManager.CreateIndexWriter(directory), true))
+                .Value;
+        }
 
-                    var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
-                    {
-                        OpenMode = OpenMode.CREATE_OR_APPEND
-                    };
+        private static IndexWriter CreateIndexWriter(Directory directory)
+        {
+            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
 
-                    return new IndexWriter(directory, configuration);
-                });
+            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+            {
+                OpenMode = OpenMode.CREATE_OR_APPEND
+            };
+
+            return new IndexWriter(directory, configuration);
         }
 
         public void Dispose()
@@ -119,9 +123,10 @@ namespace nGratis.AI.Kvasir.Core
             }
 
             this
-                ._writerLookup?
+                ._deferredWriterLookup?
                 .Values
-                .ForEach(writer => writer.Dispose());
+                .Where(deferredWriter => deferredWriter.IsValueCreated)
+                .ForEach(deferredWriter => deferredWriter.Value.Dispose());
 
             this._isDisposed = true;
         }

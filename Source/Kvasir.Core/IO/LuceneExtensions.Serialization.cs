@@ -93,7 +93,7 @@ namespace Lucene.Net
             return instance;
         }
 
-        private class IndexableTypeInfo
+        private sealed class IndexableTypeInfo
         {
             public IndexableTypeInfo(Type type)
             {
@@ -120,7 +120,7 @@ namespace Lucene.Net
             public IReadOnlyCollection<IndexablePropertyInfo> DeserializingPropertyInfos { get; }
         }
 
-        private class IndexablePropertyInfo
+        private sealed class IndexablePropertyInfo
         {
             private static readonly IReadOnlyDictionary<Type, IIndexSerializer> SerializerLookup;
 
@@ -173,7 +173,7 @@ namespace Lucene.Net
             object Deserialize(IIndexableField indexableField);
         }
 
-        private class StringSerializer : IIndexSerializer
+        private sealed class StringSerializer : IIndexSerializer
         {
             private StringSerializer()
             {
@@ -205,7 +205,7 @@ namespace Lucene.Net
             }
         }
 
-        private class ShortSerializer : IIndexSerializer
+        private sealed class ShortSerializer : IIndexSerializer
         {
             private ShortSerializer()
             {
@@ -237,7 +237,7 @@ namespace Lucene.Net
             }
         }
 
-        private class IntegerSerializer : IIndexSerializer
+        private sealed class IntegerSerializer : IIndexSerializer
         {
             private IntegerSerializer()
             {
@@ -269,7 +269,7 @@ namespace Lucene.Net
             }
         }
 
-        private class DateTimeSerializer : IIndexSerializer
+        private sealed class DateTimeSerializer : IIndexSerializer
         {
             private DateTimeSerializer()
             {

@@ -74,6 +74,25 @@ namespace nGratis.AI.Kvasir.Core.Test
             var mockWriter = MockBuilder
                 .CreateMock<IndexWriter>(new RAMDirectory(), writerConfiguration);
 
+            mockWriter
+                .Setup(mock => mock.AddDocuments(It.IsAny<IEnumerable<IEnumerable<IIndexableField>>>()))
+                .Callback<IEnumerable<IEnumerable<IIndexableField>>>(documents =>
+                {
+                    mockManager
+                        .Setup(mock => mock.HasIndex(indexKind))
+                        .Returns(true)
+                        .Verifiable();
+
+                    var stubDirectory = StubDirectory
+                        .Create()
+                        .WithDocuments(documents.ToArray());
+
+                    mockManager
+                        .Setup(mock => mock.FindIndexReader(indexKind))
+                        .Returns(DirectoryReader.Open(stubDirectory))
+                        .Verifiable();
+                });
+
             mockManager
                 .Setup(mock => mock.FindIndexWriter(indexKind))
                 .Returns(mockWriter.Object)

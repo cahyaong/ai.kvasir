@@ -46,6 +46,8 @@ namespace nGratis.AI.Kvasir.Core
 
         private readonly IStorageManager _storageManager;
 
+        private readonly ReaderWriterLockSlim _storageLock;
+
         public CachingMessageHandler(string name, IStorageManager storageManager, HttpMessageHandler delegatingHandler)
             : base(delegatingHandler)
         {
@@ -59,6 +61,7 @@ namespace nGratis.AI.Kvasir.Core
 
             this._cachingSpec = new DataSpec(name, KvasirMime.Caching);
             this._storageManager = storageManager;
+            this._storageLock = new ReaderWriterLockSlim();
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
@@ -81,21 +84,30 @@ namespace nGratis.AI.Kvasir.Core
             {
                 archiveStream = new MemoryStream();
 
-                if (this._storageManager.HasEntry(this._cachingSpec))
-                {
-                    using (var dataStream = this._storageManager.LoadEntry(this._cachingSpec))
-                    {
-                        await dataStream.CopyToAsync(archiveStream);
-                        archive = new ZipArchive(archiveStream, ZipArchiveMode.Update, true);
-                    }
+                this._storageLock.EnterReadLock();
 
-                    foundEntry = archive
-                        .Entries
-                        .SingleOrDefault(entry => entry.FullName == entryKey);
-                }
-                else
+                try
                 {
-                    archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, true);
+                    if (this._storageManager.HasEntry(this._cachingSpec))
+                    {
+                        using (var dataStream = this._storageManager.LoadEntry(this._cachingSpec))
+                        {
+                            dataStream.CopyTo(archiveStream);
+                            archive = new ZipArchive(archiveStream, ZipArchiveMode.Update, true);
+                        }
+
+                        foundEntry = archive
+                            .Entries
+                            .SingleOrDefault(entry => entry.FullName == entryKey);
+                    }
+                    else
+                    {
+                        archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, true);
+                    }
+                }
+                finally
+                {
+                    this._storageLock.ExitReadLock();
                 }
 
                 if (foundEntry != null)
@@ -131,7 +143,18 @@ namespace nGratis.AI.Kvasir.Core
 
                 if (isModified)
                 {
-                    this._storageManager.SaveEntry(this._cachingSpec, archiveStream, true);
+                    this._storageLock.EnterWriteLock();
+
+                    try
+                    {
+                        // TODO: Handle possible merging issue due to concurrency!
+
+                        this._storageManager.SaveEntry(this._cachingSpec, archiveStream, true);
+                    }
+                    finally
+                    {
+                        this._storageLock.ExitWriteLock();
+                    }
                 }
             }
             catch

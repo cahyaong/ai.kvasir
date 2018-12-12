@@ -16,7 +16,7 @@
   </i:Interaction.Triggers>
   <Grid>
     <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
+      <RowDefinition Height="65" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
@@ -30,7 +30,7 @@
       Margin="0,0,0,10"
       HorizontalAlignment="Left"
       Orientation="Horizontal">
-      <core:AweTile Header="# Card Sets" Value="{Binding CardSetViewModels, Mode=OneWay, Converter={StaticResource Cop.Converter.EnumerableToCountConverter}}" />
+      <core:AweTile Header="# Card Sets" Value="{Binding CardSetCount, Mode=OneWay}" />
       <core:AweTile Header="# Cards" Value="{Binding CardCount, Mode=OneWay}" />
     </StackPanel>
     <StackPanel
@@ -39,10 +39,11 @@
       Orientation="Horizontal">
       <DataGrid
         AutoGenerateColumns="False"
-        EnableRowVirtualization="True"
         ItemsSource="{Binding Path=CardSetViewModels, Mode=OneWay}"
-        ScrollViewer.CanContentScroll="False"
-        SelectedItem="{Binding Path=SelectedCardSetViewModel, Mode=TwoWay}">
+        SelectedItem="{Binding Path=SelectedCardSetViewModel, Mode=TwoWay}"
+        SelectionMode="Single"
+        SelectionUnit="FullRow"
+        Style="{StaticResource Cop.DataGrid.Virtualizing}">
         <DataGrid.Columns>
           <DataGridTextColumn Binding="{Binding CardSet.Code, Mode=OneWay}" Header="Code" />
           <DataGridTextColumn Binding="{Binding CardSet.Name, Mode=OneWay}" Header="Name" />
@@ -53,9 +54,10 @@
         Margin="40,0,0,0"
         core:AutoResetScroll.IsEnabled="True"
         AutoGenerateColumns="False"
-        EnableRowVirtualization="True"
         ItemsSource="{Binding SelectedCardSetViewModel.Cards, Mode=OneWay}"
-        ScrollViewer.CanContentScroll="False">
+        SelectionMode="Single"
+        SelectionUnit="FullRow"
+        Style="{StaticResource Cop.DataGrid.Virtualizing}">
         <DataGrid.Columns>
           <DataGridTextColumn Binding="{Binding Number, Mode=OneWay}" Header="Number" />
           <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" Header="Name" />

@@ -73,7 +73,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 mockIndexManager.Verify(
                     mock => mock.FindIndexReader(IndexKind.CardSet),
-                    Times.Never);
+                    Times.AtLeastOnce);
 
                 mockIndexManager.Verify(
                     mock => mock.FindIndexWriter(IndexKind.CardSet),
@@ -128,7 +128,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 mockIndexManager.Verify(
                     mock => mock.FindIndexReader(IndexKind.CardSet),
-                    Times.Once);
+                    Times.AtLeastOnce);
 
                 mockIndexManager.Verify(
                     mock => mock.FindIndexWriter(IndexKind.CardSet),
@@ -343,6 +343,186 @@ namespace nGratis.AI.Kvasir.Core.Test
                 mockMagicFetcher.Verify(
                     mock => mock.GetCardsAsync(Moq.It.IsAny<CardSet>()),
                     Times.Once);
+            }
+        }
+
+        public class CardSetIndexedEvent
+        {
+            [Fact]
+            public async Task WhenGettingEmptyIndex_ShouldRaiseEvent()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.CardSet);
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithCardSets(MockBuilder.CreateCardSets(3));
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                using (var monitoredRepository = magicRepository.Monitor())
+                {
+                    // Act.
+
+                    var _ = await magicRepository.GetCardSetsAsync();
+
+                    // Assert.
+
+                    monitoredRepository
+                        .Should().Raise(nameof(IMagicRepository.CardSetIndexed))
+                        .WithSender(magicRepository)
+                        .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+                }
+            }
+
+            [Fact]
+            public async Task WhenGettingNotEmptyIndex_ShouldNotRaiseEvent()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.CardSet)
+                    .WithExistingCardSets(MockBuilder.CreateCardSets(3));
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithoutCardSets();
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                using (var monitoredRepository = magicRepository.Monitor())
+                {
+                    // Act.
+
+                    var _ = await magicRepository.GetCardSetsAsync();
+
+                    // Assert.
+
+                    monitoredRepository
+                        .Should().NotRaise(nameof(IMagicRepository.CardSetIndexed));
+                }
+            }
+        }
+
+        public class CardIndexedEvent
+        {
+            [Fact]
+            public async Task WhenGettingEmptyIndex_ShouldFireEvent()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.Card);
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithCards(MockBuilder.CreteCards("X01", 1));
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X01",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                using (var monitoredRepository = magicRepository.Monitor())
+                {
+                    // Act.
+
+                    var _ = await magicRepository.GetCardsAsync(cardSet);
+
+                    // Assert.
+
+                    monitoredRepository
+                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
+                        .WithSender(magicRepository)
+                        .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+                }
+            }
+
+            [Fact]
+            public async Task WhenGettingNotEmptyIndex_ShouldNotFireEvent()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.Card)
+                    .WithExistingCards(MockBuilder.CreteCards("X01", 1));
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithoutCards();
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X01",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                using (var monitoredRepository = magicRepository.Monitor())
+                {
+                    // Act.
+
+                    var _ = await magicRepository.GetCardsAsync(cardSet);
+
+                    // Assert.
+
+                    monitoredRepository
+                        .Should().NotRaise(nameof(IMagicRepository.CardIndexed));
+                }
+            }
+
+            [Fact]
+            public async Task WhenGettingNotEmptyIndexButMissingCards_ShouldFireEvent()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>()
+                    .WithDefault(IndexKind.Card)
+                    .WithExistingCards(Enumerable
+                        .Empty<Card>()
+                        .Append(MockBuilder.CreteCards("X02", 2))
+                        .Append(MockBuilder.CreteCards("X05", 5))
+                        .ToArray());
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithCards(MockBuilder.CreteCards("X03", 3));
+
+                var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+
+                var cardSet = new CardSet
+                {
+                    Code = "X03",
+                    Name = "[_MOCK_NAME_]",
+                    ReleasedTimestamp = Constant.EpochTimestamp
+                };
+
+                using (var monitoredRepository = magicRepository.Monitor())
+                {
+                    // Act.
+
+                    var _ = await magicRepository.GetCardsAsync(cardSet);
+
+                    // Assert.
+
+                    monitoredRepository
+                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
+                        .WithSender(magicRepository)
+                        .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+                }
             }
         }
     }

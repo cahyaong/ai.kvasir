@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
+    using System.Collections.Generic;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
@@ -53,14 +54,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(cardSets, nameof(cardSets))
                 .Is.Not.Empty();
 
-            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
-
-            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
-            {
-                OpenMode = OpenMode.CREATE_OR_APPEND
-            };
-
-            using (var luceneWriter = new IndexWriter(this, configuration))
+            using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
             {
                 foreach (var cardSet in cardSets)
                 {
@@ -85,14 +79,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(cards, nameof(cards))
                 .Is.Not.Empty();
 
-            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
-
-            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
-            {
-                OpenMode = OpenMode.CREATE_OR_APPEND
-            };
-
-            using (var luceneWriter = new IndexWriter(this, configuration))
+            using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
             {
                 foreach (var card in cards)
                 {
@@ -118,6 +105,31 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             return this;
+        }
+
+        public StubDirectory WithDocuments(params IEnumerable<IIndexableField>[] documents)
+        {
+            Guard
+                .Require(documents, nameof(documents))
+                .Is.Not.Empty();
+
+            using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
+            {
+                luceneWriter.AddDocuments(documents);
+                luceneWriter.Commit();
+            }
+
+            return this;
+        }
+
+        private static IndexWriterConfig CreateLuceneConfiguration()
+        {
+            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+
+            return new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+            {
+                OpenMode = OpenMode.CREATE_OR_APPEND
+            };
         }
     }
 }
