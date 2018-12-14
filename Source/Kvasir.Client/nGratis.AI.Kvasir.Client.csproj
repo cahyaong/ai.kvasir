@@ -69,17 +69,17 @@
       <DependentUpon>AppView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="CardLibraryView.xaml">
+    <Page Include="LibraryManagementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppViewModel.cs" />
-    <Compile Include="CardLibraryView.xaml.cs">
-      <DependentUpon>CardLibraryView.xaml</DependentUpon>
+    <Compile Include="LibraryManagementView.xaml.cs">
+      <DependentUpon>LibraryManagementView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CardLibraryViewModel.cs" />
+    <Compile Include="LibraryManagementViewModel.cs" />
     <Compile Include="CardSetViewModel.cs" />
     <Compile Include="Converters\MagicTimestampToStringConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

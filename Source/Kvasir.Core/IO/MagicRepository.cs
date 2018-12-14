@@ -69,7 +69,7 @@ namespace nGratis.AI.Kvasir.Core
 
             if (indexReader.NumDocs <= 0)
             {
-                await this.RebuildCardSetAsync();
+                await this.ReindexCardSetAsync();
                 indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
             }
 
@@ -171,7 +171,7 @@ namespace nGratis.AI.Kvasir.Core
 
             if (!this._indexManager.HasIndex(IndexKind.CardSet))
             {
-                await this.RebuildCardSetAsync();
+                await this.ReindexCardSetAsync();
             }
 
             await Task.Run(() =>
@@ -192,7 +192,7 @@ namespace nGratis.AI.Kvasir.Core
             return cardSets;
         }
 
-        private async Task RebuildCardSetAsync()
+        private async Task ReindexCardSetAsync()
         {
             var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
             var cardSets = await this._magicFetcher.GetCardSetsAsync();

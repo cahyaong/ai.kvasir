@@ -1,5 +1,5 @@
 ﻿<UserControl
-  x:Class="nGratis.AI.Kvasir.Client.CardLibraryView"
+  x:Class="nGratis.AI.Kvasir.Client.LibraryManagementView"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client"
@@ -7,36 +7,24 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  d:DataContext="{d:DesignInstance client:CardLibraryViewModel}"
+  d:DataContext="{d:DesignInstance client:LibraryManagementViewModel}"
   mc:Ignorable="d">
   <i:Interaction.Triggers>
     <i:EventTrigger EventName="Loaded">
       <i:InvokeCommandAction Command="{Binding PopulateCardSetsCommand, Mode=OneWay}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="65" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-    <StackPanel
-      Grid.Row="0"
-      Grid.Column="0"
-      Grid.ColumnSpan="2"
-      Margin="0,0,0,10"
-      HorizontalAlignment="Left"
-      Orientation="Horizontal">
-      <core:AweTile Header="# Card Sets" Value="{Binding CardSetCount, Mode=OneWay}" />
-      <core:AweTile Header="# Cards" Value="{Binding CardCount, Mode=OneWay}" />
-    </StackPanel>
-    <StackPanel
-      Grid.Row="1"
-      Grid.Column="0"
-      Orientation="Horizontal">
+  <StackPanel core:ChildMargin.Value="20,0" Orientation="Horizontal">
+    <core:AweTileGroup Width="120" Header="INFO">
+      <StackPanel
+        HorizontalAlignment="Right"
+        core:ChildMargin.Value="0,10"
+        Orientation="Vertical">
+        <core:AweTile Header="Indexed Card Sets" Value="{Binding CardSetCount, Mode=OneWay}" />
+        <core:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
+      </StackPanel>
+    </core:AweTileGroup>
+    <core:AweTileGroup Width="500" Header="CARD SETS">
       <DataGrid
         AutoGenerateColumns="False"
         ItemsSource="{Binding Path=CardSetViewModels, Mode=OneWay}"
@@ -50,8 +38,9 @@
           <DataGridTextColumn Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
         </DataGrid.Columns>
       </DataGrid>
+    </core:AweTileGroup>
+    <core:AweTileGroup Width="500" Header="CARDS">
       <DataGrid
-        Margin="40,0,0,0"
         core:AutoResetScroll.IsEnabled="True"
         AutoGenerateColumns="False"
         ItemsSource="{Binding SelectedCardSetViewModel.Cards, Mode=OneWay}"
@@ -64,6 +53,6 @@
           <DataGridTextColumn Binding="{Binding ManaCost, Mode=OneWay}" Header="Mana Cost" />
         </DataGrid.Columns>
       </DataGrid>
-    </StackPanel>
-  </Grid>
+    </core:AweTileGroup>
+  </StackPanel>
 </UserControl>

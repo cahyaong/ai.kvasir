@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardLibraryViewModel.cs" company="nGratis">
+// <copyright file="LibraryManagementViewModel.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -44,7 +44,7 @@ namespace nGratis.AI.Kvasir.Client
     using ReactiveUI;
 
     [UsedImplicitly]
-    public sealed class CardLibraryViewModel : ReactiveObject, IDisposable
+    public sealed class LibraryManagementViewModel : ReactiveObject, IDisposable
     {
         private readonly IMagicRepository _magicRepository;
 
@@ -58,7 +58,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private bool _isDisposed;
 
-        public CardLibraryViewModel(IMagicRepository magicRepository)
+        public LibraryManagementViewModel(IMagicRepository magicRepository)
         {
             Guard
                 .Require(magicRepository, nameof(magicRepository))
@@ -69,7 +69,7 @@ namespace nGratis.AI.Kvasir.Client
             this.PopulateCardSetsCommand = new RelayCommand(_ => this.PopulateCardSets());
         }
 
-        ~CardLibraryViewModel()
+        ~LibraryManagementViewModel()
         {
             this.Dispose(false);
         }
@@ -122,7 +122,7 @@ namespace nGratis.AI.Kvasir.Client
                 .Throttle(TimeSpan.FromMilliseconds(50))
                 .Subscribe(async _ =>
                 {
-                    this.CardSetCount = this.CardSetViewModels.Count();
+                    this.CardSetCount = this.CardSetViewModels.Count;
                     this.CardCount = await this._magicRepository.GetCardCountAsync();
                 });
 

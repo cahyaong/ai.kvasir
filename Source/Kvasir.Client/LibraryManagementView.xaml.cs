@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardLibraryView.xaml.cs" company="nGratis">
+// <copyright file="LibraryManagementView.xaml.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -28,9 +28,9 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
-    public partial class CardLibraryView
+    public partial class LibraryManagementView
     {
-        public CardLibraryView()
+        public LibraryManagementView()
         {
             this.InitializeComponent();
         }
