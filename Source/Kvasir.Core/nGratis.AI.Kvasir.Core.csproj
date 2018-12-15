@@ -77,29 +77,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="HtmlAgilityPack">
-          <HintPath>..\packages\build\HtmlAgilityPack\lib\Net45\HtmlAgilityPack.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
-        <Reference Include="Humanizer">
-          <HintPath>..\packages\build\Humanizer.Core\lib\netstandard2.0\Humanizer.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
-        <Reference Include="JetBrains.Annotations">
-          <HintPath>..\packages\build\JetBrains.Annotations\lib\net20\JetBrains.Annotations.dll</HintPath>
+          <HintPath>..\packages\_io\HtmlAgilityPack\lib\Net45\HtmlAgilityPack.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -113,7 +91,7 @@
           <Paket>True</Paket>
         </Reference>
         <Reference Include="Lucene.Net">
-          <HintPath>..\packages\build\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
+          <HintPath>..\packages\_io\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -124,7 +102,29 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Lucene.Net.Analysis.Common">
-          <HintPath>..\packages\build\Lucene.Net.Analysis.Common\lib\net45\Lucene.Net.Analysis.Common.dll</HintPath>
+          <HintPath>..\packages\_io\Lucene.Net.Analysis.Common\lib\net45\Lucene.Net.Analysis.Common.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="Humanizer">
+          <HintPath>..\packages\Humanizer.Core\lib\netstandard2.0\Humanizer.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="JetBrains.Annotations">
+          <HintPath>..\packages\JetBrains.Annotations\lib\net20\JetBrains.Annotations.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -135,7 +135,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Newtonsoft.Json">
-          <HintPath>..\packages\build\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
+          <HintPath>..\packages\Newtonsoft.Json\lib\net45\Newtonsoft.Json.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

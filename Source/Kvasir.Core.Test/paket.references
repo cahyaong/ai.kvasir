@@ -1,10 +1,10 @@
-﻿group Build
-    JetBrains.Annotations
+﻿JetBrains.Annotations
+
+group _IO
     Lucene.Net
     Lucene.Net.Analysis.Common
 
-group Test
+group _Test
     FluentAssertions
     Moq
-    System.Threading.Tasks.Extensions
     xunit

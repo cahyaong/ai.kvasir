@@ -1,21 +1,25 @@
-group Build
+framework: net472
+source https://api.nuget.org/v3/index.json
+
+nuget JetBrains.Annotations
+nuget Humanizer.Core
+nuget Newtonsoft.Json
+nuget NLog
+nuget System.Reactive
+nuget System.Reactive.Linq
+nuget System.Threading.Tasks.Extensions
+nuget Unity
+
+group _IO
 
     framework: net472
     source https://api.nuget.org/v3/index.json
 
-    nuget JetBrains.Annotations
     nuget HtmlAgilityPack
-    nuget Humanizer.Core
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
-    nuget Newtonsoft.Json
-    nuget NLog
-    nuget System.Reactive
-    nuget System.Reactive.Linq
-    nuget System.Threading.Tasks.Extensions ~> 4.3.0
-    nuget Unity
 
-group Build-UI
+group _UI
 
     framework: net472
     source https://api.nuget.org/v3/index.json
@@ -24,16 +28,13 @@ group Build-UI
     nuget MahApps.Metro
     nuget ModernUI.WPF
     nuget OxyPlot.Wpf
-    nuget ReactiveUI
     nuget ReactiveUI.WPF
-    nuget System.Threading.Tasks.Extensions ~> 4.3.0
 
-group Test
+group _Test
 
     framework: net472
     source https://api.nuget.org/v3/index.json
 
     nuget FluentAssertions
-    nuget Moq ~> 4.8.2.0
-    nuget System.Threading.Tasks.Extensions ~> 4.3.0
+    nuget Moq
     nuget xunit

@@ -1,3 +1,4 @@
-﻿group Build
-    JetBrains.Annotations
+﻿JetBrains.Annotations
+
+group _IO
     Lucene.Net

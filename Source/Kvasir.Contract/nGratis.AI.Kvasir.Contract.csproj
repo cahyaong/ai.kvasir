@@ -67,8 +67,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
-        <Reference Include="JetBrains.Annotations">
-          <HintPath>..\packages\build\JetBrains.Annotations\lib\net20\JetBrains.Annotations.dll</HintPath>
+        <Reference Include="Lucene.Net">
+          <HintPath>..\packages\_io\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -78,8 +78,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
-        <Reference Include="Lucene.Net">
-          <HintPath>..\packages\build\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
+        <Reference Include="JetBrains.Annotations">
+          <HintPath>..\packages\JetBrains.Annotations\lib\net20\JetBrains.Annotations.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
