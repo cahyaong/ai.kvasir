@@ -56,6 +56,7 @@
     <Compile Include="IO\CachingMessageHandlerTests.cs" />
     <Compile Include="IO\MagicJsonFetcherTests.cs" />
     <Compile Include="IO\MagicRepositoryTests.cs" />
+    <Compile Include="IO\ThrottlingMessageHandlerTests.cs" />
     <Compile Include="MockBuilder.cs" />
     <Compile Include="MockExtensions.cs" />
     <Compile Include="MockExtensions.StorageManager.cs">

@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Net.Http;
@@ -61,7 +62,11 @@ namespace nGratis.AI.Kvasir.Core
                 : new HttpClient();
 
             this._httpClient.BaseAddress = MagicJsonFetcher.LandingUri;
-            this._httpClient.Timeout = TimeSpan.FromSeconds(5);
+
+            if (!Debugger.IsAttached)
+            {
+                this._httpClient.Timeout = TimeSpan.FromSeconds(30);
+            }
 
             this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
             this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*", 0.8));
@@ -140,6 +145,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Is.Not.Null();
 
             var messageHandler = (HttpMessageHandler)new HttpClientHandler();
+            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromSeconds(1), messageHandler);
             messageHandler = new CachingMessageHandler("Raw_MTGJSON4", storageManager, messageHandler);
 
             return messageHandler;
