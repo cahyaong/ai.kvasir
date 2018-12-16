@@ -32,6 +32,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using Lucene.Net;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Index;
@@ -96,23 +97,23 @@ namespace nGratis.AI.Kvasir.Core
                 throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
             }
 
+            IndexWriter CreateIndexWriter()
+            {
+                var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
+
+                var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
+                {
+                    OpenMode = OpenMode.CREATE_OR_APPEND
+                };
+
+                return new IndexWriter(directory, configuration);
+            }
+
             return this._deferredWriterLookup
                 .GetOrAdd(
                     indexKind,
-                    _ => new Lazy<IndexWriter>(() => IndexManager.CreateIndexWriter(directory), true))
+                    _ => new Lazy<IndexWriter>(CreateIndexWriter, LazyThreadSafetyMode.ExecutionAndPublication))
                 .Value;
-        }
-
-        private static IndexWriter CreateIndexWriter(Directory directory)
-        {
-            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
-
-            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
-            {
-                OpenMode = OpenMode.CREATE_OR_APPEND
-            };
-
-            return new IndexWriter(directory, configuration);
         }
 
         public void Dispose()
