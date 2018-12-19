@@ -40,7 +40,7 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class SendAsyncMethod
         {
             [Fact]
-            public async Task WhenMakingRequestLessThanWaitingDuration_ShouldDelayRequest()
+            public async Task WhenMakingRequestWithinWaitingDuration_ShouldDelayRequest()
             {
                 // Arrange.
 

@@ -37,7 +37,6 @@ namespace nGratis.AI.Kvasir.Core
     using System.Threading;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core;
     using nGratis.Cop.Core.Contract;
 
     internal class CachingMessageHandler : DelegatingHandler
@@ -116,7 +115,7 @@ namespace nGratis.AI.Kvasir.Core
                     {
                         responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
                         {
-                            Content = new StringContent(entryStream.AsString())
+                            Content = new StringContent(entryStream.ReadText())
                         };
                     }
                 }

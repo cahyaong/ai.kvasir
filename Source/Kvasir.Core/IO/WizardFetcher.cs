@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="WizardFetcher.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,24 +23,52 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 17 December 2018 8:37:05 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    using System.Collections.Generic;
+    using System;
+    using System.Net.Http;
     using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Vision.Imaging;
 
-    public interface IMagicFetcher
+    public class WizardFetcher : BaseMagicHttpFetcher
     {
-        ExternalResources AvailableResources { get; }
+        private static readonly Uri LandingUri = new Uri("http://gatherer.wizards.com");
 
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
+        public override ExternalResources AvailableResources => ExternalResources.CardImage;
 
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
+        public WizardFetcher(IStorageManager storageManager)
+            : base("WOTC", WizardFetcher.LandingUri, storageManager)
+        {
+        }
 
-        Task<IImage> GetCardImageAsync(Card card);
+        internal WizardFetcher(HttpMessageHandler messageHandler)
+            : base(WizardFetcher.LandingUri, messageHandler)
+        {
+        }
+
+        protected override async Task<IImage> GetCardImageCoreAsync(Card card)
+        {
+            var path = $"Pages/Card/Details.aspx?multiverseid={card.MultiverseId}{Mime.Jpeg.FileExtension}";
+            var response = await this.HttpClient.GetAsync(path);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new KvasirException(
+                    @"Failed to reach gatherer.wizard.com when trying to fetch card image! " +
+                    $"Card: [{card.Name}]. " +
+                    $"Status Code: [{response.StatusCode}].");
+            }
+
+            var cardImage = new WritableImage();
+            cardImage.LoadData(await response.Content.ReadAsStreamAsync());
+
+            return cardImage;
+        }
     }
 }

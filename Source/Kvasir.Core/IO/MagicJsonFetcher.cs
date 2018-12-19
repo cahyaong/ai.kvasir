@@ -30,11 +30,9 @@ namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Globalization;
     using System.Linq;
     using System.Net.Http;
-    using System.Net.Http.Headers;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Web;
@@ -44,39 +42,25 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
-    public class MagicJsonFetcher : IMagicFetcher
+    public class MagicJsonFetcher : BaseMagicHttpFetcher
     {
         private static readonly Uri LandingUri = new Uri("https://mtgjson.com/v4/");
 
-        private readonly HttpClient _httpClient;
-
         public MagicJsonFetcher(IStorageManager storageManager)
-            : this(MagicJsonFetcher.CreateMessageHandler(storageManager))
+            : base("MTGJSON4", MagicJsonFetcher.LandingUri, storageManager)
         {
         }
 
         internal MagicJsonFetcher(HttpMessageHandler messageHandler)
+            : base(MagicJsonFetcher.LandingUri, messageHandler)
         {
-            this._httpClient = messageHandler != null
-                ? new HttpClient(messageHandler)
-                : new HttpClient();
-
-            this._httpClient.BaseAddress = MagicJsonFetcher.LandingUri;
-
-            if (!Debugger.IsAttached)
-            {
-                this._httpClient.Timeout = TimeSpan.FromSeconds(30);
-            }
-
-            this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
-            this._httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*", 0.8));
-            this._httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
-            this._httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AI.Kvasir", "0.1"));
         }
 
-        public async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync()
+        public override ExternalResources AvailableResources => ExternalResources.CardSet | ExternalResources.Card;
+
+        protected override async Task<IReadOnlyCollection<CardSet>> GetCardSetsCoreAsync()
         {
-            var response = await this._httpClient.GetAsync("sets.html");
+            var response = await this.HttpClient.GetAsync("sets.html");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -98,13 +82,9 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        public async Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet)
+        protected override async Task<IReadOnlyCollection<Card>> GetCardsCoreAsync(CardSet cardSet)
         {
-            Guard
-                .Require(cardSet, nameof(cardSet))
-                .Is.Not.Null();
-
-            var response = await this._httpClient.GetAsync($"json/{cardSet.Code}.json");
+            var response = await this.HttpClient.GetAsync($"json/{cardSet.Code}.json");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -136,19 +116,6 @@ namespace nGratis.AI.Kvasir.Core
                     return card;
                 })
                 .ToArray();
-        }
-
-        private static HttpMessageHandler CreateMessageHandler(IStorageManager storageManager)
-        {
-            Guard
-                .Require(storageManager, nameof(storageManager))
-                .Is.Not.Null();
-
-            var messageHandler = (HttpMessageHandler)new HttpClientHandler();
-            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromSeconds(1), messageHandler);
-            messageHandler = new CachingMessageHandler("Raw_MTGJSON4", storageManager, messageHandler);
-
-            return messageHandler;
         }
 
         private static CardSet ConvertToCardSet(HtmlNode rootNode)

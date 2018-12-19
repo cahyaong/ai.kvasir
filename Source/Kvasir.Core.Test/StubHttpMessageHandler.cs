@@ -30,28 +30,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
     using System.IO.Compression;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Reflection;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core;
     using nGratis.Cop.Core.Contract;
 
     internal class StubHttpMessageHandler : HttpMessageHandler
     {
-        private readonly IDictionary<Uri, int> _invocationCountLookup;
-
-        private readonly IDictionary<Uri, HttpResponseMessage> _responseMessageLookup;
+        private readonly IDictionary<Uri, StubInfo> _infoLookup;
 
         private StubHttpMessageHandler()
         {
-            this._invocationCountLookup = new Dictionary<Uri, int>();
-
-            this._responseMessageLookup = new Dictionary<Uri, HttpResponseMessage>();
+            this._infoLookup = new Dictionary<Uri, StubInfo>();
         }
 
         public static StubHttpMessageHandler Create()
@@ -75,15 +73,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(targetUri, nameof(targetUri))
                 .Is.Url();
 
-            if (this._responseMessageLookup.ContainsKey(targetUri))
+            if (this._infoLookup.ContainsKey(targetUri))
             {
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
 
-            this._responseMessageLookup[targetUri] = new HttpResponseMessage(HttpStatusCode.OK)
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent(content)
             };
+
+            this._infoLookup[targetUri] = new StubInfo(targetUri, responseMessage);
 
             return this;
         }
@@ -104,7 +104,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(targetUri, nameof(targetUri))
                 .Is.Url();
 
-            if (this._responseMessageLookup.ContainsKey(targetUri))
+            if (this._infoLookup.ContainsKey(targetUri))
             {
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
@@ -123,22 +123,35 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 var entryKey = targetUri.Segments.Last();
 
-                var foundEntry = archive
+                var matchedEntry = archive
                     .Entries
                     .SingleOrDefault(entry => entry.Name == entryKey);
 
-                if (foundEntry == null)
+                if (matchedEntry == null)
+                {
+                    var entryKeys = targetUri
+                        .Query
+                        .Substring(1)
+                        .Split('&')
+                        .Select(parameter => parameter.Split('=')[1])
+                        .ToArray();
+
+                    matchedEntry = archive
+                        .Entries
+                        .SingleOrDefault(entry => entryKeys.Contains(entry.Name));
+                }
+
+                if (matchedEntry == null)
                 {
                     throw new KvasirTestingException($"Response for [{entryKey}] is missing from [{name}]!");
                 }
 
-                using (var entryStream = foundEntry.Open())
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    this._responseMessageLookup[targetUri] = new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(entryStream.AsString())
-                    };
-                }
+                    Content = StubHttpMessageHandler.CreateHttpContent(matchedEntry)
+                };
+
+                this._infoLookup[targetUri] = new StubInfo(targetUri, responseMessage);
             }
 
             return this;
@@ -156,44 +169,19 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(targetUri, nameof(targetUri))
                 .Is.Url();
 
-            if (this._responseMessageLookup.ContainsKey(targetUri))
+            if (this._infoLookup.ContainsKey(targetUri))
             {
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
 
-            this._responseMessageLookup[targetUri] = new HttpResponseMessage(statusCode)
+            var responseMessage = new HttpResponseMessage(statusCode)
             {
                 Content = new StringContent(content ?? Text.Empty)
             };
 
+            this._infoLookup[targetUri] = new StubInfo(targetUri, responseMessage);
+
             return this;
-        }
-
-        protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage requestMessage,
-            CancellationToken cancellationToken)
-        {
-            Guard
-                .Require(requestMessage, nameof(requestMessage))
-                .Is.Not.Null();
-
-            var targetUri = requestMessage.RequestUri;
-
-            if (this._invocationCountLookup.ContainsKey(targetUri))
-            {
-                this._invocationCountLookup[targetUri]++;
-            }
-            else
-            {
-                this._invocationCountLookup[targetUri] = 1;
-            }
-
-            if (this._responseMessageLookup.TryGetValue(requestMessage.RequestUri, out var responseMessage))
-            {
-                return await Task.FromResult(responseMessage);
-            }
-
-            return await Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
         }
 
         public void VerifyInvoked(string targetUrl, int expectedCount)
@@ -212,16 +200,77 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(targetUri, nameof(targetUri))
                 .Is.Url();
 
-            var isValid = this._invocationCountLookup.TryGetValue(targetUri, out var count)
-                ? expectedCount == count
-                : count <= 0;
+            var isValid =
+                this._infoLookup.TryGetValue(targetUri, out var stubInfo) &&
+                stubInfo.InvocationCount == expectedCount;
 
             if (!isValid)
             {
                 throw new KvasirTestingException(
-                    $"Verification failed because URL [{targetUri}] is invoked [{count}] time(s), " +
+                    $"Verification failed because URL [{targetUri}] " +
+                    $"is invoked [{stubInfo?.InvocationCount ?? 0}] time(s), " +
                     $"but expected to be invoked [{expectedCount}] time(s)!");
             }
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage requestMessage,
+            CancellationToken cancellationToken)
+        {
+            Guard
+                .Require(requestMessage, nameof(requestMessage))
+                .Is.Not.Null();
+
+            var targetUri = requestMessage.RequestUri;
+
+            if (!this._infoLookup.TryGetValue(targetUri, out var stubInfo))
+            {
+                stubInfo = new StubInfo(targetUri, new HttpResponseMessage(HttpStatusCode.NotFound));
+            }
+
+            stubInfo.InvocationCount++;
+
+            return await Task.FromResult(stubInfo.ResponseMessage);
+        }
+
+        private static HttpContent CreateHttpContent(ZipArchiveEntry archiveEntry)
+        {
+            using (var entryStream = archiveEntry.Open())
+            {
+                if (Path.GetExtension(archiveEntry.Name) == Mime.Jpeg.FileExtension)
+                {
+                    return new ByteArrayContent(entryStream.ReadBlob());
+                }
+
+                return new StringContent(entryStream.ReadText(Encoding.UTF8));
+            }
+        }
+
+        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
+        private sealed class StubInfo
+        {
+            public StubInfo(Uri targetUri, HttpResponseMessage responseMessage)
+            {
+                Guard
+                    .Require(targetUri, nameof(targetUri))
+                    .Is.Not.Null()
+                    .Is.Url();
+
+                Guard
+                    .Require(responseMessage, nameof(responseMessage))
+                    .Is.Not.Null();
+
+                this.TargetUri = targetUri;
+                this.ResponseMessage = responseMessage;
+                this.InvocationCount = 0;
+            }
+
+            public Uri TargetUri { get; }
+
+            public HttpResponseMessage ResponseMessage { get; }
+
+            public int InvocationCount { get; set; }
         }
     }
 }

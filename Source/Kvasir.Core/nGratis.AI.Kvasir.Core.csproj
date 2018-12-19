@@ -43,6 +43,7 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IO\BaseMagicHttpFetcher.cs" />
     <Compile Include="IO\CachingMessageHandler.cs" />
     <Compile Include="IO\LuceneExtensions.cs" />
     <Compile Include="IO\IndexManager.cs" />
@@ -52,6 +53,7 @@
     <Compile Include="IO\MagicRepository.cs" />
     <Compile Include="IO\MagicJsonFetcher.cs" />
     <Compile Include="IO\ThrottlingMessageHandler.cs" />
+    <Compile Include="IO\WizardFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,9 +62,13 @@
       <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
       <Name>nGratis.Cop.Core.Contract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core\nGratis.Cop.Core.csproj">
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj">
       <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
-      <Name>nGratis.Cop.Core</Name>
+      <Name>nGratis.Cop.Core.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Vision\nGratis.Cop.Core.Vision.csproj">
+      <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>
+      <Name>nGratis.Cop.Core.Vision</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
       <Project>{35d185c9-f565-4abd-b1a7-d84a14277673}</Project>

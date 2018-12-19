@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="ExternalResources.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,24 +23,21 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, 16 December 2018 11:26:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract.Magic;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using System;
 
-    public interface IMagicFetcher
+    [Flags]
+    public enum ExternalResources
     {
-        ExternalResources AvailableResources { get; }
+        None = 0,
+        CardSet = 1 << 1,
+        Card = 1 << 2,
+        CardImage = 1 << 3,
 
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
-
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
-
-        Task<IImage> GetCardImageAsync(Card card);
+        All = CardSet | Card | CardImage
     }
 }

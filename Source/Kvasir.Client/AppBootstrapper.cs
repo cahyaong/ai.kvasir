@@ -37,8 +37,8 @@ namespace nGratis.AI.Kvasir.Client
     using Caliburn.Micro;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core;
     using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Core.Framework;
     using nGratis.Cop.Core.Wpf;
     using Unity;
     using Unity.Injection;
