@@ -111,7 +111,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 stopwatch
                     .Elapsed
-                    .Should().BeLessThan(1.Seconds());
+                    .Should().BeLessThan(3.Seconds());
 
                 responseMessage
                     .Should().NotBeNull();
