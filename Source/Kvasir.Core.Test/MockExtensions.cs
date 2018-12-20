@@ -172,6 +172,22 @@ namespace nGratis.AI.Kvasir.Core.Test
             return mockManager;
         }
 
+        public static Mock<IMagicFetcher> WithAvailableResources(
+            this Mock<IMagicFetcher> mockFetcher,
+            ExternalResources availableResources)
+        {
+            Guard
+                .Require(mockFetcher, nameof(mockFetcher))
+                .Is.Not.Null();
+
+            mockFetcher
+                .Setup(mock => mock.AvailableResources)
+                .Returns(availableResources)
+                .Verifiable();
+
+            return mockFetcher;
+        }
+
         public static Mock<IMagicFetcher> WithCardSets(this Mock<IMagicFetcher> mockFetcher, params CardSet[] cardSets)
         {
             Guard

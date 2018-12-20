@@ -33,6 +33,7 @@ namespace nGratis.AI.Kvasir.Contract
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Core.Vision.Imaging;
 
     // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
 
@@ -49,5 +50,7 @@ namespace nGratis.AI.Kvasir.Contract
         Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
 
         Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
+
+        Task<IImage> GetCardImageAsync(Card card);
     }
 }

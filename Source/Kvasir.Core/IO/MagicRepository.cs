@@ -31,6 +31,7 @@ namespace nGratis.AI.Kvasir.Core
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
     using Lucene.Net;
     using Lucene.Net.Index;
@@ -38,25 +39,77 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Core.Vision.Imaging;
 
     public class MagicRepository : IMagicRepository
     {
         private readonly IIndexManager _indexManager;
 
-        private readonly IMagicFetcher _magicFetcher;
+        private readonly IReadOnlyDictionary<ExternalResources, IMagicFetcher> _magicFetcherLookup;
 
-        public MagicRepository(IIndexManager indexManager, IMagicFetcher magicFetcher)
+        public MagicRepository(IIndexManager indexManager, params IMagicFetcher[] magicFetchers)
         {
             Guard
                 .Require(indexManager, nameof(indexManager))
                 .Is.Not.Null();
 
             Guard
-                .Require(magicFetcher, nameof(magicFetcher))
-                .Is.Not.Null();
+                .Require(magicFetchers, nameof(magicFetchers))
+                .Is.Not.Empty();
 
             this._indexManager = indexManager;
-            this._magicFetcher = magicFetcher;
+
+            var externalResources = Enum
+                .GetValues(typeof(ExternalResources))
+                .Cast<ExternalResources>()
+                .Where(resource => resource != ExternalResources.None)
+                .Where(resource => resource != ExternalResources.All)
+                .ToArray();
+
+            var magicFetcherGroupings = externalResources
+                .SelectMany(resource => magicFetchers
+                    .Where(fetcher => fetcher.AvailableResources.HasFlag(resource))
+                    .Select(fetcher => new { Resource = resource, Fetcher = fetcher }))
+                .GroupBy(anon => anon.Resource, anon => anon.Fetcher)
+                .ToArray();
+
+            var missingResources = externalResources
+                .Except(magicFetcherGroupings.Select(grouping => grouping.Key))
+                .ToArray();
+
+            var duplicatingResources = magicFetcherGroupings
+                .Where(grouping => grouping.Count() > 1)
+                .Select(grouping => grouping.Key)
+                .ToArray();
+
+            var messageBuilder = new StringBuilder();
+
+            if (missingResources.Any())
+            {
+                messageBuilder.AppendFormat(
+                    "Missing Resource(s): {0}.",
+                    string.Join(", ", missingResources.Select(resource => $"[{resource}]")));
+
+                if (duplicatingResources.Any())
+                {
+                    messageBuilder.Append(" ");
+                }
+            }
+
+            if (duplicatingResources.Any())
+            {
+                messageBuilder.AppendFormat(
+                    "Duplicating Resource(s): {0}.",
+                    string.Join(", ", duplicatingResources.Select(resource => $"[{resource}]")));
+            }
+
+            if (messageBuilder.Length > 0)
+            {
+                throw new KvasirException($"One or more external resource(s) are invalid! {messageBuilder}");
+            }
+
+            this._magicFetcherLookup = magicFetcherGroupings
+                .ToDictionary(grouping => grouping.Key, grouping => grouping.Single());
         }
 
         public event EventHandler CardSetIndexed;
@@ -116,7 +169,9 @@ namespace nGratis.AI.Kvasir.Core
 
             if (cards?.Any() != true)
             {
-                cards = await this._magicFetcher.GetCardsAsync(cardSet);
+                cards = await this
+                    ._magicFetcherLookup[ExternalResources.Card]
+                    .GetCardsAsync(cardSet);
 
                 Guard
                     .Ensure(cards, nameof(cards))
@@ -141,6 +196,13 @@ namespace nGratis.AI.Kvasir.Core
             }
 
             return cards;
+        }
+
+        public async Task<IImage> GetCardImageAsync(Card card)
+        {
+            return await this
+                ._magicFetcherLookup[ExternalResources.CardImage]
+                .GetCardImageAsync(card);
         }
 
         CardSet IPagingDataProvider<CardSet>.DefaultItem => default(CardSet);
@@ -195,7 +257,10 @@ namespace nGratis.AI.Kvasir.Core
         private async Task ReindexCardSetAsync()
         {
             var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
-            var cardSets = await this._magicFetcher.GetCardSetsAsync();
+
+            var cardSets = await this
+                ._magicFetcherLookup[ExternalResources.CardSet]
+                .GetCardSetsAsync();
 
             var documents = cardSets
                 .Select(cardSet => cardSet.ToDocument())

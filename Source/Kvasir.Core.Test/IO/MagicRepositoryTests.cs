@@ -40,6 +40,137 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class MagicRepositoryTests
     {
+        public class Constructor
+        {
+            [Fact]
+            public void WhenGettingFetchersWithEachAvailableResource_ShouldNotThrowException()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>();
+
+                var mockMagicFetchers = new[]
+                {
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.CardImage)
+                };
+
+                // Act.
+
+                var action = new Action(() =>
+                {
+                    var _ = new MagicRepository(mockIndexManager.Object, mockMagicFetchers.ToObjects());
+                });
+
+                // Assert.
+
+                action
+                    .Should().NotThrow();
+            }
+
+            [Fact]
+            public void WhenGettingFetcherWithoutAvailableResource_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>();
+
+                var mockMagicFetcher = MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.None);
+
+                // Act.
+
+                var action = new Action(() =>
+                {
+                    var _ = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
+                });
+
+                // Assert.
+
+                action
+                    .Should().Throw<KvasirException>()
+                    .WithMessage(
+                        "One or more external resource(s) are invalid! " +
+                        "Missing Resource(s): [CardSet], [Card], [CardImage].");
+            }
+
+            [Fact]
+            public void WhenGettingFetchersWithDuplicatingAvailableResources_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>();
+
+                var mockMagicFetchers = new[]
+                {
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.All),
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.All)
+                };
+
+                // Act.
+
+                var action = new Action(() =>
+                {
+                    var _ = new MagicRepository(mockIndexManager.Object, mockMagicFetchers.ToObjects());
+                });
+
+                // Assert.
+
+                action
+                    .Should().Throw<KvasirException>()
+                    .WithMessage(
+                        "One or more external resource(s) are invalid! " +
+                        "Duplicating Resource(s): [CardSet], [Card], [CardImage].");
+            }
+
+            [Fact]
+            public void WhenGettingFetchersWithMissingAndDuplicatingAvailableResources_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var mockIndexManager = MockBuilder
+                    .CreateMock<IIndexManager>();
+
+                var mockMagicFetchers = new[]
+                {
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.Card)
+                };
+
+                // Act.
+
+                var action = new Action(() =>
+                {
+                    var _ = new MagicRepository(mockIndexManager.Object, mockMagicFetchers.ToObjects());
+                });
+
+                // Assert.
+
+                action
+                    .Should().Throw<KvasirException>()
+                    .WithMessage(
+                        "One or more external resource(s) are invalid! " +
+                        "Missing Resource(s): [CardImage]. " +
+                        "Duplicating Resource(s): [Card].");
+            }
+        }
+
         public class GetCardSetsAsyncMethod
         {
             [Fact]
@@ -53,6 +184,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithCardSets(MockBuilder.CreateCardSets(3));
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -96,6 +228,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithoutCardSets();
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -153,6 +286,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithCards(Enumerable
                         .Empty<Card>()
                         .Append(MockBuilder.CreteCards("X02", 2))
@@ -229,6 +363,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithoutCards();
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -295,6 +430,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithCards(MockBuilder.CreteCards("X03", 3));
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -359,6 +495,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithCardSets(MockBuilder.CreateCardSets(3));
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -390,6 +527,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithoutCardSets();
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -421,6 +559,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithCards(MockBuilder.CreteCards("X01", 1));
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -459,6 +598,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithoutCards();
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -499,6 +639,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockMagicFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All)
                     .WithCards(MockBuilder.CreteCards("X03", 3));
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
