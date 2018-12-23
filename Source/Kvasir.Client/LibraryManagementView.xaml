@@ -15,7 +15,7 @@
     </i:EventTrigger>
   </i:Interaction.Triggers>
   <StackPanel core:ChildMargin.Value="20,0" Orientation="Horizontal">
-    <core:AweTileGroup Width="120" Header="INFO">
+    <core:AweTileGroup Header="INFO">
       <StackPanel
         HorizontalAlignment="Right"
         core:ChildMargin.Value="0,10"
@@ -24,35 +24,59 @@
         <core:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
       </StackPanel>
     </core:AweTileGroup>
-    <core:AweTileGroup Width="500" Header="CARD SETS">
-      <DataGrid
-        AutoGenerateColumns="False"
-        ItemsSource="{Binding Path=CardSetViewModels, Mode=OneWay}"
-        SelectedItem="{Binding Path=SelectedCardSetViewModel, Mode=TwoWay}"
-        SelectionMode="Single"
-        SelectionUnit="FullRow"
-        Style="{StaticResource Cop.DataGrid.Virtualizing}">
-        <DataGrid.Columns>
-          <DataGridTextColumn Binding="{Binding CardSet.Code, Mode=OneWay}" Header="Code" />
-          <DataGridTextColumn Binding="{Binding CardSet.Name, Mode=OneWay}" Header="Name" />
-          <DataGridTextColumn Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}" Header="Released" />
-        </DataGrid.Columns>
-      </DataGrid>
+    <core:AweTileGroup Width="795" Header="CARD SET">
+      <StackPanel core:ChildMargin.Value="20,0" Orientation="Horizontal">
+        <DataGrid
+          AutoGenerateColumns="False"
+          ItemsSource="{Binding CardSetViewModels, Mode=OneWay}"
+          SelectedItem="{Binding SelectedCardSetViewModel, Mode=TwoWay}"
+          SelectionMode="Single"
+          SelectionUnit="FullRow"
+          Style="{StaticResource Cop.DataGrid.Virtualizing}">
+          <DataGrid.Columns>
+            <DataGridTextColumn
+              MinWidth="70"
+              Binding="{Binding CardSet.Code, Mode=OneWay}"
+              Header="Code" />
+            <DataGridTextColumn
+              MinWidth="280"
+              Binding="{Binding CardSet.Name, Mode=OneWay}"
+              Header="Card Set Name" />
+            <DataGridTextColumn
+              MinWidth="100"
+              Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}"
+              Header="Released" />
+          </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid
+          core:AutoResetScroll.IsEnabled="True"
+          AutoGenerateColumns="False"
+          DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}"
+          ItemsSource="{Binding CardViewModels, Mode=OneWay}"
+          SelectedItem="{Binding SelectedCardViewModel, Mode=TwoWay}"
+          SelectionMode="Single"
+          SelectionUnit="FullRow"
+          Style="{StaticResource Cop.DataGrid.Virtualizing}">
+          <DataGrid.Columns>
+            <DataGridTextColumn
+              MinWidth="50"
+              Binding="{Binding Card.Number, Mode=OneWay}"
+              Header="#" />
+            <DataGridTextColumn
+              MinWidth="200"
+              Binding="{Binding Card.Name, Mode=OneWay}"
+              Header="Card Name" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </StackPanel>
     </core:AweTileGroup>
-    <core:AweTileGroup Width="500" Header="CARDS">
-      <DataGrid
-        core:AutoResetScroll.IsEnabled="True"
-        AutoGenerateColumns="False"
-        ItemsSource="{Binding SelectedCardSetViewModel.Cards, Mode=OneWay}"
-        SelectionMode="Single"
-        SelectionUnit="FullRow"
-        Style="{StaticResource Cop.DataGrid.Virtualizing}">
-        <DataGrid.Columns>
-          <DataGridTextColumn Binding="{Binding Number, Mode=OneWay}" Header="Number" />
-          <DataGridTextColumn Binding="{Binding Name, Mode=OneWay}" Header="Name" />
-          <DataGridTextColumn Binding="{Binding ManaCost, Mode=OneWay}" Header="Mana Cost" />
-        </DataGrid.Columns>
-      </DataGrid>
+    <core:AweTileGroup DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}" Header="CARD">
+      <Image
+        Width="223"
+        Height="310"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
     </core:AweTileGroup>
   </StackPanel>
 </UserControl>

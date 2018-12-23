@@ -45,15 +45,22 @@ namespace nGratis.AI.Kvasir.Client
     using Unity.Lifetime;
     using Unity.RegistrationByConvention;
 
-    internal class AppBootstrapper : CopBootstrapper
+    internal sealed class AppBootstrapper : CopBootstrapper, IDisposable
     {
         private readonly IUnityContainer _unityContainer;
+
+        private bool _isDisposed;
 
         public AppBootstrapper()
         {
             this._unityContainer = new UnityContainer();
 
             this.Initialize();
+        }
+
+        ~AppBootstrapper()
+        {
+            this.Dispose(false);
         }
 
         protected override void Configure()
@@ -90,6 +97,27 @@ namespace nGratis.AI.Kvasir.Client
         {
             this.DisplayRootViewFor<AppViewModel>();
         }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool isDisposing)
+        {
+            if (this._isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                this._unityContainer?.Dispose();
+            }
+
+            this._isDisposed = true;
+        }
     }
 
     internal static class UnityExtensions
@@ -122,6 +150,11 @@ namespace nGratis.AI.Kvasir.Client
                 new InjectionConstructor(dataFolderUri));
 
             unityContainer.RegisterType<IMagicFetcher, MagicJsonFetcher>(
+                "MTGJSON",
+                new ContainerControlledLifetimeManager());
+
+            unityContainer.RegisterType<IMagicFetcher, WizardFetcher>(
+                "WOTC",
                 new ContainerControlledLifetimeManager());
 
             unityContainer.RegisterType<IIndexManager, IndexManager>(
@@ -129,10 +162,7 @@ namespace nGratis.AI.Kvasir.Client
                 new InjectionConstructor(dataFolderUri));
 
             unityContainer.RegisterType<IMagicRepository, MagicRepository>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionConstructor(
-                    new ResolvedParameter<IIndexManager>(),
-                    new ResolvedParameter<IMagicFetcher>()));
+                new ContainerControlledLifetimeManager());
 
             return unityContainer;
         }

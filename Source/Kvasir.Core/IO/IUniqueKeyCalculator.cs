@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="IUniqueKeyCalculator.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,25 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 21 December 2018 11:38:56 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract.Magic;
-    using nGratis.Cop.Core.Vision.Imaging;
 
-    public interface IMagicFetcher : IDisposable
+    public interface IUniqueKeyCalculator
     {
-        ExternalResources AvailableResources { get; }
-
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
-
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
-
-        Task<IImage> GetCardImageAsync(Card card);
+        string Calculate(Uri uri);
     }
 }

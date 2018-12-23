@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
     using System.Text;
@@ -107,6 +108,47 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             return mockManager
                 .WithData(name, KvasirMime.Caching);
+        }
+
+        public static Mock<IStorageManager> WithSelfCaching(this Mock<IStorageManager> mockManager)
+        {
+            Guard
+                .Require(mockManager, nameof(mockManager))
+                .Is.Not.Null();
+
+            var blobLookup = new Dictionary<DataSpec, byte[]>();
+
+            mockManager
+                .Setup(mock => mock.SaveEntry(It.IsAny<DataSpec>(), It.IsAny<Stream>(), It.IsAny<bool>()))
+                .Callback<DataSpec, Stream, bool>((spec, stream, _) =>
+                 {
+                     blobLookup[spec] = stream.ReadBlob();
+
+                     mockManager
+                         .Setup(mock => mock.HasEntry(spec))
+                         .Returns(true)
+                         .Verifiable();
+                 })
+                .Verifiable();
+
+            mockManager
+                .Setup(mock => mock.LoadEntry(It.IsAny<DataSpec>()))
+                .Returns<DataSpec>(spec =>
+                {
+                    if (!blobLookup.TryGetValue(spec, out var blob))
+                    {
+                        return null;
+                    }
+
+                    var stream = new MemoryStream();
+                    stream.Write(blob, 0, blob.Length);
+                    stream.Position = 0;
+
+                    return stream;
+                })
+                .Verifiable();
+
+            return mockManager;
         }
 
         private static Mock<IStorageManager> WithData(this Mock<IStorageManager> mockManager, string name, Mime mime)

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardSetViewModel.cs" company="nGratis">
+// <copyright file="CardViewModel.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,32 +23,33 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:28:38 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 21 December 2018 11:46:40 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Client
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
+    using System.Windows;
     using System.Windows.Input;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using ReactiveUI;
 
-    public class CardSetViewModel : ReactiveObject
+    public class CardViewModel : ReactiveObject
     {
+        private static readonly Int32Rect CroppingBound = new Int32Rect(3, 4, 217, 303);
+
         private readonly IMagicRepository _magicRepository;
 
-        private IEnumerable<CardViewModel> _cardViewModels;
+        private ImageSource _originalImage;
 
-        private CardViewModel _selectedCardViewModel;
-
-        public CardSetViewModel(CardSet cardSet, IMagicRepository magicRepository)
+        public CardViewModel(Card card, IMagicRepository magicRepository)
         {
             Guard
-                .Require(cardSet, nameof(cardSet))
+                .Require(card, nameof(card))
                 .Is.Not.Null();
 
             Guard
@@ -57,40 +58,26 @@ namespace nGratis.AI.Kvasir.Client
 
             this._magicRepository = magicRepository;
 
-            this.CardSet = cardSet;
-            this.CardViewModels = Enumerable.Empty<CardViewModel>();
+            this.Card = card;
 
-            this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
+            this.PopulateDetailsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateDetailAsync());
         }
 
-        public CardSet CardSet { get; }
+        public Card Card { get; }
 
-        public IEnumerable<CardViewModel> CardViewModels
+        public ICommand PopulateDetailsCommand { get; }
+
+        public ImageSource OriginalImage
         {
-            get => this._cardViewModels;
-            private set => this.RaiseAndSetIfChanged(ref this._cardViewModels, value);
+            get => this._originalImage;
+            private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
         }
 
-        public CardViewModel SelectedCardViewModel
+        private async Task PopulateDetailAsync()
         {
-            get => this._selectedCardViewModel;
+            var cardImage = await this._magicRepository.GetCardImageAsync(this.Card);
 
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this._selectedCardViewModel, value);
-                this.SelectedCardViewModel?.PopulateDetailsCommand.Execute(null);
-            }
-        }
-
-        public ICommand PopulateCardsCommand { get; }
-
-        private async Task PopulateCardsAsync()
-        {
-            var cards = await this._magicRepository.GetCardsAsync(this.CardSet);
-
-            this.CardViewModels = cards
-                .Select(card => new CardViewModel(card, this._magicRepository))
-                .ToArray();
+            this.OriginalImage = new CroppedBitmap(cardImage.ToBitmapSource(), CardViewModel.CroppingBound);
         }
     }
 }

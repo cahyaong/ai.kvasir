@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -255,11 +256,36 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Is.Not.Null();
 
             mockFetcher
-                .Setup(mock => mock.GetCardsAsync(Moq.It.IsAny<CardSet>()))
+                .Setup(mock => mock.GetCardsAsync(It.IsAny<CardSet>()))
                 .Returns(Task.FromResult<IReadOnlyCollection<Card>>(new Card[0]))
                 .Verifiable();
 
             return mockFetcher;
+        }
+
+        public static Mock<IUniqueKeyCalculator> WithMapping(
+            this Mock<IUniqueKeyCalculator> mockCalculator,
+            string url,
+            string key)
+        {
+            Guard
+                .Require(mockCalculator, nameof(mockCalculator))
+                .Is.Not.Null();
+
+            Guard
+                .Require(url, nameof(url))
+                .Is.Not.Empty();
+
+            Guard
+                .Require(key, nameof(key))
+                .Is.Not.Empty();
+
+            mockCalculator
+                .Setup(mock => mock.Calculate(It.Is<Uri>(uri => uri.ToString() == url)))
+                .Returns(key)
+                .Verifiable();
+
+            return mockCalculator;
         }
     }
 }

@@ -31,6 +31,7 @@ namespace nGratis.AI.Kvasir.Core
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
@@ -41,8 +42,16 @@ namespace nGratis.AI.Kvasir.Core
 
     public abstract class BaseMagicHttpFetcher : IMagicFetcher
     {
-        protected BaseMagicHttpFetcher(string id, Uri landingUri, IStorageManager storageManager)
-            : this(landingUri, BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager))
+        private readonly HttpMessageHandler _messageHandler;
+
+        private bool _isDisposed;
+
+        protected BaseMagicHttpFetcher(
+            string id,
+            Uri landingUri,
+            IStorageManager storageManager,
+            IUniqueKeyCalculator uniqueKeyCalculator = null)
+            : this(landingUri, BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager, uniqueKeyCalculator))
         {
         }
 
@@ -52,6 +61,8 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(landingUri, nameof(landingUri))
                 .Is.Not.Null()
                 .Is.Url();
+
+            this._messageHandler = messageHandler;
 
             this.HttpClient = messageHandler != null
                 ? new HttpClient(messageHandler)
@@ -127,7 +138,15 @@ namespace nGratis.AI.Kvasir.Core
             return await Task.FromResult(EmptyImage.Instance);
         }
 
-        private static HttpMessageHandler CreateMessageHandler(string id, IStorageManager storageManager)
+        protected virtual string CreateUniqueKey(Uri uri)
+        {
+            return uri?.Segments.Last() ?? "_unknown.file";
+        }
+
+        private static HttpMessageHandler CreateMessageHandler(
+            string id,
+            IStorageManager storageManager,
+            IUniqueKeyCalculator uniqueKeyCalculator)
         {
             Guard
                 .Require(id, nameof(id))
@@ -138,10 +157,37 @@ namespace nGratis.AI.Kvasir.Core
                 .Is.Not.Null();
 
             var messageHandler = (HttpMessageHandler)new HttpClientHandler();
-            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromSeconds(1), messageHandler);
-            messageHandler = new CachingMessageHandler($"Raw_{id}", storageManager, messageHandler);
+            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(500), messageHandler);
+
+            messageHandler = new CachingMessageHandler(
+                $"Raw_{id}",
+                storageManager,
+                uniqueKeyCalculator,
+                messageHandler);
 
             return messageHandler;
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool isDisposing)
+        {
+            if (this._isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                this._messageHandler?.Dispose();
+                this.HttpClient?.Dispose();
+            }
+
+            this._isDisposed = true;
         }
     }
 }

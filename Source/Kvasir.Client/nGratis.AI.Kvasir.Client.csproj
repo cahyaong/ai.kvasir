@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppViewModel.cs" />
+    <Compile Include="CardViewModel.cs" />
     <Compile Include="LibraryManagementView.xaml.cs">
       <DependentUpon>LibraryManagementView.xaml</DependentUpon>
     </Compile>
@@ -104,6 +105,10 @@
     <ProjectReference Include="..\..\External\cop.core\Source\Core.Theme\nGratis.Cop.Core.Theme.csproj">
       <Project>{2b8de19c-be3d-4516-aecb-01fc709f8ed8}</Project>
       <Name>nGratis.Cop.Core.Theme</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Vision\nGratis.Cop.Core.Vision.csproj">
+      <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>
+      <Name>nGratis.Cop.Core.Vision</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj">
       <Project>{199487eb-64e4-4d48-9e9a-3afdddadf041}</Project>

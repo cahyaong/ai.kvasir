@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Net.Http;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Contract.Magic;
@@ -43,7 +44,7 @@ namespace nGratis.AI.Kvasir.Core
         public override ExternalResources AvailableResources => ExternalResources.CardImage;
 
         public WizardFetcher(IStorageManager storageManager)
-            : base("WOTC", WizardFetcher.LandingUri, storageManager)
+            : base("WOTC", WizardFetcher.LandingUri, storageManager, UniqueKeyCalculator.Instance)
         {
         }
 
@@ -54,7 +55,7 @@ namespace nGratis.AI.Kvasir.Core
 
         protected override async Task<IImage> GetCardImageCoreAsync(Card card)
         {
-            var path = $"Pages/Card/Details.aspx?multiverseid={card.MultiverseId}{Mime.Jpeg.FileExtension}";
+            var path = $"Handlers/Image.ashx?multiverseid={card.MultiverseId}&type=card";
             var response = await this.HttpClient.GetAsync(path);
 
             if (!response.IsSuccessStatusCode)
@@ -69,6 +70,34 @@ namespace nGratis.AI.Kvasir.Core
             cardImage.LoadData(await response.Content.ReadAsStreamAsync());
 
             return cardImage;
+        }
+
+        private sealed class UniqueKeyCalculator : IUniqueKeyCalculator
+        {
+            private UniqueKeyCalculator()
+            {
+            }
+
+            public static UniqueKeyCalculator Instance { get; } = new UniqueKeyCalculator();
+
+            public string Calculate(Uri uri)
+            {
+                var match = Pattern.CardImageUrl.Match(uri.PathAndQuery);
+
+                if (!match.Success)
+                {
+                    throw new KvasirException($"Failed to calculate unique key for URI [{uri}].");
+                }
+
+                return $"{match.Groups["id"].Value}{Mime.Png.FileExtension}";
+            }
+        }
+
+        private static class Pattern
+        {
+            public static readonly Regex CardImageUrl = new Regex(
+                @"Image\.ashx\?multiverseid=(?<id>\d+)&type=card",
+                RegexOptions.Compiled);
         }
     }
 }

@@ -95,6 +95,7 @@ namespace nGratis.AI.Kvasir.Client
         public CardSetViewModel SelectedCardSetViewModel
         {
             get => this._selectedCardSetViewModel;
+
             set
             {
                 this.RaiseAndSetIfChanged(ref this._selectedCardSetViewModel, value);

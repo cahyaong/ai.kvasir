@@ -88,7 +88,10 @@ namespace nGratis.AI.Kvasir.Core.Test
             return this;
         }
 
-        public StubHttpMessageHandler WithSuccessfulResponseInSession(string targetUrl, string name)
+        public StubHttpMessageHandler WithSuccessfulResponseInSession(
+            string targetUrl,
+            string name,
+            string entryKey = null)
         {
             Guard
                 .Require(targetUrl, nameof(targetUrl))
@@ -121,7 +124,10 @@ namespace nGratis.AI.Kvasir.Core.Test
             using (archiveStream)
             using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Read))
             {
-                var entryKey = targetUri.Segments.Last();
+                if (string.IsNullOrEmpty(entryKey))
+                {
+                    entryKey = targetUri.Segments.Last();
+                }
 
                 var matchedEntry = archive
                     .Entries

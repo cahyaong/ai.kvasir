@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="DefaultUniqueKeyCalculator.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,25 +23,30 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 21 December 2018 11:40:37 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract.Magic;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using System.Linq;
 
-    public interface IMagicFetcher : IDisposable
+    internal class DefaultUniqueKeyCalculator : IUniqueKeyCalculator
     {
-        ExternalResources AvailableResources { get; }
+        private DefaultUniqueKeyCalculator()
+        {
+        }
 
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
+        public static DefaultUniqueKeyCalculator Instance { get; } = new DefaultUniqueKeyCalculator();
 
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
+        public string Calculate(Uri uri)
+        {
+            return uri?.Segments.Last() ?? DefaultValue.Uri;
+        }
 
-        Task<IImage> GetCardImageAsync(Card card);
+        public static class DefaultValue
+        {
+            public const string Uri = "_unknown.uri";
+        }
     }
 }

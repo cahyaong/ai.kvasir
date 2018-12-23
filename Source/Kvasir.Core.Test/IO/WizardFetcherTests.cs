@@ -47,8 +47,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubHandler = StubHttpMessageHandler
                     .Create()
                     .WithSuccessfulResponseInSession(
-                        "http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=64.jpeg",
-                        "Raw_WOTC");
+                        "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=64&type=card",
+                        "Raw_WOTC",
+                        "64.jpeg");
 
                 var wizardFetcher = new WizardFetcher(stubHandler);
 
@@ -83,7 +84,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubHandler = StubHttpMessageHandler
                     .Create()
                     .WithResponse(
-                        "http://gatherer.wizards.com/Pages/Card/Details.aspx?multiverseid=64.jpeg",
+                        "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=64&type=card",
                         HttpStatusCode.NotFound);
 
                 var wizardFetcher = new WizardFetcher(stubHandler);

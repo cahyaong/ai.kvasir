@@ -50,11 +50,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
 
                 var mockStorageManager = MockBuilder
-                    .CreateMock<IStorageManager>();
+                    .CreateMock<IStorageManager>()
+                    .WithSelfCaching();
+
+                var mockKeyCalculator = MockBuilder
+                    .CreateMock<IUniqueKeyCalculator>()
+                    .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
                 var cachingHandler = new CachingMessageHandler(
                     "[_MOCK_CACHING_NAME_]",
                     mockStorageManager.Object,
+                    mockKeyCalculator.Object,
                     stubHandler);
 
                 using (var client = new HttpClient(cachingHandler))
@@ -81,7 +87,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                     mockStorageManager.Verify(
                         mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                        Times.Never);
+                        Times.Once);
 
                     mockStorageManager.Verify(
                         mock => mock.SaveEntry(
@@ -105,9 +111,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .CreateMock<IStorageManager>()
                     .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
 
+                var mockKeyCalculator = MockBuilder
+                    .CreateMock<IUniqueKeyCalculator>()
+                    .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
+
                 var cachingHandler = new CachingMessageHandler(
                     "[_MOCK_CACHING_NAME_]",
                     mockStorageManager.Object,
+                    mockKeyCalculator.Object,
                     stubHandler);
 
                 using (var client = new HttpClient(cachingHandler))
@@ -141,7 +152,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                             Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
                             Arg.IsAny<System.IO.Stream>(),
                             Arg.IsAny<bool>()),
-                        Times.Once);
+                        Times.Never);
                 }
             }
 
@@ -158,9 +169,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .CreateMock<IStorageManager>()
                     .WithCaching("[_MOCK_CACHING_NAME_]", "mock.html", "[_MOCK_CACHED_HTML_CONTENT_]");
 
+                var mockKeyCalculator = MockBuilder
+                    .CreateMock<IUniqueKeyCalculator>()
+                    .WithMapping("http://www.mock-url.com/mock.html", "mock.html");
+
                 var cachingHandler = new CachingMessageHandler(
                     "[_MOCK_CACHING_NAME_]",
                     mockStorageManager.Object,
+                    mockKeyCalculator.Object,
                     stubHandler);
 
                 using (var client = new HttpClient(cachingHandler))
@@ -209,9 +225,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .CreateMock<IStorageManager>()
                     .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
 
+                var mockKeyCalculator = MockBuilder
+                    .CreateMock<IUniqueKeyCalculator>()
+                    .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
+
                 var cachingHandler = new CachingMessageHandler(
                     "[_MOCK_CACHING_NAME_]",
                     mockStorageManager.Object,
+                    mockKeyCalculator.Object,
                     stubHandler);
 
                 using (var client = new HttpClient(cachingHandler))
