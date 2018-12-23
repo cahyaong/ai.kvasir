@@ -72,8 +72,8 @@
     </core:AweTileGroup>
     <core:AweTileGroup DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}" Header="CARD">
       <Image
-        Width="223"
-        Height="310"
+        Width="217"
+        Height="303"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
         Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
