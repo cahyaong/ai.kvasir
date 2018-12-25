@@ -137,18 +137,18 @@ namespace nGratis.AI.Kvasir.Core
                 .NumDocs);
         }
 
-        public async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync()
+        public async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync()
         {
             return await this.GetCardSetsAsync(0, await this.GetCardSetCountAsync());
         }
 
-        public async Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet)
+        public async Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet)
         {
             Guard
                 .Require(cardSet, nameof(cardSet))
                 .Is.Not.Null();
 
-            var cards = default(IReadOnlyCollection<Card>);
+            var cards = default(IReadOnlyCollection<RawCard>);
 
             if (this._indexManager.HasIndex(IndexKind.Card))
             {
@@ -162,7 +162,7 @@ namespace nGratis.AI.Kvasir.Core
                          .Search(query, 1000)
                          .ScoreDocs
                          .Select(document => indexReader.Document(document.Doc))
-                         .Select(document => document.ToInstance<Card>())
+                         .Select(document => document.ToInstance<RawCard>())
                          .ToArray();
                 });
             }
@@ -198,28 +198,28 @@ namespace nGratis.AI.Kvasir.Core
             return cards;
         }
 
-        public async Task<IImage> GetCardImageAsync(Card card)
+        public async Task<IImage> GetCardImageAsync(RawCard card)
         {
             return await this
                 ._magicFetcherLookup[ExternalResources.CardImage]
                 .GetCardImageAsync(card);
         }
 
-        CardSet IPagingDataProvider<CardSet>.DefaultItem => default(CardSet);
+        RawCardSet IPagingDataProvider<RawCardSet>.DefaultItem => default(RawCardSet);
 
-        async Task<int> IPagingDataProvider<CardSet>.GetCountAsync()
+        async Task<int> IPagingDataProvider<RawCardSet>.GetCountAsync()
         {
             return await this.GetCardSetCountAsync();
         }
 
-        async Task<IReadOnlyCollection<CardSet>> IPagingDataProvider<CardSet>.GetItemsAsync(
+        async Task<IReadOnlyCollection<RawCardSet>> IPagingDataProvider<RawCardSet>.GetItemsAsync(
             int pagingIndex,
             int itemCount)
         {
             return await this.GetCardSetsAsync(pagingIndex, itemCount);
         }
 
-        private async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
+        private async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
         {
             Guard
                 .Require(pagingIndex, nameof(pagingIndex))
@@ -229,7 +229,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(itemCount, nameof(itemCount))
                 .Is.Positive();
 
-            var cardSets = default(IReadOnlyCollection<CardSet>);
+            var cardSets = default(IReadOnlyCollection<RawCardSet>);
 
             if (!this._indexManager.HasIndex(IndexKind.CardSet))
             {
@@ -247,7 +247,7 @@ namespace nGratis.AI.Kvasir.Core
                 cardSets = Enumerable
                     .Range(pagingIndex * itemCount, itemCount)
                     .Select(index => indexReader.Document(index))
-                    .Select(document => document.ToInstance<CardSet>())
+                    .Select(document => document.ToInstance<RawCardSet>())
                     .ToArray();
             });
 

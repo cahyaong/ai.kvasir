@@ -165,7 +165,7 @@ namespace nGratis.AI.Kvasir.Client
             {
                 get
                 {
-                    var cardSet = new CardSet
+                    var cardSet = new RawCardSet
                     {
                         Code = "---",
                         Name = "Loading...",

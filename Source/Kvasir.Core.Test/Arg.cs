@@ -33,15 +33,15 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal partial class Arg : Moq.Arg
     {
-        public class CardSet
+        public class RawCardSet
         {
-            public static Contract.Magic.CardSet Is(string code)
+            public static Contract.RawCardSet Is(string code)
             {
                 Guard
                     .Require(code, nameof(code))
                     .Is.Not.Empty();
 
-                return Match.Create<Contract.Magic.CardSet>(card => card.Code == code);
+                return Match.Create<Contract.RawCardSet>(card => card.Code == code);
             }
         }
     }

@@ -58,7 +58,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public override ExternalResources AvailableResources => ExternalResources.CardSet | ExternalResources.Card;
 
-        protected override async Task<IReadOnlyCollection<CardSet>> GetCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
         {
             var response = await this.HttpClient.GetAsync("sets.html");
 
@@ -82,7 +82,7 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<Card>> GetCardsCoreAsync(CardSet cardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet cardSet)
         {
             var response = await this.HttpClient.GetAsync($"json/{cardSet.Code}.json");
 
@@ -106,7 +106,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Children()
                 .Select(token =>
                 {
-                    var card = token.ToObject<Card>();
+                    var card = token.ToObject<RawCard>();
                     card.CardSetCode = cardSet.Code;
                     card.ManaCost = card.ManaCost ?? string.Empty;
                     card.FlavorText = card.FlavorText ?? string.Empty;
@@ -118,7 +118,7 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        private static CardSet ConvertToCardSet(HtmlNode rootNode)
+        private static RawCardSet ConvertToCardSet(HtmlNode rootNode)
         {
             var nameNode = rootNode
                 .ChildNodes
@@ -151,7 +151,7 @@ namespace nGratis.AI.Kvasir.Core
                     DateTimeStyles.AdjustToUniversal);
             }
 
-            return new CardSet
+            return new RawCardSet
             {
                 Name = HttpUtility.HtmlDecode(nameNode.InnerText),
                 Code = foundMatch.Groups["code"].Value,

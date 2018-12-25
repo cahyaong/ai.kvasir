@@ -53,7 +53,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var wizardFetcher = new WizardFetcher(stubHandler);
 
-                var card = new Card
+                var card = new RawCard
                 {
                     MultiverseId = 64
                 };
@@ -89,7 +89,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var wizardFetcher = new WizardFetcher(stubHandler);
 
-                var card = new Card
+                var card = new RawCard
                 {
                     Name = "[_MOCK_NAME_]",
                     MultiverseId = 64

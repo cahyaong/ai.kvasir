@@ -38,10 +38,10 @@ namespace nGratis.AI.Kvasir.Contract
     {
         ExternalResources AvailableResources { get; }
 
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
+        Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync();
 
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
+        Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet);
 
-        Task<IImage> GetCardImageAsync(Card card);
+        Task<IImage> GetCardImageAsync(RawCard card);
     }
 }

@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using Lucene.Net.Index;
     using Lucene.Net.Store;
     using Lucene.Net.Util;
-    using nGratis.AI.Kvasir.Contract.Magic;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
     internal class StubDirectory : RAMDirectory
@@ -48,7 +48,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             return new StubDirectory();
         }
 
-        public StubDirectory WithCardSets(params CardSet[] cardSets)
+        public StubDirectory WithRawCardSets(params RawCardSet[] cardSets)
         {
             Guard
                 .Require(cardSets, nameof(cardSets))
@@ -73,7 +73,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             return this;
         }
 
-        public StubDirectory WithCards(params Card[] cards)
+        public StubDirectory WithRawCards(params RawCard[] cards)
         {
             Guard
                 .Require(cards, nameof(cards))

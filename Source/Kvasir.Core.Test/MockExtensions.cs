@@ -39,7 +39,6 @@ namespace nGratis.AI.Kvasir.Core.Test
     using Lucene.Net.Util;
     using Moq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
     [PublicAPI]
@@ -125,9 +124,9 @@ namespace nGratis.AI.Kvasir.Core.Test
             return mockManager;
         }
 
-        public static Mock<IIndexManager> WithExistingCardSets(
+        public static Mock<IIndexManager> WithExistingRawCardSets(
             this Mock<IIndexManager> mockManager,
-            params CardSet[] cardSets)
+            params RawCardSet[] cardSets)
         {
             Guard
                 .Require(mockManager, nameof(mockManager))
@@ -140,7 +139,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             var stubDirectory = StubDirectory
                 .Create()
-                .WithCardSets(cardSets);
+                .WithRawCardSets(cardSets);
 
             mockManager
                 .Setup(mock => mock.FindIndexReader(IndexKind.CardSet))
@@ -150,7 +149,9 @@ namespace nGratis.AI.Kvasir.Core.Test
             return mockManager;
         }
 
-        public static Mock<IIndexManager> WithExistingCards(this Mock<IIndexManager> mockManager, params Card[] cards)
+        public static Mock<IIndexManager> WithExistingRawCards(
+            this Mock<IIndexManager> mockManager,
+            params RawCard[] cards)
         {
             Guard
                 .Require(mockManager, nameof(mockManager))
@@ -163,7 +164,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             var stubDirectory = StubDirectory
                 .Create()
-                .WithCards(cards);
+                .WithRawCards(cards);
 
             mockManager
                 .Setup(mock => mock.FindIndexReader(IndexKind.Card))
@@ -189,7 +190,9 @@ namespace nGratis.AI.Kvasir.Core.Test
             return mockFetcher;
         }
 
-        public static Mock<IMagicFetcher> WithCardSets(this Mock<IMagicFetcher> mockFetcher, params CardSet[] cardSets)
+        public static Mock<IMagicFetcher> WithRawCardSets(
+            this Mock<IMagicFetcher> mockFetcher,
+            params RawCardSet[] cardSets)
         {
             Guard
                 .Require(mockFetcher, nameof(mockFetcher))
@@ -201,13 +204,13 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             mockFetcher
                 .Setup(mock => mock.GetCardSetsAsync())
-                .Returns(Task.FromResult<IReadOnlyCollection<CardSet>>(cardSets))
+                .Returns(Task.FromResult<IReadOnlyCollection<RawCardSet>>(cardSets))
                 .Verifiable();
 
             return mockFetcher;
         }
 
-        public static Mock<IMagicFetcher> WithoutCardSets(this Mock<IMagicFetcher> mockFetcher)
+        public static Mock<IMagicFetcher> WithoutRawCardSets(this Mock<IMagicFetcher> mockFetcher)
         {
             Guard
                 .Require(mockFetcher, nameof(mockFetcher))
@@ -215,13 +218,13 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             mockFetcher
                 .Setup(mock => mock.GetCardSetsAsync())
-                .Returns(Task.FromResult<IReadOnlyCollection<CardSet>>(new CardSet[0]))
+                .Returns(Task.FromResult<IReadOnlyCollection<RawCardSet>>(new RawCardSet[0]))
                 .Verifiable();
 
             return mockFetcher;
         }
 
-        public static Mock<IMagicFetcher> WithCards(this Mock<IMagicFetcher> mockFetcher, params Card[] cards)
+        public static Mock<IMagicFetcher> WithRawCards(this Mock<IMagicFetcher> mockFetcher, params RawCard[] cards)
         {
             Guard
                 .Require(mockFetcher, nameof(mockFetcher))
@@ -241,23 +244,23 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .ForEach(anon =>
                 {
                     mockFetcher
-                        .Setup(mock => mock.GetCardsAsync(Arg.CardSet.Is(anon.CardSetCode)))
-                        .Returns(Task.FromResult<IReadOnlyCollection<Card>>(anon.Cards))
+                        .Setup(mock => mock.GetCardsAsync(Arg.RawCardSet.Is(anon.CardSetCode)))
+                        .Returns(Task.FromResult<IReadOnlyCollection<RawCard>>(anon.Cards))
                         .Verifiable();
                 });
 
             return mockFetcher;
         }
 
-        public static Mock<IMagicFetcher> WithoutCards(this Mock<IMagicFetcher> mockFetcher)
+        public static Mock<IMagicFetcher> WithoutRawCards(this Mock<IMagicFetcher> mockFetcher)
         {
             Guard
                 .Require(mockFetcher, nameof(mockFetcher))
                 .Is.Not.Null();
 
             mockFetcher
-                .Setup(mock => mock.GetCardsAsync(It.IsAny<CardSet>()))
-                .Returns(Task.FromResult<IReadOnlyCollection<Card>>(new Card[0]))
+                .Setup(mock => mock.GetCardsAsync(It.IsAny<RawCardSet>()))
+                .Returns(Task.FromResult<IReadOnlyCollection<RawCard>>(new RawCard[0]))
                 .Verifiable();
 
             return mockFetcher;

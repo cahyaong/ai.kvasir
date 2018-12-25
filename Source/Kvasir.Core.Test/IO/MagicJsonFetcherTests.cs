@@ -117,7 +117,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var magicFetcher = new MagicJsonFetcher(stubHandler);
 
-                var cardSet = new CardSet
+                var cardSet = new RawCardSet
                 {
                     Code = "GRN",
                     Name = "[_MOCK_NAME_]",
@@ -209,7 +209,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var magicFetcher = new MagicJsonFetcher(stubHandler);
 
-                var cardSet = new CardSet
+                var cardSet = new RawCardSet
                 {
                     Code = "X42",
                     Name = "[_MOCK_NAME_]",
@@ -235,7 +235,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var magicFetcher = new MagicJsonFetcher(stubHandler);
 
-                var cardSet = new CardSet
+                var cardSet = new RawCardSet
                 {
                     Code = "X42",
                     Name = "[_MOCK_NAME_]",

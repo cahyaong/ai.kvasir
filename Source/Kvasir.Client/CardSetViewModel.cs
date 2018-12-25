@@ -45,7 +45,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private CardViewModel _selectedCardViewModel;
 
-        public CardSetViewModel(CardSet cardSet, IMagicRepository magicRepository)
+        public CardSetViewModel(RawCardSet cardSet, IMagicRepository magicRepository)
         {
             Guard
                 .Require(cardSet, nameof(cardSet))
@@ -63,7 +63,7 @@ namespace nGratis.AI.Kvasir.Client
             this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
         }
 
-        public CardSet CardSet { get; }
+        public RawCardSet CardSet { get; }
 
         public IEnumerable<CardViewModel> CardViewModels
         {

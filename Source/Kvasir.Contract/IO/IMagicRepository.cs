@@ -37,7 +37,7 @@ namespace nGratis.AI.Kvasir.Contract
 
     // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
 
-    public interface IMagicRepository : IPagingDataProvider<CardSet>
+    public interface IMagicRepository : IPagingDataProvider<RawCardSet>
     {
         event EventHandler CardSetIndexed;
 
@@ -47,10 +47,10 @@ namespace nGratis.AI.Kvasir.Contract
 
         Task<int> GetCardCountAsync();
 
-        Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync();
+        Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync();
 
-        Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet);
+        Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet);
 
-        Task<IImage> GetCardImageAsync(Card card);
+        Task<IImage> GetCardImageAsync(RawCard card);
     }
 }

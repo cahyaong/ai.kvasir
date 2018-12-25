@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Card.cs" company="nGratis">
+// <copyright file="RawCardSet.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,40 +23,23 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:31:22 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 8 November 2018 8:27:59 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract.Magic
+namespace nGratis.AI.Kvasir.Contract
 {
+    using System;
     using System.Diagnostics;
 
     // TODO: Make this class immutable once constructed!
 
-    [DebuggerDisplay("[{this.MultiverseId}]: {this.Name ?? \"<undefined>\"}")]
-    public class Card
+    [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
+    public class RawCardSet
     {
-        public int MultiverseId { get; set; }
-
-        public string CardSetCode { get; set; }
+        public string Code { get; set; }
 
         public string Name { get; set; }
 
-        public string ManaCost { get; set; }
-
-        public string Type { get; set; }
-
-        public string Rarity { get; set; }
-
-        public string Text { get; set; }
-
-        public string FlavorText { get; set; }
-
-        public string Power { get; set; }
-
-        public string Toughness { get; set; }
-
-        public string Number { get; set; }
-
-        public string Artist { get; set; }
+        public DateTime ReleasedTimestamp { get; set; }
     }
 }

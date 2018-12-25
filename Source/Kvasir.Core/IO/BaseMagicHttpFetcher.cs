@@ -85,17 +85,17 @@ namespace nGratis.AI.Kvasir.Core
 
         protected HttpClient HttpClient { get; }
 
-        public async Task<IReadOnlyCollection<CardSet>> GetCardSetsAsync()
+        public async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync()
         {
             if (!this.AvailableResources.HasFlag(ExternalResources.CardSet))
             {
-                return await Task.FromException<IReadOnlyCollection<CardSet>>(new NotSupportedException());
+                return await Task.FromException<IReadOnlyCollection<RawCardSet>>(new NotSupportedException());
             }
 
             return await this.GetCardSetsCoreAsync();
         }
 
-        public async Task<IReadOnlyCollection<Card>> GetCardsAsync(CardSet cardSet)
+        public async Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet)
         {
             Guard
                 .Require(cardSet, nameof(cardSet))
@@ -103,13 +103,13 @@ namespace nGratis.AI.Kvasir.Core
 
             if (!this.AvailableResources.HasFlag(ExternalResources.Card))
             {
-                return await Task.FromException<IReadOnlyCollection<Card>>(new NotSupportedException());
+                return await Task.FromException<IReadOnlyCollection<RawCard>>(new NotSupportedException());
             }
 
             return await this.GetCardsCoreAsync(cardSet);
         }
 
-        public async Task<IImage> GetCardImageAsync(Card card)
+        public async Task<IImage> GetCardImageAsync(RawCard card)
         {
             Guard
                 .Require(card, nameof(card))
@@ -123,17 +123,17 @@ namespace nGratis.AI.Kvasir.Core
             return await this.GetCardImageCoreAsync(card);
         }
 
-        protected virtual async Task<IReadOnlyCollection<CardSet>> GetCardSetsCoreAsync()
+        protected virtual async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
         {
-            return await Task.FromResult(new CardSet[0]);
+            return await Task.FromResult(new RawCardSet[0]);
         }
 
-        protected virtual async Task<IReadOnlyCollection<Card>> GetCardsCoreAsync(CardSet cardSet)
+        protected virtual async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet cardSet)
         {
-            return await Task.FromResult(new Card[0]);
+            return await Task.FromResult(new RawCard[0]);
         }
 
-        protected virtual async Task<IImage> GetCardImageCoreAsync(Card card)
+        protected virtual async Task<IImage> GetCardImageCoreAsync(RawCard card)
         {
             return await Task.FromResult(EmptyImage.Instance);
         }

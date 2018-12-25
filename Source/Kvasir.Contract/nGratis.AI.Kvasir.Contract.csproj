@@ -47,8 +47,8 @@
     <Compile Include="KvasirException.cs" />
     <Compile Include="KvasirMime.cs" />
     <Compile Include="KvasirTestingException.cs" />
-    <Compile Include="Magic\CardSet.cs" />
-    <Compile Include="Magic\Card.cs" />
+    <Compile Include="IO\RawCardSet.cs" />
+    <Compile Include="IO\RawCard.cs" />
     <Compile Include="IO\IMagicFetcher.cs" />
     <Compile Include="IO\IMagicRepository.cs" />
     <Compile Include="Magic\Rarity.cs" />

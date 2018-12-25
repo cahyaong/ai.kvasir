@@ -118,7 +118,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create(stubHandler)
                     .WithAvailableResources(ExternalResources.Card);
 
-                var cardSet = new CardSet
+                var cardSet = new RawCardSet
                 {
                     Code = "[_MOCK_CODE_]",
                     Name = "[_MOCK_NAME_]"
@@ -145,7 +145,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubFetcher = StubMagicHttpFetcher
                     .Create(stubHandler);
 
-                var cardSet = new CardSet
+                var cardSet = new RawCardSet
                 {
                     Code = "[_MOCK_CODE_]",
                     Name = "[_MOCK_NAME_]"
@@ -173,7 +173,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create(stubHandler)
                     .WithAvailableResources(ExternalResources.CardImage);
 
-                var card = new Card
+                var card = new RawCard
                 {
                     Name = "[_MOCK_NAME_]"
                 };
@@ -199,7 +199,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubFetcher = StubMagicHttpFetcher
                     .Create(stubHandler);
 
-                var card = new Card
+                var card = new RawCard
                 {
                     Name = "[_MOCK_NAME_]"
                 };

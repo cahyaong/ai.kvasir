@@ -53,7 +53,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(Card card)
+        protected override async Task<IImage> GetCardImageCoreAsync(RawCard card)
         {
             var path = $"Handlers/Image.ashx?multiverseid={card.MultiverseId}&type=card";
             var response = await this.HttpClient.GetAsync(path);
