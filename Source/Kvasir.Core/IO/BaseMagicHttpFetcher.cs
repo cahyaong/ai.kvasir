@@ -36,7 +36,6 @@ namespace nGratis.AI.Kvasir.Core
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Vision.Imaging;
 

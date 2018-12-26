@@ -34,7 +34,6 @@ namespace nGratis.AI.Kvasir.Client
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using ReactiveUI;
 

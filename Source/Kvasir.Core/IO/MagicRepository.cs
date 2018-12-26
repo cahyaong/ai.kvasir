@@ -37,7 +37,6 @@ namespace nGratis.AI.Kvasir.Core
     using Lucene.Net.Index;
     using Lucene.Net.Search;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Vision.Imaging;
 

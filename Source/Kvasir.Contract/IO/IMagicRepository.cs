@@ -31,7 +31,6 @@ namespace nGratis.AI.Kvasir.Contract
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Vision.Imaging;
 

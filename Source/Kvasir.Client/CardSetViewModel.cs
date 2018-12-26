@@ -33,7 +33,6 @@ namespace nGratis.AI.Kvasir.Client
     using System.Threading.Tasks;
     using System.Windows.Input;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using ReactiveUI;
 

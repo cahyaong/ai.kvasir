@@ -26,7 +26,7 @@
 // <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract.Magic
+namespace nGratis.AI.Kvasir.Contract
 {
     public enum Rarity
     {

@@ -34,7 +34,6 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Net.Http;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Vision.Imaging;
 
