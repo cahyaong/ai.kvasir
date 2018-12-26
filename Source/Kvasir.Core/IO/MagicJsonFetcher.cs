@@ -39,7 +39,6 @@ namespace nGratis.AI.Kvasir.Core
     using HtmlAgilityPack;
     using Newtonsoft.Json.Linq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Contract.Magic;
     using nGratis.Cop.Core.Contract;
 
     public class MagicJsonFetcher : BaseMagicHttpFetcher
@@ -107,8 +106,10 @@ namespace nGratis.AI.Kvasir.Core
                 .Select(token =>
                 {
                     var card = token.ToObject<RawCard>();
+
                     card.CardSetCode = cardSet.Code;
                     card.ManaCost = card.ManaCost ?? string.Empty;
+                    card.Text = card.Text ?? string.Empty;
                     card.FlavorText = card.FlavorText ?? string.Empty;
                     card.Power = card.Power ?? string.Empty;
                     card.Toughness = card.Toughness ?? string.Empty;
