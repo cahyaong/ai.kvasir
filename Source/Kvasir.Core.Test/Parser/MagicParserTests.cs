@@ -56,27 +56,28 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardInfo = magicParser.ParseRawCard(rawCard);
+                var parsingResult = magicParser.ParseRawCard(rawCard);
 
                 // Assert.
 
+                parsingResult
+                    .Should().NotBeNull();
+
+                var cardInfo = parsingResult.GetValue<CardInfo>();
+
                 cardInfo
                     .Should().NotBeNull();
 
                 cardInfo
-                    .Value
-                    .Should().NotBeNull();
-
-                cardInfo
-                    .Value.Kind
+                    .Kind
                     .Should().Be(theory.Kind);
 
                 cardInfo
-                    .Value.SuperKind
+                    .SuperKind
                     .Should().Be(theory.SuperKind);
 
                 cardInfo
-                    .Value.SubKinds
+                    .SubKinds
                     .Should().BeEquivalentTo(theory.SubKinds);
             }
 
@@ -95,14 +96,14 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardInfo = magicParser.ParseRawCard(rawCard);
+                var parsingResult = magicParser.ParseRawCard(rawCard);
 
                 // Assert.
 
-                cardInfo
+                parsingResult
                     .Should().NotBeNull();
 
-                cardInfo
+                parsingResult
                     .Messages
                     .Should().NotBeNull()
                     .And.Contain(theory.Message);

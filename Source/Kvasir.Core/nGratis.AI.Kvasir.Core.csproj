@@ -60,6 +60,7 @@
     <Compile Include="Parser\IMagicParser.cs" />
     <Compile Include="Parser\MagicParser.cs" />
     <Compile Include="Parser\ParsingResult.cs" />
+    <Compile Include="ParsingResultExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegexExtensions.cs" />
   </ItemGroup>

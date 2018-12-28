@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicParser.cs" company="nGratis">
+// <copyright file="ParsingResultExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,50 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 11:13:40 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 28 December 2018 1:22:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
+    using System;
+    using System.Linq.Expressions;
+    using System.Reflection;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
 
-    public interface IMagicParser
+    internal static class ParsingResultExtensions
     {
-        ParsingResult ParseRawCard(RawCard rawCard);
+        public static ParsingResult BindToCardInfo(
+            this ParsingResult parsingResult,
+            Expression<Func<CardInfo, object>> bindingExpression)
+        {
+            Guard
+                .Require(parsingResult, nameof(parsingResult))
+                .Is.Not.Null();
+
+            Guard
+                .Require(bindingExpression, nameof(bindingExpression))
+                .Is.Not.Null();
+
+            return parsingResult.BindTo(bindingExpression.GetPropertyInfo());
+        }
+
+        private static PropertyInfo GetPropertyInfo<T>(this Expression<Func<T, object>> expression)
+        {
+            var unaryExpression = expression.Body as UnaryExpression;
+
+            var memberExpression =
+                unaryExpression?.Operand as MemberExpression ??
+                expression.Body as MemberExpression;
+
+            var propertyInfo = memberExpression?.Member as PropertyInfo;
+
+            if (propertyInfo == null)
+            {
+                throw new KvasirException("Binding expression must return <Property> value!");
+            }
+
+            return propertyInfo;
+        }
     }
 }

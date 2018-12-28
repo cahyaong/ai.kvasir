@@ -37,13 +37,14 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicParser : IMagicParser
     {
-        public ParsingResult<CardInfo> ParseRawCard(RawCard rawCard)
+        public ParsingResult ParseRawCard(RawCard rawCard)
         {
             Guard
                 .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
-            var parsingResult = ParsingResult<CardInfo>.CreateValid(new CardInfo());
+            var parsingResult = ValidParsingResult.Create(new CardInfo());
+
             var typeMatch = Pattern.CardType.Match(rawCard.Type);
 
             if (!typeMatch.Success)
@@ -65,47 +66,43 @@ namespace nGratis.AI.Kvasir.Core
                     .ToArray();
 
                 parsingResult
-                    .WithChildResult(
-                        MagicParser.ParseCardKind(kindValue),
-                        (info, kind) => info.Kind = kind)
-                    .WithChildResult(
-                        MagicParser.ParseCardSuperKind(superValue),
-                        (info, superKind) => info.SuperKind = superKind)
-                    .WithChildResult(
-                        MagicParser.ParseCardSubKinds(subValues),
-                        (info, subKinds) => info.SubKinds = subKinds);
+                    .WithChildResult(MagicParser.ParseCardKind(kindValue))
+                    .BindToCardInfo(info => info.Kind)
+                    .WithChildResult(MagicParser.ParseCardSuperKind(superValue))
+                    .BindToCardInfo(info => info.SuperKind)
+                    .WithChildResult(MagicParser.ParseCardSubKinds(subValues))
+                    .BindToCardInfo(info => info.SubKinds);
             }
 
             return parsingResult;
         }
 
-        private static ParsingResult<CardKind> ParseCardKind(string value)
+        private static ParsingResult ParseCardKind(string value)
         {
             return Enum.TryParse(value, out CardKind kind)
-                ? ParsingResult<CardKind>.CreateValid(kind)
-                : ParsingResult<CardKind>.CreateInvalid($"<Kind> No mapping for value [{value}].");
+                ? ValidParsingResult.Create(kind)
+                : InvalidParsingResult.Create($"<Kind> No mapping for value [{value}].");
         }
 
-        private static ParsingResult<CardSuperKind> ParseCardSuperKind(string value)
+        private static ParsingResult ParseCardSuperKind(string value)
         {
             if (string.IsNullOrEmpty(value))
             {
-                return ParsingResult<CardSuperKind>.CreateValid(CardSuperKind.None);
+                return ValidParsingResult.Create(CardSuperKind.None);
             }
 
             return Enum.TryParse(value, out CardSuperKind superKind)
-                ? ParsingResult<CardSuperKind>.CreateValid(superKind)
-                : ParsingResult<CardSuperKind>.CreateInvalid($"<SuperKind> No mapping for value [{value}].");
+                ? ValidParsingResult.Create(superKind)
+                : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{value}].");
         }
 
-        private static ParsingResult<IReadOnlyCollection<CardSubKind>> ParseCardSubKinds(
-            IReadOnlyCollection<string> values)
+        private static ParsingResult ParseCardSubKinds(IReadOnlyCollection<string> values)
         {
             var subKinds = new List<CardSubKind>();
 
             if (!values.Any())
             {
-                return ParsingResult<IReadOnlyCollection<CardSubKind>>.CreateValid(subKinds);
+                return ValidParsingResult.Create(subKinds);
             }
 
             var invalidValues = new List<string>();
@@ -125,12 +122,12 @@ namespace nGratis.AI.Kvasir.Core
             if (invalidValues.Any())
             {
                 var formattedValues = invalidValues.Select(value => $"[{value}]");
+                var message = $"<SubKind> No mapping for value {string.Join(", ", formattedValues)}.";
 
-                return ParsingResult<IReadOnlyCollection<CardSubKind>>.CreateInvalid(
-                    $"<SubKind> No mapping for value {string.Join(", ", formattedValues)}.");
+                return InvalidParsingResult.Create(message);
             }
 
-            return ParsingResult<IReadOnlyCollection<CardSubKind>>.CreateValid(subKinds);
+            return ValidParsingResult.Create(subKinds);
         }
 
         private static class Pattern

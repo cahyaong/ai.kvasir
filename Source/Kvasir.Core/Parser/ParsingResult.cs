@@ -1,45 +1,102 @@
 ﻿namespace nGratis.AI.Kvasir.Core
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    public class ParsingResult<TValue>
+    public sealed class ValidParsingResult : ParsingResult
     {
-        private readonly List<string> _messages;
+        private readonly object _value;
 
-        private ParsingResult(TValue value, IEnumerable<string> messages)
-        {
-            this._messages = new List<string>(messages);
-            this.Value = value;
-        }
+        private object _childValue;
 
-        public bool IsValid =>
-            !object.Equals(this.Value, default(TValue)) &&
-            !this.Messages.Any();
-
-        public TValue Value { get; }
-
-        public IEnumerable<string> Messages => this._messages;
-
-        public static ParsingResult<TValue> CreateValid(TValue value)
+        private ValidParsingResult(object value)
+            : base(Enumerable.Empty<string>())
         {
             Guard
                 .Require(value, nameof(value))
                 .Is.Not.Default();
 
-            return new ParsingResult<TValue>(value, Enumerable.Empty<string>());
+            this._value = value;
         }
 
-        public static ParsingResult<TValue> CreateInvalid(params string[] messages)
+        public static ParsingResult Create(object value)
         {
-            return new ParsingResult<TValue>(
-                default(TValue),
-                messages.Where(message => !string.IsNullOrEmpty(message)));
+            return new ValidParsingResult(value);
         }
 
-        public ParsingResult<TValue> WithMessage(string message)
+        public override TValue GetValue<TValue>()
+        {
+            return (TValue)this._value;
+        }
+
+        protected override ParsingResult WithChildResultCore(ParsingResult childResult)
+        {
+            if (childResult.IsValid && childResult is ValidParsingResult validChildResult)
+            {
+                this._childValue = validChildResult._value;
+            }
+            else
+            {
+                this._childValue = default(object);
+            }
+
+            return this;
+        }
+
+        protected override ParsingResult BindToCore(PropertyInfo propertyInfo)
+        {
+            propertyInfo.SetValue(this._value, this._childValue);
+            this._childValue = default(object);
+
+            return this;
+        }
+    }
+
+    public sealed class InvalidParsingResult : ParsingResult
+    {
+        private InvalidParsingResult(IEnumerable<string> messages)
+            : base(messages)
+        {
+        }
+
+        public static ParsingResult Create(params string[] messages)
+        {
+            return new InvalidParsingResult(messages);
+        }
+
+        public override TValue GetValue<TValue>()
+        {
+            throw new KvasirException("No valid value for this parsing result!");
+        }
+    }
+
+    public abstract class ParsingResult
+    {
+        private readonly List<string> _messages;
+
+        protected ParsingResult(IEnumerable<string> messages)
+        {
+            Guard
+                .Require(messages, nameof(messages))
+                .Is.Not.Null();
+
+            this._messages = messages
+                .Where(message => !string.IsNullOrEmpty(message))
+                .ToList();
+        }
+
+        public bool IsValid =>
+            this.IsValidCore &&
+            !this.Messages.Any();
+
+        public IEnumerable<string> Messages => this._messages;
+
+        protected virtual bool IsValidCore => true;
+
+        public ParsingResult WithMessage(string message)
         {
             Guard
                 .Require(message, nameof(message))
@@ -50,22 +107,11 @@
             return this;
         }
 
-        public ParsingResult<TValue> WithChildResult<TChildValue>(
-            ParsingResult<TChildValue> childResult,
-            Action<TValue, TChildValue> merge)
+        public ParsingResult WithChildResult(ParsingResult childResult)
         {
             Guard
                 .Require(childResult, nameof(childResult))
                 .Is.Not.Null();
-
-            var shouldMerge =
-                merge != null &&
-                childResult.IsValid;
-
-            if (shouldMerge)
-            {
-                merge(this.Value, childResult.Value);
-            }
 
             if (!childResult.IsValid)
             {
@@ -77,6 +123,27 @@
                 this._messages.AddRange(filteredMessages);
             }
 
+            return this.WithChildResultCore(childResult);
+        }
+
+        public ParsingResult BindTo(PropertyInfo propertyInfo)
+        {
+            Guard
+                .Require(propertyInfo, nameof(propertyInfo))
+                .Is.Not.Null();
+
+            return this.BindToCore(propertyInfo);
+        }
+
+        public abstract TValue GetValue<TValue>();
+
+        protected virtual ParsingResult WithChildResultCore(ParsingResult childResult)
+        {
+            return this;
+        }
+
+        protected virtual ParsingResult BindToCore(PropertyInfo propertyInfo)
+        {
             return this;
         }
     }
