@@ -57,7 +57,11 @@
     <Compile Include="IO\ThrottlingMessageHandler.cs" />
     <Compile Include="IO\WizardFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />
+    <Compile Include="Parser\IMagicParser.cs" />
+    <Compile Include="Parser\MagicParser.cs" />
+    <Compile Include="Parser\ParsingResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegexExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj">

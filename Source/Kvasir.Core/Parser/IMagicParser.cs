@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Rarity.cs" company="nGratis">
+// <copyright file="IMagicParser.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,18 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 25 December 2018 11:13:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public enum Rarity
-    {
-        Unknown = 0,
+    using nGratis.AI.Kvasir.Contract;
 
-        Common,
-        Uncommon,
-        Rare,
-        Mythic
+    public interface IMagicParser
+    {
+        ParsingResult<CardInfo> ParseRawCard(RawCard rawCard);
     }
 }

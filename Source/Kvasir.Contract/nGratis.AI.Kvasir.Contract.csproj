@@ -41,6 +41,11 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constant.cs" />
+    <Compile Include="Magic\CardKind.cs" />
+    <Compile Include="Magic\CardSuperKind.cs" />
+    <Compile Include="Engine\CardInfo.cs" />
+    <Compile Include="Magic\Mana.cs" />
+    <Compile Include="Magic\CardSubKind.cs" />
     <Compile Include="IO\ExternalResources.cs" />
     <Compile Include="IO\IIndexManager.cs" />
     <Compile Include="IO\IndexKind.cs" />

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Rarity.cs" company="nGratis">
+// <copyright file="CardSubKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,18 +23,52 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 25 December 2018 1:00:14 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum Rarity
+    public enum CardSubKind
     {
         Unknown = 0,
 
-        Common,
-        Uncommon,
-        Rare,
-        Mythic
+        Equipment,
+
+        Advisor,
+        Archer,
+        Assassin,
+        Cleric,
+        Druid,
+        Elemental,
+        Elf,
+        Faerie,
+        Giant,
+        Goblin,
+        Kithkin,
+        Knight,
+        Incarnation,
+        Merfolk,
+        Rogue,
+        Scout,
+        Shaman,
+        Shapeshifter,
+        Soldier,
+        Treefolk,
+        Warrior,
+        Wizard,
+
+        Aura,
+
+        Plains,
+        Island,
+        Swamp,
+        Mountain,
+        Forest,
+
+        Ajani,
+        Chandra,
+        Garruk,
+        Jace,
+        Liliana
     }
 }

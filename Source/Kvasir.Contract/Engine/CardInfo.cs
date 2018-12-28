@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Rarity.cs" company="nGratis">
+// <copyright file="GameCard.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,18 +23,30 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 25 December 2018 1:23:57 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum Rarity
-    {
-        Unknown = 0,
+    using System.Collections.Generic;
 
-        Common,
-        Uncommon,
-        Rare,
-        Mythic
+    public class CardInfo
+    {
+        public CardInfo()
+        {
+            this.SubKinds = new CardSubKind[0];
+        }
+
+        public uint MultiverseId { get; set; }
+
+        public string Name { get; set; }
+
+        public CardKind Kind { get; set; }
+
+        public CardSuperKind SuperKind { get; set; }
+
+        public IReadOnlyCollection<CardSubKind> SubKinds { get; set; }
+
+        public bool IsTribal { get; set; }
     }
 }

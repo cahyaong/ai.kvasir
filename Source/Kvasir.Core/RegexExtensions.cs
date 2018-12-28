@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Rarity.cs" company="nGratis">
+// <copyright file="RegexExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,18 +23,40 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 28 December 2018 7:58:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum Rarity
-    {
-        Unknown = 0,
+// ReSharper disable once CheckNamespace
 
-        Common,
-        Uncommon,
-        Rare,
-        Mythic
+namespace System.Text.RegularExpressions
+{
+    using System.Collections.Generic;
+    using System.Linq;
+    using nGratis.Cop.Core.Contract;
+
+    public static class RegexExtensions
+    {
+        public static IEnumerable<string> FindCaptureValues(this Match match, string name)
+        {
+            Guard
+                .Require(match, nameof(match))
+                .Is.Not.Null();
+
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
+
+            var matchedGroup = match.Groups[name];
+
+            if (!matchedGroup.Success)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            return matchedGroup
+                .Captures
+                .Cast<Capture>()
+                .Select(capture => capture.Value);
+        }
     }
 }

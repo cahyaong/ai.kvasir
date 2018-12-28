@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Rarity.cs" company="nGratis">
+// <copyright file="CardSuperKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,18 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 25 December 2018 1:13:37 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum Rarity
+    public enum CardSuperKind
     {
         Unknown = 0,
 
-        Common,
-        Uncommon,
-        Rare,
-        Mythic
+        None,
+        Basic,
+        Legendary
     }
 }
