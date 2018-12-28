@@ -29,6 +29,7 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -106,6 +107,7 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class GetCardsAsyncMethod
         {
             [Fact]
+            [SuppressMessage("ReSharper", "StringLiteralTypo")]
             public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
             {
                 // Arrange.
@@ -154,7 +156,6 @@ namespace nGratis.AI.Kvasir.Core.Test
                     card
                         .ManaCost
                         .Should().NotBeNull()
-                        // ReSharper disable once StringLiteralTypo
                         .And.MatchRegex(@"(\{[\dWUBRGX/]+\})*");
 
                     card

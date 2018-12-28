@@ -76,6 +76,8 @@ namespace nGratis.AI.Kvasir.Client
         {
             var cardImage = await this._magicRepository.GetCardImageAsync(this.Card);
 
+            // TODO: Need to handle larger image size, e.g. Planechase card!
+
             this.OriginalImage = new CroppedBitmap(cardImage.ToBitmapSource(), CardViewModel.CroppingBound);
         }
     }

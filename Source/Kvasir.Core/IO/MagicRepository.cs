@@ -176,14 +176,12 @@ namespace nGratis.AI.Kvasir.Core
                     .Ensure(cards, nameof(cards))
                     .Is.Not.Null();
 
-                // ReSharper disable once ImplicitlyCapturedClosure
-
                 await Task.Run(() =>
                 {
                     var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Card);
 
                     var documents = cards
-                        .Select(card => card.ToDocument())
+                        .Select(card => card.ToLuceneDocument())
                         .ToArray();
 
                     indexWriter.AddDocuments(documents);
@@ -262,7 +260,7 @@ namespace nGratis.AI.Kvasir.Core
                 .GetCardSetsAsync();
 
             var documents = cardSets
-                .Select(cardSet => cardSet.ToDocument())
+                .Select(cardSet => cardSet.ToLuceneDocument())
                 .ToArray();
 
             indexWriter.AddDocuments(documents);

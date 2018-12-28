@@ -30,7 +30,7 @@ namespace nGratis.AI.Kvasir.Contract
 {
     public enum IndexKind
     {
-        Undefined = 0,
+        Unknown = 0,
         CardSet,
         Card
     }

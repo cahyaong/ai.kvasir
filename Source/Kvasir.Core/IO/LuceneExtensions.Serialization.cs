@@ -50,7 +50,7 @@ namespace Lucene.Net
             LuceneExtensions.TypeInfoLookup = new ConcurrentDictionary<Type, IndexableTypeInfo>();
         }
 
-        public static Document ToDocument<TInstance>(this TInstance instance)
+        public static Document ToLuceneDocument<TInstance>(this TInstance instance)
               where TInstance : class
         {
             Guard

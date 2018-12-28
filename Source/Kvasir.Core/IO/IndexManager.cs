@@ -58,7 +58,7 @@ namespace nGratis.AI.Kvasir.Core
             this._directoryLookup = Enum
                 .GetValues(typeof(IndexKind))
                 .Cast<IndexKind>()
-                .Where(indexKind => indexKind != IndexKind.Undefined)
+                .Where(indexKind => indexKind != IndexKind.Unknown)
                 .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
 
             this._deferredWriterLookup = new ConcurrentDictionary<IndexKind, Lazy<IndexWriter>>();

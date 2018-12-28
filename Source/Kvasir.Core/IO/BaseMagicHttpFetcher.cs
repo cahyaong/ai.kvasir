@@ -82,6 +82,8 @@ namespace nGratis.AI.Kvasir.Core
 
         public abstract ExternalResources AvailableResources { get; }
 
+        // TODO: Consider handling <TaskCanceledException> when application is closing while HTTP client is in a middle of making request!
+
         protected HttpClient HttpClient { get; }
 
         public async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync()
