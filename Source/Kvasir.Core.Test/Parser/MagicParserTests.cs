@@ -41,6 +41,148 @@ namespace nGratis.AI.Kvasir.Core.Test
     {
         public class ParseRawCardMethod
         {
+            [Fact]
+            public void WhenGettingValidCard_ShouldReturnValidParsingResult()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Name = "Llanowar Elves",
+                    Type = "Creature - Elf Druid"
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .Messages
+                    .Should().NotBeNull()
+                    .And.BeEmpty();
+
+                parsingResult
+                    .IsValid
+                    .Should().BeTrue();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Should().NotBeNull();
+            }
+
+            [Fact]
+            public void WhenGettingInvalidCard_ShouldInvalidParsingResult()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard();
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .Messages
+                    .Should().NotBeEmpty();
+
+                parsingResult
+                    .IsValid
+                    .Should().BeFalse();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Should().NotBeNull();
+            }
+
+            [Fact]
+            public void WhenGettingValidMultiverseId_ShouldAssignItAsIs()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    MultiverseId = 42
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .MultiverseId
+                    .Should().Be(42);
+            }
+
+            [Fact]
+            public void WhenGettingInvalidMultiverseId_ShouldAddMessage()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    MultiverseId = -42
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Messages
+                    .Should().Contain("<MultiverseId> Value must be zero or positive.");
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .MultiverseId
+                    .Should().Be(0);
+            }
+
+            [Fact]
+            public void WhenGettingValidCardName_ShouldAssignItAsIs()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Name = "Llanowar Elves"
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Name
+                    .Should().Be("Llanowar Elves");
+            }
+
             [Theory]
             [MemberData(nameof(TestData.ValidCardKindTheories), MemberType = typeof(TestData))]
             public void WhenGettingValidCardType_ShouldParseItAsCardKind(CardKindTheory theory)
@@ -61,29 +203,24 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Assert.
 
                 parsingResult
-                    .Should().NotBeNull();
-
-                var cardInfo = parsingResult.GetValue<CardInfo>();
-
-                cardInfo
-                    .Should().NotBeNull();
-
-                cardInfo
+                    .GetValue<CardInfo>()
                     .Kind
                     .Should().Be(theory.Kind);
 
-                cardInfo
+                parsingResult
+                    .GetValue<CardInfo>()
                     .SuperKind
                     .Should().Be(theory.SuperKind);
 
-                cardInfo
+                parsingResult
+                    .GetValue<CardInfo>()
                     .SubKinds
                     .Should().BeEquivalentTo(theory.SubKinds);
             }
 
             [Theory]
             [MemberData(nameof(TestData.InvalidCardKindTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidCardType_ShouldGenerateErrorMessage(CardKindTheory theory)
+            public void WhenGettingInvalidCardType_ShouldAddMessage(CardKindTheory theory)
             {
                 // Arrange.
 
@@ -101,12 +238,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Assert.
 
                 parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
                     .Messages
-                    .Should().NotBeNull()
-                    .And.Contain(theory.Message);
+                    .Should().Contain(theory.Message);
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]
@@ -152,7 +285,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     {
                         yield return CardKindTheory
                             .Create(string.Empty)
-                            .ExpectInvalid("<Kind> No matching pattern for value [].")
+                            .ExpectInvalid("<Kind> Value must not be <null> or empty.")
                             .WithLabel("CASE 01 -> Empty type.")
                             .ToXunitTheory();
 

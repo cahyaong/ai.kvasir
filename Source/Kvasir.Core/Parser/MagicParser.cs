@@ -30,7 +30,6 @@ namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Text.RegularExpressions;
@@ -45,48 +44,67 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
+            var cardInfo = new CardInfo
+            {
+                Name = !string.IsNullOrEmpty(rawCard.Name)
+                    ? rawCard.Name
+                    : Text.Undefined
+            };
+
             return ValidParsingResult
-                .Create(new CardInfo())
-                .WithCardTypeResult(rawCard.Type);
+                .Create(cardInfo)
+                .ThenParseMultiverseId(rawCard.MultiverseId)
+                .ThenParseCardType(rawCard.Type);
         }
     }
 
-    [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local", Justification = "Due to fluent-syntax.")]
     internal static class MagicParserExtensions
     {
-        public static ParsingResult WithCardTypeResult(this ParsingResult parsingResult, string value)
+        public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int value)
         {
+            if (value < 0)
+            {
+                return parsingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
+            }
+
+            return parsingResult
+                .WithChildResult(ValidParsingResult.Create((uint)value))
+                .BindToCardInfo(info => info.MultiverseId);
+        }
+
+        public static ParsingResult ThenParseCardType(this ParsingResult parsingResult, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return parsingResult.WithMessage("<Kind> Value must not be <null> or empty.");
+            }
+
             var typeMatch = Pattern.CardType.Match(value);
 
             if (!typeMatch.Success)
             {
-                parsingResult
-                    .WithMessage($"<Kind> No matching pattern for value [{value}].");
-            }
-            else
-            {
-                var kindValue = typeMatch
-                    .FindCaptureValues("kind")
-                    .Single();
-
-                var superKindValue = typeMatch
-                    .FindCaptureValues("super")
-                    .SingleOrDefault();
-
-                var subKindValues = typeMatch
-                    .FindCaptureValues("sub")
-                    .ToArray();
-
-                parsingResult
-                    .WithCardKindResult(kindValue)
-                    .WithCardSuperKindResult(superKindValue)
-                    .WithCardSubKindsResult(subKindValues);
+                return parsingResult.WithMessage($"<Kind> No matching pattern for value [{value}].");
             }
 
-            return parsingResult;
+            var kindValue = typeMatch
+                .FindCaptureValues("kind")
+                .Single();
+
+            var superKindValue = typeMatch
+                .FindCaptureValues("super")
+                .SingleOrDefault();
+
+            var subKindValues = typeMatch
+                .FindCaptureValues("sub")
+                .ToArray();
+
+            return parsingResult
+                .ThenParseCardKind(kindValue)
+                .ThenParseCardSuperKind(superKindValue)
+                .ThenParseCardSubKinds(subKindValues);
         }
 
-        private static ParsingResult WithCardKindResult(this ParsingResult parsingResult, string value)
+        private static ParsingResult ThenParseCardKind(this ParsingResult parsingResult, string value)
         {
             var kindResult = Enum.TryParse(value, out CardKind kind)
                 ? ValidParsingResult.Create(kind)
@@ -97,7 +115,7 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.Kind);
         }
 
-        private static ParsingResult WithCardSuperKindResult(this ParsingResult parsingResult, string value)
+        private static ParsingResult ThenParseCardSuperKind(this ParsingResult parsingResult, string value)
         {
             var superKindResult = default(ParsingResult);
 
@@ -117,7 +135,7 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.SuperKind);
         }
 
-        private static ParsingResult WithCardSubKindsResult(this ParsingResult parsingResult, params string[] values)
+        private static ParsingResult ThenParseCardSubKinds(this ParsingResult parsingResult, params string[] values)
         {
             var subKinds = new List<CardSubKind>();
             var invalidValues = new List<string>();
