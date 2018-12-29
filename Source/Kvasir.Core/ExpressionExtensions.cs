@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ParsingResultExtensions.cs" company="nGratis">
+// <copyright file="ExpressionExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -26,32 +26,17 @@
 // <creation_timestamp>Friday, 28 December 2018 1:22:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+// ReSharper disable once CheckNamespace
+
+namespace System.Linq.Expressions
 {
     using System;
-    using System.Linq.Expressions;
     using System.Reflection;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
 
-    internal static class ParsingResultExtensions
+    internal static class ExpressionExtensions
     {
-        public static ParsingResult BindToCardInfo(
-            this ParsingResult parsingResult,
-            Expression<Func<CardInfo, object>> bindingExpression)
-        {
-            Guard
-                .Require(parsingResult, nameof(parsingResult))
-                .Is.Not.Null();
-
-            Guard
-                .Require(bindingExpression, nameof(bindingExpression))
-                .Is.Not.Null();
-
-            return parsingResult.BindTo(bindingExpression.GetPropertyInfo());
-        }
-
-        private static PropertyInfo GetPropertyInfo<T>(this Expression<Func<T, object>> expression)
+        public static PropertyInfo GetPropertyInfo<T>(this Expression<Func<T, object>> expression)
         {
             var unaryExpression = expression.Body as UnaryExpression;
 

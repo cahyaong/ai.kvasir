@@ -30,7 +30,9 @@ namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Text.RegularExpressions;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
@@ -43,13 +45,23 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
-            var parsingResult = ValidParsingResult.Create(new CardInfo());
+            return ValidParsingResult
+                .Create(new CardInfo())
+                .WithCardTypeResult(rawCard.Type);
+        }
+    }
 
-            var typeMatch = Pattern.CardType.Match(rawCard.Type);
+    [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Local", Justification = "Due to fluent-syntax.")]
+    internal static class MagicParserExtensions
+    {
+        public static ParsingResult WithCardTypeResult(this ParsingResult parsingResult, string value)
+        {
+            var typeMatch = Pattern.CardType.Match(value);
 
             if (!typeMatch.Success)
             {
-                parsingResult.WithMessage($"<Kind> No matching pattern for value [{rawCard.Type}].");
+                parsingResult
+                    .WithMessage($"<Kind> No matching pattern for value [{value}].");
             }
             else
             {
@@ -57,54 +69,57 @@ namespace nGratis.AI.Kvasir.Core
                     .FindCaptureValues("kind")
                     .Single();
 
-                var superValue = typeMatch
+                var superKindValue = typeMatch
                     .FindCaptureValues("super")
                     .SingleOrDefault();
 
-                var subValues = typeMatch
+                var subKindValues = typeMatch
                     .FindCaptureValues("sub")
                     .ToArray();
 
                 parsingResult
-                    .WithChildResult(MagicParser.ParseCardKind(kindValue))
-                    .BindToCardInfo(info => info.Kind)
-                    .WithChildResult(MagicParser.ParseCardSuperKind(superValue))
-                    .BindToCardInfo(info => info.SuperKind)
-                    .WithChildResult(MagicParser.ParseCardSubKinds(subValues))
-                    .BindToCardInfo(info => info.SubKinds);
+                    .WithCardKindResult(kindValue)
+                    .WithCardSuperKindResult(superKindValue)
+                    .WithCardSubKindsResult(subKindValues);
             }
 
             return parsingResult;
         }
 
-        private static ParsingResult ParseCardKind(string value)
+        private static ParsingResult WithCardKindResult(this ParsingResult parsingResult, string value)
         {
-            return Enum.TryParse(value, out CardKind kind)
+            var kindResult = Enum.TryParse(value, out CardKind kind)
                 ? ValidParsingResult.Create(kind)
                 : InvalidParsingResult.Create($"<Kind> No mapping for value [{value}].");
+
+            return parsingResult
+                .WithChildResult(kindResult)
+                .BindToCardInfo(info => info.Kind);
         }
 
-        private static ParsingResult ParseCardSuperKind(string value)
+        private static ParsingResult WithCardSuperKindResult(this ParsingResult parsingResult, string value)
         {
+            var superKindResult = default(ParsingResult);
+
             if (string.IsNullOrEmpty(value))
             {
-                return ValidParsingResult.Create(CardSuperKind.None);
+                superKindResult = ValidParsingResult.Create(CardSuperKind.None);
+            }
+            else
+            {
+                superKindResult = Enum.TryParse(value, out CardSuperKind superKind)
+                    ? ValidParsingResult.Create(superKind)
+                    : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{value}].");
             }
 
-            return Enum.TryParse(value, out CardSuperKind superKind)
-                ? ValidParsingResult.Create(superKind)
-                : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{value}].");
+            return parsingResult
+                .WithChildResult(superKindResult)
+                .BindToCardInfo(info => info.SuperKind);
         }
 
-        private static ParsingResult ParseCardSubKinds(IReadOnlyCollection<string> values)
+        private static ParsingResult WithCardSubKindsResult(this ParsingResult parsingResult, params string[] values)
         {
             var subKinds = new List<CardSubKind>();
-
-            if (!values.Any())
-            {
-                return ValidParsingResult.Create(subKinds);
-            }
-
             var invalidValues = new List<string>();
 
             foreach (var value in values)
@@ -119,15 +134,38 @@ namespace nGratis.AI.Kvasir.Core
                 }
             }
 
+            var subKindsResult = default(ParsingResult);
+
             if (invalidValues.Any())
             {
                 var formattedValues = invalidValues.Select(value => $"[{value}]");
                 var message = $"<SubKind> No mapping for value {string.Join(", ", formattedValues)}.";
 
-                return InvalidParsingResult.Create(message);
+                subKindsResult = InvalidParsingResult.Create(message);
+            }
+            else
+            {
+                subKindsResult = ValidParsingResult.Create(subKinds);
             }
 
-            return ValidParsingResult.Create(subKinds);
+            return parsingResult
+                .WithChildResult(subKindsResult)
+                .BindToCardInfo(info => info.SubKinds);
+        }
+
+        public static ParsingResult BindToCardInfo(
+            this ParsingResult parsingResult,
+            Expression<Func<CardInfo, object>> bindingExpression)
+        {
+            Guard
+                .Require(parsingResult, nameof(parsingResult))
+                .Is.Not.Null();
+
+            Guard
+                .Require(bindingExpression, nameof(bindingExpression))
+                .Is.Not.Null();
+
+            return parsingResult.BindTo(bindingExpression.GetPropertyInfo());
         }
 
         private static class Pattern
