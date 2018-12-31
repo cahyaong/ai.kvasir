@@ -32,11 +32,12 @@ namespace nGratis.AI.Kvasir.Contract
     {
         Unknown = 0,
 
+        Colorless,
+
         White,
         Blue,
         Black,
         Red,
-        Green,
-        Colorless
+        Green
     }
 }

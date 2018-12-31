@@ -54,14 +54,28 @@ namespace nGratis.AI.Kvasir.Core
             return ValidParsingResult
                 .Create(cardInfo)
                 .ThenParseMultiverseId(rawCard.MultiverseId)
-                .ThenParseCardType(rawCard.Type);
+                .ThenParseCardType(rawCard.Type)
+                .ThenParseManaCost(rawCard.ManaCost);
         }
     }
 
     internal static class MagicParserExtensions
     {
+        private static readonly IReadOnlyDictionary<string, Mana> ManaLookup = new Dictionary<string, Mana>
+        {
+            ["W"] = Mana.White,
+            ["U"] = Mana.Blue,
+            ["B"] = Mana.Black,
+            ["R"] = Mana.Red,
+            ["G"] = Mana.Green
+        };
+
         public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int value)
         {
+            Guard
+                .Require(parsingResult, nameof(parsingResult))
+                .Is.Not.Null();
+
             if (value < 0)
             {
                 return parsingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
@@ -74,12 +88,16 @@ namespace nGratis.AI.Kvasir.Core
 
         public static ParsingResult ThenParseCardType(this ParsingResult parsingResult, string value)
         {
+            Guard
+                .Require(parsingResult, nameof(parsingResult))
+                .Is.Not.Null();
+
             if (string.IsNullOrEmpty(value))
             {
                 return parsingResult.WithMessage("<Kind> Value must not be <null> or empty.");
             }
 
-            var typeMatch = Pattern.CardType.Match(value);
+            var typeMatch = Pattern.Card.Type.Match(value);
 
             if (!typeMatch.Success)
             {
@@ -102,6 +120,46 @@ namespace nGratis.AI.Kvasir.Core
                 .ThenParseCardKind(kindValue)
                 .ThenParseCardSuperKind(superKindValue)
                 .ThenParseCardSubKinds(subKindValues);
+        }
+
+        public static ParsingResult ThenParseManaCost(this ParsingResult parsingResult, string value)
+        {
+            Guard
+                .Require(parsingResult, nameof(parsingResult))
+                .Is.Not.Null();
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return parsingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
+            }
+
+            var manaCostMatch = Pattern.Card.ManaCost.Match(value);
+
+            if (!manaCostMatch.Success)
+            {
+                return parsingResult.WithMessage($"<ManaCost> Symbol(s) has no mapping for value [{value}].");
+            }
+
+            var manaCost = new ManaCost();
+
+            var colorlessValue = manaCostMatch
+                .FindCaptureValues("colorless")
+                .SingleOrDefault();
+
+            if (!string.IsNullOrEmpty(colorlessValue))
+            {
+                manaCost[Mana.Colorless] = ushort.Parse(colorlessValue);
+            }
+
+            manaCostMatch
+                .FindCaptureValues("color")
+                .Select(symbol => MagicParserExtensions.ManaLookup[symbol])
+                .GroupBy(mana => mana)
+                .ForEach(grouping => manaCost[grouping.Key] = (ushort)grouping.Count());
+
+            return parsingResult
+                .WithChildResult(ValidParsingResult.Create(manaCost))
+                .BindToCardInfo(info => info.ManaCost);
         }
 
         private static ParsingResult ThenParseCardKind(this ParsingResult parsingResult, string value)
@@ -171,7 +229,7 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.SubKinds);
         }
 
-        public static ParsingResult BindToCardInfo(
+        private static ParsingResult BindToCardInfo(
             this ParsingResult parsingResult,
             Expression<Func<CardInfo, object>> bindingExpression)
         {
@@ -188,9 +246,16 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Pattern
         {
-            public static readonly Regex CardType = new Regex(
-                @"^((?<super>\w+)\s)?(?<kind>\w+){1}[\s-]*((?<sub>\w+)\s?)*$",
-                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            public static class Card
+            {
+                public static readonly Regex Type = new Regex(
+                    @"^((?<super>\w+)\s)?(?<kind>\w+){1}[\s-]*((?<sub>\w+)\s?)*$",
+                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+                public static readonly Regex ManaCost = new Regex(
+                    @"^({((?<colorless>\d+)|(?<color>[WUBRG]))})+$",
+                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            }
         }
     }
 }

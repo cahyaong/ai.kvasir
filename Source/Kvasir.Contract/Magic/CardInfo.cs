@@ -34,7 +34,8 @@ namespace nGratis.AI.Kvasir.Contract
     {
         public CardInfo()
         {
-            this.SubKinds = new CardSubKind[0];
+            this.SubKinds = Default.SubKinds;
+            this.ManaCost = ManaCost.Empty;
         }
 
         public uint MultiverseId { get; set; }
@@ -48,5 +49,12 @@ namespace nGratis.AI.Kvasir.Contract
         public IReadOnlyCollection<CardSubKind> SubKinds { get; set; }
 
         public bool IsTribal { get; set; }
+
+        public ManaCost ManaCost { get; set; }
+
+        private static class Default
+        {
+            public static readonly IReadOnlyCollection<CardSubKind> SubKinds = new CardSubKind[0];
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -43,7 +43,7 @@
     <Compile Include="Constant.cs" />
     <Compile Include="Magic\CardKind.cs" />
     <Compile Include="Magic\CardSuperKind.cs" />
-    <Compile Include="Engine\CardInfo.cs" />
+    <Compile Include="Magic\CardInfo.cs" />
     <Compile Include="Magic\Mana.cs" />
     <Compile Include="Magic\CardSubKind.cs" />
     <Compile Include="IO\ExternalResources.cs" />
@@ -56,6 +56,7 @@
     <Compile Include="IO\RawCard.cs" />
     <Compile Include="IO\IMagicFetcher.cs" />
     <Compile Include="IO\IMagicRepository.cs" />
+    <Compile Include="Magic\ManaCost.cs" />
     <Compile Include="Magic\Rarity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
