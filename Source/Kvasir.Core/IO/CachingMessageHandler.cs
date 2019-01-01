@@ -136,7 +136,7 @@ namespace nGratis.AI.Kvasir.Core
             {
                 responseMessage = await base.SendAsync(requestMessage, cancellationToken);
 
-                if (responseMessage.IsSuccessStatusCode)
+                if (responseMessage.IsSuccessStatusCode && !this._whenEntrySavingRequested.IsDisposed)
                 {
                     this._whenEntrySavingRequested.OnNext(new SavingRequest
                     {
@@ -158,7 +158,7 @@ namespace nGratis.AI.Kvasir.Core
 
             if (isDisposing)
             {
-                this._whenEntrySavingRequested?.Dispose();
+                this._whenEntrySavingRequested.Dispose();
 
                 this._storageLock.EnterWriteLock();
 

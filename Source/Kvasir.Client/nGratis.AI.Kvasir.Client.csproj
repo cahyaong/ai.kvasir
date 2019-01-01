@@ -69,6 +69,10 @@
       <DependentUpon>AppView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="EngineManagementView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LibraryManagementView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -77,6 +81,10 @@
   <ItemGroup>
     <Compile Include="AppViewModel.cs" />
     <Compile Include="CardViewModel.cs" />
+    <Compile Include="EngineManagementView.xaml.cs">
+      <DependentUpon>EngineManagementView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EngineManagementViewModel.cs" />
     <Compile Include="LibraryManagementView.xaml.cs">
       <DependentUpon>LibraryManagementView.xaml</DependentUpon>
     </Compile>

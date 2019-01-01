@@ -98,7 +98,7 @@ namespace nGratis.AI.Kvasir.Client
             set
             {
                 this.RaiseAndSetIfChanged(ref this._selectedCardSetViewModel, value);
-                this.SelectedCardSetViewModel.PopulateCardsCommand.Execute(null);
+                this.SelectedCardSetViewModel?.PopulateCardsCommand.Execute(null);
             }
         }
 
