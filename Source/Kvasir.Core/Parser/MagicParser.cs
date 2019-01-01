@@ -54,8 +54,10 @@ namespace nGratis.AI.Kvasir.Core
             return ValidParsingResult
                 .Create(cardInfo)
                 .ThenParseMultiverseId(rawCard.MultiverseId)
-                .ThenParseCardType(rawCard.Type)
-                .ThenParseManaCost(rawCard.ManaCost);
+                .ThenParseType(rawCard.Type)
+                .ThenParseManaCost(rawCard.ManaCost)
+                .ThenParsePower(cardInfo.Kind, rawCard.Power)
+                .ThenParseToughness(cardInfo.Kind, rawCard.Toughness);
         }
     }
 
@@ -70,38 +72,38 @@ namespace nGratis.AI.Kvasir.Core
             ["G"] = Mana.Green
         };
 
-        public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int value)
+        public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int rawMultiverseId)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))
                 .Is.Not.Null();
 
-            if (value < 0)
+            if (rawMultiverseId < 0)
             {
                 return parsingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
             }
 
             return parsingResult
-                .WithChildResult(ValidParsingResult.Create((uint)value))
+                .WithChildResult(ValidParsingResult.Create((uint)rawMultiverseId))
                 .BindToCardInfo(info => info.MultiverseId);
         }
 
-        public static ParsingResult ThenParseCardType(this ParsingResult parsingResult, string value)
+        public static ParsingResult ThenParseType(this ParsingResult parsingResult, string rawType)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))
                 .Is.Not.Null();
 
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(rawType))
             {
                 return parsingResult.WithMessage("<Kind> Value must not be <null> or empty.");
             }
 
-            var typeMatch = Pattern.Card.Type.Match(value);
+            var typeMatch = Pattern.Card.Type.Match(rawType);
 
             if (!typeMatch.Success)
             {
-                return parsingResult.WithMessage($"<Kind> No matching pattern for value [{value}].");
+                return parsingResult.WithMessage($"<Kind> No matching pattern for value [{rawType}].");
             }
 
             var kindValue = typeMatch
@@ -117,27 +119,27 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
 
             return parsingResult
-                .ThenParseCardKind(kindValue)
-                .ThenParseCardSuperKind(superKindValue)
-                .ThenParseCardSubKinds(subKindValues);
+                .ThenParseKind(kindValue)
+                .ThenParseSuperKind(superKindValue)
+                .ThenParseSubKinds(subKindValues);
         }
 
-        public static ParsingResult ThenParseManaCost(this ParsingResult parsingResult, string value)
+        public static ParsingResult ThenParseManaCost(this ParsingResult parsingResult, string rawManaCost)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))
                 .Is.Not.Null();
 
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(rawManaCost))
             {
                 return parsingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
             }
 
-            var manaCostMatch = Pattern.Card.ManaCost.Match(value);
+            var manaCostMatch = Pattern.Card.ManaCost.Match(rawManaCost);
 
             if (!manaCostMatch.Success)
             {
-                return parsingResult.WithMessage($"<ManaCost> Symbol(s) has no mapping for value [{value}].");
+                return parsingResult.WithMessage($"<ManaCost> Symbol(s) has no mapping for value [{rawManaCost}].");
             }
 
             var manaCost = new ManaCost();
@@ -162,30 +164,74 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.ManaCost);
         }
 
-        private static ParsingResult ThenParseCardKind(this ParsingResult parsingResult, string value)
+        public static ParsingResult ThenParsePower(this ParsingResult parsingResult, CardKind kind, string rawPower)
         {
-            var kindResult = Enum.TryParse(value, out CardKind kind)
+            var power = (ushort)0;
+
+            var isValid =
+                !string.IsNullOrEmpty(rawPower) &&
+                ushort.TryParse(rawPower, out power);
+
+            if (isValid && kind != CardKind.Creature)
+            {
+                return parsingResult.WithMessage($"<Power> Non-empty value for non-creature type [{kind}].");
+            }
+
+            var powerResult = isValid
+                ? ValidParsingResult.Create(power)
+                : InvalidParsingResult.Create($"<Power> Invalid value [{rawPower}].");
+
+            return parsingResult
+                .WithChildResult(powerResult)
+                .BindToCardInfo(info => info.Power);
+        }
+
+        public static ParsingResult ThenParseToughness(this ParsingResult parsingResult, CardKind kind, string rawToughness)
+        {
+            var toughness = (ushort)0;
+
+            var isValid =
+                !string.IsNullOrEmpty(rawToughness) &&
+                ushort.TryParse(rawToughness, out toughness);
+
+            if (isValid && kind != CardKind.Creature)
+            {
+                return parsingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{kind}].");
+            }
+
+            var toughnessResult = isValid
+                ? ValidParsingResult.Create(toughness)
+                : InvalidParsingResult.Create($"<Toughness> Invalid value [{rawToughness}].");
+
+            return parsingResult
+                .WithChildResult(toughnessResult)
+                .BindToCardInfo(info => info.Toughness);
+        }
+
+        private static ParsingResult ThenParseKind(this ParsingResult parsingResult, string rawKind)
+        {
+            var kindResult = Enum.TryParse(rawKind, out CardKind kind)
                 ? ValidParsingResult.Create(kind)
-                : InvalidParsingResult.Create($"<Kind> No mapping for value [{value}].");
+                : InvalidParsingResult.Create($"<Kind> No mapping for value [{rawKind}].");
 
             return parsingResult
                 .WithChildResult(kindResult)
                 .BindToCardInfo(info => info.Kind);
         }
 
-        private static ParsingResult ThenParseCardSuperKind(this ParsingResult parsingResult, string value)
+        private static ParsingResult ThenParseSuperKind(this ParsingResult parsingResult, string rawSuperKind)
         {
             var superKindResult = default(ParsingResult);
 
-            if (string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(rawSuperKind))
             {
                 superKindResult = ValidParsingResult.Create(CardSuperKind.None);
             }
             else
             {
-                superKindResult = Enum.TryParse(value, out CardSuperKind superKind)
+                superKindResult = Enum.TryParse(rawSuperKind, out CardSuperKind superKind)
                     ? ValidParsingResult.Create(superKind)
-                    : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{value}].");
+                    : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{rawSuperKind}].");
             }
 
             return parsingResult
@@ -193,20 +239,20 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.SuperKind);
         }
 
-        private static ParsingResult ThenParseCardSubKinds(this ParsingResult parsingResult, params string[] values)
+        private static ParsingResult ThenParseSubKinds(this ParsingResult parsingResult, params string[] rawSubKinds)
         {
             var subKinds = new List<CardSubKind>();
             var invalidValues = new List<string>();
 
-            foreach (var value in values)
+            foreach (var rawSubKind in rawSubKinds)
             {
-                if (Enum.TryParse(value, out CardSubKind subKind))
+                if (Enum.TryParse(rawSubKind, out CardSubKind subKind))
                 {
                     subKinds.Add(subKind);
                 }
                 else
                 {
-                    invalidValues.Add(value);
+                    invalidValues.Add(rawSubKind);
                 }
             }
 

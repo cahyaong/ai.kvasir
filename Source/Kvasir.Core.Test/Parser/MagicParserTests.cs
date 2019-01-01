@@ -52,7 +52,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     Name = "Llanowar Elves",
                     Type = "Creature - Elf Druid",
-                    ManaCost = "{G}"
+                    ManaCost = "{G}",
+                    Power = "1",
+                    Toughness = "1"
                 };
 
                 var magicParser = new MagicParser();
@@ -220,7 +222,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var rawCard = new RawCard
                 {
-                    Type = theory.Text
+                    Type = theory.RawType
                 };
 
                 var magicParser = new MagicParser();
@@ -243,17 +245,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     parsingResult
                         .GetValue<CardInfo>()
                         .Kind
-                        .Should().Be(theory.Kind);
+                        .Should().Be(theory.ParsedKind);
 
                     parsingResult
                         .GetValue<CardInfo>()
                         .SuperKind
-                        .Should().Be(theory.SuperKind);
+                        .Should().Be(theory.ParsedSuperKind);
 
                     parsingResult
                         .GetValue<CardInfo>()
                         .SubKinds
-                        .Should().BeEquivalentTo(theory.SubKinds);
+                        .Should().BeEquivalentTo(theory.ParsedSubKinds);
                 }
             }
 
@@ -265,7 +267,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var rawCard = new RawCard
                 {
-                    Type = theory.Text
+                    Type = theory.RawType
                 };
 
                 var magicParser = new MagicParser();
@@ -292,7 +294,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var rawCard = new RawCard
                 {
-                    ManaCost = theory.Text
+                    ManaCost = theory.RawManaCost
                 };
 
                 var magicParser = new MagicParser();
@@ -318,12 +320,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 parsingResult
                     .GetValue<CardInfo>()
                     .ManaCost.ConvertedAmount
-                    .Should().Be(theory.ConvertedAmount);
+                    .Should().Be(theory.ParsedConvertedAmount);
 
                 using (new AssertionScope())
                 {
                     theory
-                        .AmountLookup
+                        .ParsedAmountLookup
                         .ForEach(kvp => parsingResult
                             .GetValue<CardInfo>()
                             .ManaCost[kvp.Key]
@@ -333,7 +335,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .GetValues(typeof(Mana))
                         .Cast<Mana>()
                         .Where(mana => mana != Mana.Unknown)
-                        .Where(mana => !theory.AmountLookup.ContainsKey(mana))
+                        .Where(mana => !theory.ParsedAmountLookup.ContainsKey(mana))
                         .ForEach(mana => parsingResult
                             .GetValue<CardInfo>()
                             .ManaCost[mana]
@@ -349,7 +351,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var rawCard = new RawCard
                 {
-                    ManaCost = theory.Text
+                    ManaCost = theory.RawManaCost
                 };
 
                 var magicParser = new MagicParser();
@@ -392,6 +394,128 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .ManaCost[mana]
                             .Should().Be(0));
                 }
+            }
+
+            [Theory]
+            [MemberData(nameof(TestData.ValidPowerTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidPower_ShouldParse(PowerTheory theory)
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Type = theory.RawType,
+                    Power = theory.RawPower
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Power
+                    .Should().Be(theory.ParsedPower);
+            }
+
+            [Theory]
+            [MemberData(nameof(TestData.InvalidPowerTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidPower_ShouldAddMessage(PowerTheory theory)
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Type = theory.RawType,
+                    Power = theory.RawPower
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .Messages
+                    .Should().Contain(theory.Message);
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Power.Should().Be(0);
+            }
+
+            [Theory]
+            [MemberData(nameof(TestData.ValidToughnessTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidToughness_ShouldParse(ToughnessTheory theory)
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Type = theory.RawType,
+                    Toughness = theory.RawToughness
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Toughness
+                    .Should().Be(theory.ParsedToughness);
+            }
+
+            [Theory]
+            [MemberData(nameof(TestData.InvalidToughnessTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidToughness_ShouldAddMessage(ToughnessTheory theory)
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Type = theory.RawType,
+                    Toughness = theory.RawToughness
+                };
+
+                var magicParser = new MagicParser();
+
+                // Act.
+
+                var parsingResult = magicParser.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .Messages
+                    .Should().Contain(theory.Message);
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Toughness.Should().Be(0);
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]
@@ -522,101 +646,220 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .ToXunitTheory();
                     }
                 }
+
+                public static IEnumerable<object[]> ValidPowerTheories
+                {
+                    get
+                    {
+                        yield return PowerTheory
+                            .Create("Creature", "42")
+                            .ExpectValid(42)
+                            .WithLabel("CASE 01 -> Creature with non-zero power.")
+                            .ToXunitTheory();
+
+                        yield return PowerTheory
+                            .Create("Legendary Creature - Elf Warrior", "42")
+                            .ExpectValid(42)
+                            .WithLabel("CASE 02 -> Creature with super-, sub-types and non-zero power.")
+                            .ToXunitTheory();
+                    }
+                }
+
+                public static IEnumerable<object[]> InvalidPowerTheories
+                {
+                    get
+                    {
+                        yield return PowerTheory
+                            .Create("Creature", "X")
+                            .ExpectInvalid("<Power> Invalid value [X].")
+                            .WithLabel("CASE 01 -> Creature with invalid power.")
+                            .ToXunitTheory();
+
+                        yield return PowerTheory
+                            .Create("Basic Land - Forest", "42")
+                            .ExpectInvalid("<Power> Non-empty value for non-creature type [Land].")
+                            .WithLabel("CASE 02 -> Non-creature with non-empty power.")
+                            .ToXunitTheory();
+                    }
+                }
+
+                public static IEnumerable<object[]> ValidToughnessTheories
+                {
+                    get
+                    {
+                        yield return ToughnessTheory
+                            .Create("Creature", "42")
+                            .ExpectValid(42)
+                            .WithLabel("CASE 01 -> Creature with non-zero toughness.")
+                            .ToXunitTheory();
+
+                        yield return ToughnessTheory
+                            .Create("Legendary Creature - Elf Warrior", "42")
+                            .ExpectValid(42)
+                            .WithLabel("CASE 02 -> Creature with super-, sub-types and non-zero toughness.")
+                            .ToXunitTheory();
+                    }
+                }
+
+                public static IEnumerable<object[]> InvalidToughnessTheories
+                {
+                    get
+                    {
+                        yield return ToughnessTheory
+                            .Create("Creature", "X")
+                            .ExpectInvalid("<Toughness> Invalid value [X].")
+                            .WithLabel("CASE 01 -> Creature with invalid toughness.")
+                            .ToXunitTheory();
+
+                        yield return ToughnessTheory
+                            .Create("Basic Land - Forest", "42")
+                            .ExpectInvalid("<Toughness> Non-empty value for non-creature type [Land].")
+                            .WithLabel("CASE 02 -> Non-creature with non-empty toughness.")
+                            .ToXunitTheory();
+                    }
+                }
             }
         }
 
-        public class CardKindTheory : CopTheory
+        public class CardKindTheory : BaseParsingTheory
         {
-            public string Text { get; private set; }
+            public string RawType { get; private set; }
 
-            public CardKind Kind { get; private set; }
+            public CardKind ParsedKind { get; private set; }
 
-            public CardSuperKind SuperKind { get; private set; }
+            public CardSuperKind ParsedSuperKind { get; private set; }
 
-            public IEnumerable<CardSubKind> SubKinds { get; private set; }
+            public IEnumerable<CardSubKind> ParsedSubKinds { get; private set; }
 
-            public string Message { get; private set; }
-
-            public static CardKindTheory Create(string text)
+            public static CardKindTheory Create(string rawType)
             {
                 return new CardKindTheory
                 {
-                    Text = text,
-                    Kind = CardKind.Unknown,
-                    SuperKind = CardSuperKind.Unknown,
-                    SubKinds = Enumerable.Empty<CardSubKind>(),
+                    RawType = rawType,
+                    ParsedKind = CardKind.Unknown,
+                    ParsedSuperKind = CardSuperKind.Unknown,
+                    ParsedSubKinds = Enumerable.Empty<CardSubKind>(),
                     Message = string.Empty
                 };
             }
 
-            public CardKindTheory ExpectValid(CardKind kind, CardSuperKind superKind, params CardSubKind[] subKinds)
+            public CardKindTheory ExpectValid(
+                CardKind parsedKind,
+                CardSuperKind parsedSuperKind,
+                params CardSubKind[] parsedSubKinds)
             {
                 Guard
-                    .Require(kind, nameof(kind))
+                    .Require(parsedKind, nameof(parsedKind))
                     .Is.Not.EqualTo(CardKind.Unknown);
 
                 Guard
-                    .Require(superKind, nameof(superKind))
+                    .Require(parsedSuperKind, nameof(parsedSuperKind))
                     .Is.Not.EqualTo(CardSuperKind.Unknown);
 
                 // TODO: Extend <Guard> class to support collection check against specific value(s).
 
-                var hasInvalidSubKind = subKinds
+                var hasInvalidSubKind = parsedSubKinds
                     .Any(subKind => subKind == CardSubKind.Unknown);
 
                 Guard
                     .Require(hasInvalidSubKind, nameof(hasInvalidSubKind))
                     .Is.False();
 
-                this.Kind = kind;
-                this.SuperKind = superKind;
-                this.SubKinds = subKinds;
-
-                return this;
-            }
-
-            public CardKindTheory ExpectInvalid(string message)
-            {
-                Guard
-                    .Require(message, nameof(message))
-                    .Is.Not.Empty();
-
-                this.Message = message;
+                this.ParsedKind = parsedKind;
+                this.ParsedSuperKind = parsedSuperKind;
+                this.ParsedSubKinds = parsedSubKinds;
 
                 return this;
             }
         }
 
-        public class ManaCostTheory : CopTheory
+        public class ManaCostTheory : BaseParsingTheory
         {
-            public string Text { get; private set; }
+            public string RawManaCost { get; private set; }
 
-            public uint ConvertedAmount { get; private set; }
+            public uint ParsedConvertedAmount { get; private set; }
 
-            public IReadOnlyDictionary<Mana, ushort> AmountLookup { get; private set; }
+            public IReadOnlyDictionary<Mana, ushort> ParsedAmountLookup { get; private set; }
 
-            public string Message { get; private set; }
-
-            public static ManaCostTheory Create(string text)
+            public static ManaCostTheory Create(string rawManaCost)
             {
                 return new ManaCostTheory
                 {
-                    Text = text,
-                    ConvertedAmount = 0,
-                    AmountLookup = new Dictionary<Mana, ushort>(),
+                    RawManaCost = rawManaCost,
+                    ParsedConvertedAmount = 0,
+                    ParsedAmountLookup = new Dictionary<Mana, ushort>(),
                     Message = string.Empty
                 };
             }
 
-            public ManaCostTheory ExpectValid(IReadOnlyDictionary<Mana, ushort> amountLookup)
+            public ManaCostTheory ExpectValid(IReadOnlyDictionary<Mana, ushort> parsedAmountLookup)
             {
-                this.ConvertedAmount = (uint)amountLookup.Values.Sum(amount => amount);
-                this.AmountLookup = amountLookup;
+                this.ParsedConvertedAmount = (uint)parsedAmountLookup.Values.Sum(amount => amount);
+                this.ParsedAmountLookup = parsedAmountLookup;
 
                 return this;
             }
+        }
 
-            public ManaCostTheory ExpectInvalid(string message)
+        public class PowerTheory : BaseParsingTheory
+        {
+            public string RawType { get; private set; }
+
+            public string RawPower { get; private set; }
+
+            public ushort ParsedPower { get; private set; }
+
+            public static PowerTheory Create(string rawType, string rawPower)
+            {
+                return new PowerTheory
+                {
+                    RawType = rawType,
+                    RawPower = rawPower,
+                    ParsedPower = 0,
+                    Message = string.Empty
+                };
+            }
+
+            public PowerTheory ExpectValid(ushort parsedPower)
+            {
+                this.ParsedPower = parsedPower;
+
+                return this;
+            }
+        }
+
+        public class ToughnessTheory : BaseParsingTheory
+        {
+            public string RawType { get; private set; }
+
+            public string RawToughness { get; private set; }
+
+            public ushort ParsedToughness { get; private set; }
+
+            public static ToughnessTheory Create(string rawType, string rawToughness)
+            {
+                return new ToughnessTheory
+                {
+                    RawType = rawType,
+                    RawToughness = rawToughness,
+                    ParsedToughness = 0,
+                    Message = string.Empty
+                };
+            }
+
+            public ToughnessTheory ExpectValid(ushort parsedToughness)
+            {
+                this.ParsedToughness = parsedToughness;
+
+                return this;
+            }
+        }
+
+        public abstract class BaseParsingTheory : CopTheory
+        {
+            public string Message { get; protected set; }
+
+            public BaseParsingTheory ExpectInvalid(string message)
             {
                 Guard
                     .Require(message, nameof(message))

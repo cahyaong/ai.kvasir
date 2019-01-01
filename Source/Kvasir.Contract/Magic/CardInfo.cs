@@ -52,6 +52,10 @@ namespace nGratis.AI.Kvasir.Contract
 
         public ManaCost ManaCost { get; set; }
 
+        public ushort Power { get; set; }
+
+        public ushort Toughness { get; set; }
+
         private static class Default
         {
             public static readonly IReadOnlyCollection<CardSubKind> SubKinds = new CardSubKind[0];
