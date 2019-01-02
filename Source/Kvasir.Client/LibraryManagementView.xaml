@@ -14,18 +14,18 @@
       <i:InvokeCommandAction Command="{Binding PopulateCardSetsCommand, Mode=OneWay}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
-  <StackPanel core:ChildMargin.Value="20,0" Orientation="Horizontal">
+  <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
     <core:AweTileGroup Header="INFO">
       <StackPanel
         HorizontalAlignment="Right"
-        core:ChildMargin.Value="0,10"
+        core:ChildrenMargin.Value="0,10"
         Orientation="Vertical">
         <core:AweTile Header="Indexed Card Sets" Value="{Binding CardSetCount, Mode=OneWay}" />
         <core:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
       </StackPanel>
     </core:AweTileGroup>
     <core:AweTileGroup Width="815" Header="CARD SET">
-      <StackPanel core:ChildMargin.Value="20,0" Orientation="Horizontal">
+      <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
         <DataGrid
           AutoGenerateColumns="False"
           ItemsSource="{Binding CardSetViewModels, Mode=OneWay}"

@@ -28,9 +28,72 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using System.Windows.Input;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
     using ReactiveUI;
 
     public class EngineManagementViewModel : ReactiveObject
     {
+        // TODO: Consider adding searching filter on UI instead!
+
+        private static readonly IEnumerable<string> TargetCardSetNames = new[]
+        {
+            "Lorwyn",
+            "Morningtide"
+        };
+
+        private readonly IMagicRepository _magicRepository;
+
+        private IEnumerable<CardSetViewModel> _cardSetViewModels;
+
+        private CardSetViewModel _selectedCardSetViewModel;
+
+        public EngineManagementViewModel(IMagicRepository magicRepository)
+        {
+            Guard
+                .Require(magicRepository, nameof(magicRepository))
+                .Is.Not.Null();
+
+            this._magicRepository = magicRepository;
+
+            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                await this.PopulateCardSetsAsync();
+            });
+        }
+
+        public ICommand PopulateCardSetsCommand { get; }
+
+        public IEnumerable<CardSetViewModel> CardSetViewModels
+        {
+            get => this._cardSetViewModels;
+            private set => this.RaiseAndSetIfChanged(ref this._cardSetViewModels, value);
+        }
+
+        public CardSetViewModel SelectedCardSetViewModel
+        {
+            get => this._selectedCardSetViewModel;
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref this._selectedCardSetViewModel, value);
+                this.SelectedCardSetViewModel?.PopulateCardsCommand.Execute(null);
+            }
+        }
+
+        private async Task PopulateCardSetsAsync()
+        {
+            var cardSets = await this._magicRepository.GetCardSetsAsync();
+
+            this.CardSetViewModels = cardSets
+                .Where(cardSet => EngineManagementViewModel.TargetCardSetNames.Contains(cardSet.Name))
+                .OrderBy(cardSet => cardSet.Name)
+                .Select(cardSet => new CardSetViewModel(cardSet, this._magicRepository))
+                .ToArray();
+        }
     }
 }
