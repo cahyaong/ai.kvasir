@@ -527,6 +527,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 CardSubKind.Shaman)
                             .WithLabel("CASE 03 -> Card type with super-type and multiple sub-types.")
                             .ToXunitTheory();
+
+                        yield return CardKindTheory
+                            .Create("Creature — Kithkin Soldier")
+                            .ExpectValid(
+                                CardKind.Creature,
+                                CardSuperKind.None,
+                                CardSubKind.Kithkin,
+                                CardSubKind.Soldier)
+                            .WithLabel("CASE 04 -> Card type with separator from MTGJSON.")
+                            .ToXunitTheory();
                     }
                 }
 

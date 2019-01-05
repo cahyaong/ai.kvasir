@@ -301,7 +301,7 @@ namespace nGratis.AI.Kvasir.Core
             public static class Card
             {
                 public static readonly Regex Type = new Regex(
-                    @"^((?<super>\w+)\s)?(?<kind>\w+){1}[\s-]*((?<sub>\w+)\s?)*$",
+                    @"^((?<super>\w+)\s)?(?<kind>\w+){1}[\s-—]*((?<sub>\w+)\s?)*$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
                 public static readonly Regex ManaCost = new Regex(
