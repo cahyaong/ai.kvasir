@@ -60,6 +60,7 @@ namespace nGratis.AI.Kvasir.Client
             this.CardViewModels = Enumerable.Empty<CardViewModel>();
 
             this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
+            this.ParseCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardsAysnc());
         }
 
         public RawCardSet CardSet { get; }
@@ -83,6 +84,8 @@ namespace nGratis.AI.Kvasir.Client
 
         public ICommand PopulateCardsCommand { get; }
 
+        public ICommand ParseCardsCommand { get; }
+
         private async Task PopulateCardsAsync()
         {
             var cards = await this._magicRepository.GetCardsAsync(this.CardSet);
@@ -90,6 +93,29 @@ namespace nGratis.AI.Kvasir.Client
             this.CardViewModels = cards
                 .Select(card => new CardViewModel(card, this._magicRepository))
                 .ToArray();
+        }
+
+        private async Task ParseCardsAysnc()
+        {
+            if (this.CardViewModels?.Any() != true)
+            {
+                return;
+            }
+
+            if (this.SelectedCardViewModel == null)
+            {
+                this.SelectedCardViewModel = this.CardViewModels.First();
+            }
+
+            await Task.Run(() =>
+            {
+                this.SelectedCardViewModel.ParseCardCommand.Execute(null);
+
+                this.CardViewModels
+                    .AsParallel()
+                    .Where(viewModel => viewModel.ParseCardCommand.CanExecute(null))
+                    .ForEach(viewModel => viewModel.ParseCardCommand.Execute(null));
+            });
         }
     }
 }

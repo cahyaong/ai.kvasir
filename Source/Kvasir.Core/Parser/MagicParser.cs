@@ -38,6 +38,12 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicParser : IMagicParser
     {
+        private MagicParser()
+        {
+        }
+
+        public static MagicParser Instance { get; } = new MagicParser();
+
         public ParsingResult ParseRawCard(RawCard rawCard)
         {
             Guard

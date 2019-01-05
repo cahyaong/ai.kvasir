@@ -28,12 +28,15 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Input;
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
     using ReactiveUI;
 
@@ -43,9 +46,20 @@ namespace nGratis.AI.Kvasir.Client
 
         private readonly IMagicRepository _magicRepository;
 
+        private readonly IMagicParser _magicParser;
+
         private ImageSource _originalImage;
 
+        private CardInfo _cardInfo;
+
+        private IEnumerable<string> _parsingMessages;
+
         public CardViewModel(RawCard card, IMagicRepository magicRepository)
+            : this(card, magicRepository, MagicParser.Instance)
+        {
+        }
+
+        internal CardViewModel(RawCard card, IMagicRepository magicRepository, IMagicParser magicParser)
         {
             Guard
                 .Require(card, nameof(card))
@@ -55,22 +69,42 @@ namespace nGratis.AI.Kvasir.Client
                 .Require(magicRepository, nameof(magicRepository))
                 .Is.Not.Null();
 
+            Guard
+                .Require(magicParser, nameof(magicParser))
+                .Is.Not.Null();
+
             this._magicRepository = magicRepository;
+            this._magicParser = magicParser;
 
             this.Card = card;
 
             this.PopulateDetailsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateDetailAsync());
+            this.ParseCardCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardAsync());
         }
 
         public RawCard Card { get; }
-
-        public ICommand PopulateDetailsCommand { get; }
 
         public ImageSource OriginalImage
         {
             get => this._originalImage;
             private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
         }
+
+        public CardInfo CardInfo
+        {
+            get => this._cardInfo;
+            private set => this.RaiseAndSetIfChanged(ref this._cardInfo, value);
+        }
+
+        public IEnumerable<string> ParsingMessages
+        {
+            get => this._parsingMessages;
+            private set => this.RaiseAndSetIfChanged(ref this._parsingMessages, value);
+        }
+
+        public ICommand PopulateDetailsCommand { get; }
+
+        public ICommand ParseCardCommand { get; }
 
         private async Task PopulateDetailAsync()
         {
@@ -79,6 +113,29 @@ namespace nGratis.AI.Kvasir.Client
             // TODO: Need to handle larger image size, e.g. Planechase card!
 
             this.OriginalImage = new CroppedBitmap(cardImage.ToBitmapSource(), CardViewModel.CroppingBound);
+        }
+
+        private async Task ParseCardAsync()
+        {
+            if (this.Card == null)
+            {
+                this.CardInfo = null;
+            }
+            else
+            {
+                var parsingResult = await Task.Run(() => this._magicParser.ParseRawCard(this.Card));
+
+                if (parsingResult.IsValid)
+                {
+                    this.CardInfo = parsingResult.GetValue<CardInfo>();
+                    this.ParsingMessages = Enumerable.Empty<string>();
+                }
+                else
+                {
+                    this.CardInfo = null;
+                    this.ParsingMessages = parsingResult.Messages;
+                }
+            }
         }
     }
 }

@@ -57,11 +57,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Toughness = "1"
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -93,11 +91,10 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Arrange.
 
                 var rawCard = new RawCard();
-                var magicParser = new MagicParser();
 
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -127,11 +124,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     MultiverseId = 42
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -158,11 +153,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     MultiverseId = -42
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -193,11 +186,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Name = "Llanowar Elves"
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -225,11 +216,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Type = theory.RawType
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -270,11 +259,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Type = theory.RawType
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -297,11 +284,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ManaCost = theory.RawManaCost
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -354,11 +339,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ManaCost = theory.RawManaCost
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -408,11 +391,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Power = theory.RawPower
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -437,11 +418,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Power = theory.RawPower
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -469,11 +448,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Toughness = theory.RawToughness
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 
@@ -498,11 +475,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Toughness = theory.RawToughness
                 };
 
-                var magicParser = new MagicParser();
-
                 // Act.
 
-                var parsingResult = magicParser.ParseRawCard(rawCard);
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
 
                 // Assert.
 

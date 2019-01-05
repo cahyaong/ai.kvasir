@@ -14,8 +14,8 @@
       <i:InvokeCommandAction Command="{Binding PopulateCardSetsCommand, Mode=OneWay}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
-  <StackPanel Orientation="Horizontal">
-    <core:AweTileGroup Width="490" Header="RAW">
+  <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
+    <core:AweTileGroup Width="500" Header="RAW">
       <Grid core:ChildrenMargin.Value="10,10">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
@@ -28,16 +28,31 @@
         <core:AweField
           Grid.Row="0"
           Grid.Column="0"
-          Grid.ColumnSpan="2"
           Width="120"
           HorizontalAlignment="Right"
-          core:ChildrenMargin.IsHorizontalExcluded="True"
           DisplayMemberPath="CardSet.Name"
           Header="Card Set"
           Kind="DropDown"
           Mode="Input"
           Values="{Binding CardSetViewModels, Mode=OneWay}"
           Value="{Binding SelectedCardSetViewModel, Mode=TwoWay}" />
+        <StackPanel
+          Grid.Row="0"
+          Grid.Column="1"
+          HorizontalAlignment="Right"
+          core:ChildrenMargin.IsHorizontalExcluded="True"
+          core:ChildrenMargin.Value="5,0"
+          DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}"
+          Orientation="Horizontal">
+          <Button
+            VerticalAlignment="Bottom"
+            Command="{Binding ParseCardsCommand, Mode=OneWay}"
+            Content="Parse ALL" />
+          <Button
+            VerticalAlignment="Bottom"
+            Command="{Binding SelectedCardViewModel.ParseCardCommand, Mode=OneWay}"
+            Content="Parse Current" />
+        </StackPanel>
         <DataGrid
           Grid.Row="1"
           Grid.Column="0"
@@ -49,7 +64,7 @@
           Style="{StaticResource Cop.DataGrid.Virtualizing}">
           <DataGrid.Columns>
             <DataGridTextColumn
-              Width="220"
+              Width="230"
               Binding="{Binding Card.Name, Mode=OneWay}"
               Header="Card" />
           </DataGrid.Columns>
@@ -64,6 +79,47 @@
           DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}"
           Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
       </Grid>
+    </core:AweTileGroup>
+    <core:AweTileGroup Width="500" Header="PARSED">
+      <StackPanel
+        core:ChildrenMargin.Value="0,10"
+        DataContext="{Binding SelectedCardSetViewModel.SelectedCardViewModel, Mode=OneWay}"
+        Orientation="Vertical">
+        <core:AweField
+          Header="Name"
+          Kind="Text"
+          Mode="Output"
+          Value="{Binding CardInfo.Name, Mode=OneWay}" />
+        <core:AweField
+          Header="Mana Cost"
+          Kind="Text"
+          Mode="Output"
+          Value="{Binding CardInfo.ManaCost, Mode=OneWay}" />
+        <Grid core:ChildrenMargin.Value="10,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <core:AweField
+            Grid.Column="1"
+            Header="Power"
+            Kind="Text"
+            Mode="Output"
+            Value="{Binding CardInfo.Power, Mode=OneWay}" />
+          <core:AweField
+            Grid.Column="2"
+            Header="Toughness"
+            Kind="Text"
+            Mode="Output"
+            Value="{Binding CardInfo.Toughness, Mode=OneWay}" />
+        </Grid>
+        <core:AweField
+          Header="Messages"
+          Kind="List"
+          Mode="Output"
+          Values="{Binding ParsingMessages, Mode=OneWay}" />
+      </StackPanel>
     </core:AweTileGroup>
   </StackPanel>
 </UserControl>
