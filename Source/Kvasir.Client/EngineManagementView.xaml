@@ -85,11 +85,24 @@
         core:ChildrenMargin.Value="0,10"
         DataContext="{Binding SelectedCardSetViewModel.SelectedCardViewModel, Mode=OneWay}"
         Orientation="Vertical">
-        <core:AweField
-          Header="Name"
-          Kind="Text"
-          Mode="Output"
-          Value="{Binding CardInfo.Name, Mode=OneWay}" />
+        <Grid core:ChildrenMargin.Value="10,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <core:AweField
+            Grid.Column="0"
+            Header="Name"
+            Kind="Text"
+            Mode="Output"
+            Value="{Binding CardInfo.Name, Mode=OneWay}" />
+          <core:AweField
+            Grid.Column="1"
+            Header="Multiverse ID"
+            Kind="Text"
+            Mode="Output"
+            Value="{Binding CardInfo.MultiverseId, Mode=OneWay}" />
+        </Grid>
         <Grid core:ChildrenMargin.Value="10,0">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*" />
