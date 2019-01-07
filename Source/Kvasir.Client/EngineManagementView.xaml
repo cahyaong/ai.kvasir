@@ -80,7 +80,7 @@
           Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
       </Grid>
     </core:AweTileGroup>
-    <core:AweTileGroup Width="500" Header="PARSED">
+    <core:AweTileGroup Width="350" Header="PARSED">
       <StackPanel
         core:ChildrenMargin.Value="0,10"
         DataContext="{Binding SelectedCardSetViewModel.SelectedCardViewModel, Mode=OneWay}"
@@ -90,11 +90,25 @@
           Kind="Text"
           Mode="Output"
           Value="{Binding CardInfo.Name, Mode=OneWay}" />
-        <core:AweField
-          Header="Mana Cost"
-          Kind="Text"
-          Mode="Output"
-          Value="{Binding CardInfo.ManaCost, Mode=OneWay}" />
+        <Grid core:ChildrenMargin.Value="10,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <core:AweField Grid.Column="0" Header="Mana Cost">
+            <core:AweField.CustomTemplate>
+              <DataTemplate DataType="client:CardViewModel">
+                <client:AweManaCostViewer ManaCost="{Binding CardInfo.ManaCost, Mode=OneWay}" />
+              </DataTemplate>
+            </core:AweField.CustomTemplate>
+          </core:AweField>
+          <core:AweField
+            Grid.Column="1"
+            Header="(Converted)"
+            Kind="Text"
+            Mode="Output"
+            Value="{Binding CardInfo.ManaCost.ConvertedAmount, Mode=OneWay}" />
+        </Grid>
         <Grid core:ChildrenMargin.Value="10,0">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />

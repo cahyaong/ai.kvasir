@@ -1,0 +1,6 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:core="http://schemas.ngratis.com/2014/core">
+  <ResourceDictionary.MergedDictionaries>
+    <core:SharedResourceDictionary Source="/nGratis.AI.Kvasir.Client;component/Theme/AI.Palette.Generic.xaml" />
+    <core:SharedResourceDictionary Source="/nGratis.AI.Kvasir.Client;component/Theme/AI.Style.AweManaCostViewer.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

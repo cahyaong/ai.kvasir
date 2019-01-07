@@ -77,10 +77,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Theme\AI.Palette.Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\AI.Style.AweManaCostViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Theme\AI.Theme.Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppViewModel.cs" />
     <Compile Include="CardViewModel.cs" />
+    <Compile Include="Controls\AweManaCostViewer.cs" />
     <Compile Include="EngineManagementView.xaml.cs">
       <DependentUpon>EngineManagementView.xaml</DependentUpon>
     </Compile>
@@ -134,6 +147,7 @@
   <ItemGroup>
     <Resource Include="app.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
