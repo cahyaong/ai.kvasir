@@ -85,7 +85,7 @@ namespace nGratis.AI.Kvasir.Core
 
             this._whenEntrySavingRequested
                 .ObserveOn(ThreadPoolScheduler.Instance)
-                .Subscribe(this.OnEntriesSavingRequested);
+                .Subscribe(this.SaveEntry);
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
@@ -204,7 +204,7 @@ namespace nGratis.AI.Kvasir.Core
             return new ZipArchive(dataStream, ZipArchiveMode.Update, true);
         }
 
-        private void OnEntriesSavingRequested(SavingRequest request)
+        private void SaveEntry(SavingRequest request)
         {
             if (this._isDisposed)
             {

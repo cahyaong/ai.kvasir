@@ -104,6 +104,7 @@
     <Compile Include="LibraryManagementViewModel.cs" />
     <Compile Include="CardSetViewModel.cs" />
     <Compile Include="Converters\MagicTimestampToStringConverter.cs" />
+    <Compile Include="ObservableExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

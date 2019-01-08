@@ -28,8 +28,10 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reactive.Linq;
     using System.Threading.Tasks;
     using System.Windows.Input;
     using nGratis.AI.Kvasir.Contract;
@@ -43,6 +45,12 @@ namespace nGratis.AI.Kvasir.Client
         private IEnumerable<CardViewModel> _cardViewModels;
 
         private CardViewModel _selectedCardViewModel;
+
+        private int _notParsedCardCount;
+
+        private int _validCardCount;
+
+        private int _invalidCardCount;
 
         public CardSetViewModel(RawCardSet cardSet, IMagicRepository magicRepository)
         {
@@ -82,6 +90,24 @@ namespace nGratis.AI.Kvasir.Client
             }
         }
 
+        public int NotParsedCardCount
+        {
+            get => this._notParsedCardCount;
+            private set => this.RaiseAndSetIfChanged(ref this._notParsedCardCount, value);
+        }
+
+        public int ValidCardCount
+        {
+            get => this._validCardCount;
+            private set => this.RaiseAndSetIfChanged(ref this._validCardCount, value);
+        }
+
+        public int InvalidCardCount
+        {
+            get => this._invalidCardCount;
+            private set => this.RaiseAndSetIfChanged(ref this._invalidCardCount, value);
+        }
+
         public ICommand PopulateCardsCommand { get; }
 
         public ICommand ParseCardsCommand { get; }
@@ -93,6 +119,19 @@ namespace nGratis.AI.Kvasir.Client
             this.CardViewModels = cards
                 .Select(card => new CardViewModel(card, this._magicRepository))
                 .ToArray();
+
+            this.NotParsedCardCount = this.CardViewModels.Count();
+            this.ValidCardCount = 0;
+            this.InvalidCardCount = 0;
+
+            this.CardViewModels
+                .Select(vm => vm.WhenPropertyChanged())
+                .Merge()
+                .Where(pattern =>
+                    pattern.EventArgs.PropertyName == nameof(CardViewModel.CardInfo) ||
+                    pattern.EventArgs.PropertyName == nameof(CardViewModel.ParsingMessages))
+                .Throttle(TimeSpan.FromMilliseconds(250))
+                .Subscribe(_ => this.UpdateParsingStatistics());
         }
 
         private async Task ParseCardsAysnc()
@@ -113,9 +152,21 @@ namespace nGratis.AI.Kvasir.Client
 
                 this.CardViewModels
                     .AsParallel()
-                    .Where(viewModel => viewModel.ParseCardCommand.CanExecute(null))
-                    .ForEach(viewModel => viewModel.ParseCardCommand.Execute(null));
+                    .Where(vm => vm.ParseCardCommand.CanExecute(null))
+                    .ForEach(vm => vm.ParseCardCommand.Execute(null));
             });
+        }
+
+        private void UpdateParsingStatistics()
+        {
+            var parsedCardViewModels = this
+                .CardViewModels
+                .Where(vm => vm.CardInfo != null)
+                .ToArray();
+
+            this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;
+            this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ParsingMessages.Any());
+            this.InvalidCardCount = parsedCardViewModels.Length - this.ValidCardCount;
         }
     }
 }

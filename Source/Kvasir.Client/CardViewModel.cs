@@ -44,6 +44,10 @@ namespace nGratis.AI.Kvasir.Client
     {
         private static readonly Int32Rect CroppingBound = new Int32Rect(3, 4, 217, 303);
 
+        // TODO: Need to make <CardInfo> class as immutable as possible!
+
+        private static readonly CardInfo InvalidCardInfo = new CardInfo();
+
         private readonly IMagicRepository _magicRepository;
 
         private readonly IMagicParser _magicParser;
@@ -132,7 +136,7 @@ namespace nGratis.AI.Kvasir.Client
                 }
                 else
                 {
-                    this.CardInfo = null;
+                    this.CardInfo = CardViewModel.InvalidCardInfo;
                     this.ParsingMessages = parsingResult.Messages;
                 }
             }

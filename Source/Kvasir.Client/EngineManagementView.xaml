@@ -69,15 +69,35 @@
               Header="Card" />
           </DataGrid.Columns>
         </DataGrid>
-        <Image
+        <StackPanel
           Grid.Row="1"
           Grid.Column="1"
-          Width="217"
-          Height="303"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Top"
+          core:ChildrenMargin.Value="0,10"
           DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}"
-          Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
+          Orientation="Vertical">
+          <core:AweTile Header="Not Parsed Cards" Value="{Binding NotParsedCardCount, Mode=OneWay}" />
+          <Grid core:ChildrenMargin.Value="10,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <core:AweTile
+              Grid.Column="0"
+              Header="Valid Cards"
+              Value="{Binding ValidCardCount, Mode=OneWay}" />
+            <core:AweTile
+              Grid.Column="1"
+              Header="Invalid Cards"
+              Value="{Binding InvalidCardCount, Mode=OneWay}" />
+          </Grid>
+
+          <Image
+            Width="217"
+            Height="303"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
+        </StackPanel>
       </Grid>
     </core:AweTileGroup>
     <core:AweTileGroup Width="350" Header="PARSED">
