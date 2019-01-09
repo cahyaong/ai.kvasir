@@ -46,6 +46,11 @@
         Mode="Output"
         Value="{Binding CardInfo.ManaCost.ConvertedAmount, Mode=OneWay}" />
     </Grid>
+    <wpf:AweField
+      Header="Kinds (incl. Super- and Sub-)"
+      Kind="Chips"
+      Mode="Output"
+      Values="{Binding CombinedKinds, Mode=OneWay}" />
     <Grid wpf:ChildrenMargin.Value="10,0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="2*" />

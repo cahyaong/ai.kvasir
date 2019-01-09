@@ -288,9 +288,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithRawCards(Enumerable
                         .Empty<RawCard>()
-                        .Append(MockBuilder.CreteRawCards("X02", 2))
-                        .Append(MockBuilder.CreteRawCards("X03", 3))
-                        .Append(MockBuilder.CreteRawCards("X05", 5))
+                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
+                        .AppendItems(MockBuilder.CreteRawCards("X03", 3))
+                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
                         .ToArray());
 
                 var magicRepository = new MagicRepository(mockIndexManager.Object, mockMagicFetcher.Object);
@@ -355,9 +355,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithDefault(IndexKind.Card)
                     .WithExistingRawCards(Enumerable
                         .Empty<RawCard>()
-                        .Append(MockBuilder.CreteRawCards("X02", 2))
-                        .Append(MockBuilder.CreteRawCards("X03", 3))
-                        .Append(MockBuilder.CreteRawCards("X05", 5))
+                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
+                        .AppendItems(MockBuilder.CreteRawCards("X03", 3))
+                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
                         .ToArray());
 
                 var mockMagicFetcher = MockBuilder
@@ -423,8 +423,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithDefault(IndexKind.Card)
                     .WithExistingRawCards(Enumerable
                         .Empty<RawCard>()
-                        .Append(MockBuilder.CreteRawCards("X02", 2))
-                        .Append(MockBuilder.CreteRawCards("X05", 5))
+                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
+                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
                         .ToArray());
 
                 var mockMagicFetcher = MockBuilder
@@ -632,8 +632,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithDefault(IndexKind.Card)
                     .WithExistingRawCards(Enumerable
                         .Empty<RawCard>()
-                        .Append(MockBuilder.CreteRawCards("X02", 2))
-                        .Append(MockBuilder.CreteRawCards("X05", 5))
+                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
+                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
                         .ToArray());
 
                 var mockMagicFetcher = MockBuilder

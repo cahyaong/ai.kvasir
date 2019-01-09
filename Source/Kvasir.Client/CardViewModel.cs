@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -55,6 +56,8 @@ namespace nGratis.AI.Kvasir.Client
         private ImageSource _originalImage;
 
         private CardInfo _cardInfo;
+
+        private IEnumerable _combinedKinds;
 
         private IEnumerable<string> _parsingMessages;
 
@@ -100,6 +103,12 @@ namespace nGratis.AI.Kvasir.Client
             private set => this.RaiseAndSetIfChanged(ref this._cardInfo, value);
         }
 
+        public IEnumerable CombinedKinds
+        {
+            get => this._combinedKinds;
+            private set => this.RaiseAndSetIfChanged(ref this._combinedKinds, value);
+        }
+
         public IEnumerable<string> ParsingMessages
         {
             get => this._parsingMessages;
@@ -132,11 +141,20 @@ namespace nGratis.AI.Kvasir.Client
                 if (parsingResult.IsValid)
                 {
                     this.CardInfo = parsingResult.GetValue<CardInfo>();
+
+                    this.CombinedKinds = Enumerable
+                        .Empty<object>()
+                        .AppendItem(this.CardInfo.SuperKind)
+                        .AppendItem(this.CardInfo.Kind)
+                        .AppendItems(this.CardInfo.SubKinds.Cast<object>())
+                        .ToArray();
+
                     this.ParsingMessages = Enumerable.Empty<string>();
                 }
                 else
                 {
                     this.CardInfo = CardViewModel.InvalidCardInfo;
+                    this.CombinedKinds = Enumerable.Empty<object>();
                     this.ParsingMessages = parsingResult.Messages;
                 }
             }
