@@ -75,22 +75,7 @@
           core:ChildrenMargin.Value="0,10"
           DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}"
           Orientation="Vertical">
-          <core:AweTile Header="Not Parsed Cards" Value="{Binding NotParsedCardCount, Mode=OneWay}" />
-          <Grid core:ChildrenMargin.Value="10,0">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="*" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <core:AweTile
-              Grid.Column="0"
-              Header="Valid Cards"
-              Value="{Binding ValidCardCount, Mode=OneWay}" />
-            <core:AweTile
-              Grid.Column="1"
-              Header="Invalid Cards"
-              Value="{Binding InvalidCardCount, Mode=OneWay}" />
-          </Grid>
-
+          <client:ParsingStatisticsViewPart />
           <Image
             Width="217"
             Height="303"
@@ -101,72 +86,7 @@
       </Grid>
     </core:AweTileGroup>
     <core:AweTileGroup Width="350" Header="PARSED">
-      <StackPanel
-        core:ChildrenMargin.Value="0,10"
-        DataContext="{Binding SelectedCardSetViewModel.SelectedCardViewModel, Mode=OneWay}"
-        Orientation="Vertical">
-        <Grid core:ChildrenMargin.Value="10,0">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
-          <core:AweField
-            Grid.Column="0"
-            Header="Name"
-            Kind="Text"
-            Mode="Output"
-            Value="{Binding CardInfo.Name, Mode=OneWay}" />
-          <core:AweField
-            Grid.Column="1"
-            Header="Multiverse ID"
-            Kind="Text"
-            Mode="Output"
-            Value="{Binding CardInfo.MultiverseId, Mode=OneWay}" />
-        </Grid>
-        <Grid core:ChildrenMargin.Value="10,0">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
-          <core:AweField Grid.Column="0" Header="Mana Cost">
-            <core:AweField.CustomTemplate>
-              <DataTemplate DataType="client:CardViewModel">
-                <client:AweManaCostViewer ManaCost="{Binding CardInfo.ManaCost, Mode=OneWay}" />
-              </DataTemplate>
-            </core:AweField.CustomTemplate>
-          </core:AweField>
-          <core:AweField
-            Grid.Column="1"
-            Header="(Converted)"
-            Kind="Text"
-            Mode="Output"
-            Value="{Binding CardInfo.ManaCost.ConvertedAmount, Mode=OneWay}" />
-        </Grid>
-        <Grid core:ChildrenMargin.Value="10,0">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
-          <core:AweField
-            Grid.Column="1"
-            Header="Power"
-            Kind="Text"
-            Mode="Output"
-            Value="{Binding CardInfo.Power, Mode=OneWay}" />
-          <core:AweField
-            Grid.Column="2"
-            Header="Toughness"
-            Kind="Text"
-            Mode="Output"
-            Value="{Binding CardInfo.Toughness, Mode=OneWay}" />
-        </Grid>
-        <core:AweField
-          Header="Messages"
-          Kind="List"
-          Mode="Output"
-          Values="{Binding ParsingMessages, Mode=OneWay}" />
-      </StackPanel>
+      <client:ParsedCardViewPart DataContext="{Binding SelectedCardSetViewModel.SelectedCardViewModel, Mode=OneWay}" />
     </core:AweTileGroup>
   </StackPanel>
 </UserControl>

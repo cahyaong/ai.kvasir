@@ -61,7 +61,7 @@ namespace nGratis.AI.Kvasir.Core
         public CachingMessageHandler(
             string name,
             IStorageManager storageManager,
-            IUniqueKeyCalculator cachingKeyCalculator,
+            IUniqueKeyCalculator keyCalculator,
             HttpMessageHandler delegatingHandler)
             : base(delegatingHandler)
         {
@@ -76,7 +76,7 @@ namespace nGratis.AI.Kvasir.Core
             this._cachingSpec = new DataSpec(name, KvasirMime.Caching);
             this._storageManager = storageManager;
             this._storageLock = new ReaderWriterLockSlim();
-            this._keyCalculator = cachingKeyCalculator ?? DefaultUniqueKeyCalculator.Instance;
+            this._keyCalculator = keyCalculator ?? DefaultUniqueKeyCalculator.Instance;
             this._whenEntrySavingRequested = new Subject<SavingRequest>();
 
             this._deferredArchive = new Lazy<ZipArchive>(
