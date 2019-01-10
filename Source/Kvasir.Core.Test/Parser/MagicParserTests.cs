@@ -245,6 +245,58 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .GetValue<CardInfo>()
                         .SubKinds
                         .Should().BeEquivalentTo(theory.ParsedSubKinds);
+
+                    parsingResult
+                        .GetValue<CardInfo>()
+                        .IsTribal
+                        .Should().BeFalse();
+                }
+            }
+
+            [Fact]
+            public void WhenGettingValidTribalCardType_ShouldSetIsTribalFlag()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Type = "Tribal Creature - Merfolk Wizard"
+                };
+
+                // Act.
+
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Should().NotBeNull();
+
+                using (new AssertionScope())
+                {
+                    parsingResult
+                        .GetValue<CardInfo>()
+                        .IsTribal
+                        .Should().BeTrue();
+
+                    parsingResult
+                        .GetValue<CardInfo>()
+                        .SuperKind
+                        .Should().Be(CardSuperKind.None);
+
+                    parsingResult
+                        .GetValue<CardInfo>()
+                        .Kind
+                        .Should().Be(CardKind.Creature);
+
+                    parsingResult
+                        .GetValue<CardInfo>()
+                        .SubKinds
+                        .Should().BeEquivalentTo(CardSubKind.Merfolk, CardSubKind.Wizard);
                 }
             }
 

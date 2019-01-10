@@ -142,13 +142,18 @@ namespace nGratis.AI.Kvasir.Client
                 {
                     this.CardInfo = parsingResult.GetValue<CardInfo>();
 
-                    this.CombinedKinds = Enumerable
-                        .Empty<object>()
-                        .AppendItem(this.CardInfo.SuperKind)
-                        .AppendItem(this.CardInfo.Kind)
-                        .AppendItems(this.CardInfo.SubKinds.Cast<object>())
-                        .ToArray();
+                    var combinedKinds = new List<object>();
 
+                    if (this.CardInfo.IsTribal)
+                    {
+                        combinedKinds.Add("Tribal");
+                    }
+
+                    combinedKinds.Add(this.CardInfo.SuperKind);
+                    combinedKinds.Add(this.CardInfo.Kind);
+                    combinedKinds.AddRange(this.CardInfo.SubKinds.Cast<object>());
+
+                    this.CombinedKinds = combinedKinds;
                     this.ParsingMessages = Enumerable.Empty<string>();
                 }
                 else

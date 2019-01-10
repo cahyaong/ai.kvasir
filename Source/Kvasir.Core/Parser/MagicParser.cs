@@ -229,6 +229,15 @@ namespace nGratis.AI.Kvasir.Core
         {
             var superKindResult = default(ParsingResult);
 
+            if (string.Equals(rawSuperKind, "Tribal", StringComparison.OrdinalIgnoreCase))
+            {
+                return parsingResult
+                    .WithChildResult(ValidParsingResult.Create(true))
+                    .BindToCardInfo(info => info.IsTribal)
+                    .WithChildResult(ValidParsingResult.Create(CardSuperKind.None))
+                    .BindToCardInfo(info => info.SuperKind);
+            }
+
             if (string.IsNullOrEmpty(rawSuperKind))
             {
                 superKindResult = ValidParsingResult.Create(CardSuperKind.None);
@@ -301,11 +310,11 @@ namespace nGratis.AI.Kvasir.Core
             public static class Card
             {
                 public static readonly Regex Type = new Regex(
-                    @"^((?<super>\w+)\s)?(?<kind>\w+){1}[\s-—]*((?<sub>\w+)\s?)*$",
+                    @"^(?:(?<super>\w+)\s)?(?<kind>\w+){1}[\s-—]*(?:(?<sub>\w+)\s?)*$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
                 public static readonly Regex ManaCost = new Regex(
-                    @"^({((?<colorless>\d+)|(?<color>[WUBRG]))})+$",
+                    @"^(?:{(?:(?<colorless>\d+)|(?<color>[WUBRG]))})+$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
         }
