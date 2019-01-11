@@ -178,9 +178,11 @@ namespace nGratis.AI.Kvasir.Core
                 !string.IsNullOrEmpty(rawPower) &&
                 ushort.TryParse(rawPower, out power);
 
-            if (isValid && kind != CardKind.Creature)
+            if (kind != CardKind.Creature)
             {
-                return parsingResult.WithMessage($"<Power> Non-empty value for non-creature type [{kind}].");
+                return isValid
+                    ? parsingResult.WithMessage($"<Power> Non-empty value for non-creature type [{kind}].")
+                    : parsingResult;
             }
 
             var powerResult = isValid
@@ -200,9 +202,11 @@ namespace nGratis.AI.Kvasir.Core
                 !string.IsNullOrEmpty(rawToughness) &&
                 ushort.TryParse(rawToughness, out toughness);
 
-            if (isValid && kind != CardKind.Creature)
+            if (kind != CardKind.Creature)
             {
-                return parsingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{kind}].");
+                return isValid
+                    ? parsingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{kind}].")
+                    : parsingResult;
             }
 
             var toughnessResult = isValid

@@ -149,7 +149,11 @@ namespace nGratis.AI.Kvasir.Client
                         combinedKinds.Add("Tribal");
                     }
 
-                    combinedKinds.Add(this.CardInfo.SuperKind);
+                    if (this.CardInfo.SuperKind != CardSuperKind.None)
+                    {
+                        combinedKinds.Add(this.CardInfo.SuperKind);
+                    }
+
                     combinedKinds.Add(this.CardInfo.Kind);
                     combinedKinds.AddRange(this.CardInfo.SubKinds.Cast<object>());
 

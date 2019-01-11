@@ -699,6 +699,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .ExpectValid(42)
                             .WithLabel("CASE 02 -> Creature with super-, sub-types and non-zero power.")
                             .ToXunitTheory();
+
+                        yield return PowerTheory
+                            .Create("Artifact", string.Empty)
+                            .ExpectValid(0)
+                            .WithLabel("CASE 03 -> Non-creature with empty power.")
+                            .ToXunitTheory();
                     }
                 }
 
@@ -734,6 +740,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .Create("Legendary Creature - Elf Warrior", "42")
                             .ExpectValid(42)
                             .WithLabel("CASE 02 -> Creature with super-, sub-types and non-zero toughness.")
+                            .ToXunitTheory();
+
+                        yield return ToughnessTheory
+                            .Create("Artifact", string.Empty)
+                            .ExpectValid(0)
+                            .WithLabel("CASE 03 -> Non-creature with empty toughness.")
                             .ToXunitTheory();
                     }
                 }
