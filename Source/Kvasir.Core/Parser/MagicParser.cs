@@ -61,7 +61,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Create(cardInfo)
                 .ThenParseMultiverseId(rawCard.MultiverseId)
                 .ThenParseType(rawCard.Type)
-                .ThenParseManaCost(rawCard.ManaCost)
+                .ThenParseManaCost(cardInfo.Kind, rawCard.ManaCost)
                 .ThenParsePower(cardInfo.Kind, rawCard.Power)
                 .ThenParseToughness(cardInfo.Kind, rawCard.Toughness);
         }
@@ -130,11 +130,26 @@ namespace nGratis.AI.Kvasir.Core
                 .ThenParseSubKinds(subKindValues);
         }
 
-        public static ParsingResult ThenParseManaCost(this ParsingResult parsingResult, string rawManaCost)
+        public static ParsingResult ThenParseManaCost(
+            this ParsingResult parsingResult,
+            CardKind kind,
+            string rawManaCost)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))
                 .Is.Not.Null();
+
+            if (kind == CardKind.Land)
+            {
+                if (string.IsNullOrEmpty(rawManaCost))
+                {
+                    return parsingResult
+                        .WithChildResult(ValidParsingResult.Create(ManaCost.Free))
+                        .BindToCardInfo(info => info.ManaCost);
+                }
+
+                return parsingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
+            }
 
             if (string.IsNullOrEmpty(rawManaCost))
             {
@@ -194,7 +209,10 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.Power);
         }
 
-        public static ParsingResult ThenParseToughness(this ParsingResult parsingResult, CardKind kind, string rawToughness)
+        public static ParsingResult ThenParseToughness(
+            this ParsingResult parsingResult,
+            CardKind kind,
+            string rawToughness)
         {
             var toughness = (ushort)0;
 

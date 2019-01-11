@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ManaCost.cs" company="nGratis">
+// <copyright file="ManaCost.Empty.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,60 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 29 December 2018 10:38:28 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 11 January 2019 8:01:50 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using nGratis.Cop.Core.Contract;
+    using System;
 
-    public class ManaCost
+    internal sealed class EmptyManaCost : ManaCost
     {
-        private readonly IDictionary<Mana, ushort> _amountLookup;
-
-        public ManaCost()
+        private EmptyManaCost()
         {
-            this._amountLookup = new Dictionary<Mana, ushort>();
         }
 
-        public static ManaCost Empty { get; } = EmptyManaCost.Instance;
+        internal static EmptyManaCost Instance { get; } = new EmptyManaCost();
 
-        public static ManaCost Free { get; } = FreeManaCost.Instance;
-
-        public uint ConvertedAmount => (uint)this
-            ._amountLookup.Values
-            .Sum(amount => amount);
-
-        public virtual ushort this[Mana mana]
+        public override ushort this[Mana mana]
         {
-            get
-            {
-                Guard
-                    .Require(mana, nameof(mana))
-                    .Is.Not.Default();
-
-                return this._amountLookup.TryGetValue(mana, out var amount)
-                    ? amount
-                    : (ushort)0;
-            }
-
-            set
-            {
-                Guard
-                    .Require(mana, nameof(mana))
-                    .Is.Not.Default();
-
-                if (this._amountLookup.ContainsKey(mana))
-                {
-                    this._amountLookup[mana] += value;
-                }
-                else
-                {
-                    this._amountLookup.Add(mana, value);
-                }
-            }
+            get => base[mana];
+            set => throw new NotSupportedException("Setting mana amount is not allowed.");
         }
     }
 }

@@ -325,6 +325,32 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
             }
 
+            [Fact]
+            public void WhenGettingValidLandCardType_ShouldSetNoManaCost()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Type = "Land",
+                    ManaCost = string.Empty
+                };
+
+                // Act.
+
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .ManaCost
+                    .Should().Be(ManaCost.Free);
+            }
+
             [Theory]
             [MemberData(nameof(TestData.ValidManaCostTheories), MemberType = typeof(TestData))]
             public void WhenGettingValidCardManaCost_ShouldParse(ManaCostTheory theory)
@@ -333,6 +359,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var rawCard = new RawCard
                 {
+                    Type = theory.RawType,
                     ManaCost = theory.RawManaCost
                 };
 
@@ -388,6 +415,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var rawCard = new RawCard
                 {
+                    Type = theory.RawType,
                     ManaCost = theory.RawManaCost
                 };
 
@@ -627,31 +655,31 @@ namespace nGratis.AI.Kvasir.Core.Test
                     get
                     {
                         yield return ManaCostTheory
-                            .Create("{0}")
+                            .Create("Creature", "{0}")
                             .ExpectValid(new Dictionary<Mana, ushort>())
-                            .WithLabel("CASE 01 -> Zero amount.")
+                            .WithLabel("CASE 01 -> Non-land with zero amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
-                            .Create("{42}")
+                            .Create("Creature", "{42}")
                             .ExpectValid(new Dictionary<Mana, ushort>
                             {
                                 [Mana.Colorless] = 42
                             })
-                            .WithLabel("CASE 02 -> Colorless amount.")
+                            .WithLabel("CASE 02 -> Non-land with colorless amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
-                            .Create("{G}")
+                            .Create("Creature", "{G}")
                             .ExpectValid(new Dictionary<Mana, ushort>
                             {
                                 [Mana.Green] = 1
                             })
-                            .WithLabel("CASE 03 -> Mono-color amount.")
+                            .WithLabel("CASE 03 -> Non-land with mono-color amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
-                            .Create("{1}{W}{W}{U}{U}{U}{B}{B}{B}{B}{R}{R}{R}{R}{R}{G}{G}{G}{G}{G}{G}")
+                            .Create("Creature", "{1}{W}{W}{U}{U}{U}{B}{B}{B}{B}{R}{R}{R}{R}{R}{G}{G}{G}{G}{G}{G}")
                             .ExpectValid(new Dictionary<Mana, ushort>
                             {
                                 [Mana.Colorless] = 1,
@@ -661,7 +689,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 [Mana.Red] = 5,
                                 [Mana.Green] = 6
                             })
-                            .WithLabel("CASE 04 -> Colorless and all colors amount.")
+                            .WithLabel("CASE 04 -> Non-land with colorless and all colors amount.")
+                            .ToXunitTheory();
+
+                        yield return ManaCostTheory
+                            .Create("Land", string.Empty)
+                            .ExpectValid(new Dictionary<Mana, ushort>())
+                            .WithLabel("CASE 05 -> Land with empty amount.")
                             .ToXunitTheory();
                     }
                 }
@@ -671,15 +705,21 @@ namespace nGratis.AI.Kvasir.Core.Test
                     get
                     {
                         yield return ManaCostTheory
-                            .Create(string.Empty)
+                            .Create("Creature", string.Empty)
                             .ExpectInvalid("<ManaCost> Value must not be <null> or empty.")
-                            .WithLabel("CASE 01 -> Empty mana cost.")
+                            .WithLabel("CASE 01 -> Non-land with empty mana cost.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
-                            .Create("{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}")
+                            .Create("Creature", "{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}")
                             .ExpectInvalid("<ManaCost> Symbol(s) has no mapping for value [{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}].")
-                            .WithLabel("CASE 02 -> Invalid mana symbol.")
+                            .WithLabel("CASE 02 -> Non-land with invalid mana symbol.")
+                            .ToXunitTheory();
+
+                        yield return ManaCostTheory
+                            .Create("Land", "{42}")
+                            .ExpectInvalid("<ManaCost> Non-empty value for type [Land].")
+                            .WithLabel("CASE 03 -> Land with non-empty mana cost.")
                             .ToXunitTheory();
                     }
                 }
@@ -824,16 +864,19 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class ManaCostTheory : BaseParsingTheory
         {
+            public string RawType { get; private set; }
+
             public string RawManaCost { get; private set; }
 
             public uint ParsedConvertedAmount { get; private set; }
 
             public IReadOnlyDictionary<Mana, ushort> ParsedAmountLookup { get; private set; }
 
-            public static ManaCostTheory Create(string rawManaCost)
+            public static ManaCostTheory Create(string rawType, string rawManaCost)
             {
                 return new ManaCostTheory
                 {
+                    RawType = rawType,
                     RawManaCost = rawManaCost,
                     ParsedConvertedAmount = 0,
                     ParsedAmountLookup = new Dictionary<Mana, ushort>(),
