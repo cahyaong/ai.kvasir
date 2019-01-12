@@ -63,7 +63,8 @@ namespace nGratis.AI.Kvasir.Core
                 .ThenParseType(rawCard.Type)
                 .ThenParseManaCost(cardInfo.Kind, rawCard.ManaCost)
                 .ThenParsePower(cardInfo.Kind, rawCard.Power)
-                .ThenParseToughness(cardInfo.Kind, rawCard.Toughness);
+                .ThenParseToughness(cardInfo.Kind, rawCard.Toughness)
+                .ThenParseText(rawCard.Text);
         }
     }
 
@@ -236,6 +237,23 @@ namespace nGratis.AI.Kvasir.Core
                 .BindToCardInfo(info => info.Toughness);
         }
 
+        public static ParsingResult ThenParseText(this ParsingResult parsingResult, string rawText)
+        {
+            var abilities = CardInfo.Default.Abilities;
+
+            if (!string.IsNullOrEmpty(rawText))
+            {
+                abilities = rawText
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(_ => Ability.NotSupported)
+                    .ToArray();
+            }
+
+            return parsingResult
+                .WithChildResult(ValidParsingResult.Create(abilities))
+                .BindToCardInfo(info => info.Abilities);
+        }
+
         private static ParsingResult ThenParseKind(this ParsingResult parsingResult, string rawKind)
         {
             var kindResult = Enum.TryParse(rawKind, out CardKind kind)
@@ -304,7 +322,7 @@ namespace nGratis.AI.Kvasir.Core
             }
             else
             {
-                subKindsResult = ValidParsingResult.Create(subKinds);
+                subKindsResult = ValidParsingResult.Create(subKinds.ToArray());
             }
 
             return parsingResult

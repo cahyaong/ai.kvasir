@@ -41,6 +41,10 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constant.cs" />
+    <Compile Include="Magic\Ability.cs" />
+    <Compile Include="Magic\Ability.NotSupported.cs">
+      <DependentUpon>Ability.cs</DependentUpon>
+    </Compile>
     <Compile Include="Magic\CardKind.cs" />
     <Compile Include="Magic\CardSuperKind.cs" />
     <Compile Include="Magic\CardInfo.cs" />

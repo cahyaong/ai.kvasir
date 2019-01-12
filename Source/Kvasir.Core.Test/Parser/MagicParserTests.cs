@@ -115,7 +115,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Fact]
-            public void WhenGettingValidMultiverseId_ShouldAssignAsIs()
+            public void WhenGettingValidMultiverseId_ShouldSetAsIs()
             {
                 // Arrange.
 
@@ -177,7 +177,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Fact]
-            public void WhenGettingValidCardName_ShouldAssignAsIs()
+            public void WhenGettingValidName_ShouldSetAsIs()
             {
                 // Arrange.
 
@@ -207,7 +207,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidCardKindTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidCardType_ShouldParse(CardKindTheory theory)
+            public void WhenGettingValidType_ShouldParseRawValue(CardKindTheory theory)
             {
                 // Arrange.
 
@@ -254,7 +254,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Fact]
-            public void WhenGettingValidTribalCardType_ShouldSetIsTribalFlag()
+            public void WhenGettingValidTribalType_ShouldSetIsTribal()
             {
                 // Arrange.
 
@@ -302,7 +302,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.InvalidCardKindTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidCardType_ShouldAddMessage(CardKindTheory theory)
+            public void WhenGettingInvalidType_ShouldAddMessage(CardKindTheory theory)
             {
                 // Arrange.
 
@@ -326,7 +326,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Fact]
-            public void WhenGettingValidLandCardType_ShouldSetNoManaCost()
+            public void WhenGettingValidLandType_ShouldSetNoManaCost()
             {
                 // Arrange.
 
@@ -353,7 +353,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidCardManaCost_ShouldParse(ManaCostTheory theory)
+            public void WhenGettingValidManaCost_ShouldParseRawValue(ManaCostTheory theory)
             {
                 // Arrange.
 
@@ -461,7 +461,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidPowerTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidPower_ShouldParse(PowerTheory theory)
+            public void WhenGettingValidPower_ShouldParseRawValue(PowerTheory theory)
             {
                 // Arrange.
 
@@ -518,7 +518,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidToughnessTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidToughness_ShouldParse(ToughnessTheory theory)
+            public void WhenGettingValidToughness_ShouldParseRawValue(ToughnessTheory theory)
             {
                 // Arrange.
 
@@ -571,6 +571,33 @@ namespace nGratis.AI.Kvasir.Core.Test
                 parsingResult
                     .GetValue<CardInfo>()
                     .Toughness.Should().Be(0);
+            }
+
+            [Fact]
+            public void WhenGettingInvalidText_ShouldSetNotSupportedAbility()
+            {
+                // Arrange.
+
+                var rawCard = new RawCard
+                {
+                    Text =
+                        "[_MOCK_UNPARSED_ABILITY_01_]" + Environment.NewLine +
+                        "[_MOCK_UNPARSED_ABILITY_02_]"
+                };
+
+                // Act.
+
+                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<CardInfo>()
+                    .Abilities
+                    .Should().BeEquivalentTo(Ability.NotSupported, Ability.NotSupported);
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]

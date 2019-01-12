@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GameCard.cs" company="nGratis">
+// <copyright file="NotSupportedAbility.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,45 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 1:23:57 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 11 January 2019 11:43:10 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public class CardInfo
+    internal class NotSupportedAbility : Ability
     {
-        public CardInfo()
+        private NotSupportedAbility()
         {
-            this.SubKinds = Default.SubKinds;
-            this.ManaCost = ManaCost.Empty;
-            this.Abilities = Default.Abilities;
         }
 
-        public uint MultiverseId { get; set; }
-
-        public string Name { get; set; }
-
-        public CardKind Kind { get; set; }
-
-        public CardSuperKind SuperKind { get; set; }
-
-        public CardSubKind[] SubKinds { get; set; }
-
-        public bool IsTribal { get; set; }
-
-        public ManaCost ManaCost { get; set; }
-
-        public ushort Power { get; set; }
-
-        public ushort Toughness { get; set; }
-
-        public Ability[] Abilities { get; set; }
-
-        public static class Default
-        {
-            public static readonly CardSubKind[] SubKinds = new CardSubKind[0];
-
-            public static readonly Ability[] Abilities = new Ability[0];
-        }
+        public static NotSupportedAbility Instance { get; } = new NotSupportedAbility();
     }
 }
