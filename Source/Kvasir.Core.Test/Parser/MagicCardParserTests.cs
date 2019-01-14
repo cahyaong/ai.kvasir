@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicParserTests.cs" company="nGratis">
+// <copyright file="MagicCardParserTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -39,9 +39,9 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.Cop.Core.Testing;
     using Xunit;
 
-    public class MagicParserTests
+    public class MagicCardParserTests
     {
-        public class ParseRawCardMethod
+        public class ParseMethod
         {
             [Fact]
             public void WhenGettingValidCard_ShouldReturnValidParsingResult()
@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -94,7 +94,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -126,7 +126,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -155,7 +155,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -188,7 +188,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -218,7 +218,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -265,7 +265,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -313,7 +313,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -338,7 +338,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -365,7 +365,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -421,7 +421,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -473,7 +473,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -500,7 +500,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -530,7 +530,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -557,7 +557,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 
@@ -587,7 +587,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicParser.Instance.ParseRawCard(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
 
                 // Assert.
 

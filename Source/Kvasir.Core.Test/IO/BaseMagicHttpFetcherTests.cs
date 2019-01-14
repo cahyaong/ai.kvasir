@@ -98,7 +98,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async fetcher => await fetcher.GetCardSetsAsync())
+                    .Awaiting(async self => await self.GetCardSetsAsync())
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -153,7 +153,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async fetcher => await fetcher.GetCardsAsync(cardSet))
+                    .Awaiting(async self => await self.GetCardsAsync(cardSet))
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -206,7 +206,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async fetcher => await fetcher.GetCardImageAsync(card))
+                    .Awaiting(async self => await self.GetCardImageAsync(card))
                     .Should().Throw<NotSupportedException>();
             }
         }

@@ -15,6 +15,7 @@ group _IO
     framework: net472
     source https://api.nuget.org/v3/index.json
 
+    nuget Antlr4
     nuget HtmlAgilityPack
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001

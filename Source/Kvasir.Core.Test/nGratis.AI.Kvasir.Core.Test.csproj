@@ -64,7 +64,7 @@
     <Compile Include="MockExtensions.StorageManager.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Parser\MagicParserTests.cs" />
+    <Compile Include="Parser\MagicCardParserTests.cs" />
     <Compile Include="StubDirectory.cs" />
     <Compile Include="StubHttpMessageHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -203,7 +203,6 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>

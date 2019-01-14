@@ -46,19 +46,19 @@ namespace nGratis.AI.Kvasir.Client
             "Morningtide"
         };
 
-        private readonly IMagicRepository _magicRepository;
+        private readonly IMagicRepository _repository;
 
         private IEnumerable<CardSetViewModel> _cardSetViewModels;
 
         private CardSetViewModel _selectedCardSetViewModel;
 
-        public EngineManagementViewModel(IMagicRepository magicRepository)
+        public EngineManagementViewModel(IMagicRepository repository)
         {
             Guard
-                .Require(magicRepository, nameof(magicRepository))
+                .Require(repository, nameof(repository))
                 .Is.Not.Null();
 
-            this._magicRepository = magicRepository;
+            this._repository = repository;
 
             this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () =>
             {
@@ -87,12 +87,12 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSetsAsync()
         {
-            var cardSets = await this._magicRepository.GetCardSetsAsync();
+            var cardSets = await this._repository.GetCardSetsAsync();
 
             this.CardSetViewModels = cardSets
                 .Where(cardSet => EngineManagementViewModel.TargetCardSetNames.Contains(cardSet.Name))
                 .OrderBy(cardSet => cardSet.Name)
-                .Select(cardSet => new CardSetViewModel(cardSet, this._magicRepository))
+                .Select(cardSet => new CardSetViewModel(cardSet, this._repository))
                 .ToArray();
         }
     }

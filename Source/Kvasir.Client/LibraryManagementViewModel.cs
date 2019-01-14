@@ -45,7 +45,7 @@ namespace nGratis.AI.Kvasir.Client
     [UsedImplicitly]
     public sealed class LibraryManagementViewModel : ReactiveObject, IDisposable
     {
-        private readonly IMagicRepository _magicRepository;
+        private readonly IMagicRepository _repository;
 
         private int _cardSetCount;
 
@@ -57,13 +57,13 @@ namespace nGratis.AI.Kvasir.Client
 
         private bool _isDisposed;
 
-        public LibraryManagementViewModel(IMagicRepository magicRepository)
+        public LibraryManagementViewModel(IMagicRepository repository)
         {
             Guard
-                .Require(magicRepository, nameof(magicRepository))
+                .Require(repository, nameof(repository))
                 .Is.Not.Null();
 
-            this._magicRepository = magicRepository;
+            this._repository = repository;
 
             this.PopulateCardSetsCommand = new RelayCommand(_ => this.PopulateCardSets());
         }
@@ -112,7 +112,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private void PopulateCardSets()
         {
-            var virtualizingProvider = new CardSetViewModelProvider(this._magicRepository);
+            var virtualizingProvider = new CardSetViewModelProvider(this._repository);
 
             this.CardSetViewModels?.Dispose();
             this.CardSetViewModels = new AsyncVirtualizingCollection<CardSetViewModel>(virtualizingProvider);
@@ -123,13 +123,13 @@ namespace nGratis.AI.Kvasir.Client
                 .Subscribe(async _ =>
                 {
                     this.CardSetCount = this.CardSetViewModels.Count;
-                    this.CardCount = await this._magicRepository.GetCardCountAsync();
+                    this.CardCount = await this._repository.GetCardCountAsync();
                 });
 
             Observable
-                .FromEventPattern<EventArgs>(this._magicRepository, "CardIndexed")
+                .FromEventPattern<EventArgs>(this._repository, "CardIndexed")
                 .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(async _ => this.CardCount = await this._magicRepository.GetCardCountAsync());
+                .Subscribe(async _ => this.CardCount = await this._repository.GetCardCountAsync());
         }
 
         private void Dispose(bool isDisposing)
@@ -149,15 +149,15 @@ namespace nGratis.AI.Kvasir.Client
 
         private sealed class CardSetViewModelProvider : IPagingDataProvider<CardSetViewModel>
         {
-            private readonly IMagicRepository _magicRepository;
+            private readonly IMagicRepository _repository;
 
-            public CardSetViewModelProvider(IMagicRepository magicRepository)
+            public CardSetViewModelProvider(IMagicRepository repository)
             {
                 Guard
-                    .Require(magicRepository, nameof(magicRepository))
+                    .Require(repository, nameof(repository))
                     .Is.Not.Null();
 
-                this._magicRepository = magicRepository;
+                this._repository = repository;
             }
 
             public CardSetViewModel DefaultItem
@@ -171,21 +171,21 @@ namespace nGratis.AI.Kvasir.Client
                         ReleasedTimestamp = DateTime.MinValue
                     };
 
-                    return new CardSetViewModel(cardSet, this._magicRepository);
+                    return new CardSetViewModel(cardSet, this._repository);
                 }
             }
 
             public async Task<int> GetCountAsync()
             {
-                return await this._magicRepository.GetCardSetCountAsync();
+                return await this._repository.GetCardSetCountAsync();
             }
 
             public async Task<IReadOnlyCollection<CardSetViewModel>> GetItemsAsync(int pagingIndex, int itemCount)
             {
-                var cardSets = await this._magicRepository.GetItemsAsync(pagingIndex, itemCount);
+                var cardSets = await this._repository.GetItemsAsync(pagingIndex, itemCount);
 
                 return cardSets
-                    .Select(cardSet => new CardSetViewModel(cardSet, this._magicRepository))
+                    .Select(cardSet => new CardSetViewModel(cardSet, this._repository))
                     .ToArray();
             }
         }

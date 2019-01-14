@@ -30,6 +30,11 @@ GROUP _IO
 RESTRICTION: == net472
 NUGET
   remote: https://api.nuget.org/v3/index.json
+    Antlr4 (4.6.6)
+      Antlr4.CodeGenerator (>= 4.6.6)
+      Antlr4.Runtime (>= 4.6.6)
+    Antlr4.CodeGenerator (4.6.6)
+    Antlr4.Runtime (4.6.6)
     HtmlAgilityPack (1.8.11)
     Lucene.Net (4.8.0-beta00005)
     Lucene.Net.Analysis.Common (4.8.0-beta00005)

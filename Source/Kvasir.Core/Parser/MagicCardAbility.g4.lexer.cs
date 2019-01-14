@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicParser.cs" company="nGratis">
+// <copyright file="MagicCardAbility.g4.lexer.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,12 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 11:13:40 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, 12 January 2019 10:06:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
-    using nGratis.AI.Kvasir.Contract;
-
-    public interface IMagicParser
+    public partial class MagicCardAbilityLexer
     {
-        ParsingResult ParseRawCard(RawCard rawCard);
     }
 }

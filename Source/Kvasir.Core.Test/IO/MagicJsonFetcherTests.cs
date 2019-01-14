@@ -49,11 +49,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create()
                     .WithSuccessfulResponseInSession("https://mtgjson.com/v4/sets.html", "Raw_MTGJSON4");
 
-                var magicFetcher = new MagicJsonFetcher(stubHandler);
+                var fetcher = new MagicJsonFetcher(stubHandler);
 
                 // Act.
 
-                var cardSets = await magicFetcher.GetCardSetsAsync();
+                var cardSets = await fetcher.GetCardSetsAsync();
 
                 // Assert.
 
@@ -91,12 +91,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create()
                     .WithResponse("https://mtgjson.com/v4/sets.html", HttpStatusCode.NotFound);
 
-                var magicFetcher = new MagicJsonFetcher(stubHandler);
+                var fetcher = new MagicJsonFetcher(stubHandler);
 
                 // Act &  Assert.
 
-                magicFetcher
-                    .Awaiting(async fetcher => await fetcher.GetCardSetsAsync())
+                fetcher
+                    .Awaiting(async self => await self.GetCardSetsAsync())
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach MTGJSON4.com when trying to fetch card sets! " +
@@ -116,7 +116,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create()
                     .WithSuccessfulResponseInSession("https://mtgjson.com/v4/json/GRN.json", "Raw_MTGJSON4");
 
-                var magicFetcher = new MagicJsonFetcher(stubHandler);
+                var fetcher = new MagicJsonFetcher(stubHandler);
 
                 var cardSet = new RawCardSet
                 {
@@ -127,7 +127,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await magicFetcher.GetCardsAsync(cardSet);
+                var cards = await fetcher.GetCardsAsync(cardSet);
 
                 // Assert.
 
@@ -207,7 +207,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create()
                     .WithSuccessfulResponse("https://mtgjson.com/v4/json/X42.json", "{ }");
 
-                var magicFetcher = new MagicJsonFetcher(stubHandler);
+                var fetcher = new MagicJsonFetcher(stubHandler);
 
                 var cardSet = new RawCardSet
                 {
@@ -218,8 +218,8 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act & Assert.
 
-                magicFetcher
-                     .Awaiting(async fetcher => await fetcher.GetCardsAsync(cardSet))
+                fetcher
+                     .Awaiting(async self => await self.GetCardsAsync(cardSet))
                      .Should().Throw<KvasirException>()
                      .WithMessage("Response from MTGJSON4.com is missing cards!");
             }
@@ -233,7 +233,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create()
                     .WithResponse("https://mtgjson.com/v4/json/X42.json", HttpStatusCode.NotFound);
 
-                var magicFetcher = new MagicJsonFetcher(stubHandler);
+                var fetcher = new MagicJsonFetcher(stubHandler);
 
                 var cardSet = new RawCardSet
                 {
@@ -244,8 +244,8 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act & Assert.
 
-                magicFetcher
-                     .Awaiting(async fetcher => await fetcher.GetCardsAsync(cardSet))
+                fetcher
+                     .Awaiting(async self => await self.GetCardsAsync(cardSet))
                      .Should().Throw<KvasirException>()
                      .WithMessage(
                         "Failed to reach MTGJSON4.com when trying to fetch cards! " +

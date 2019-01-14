@@ -4,6 +4,7 @@ Newtonsoft.Json
 System.Reactive.Linq
 
 group _IO
+    Antlr4
     HtmlAgilityPack
     Lucene.Net
     Lucene.Net.Analysis.Common

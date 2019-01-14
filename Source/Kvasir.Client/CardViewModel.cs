@@ -49,9 +49,9 @@ namespace nGratis.AI.Kvasir.Client
 
         private static readonly CardInfo InvalidCardInfo = new CardInfo();
 
-        private readonly IMagicRepository _magicRepository;
+        private readonly IMagicRepository _repository;
 
-        private readonly IMagicParser _magicParser;
+        private readonly IMagicCardParser _cardParser;
 
         private ImageSource _originalImage;
 
@@ -61,27 +61,27 @@ namespace nGratis.AI.Kvasir.Client
 
         private IEnumerable<string> _parsingMessages;
 
-        public CardViewModel(RawCard card, IMagicRepository magicRepository)
-            : this(card, magicRepository, MagicParser.Instance)
+        public CardViewModel(RawCard card, IMagicRepository repository)
+            : this(card, repository, MagicCardParser.Instance)
         {
         }
 
-        internal CardViewModel(RawCard card, IMagicRepository magicRepository, IMagicParser magicParser)
+        internal CardViewModel(RawCard card, IMagicRepository repository, IMagicCardParser cardParser)
         {
             Guard
                 .Require(card, nameof(card))
                 .Is.Not.Null();
 
             Guard
-                .Require(magicRepository, nameof(magicRepository))
+                .Require(repository, nameof(repository))
                 .Is.Not.Null();
 
             Guard
-                .Require(magicParser, nameof(magicParser))
+                .Require(cardParser, nameof(cardParser))
                 .Is.Not.Null();
 
-            this._magicRepository = magicRepository;
-            this._magicParser = magicParser;
+            this._repository = repository;
+            this._cardParser = cardParser;
 
             this.Card = card;
 
@@ -121,7 +121,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateDetailAsync()
         {
-            var cardImage = await this._magicRepository.GetCardImageAsync(this.Card);
+            var cardImage = await this._repository.GetCardImageAsync(this.Card);
 
             // TODO: Need to handle larger image size, e.g. Planechase card!
 
@@ -136,7 +136,7 @@ namespace nGratis.AI.Kvasir.Client
             }
             else
             {
-                var parsingResult = await Task.Run(() => this._magicParser.ParseRawCard(this.Card));
+                var parsingResult = await Task.Run(() => this._cardParser.Parse(this.Card));
 
                 if (parsingResult.IsValid)
                 {

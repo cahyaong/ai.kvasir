@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicParser.cs" company="nGratis">
+// <copyright file="MagicCardParser.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -36,15 +36,15 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    public class MagicParser : IMagicParser
+    public class MagicCardParser : IMagicCardParser
     {
-        private MagicParser()
+        private MagicCardParser()
         {
         }
 
-        public static MagicParser Instance { get; } = new MagicParser();
+        public static MagicCardParser Instance { get; } = new MagicCardParser();
 
-        public ParsingResult ParseRawCard(RawCard rawCard)
+        public ParsingResult Parse(RawCard rawCard)
         {
             Guard
                 .Require(rawCard, nameof(rawCard))
