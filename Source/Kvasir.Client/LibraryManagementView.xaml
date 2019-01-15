@@ -36,15 +36,15 @@
           <DataGrid.Columns>
             <DataGridTextColumn
               MinWidth="70"
-              Binding="{Binding CardSet.Code, Mode=OneWay}"
+              Binding="{Binding RawCardSet.Code, Mode=OneWay}"
               Header="Code" />
             <DataGridTextColumn
               MinWidth="280"
-              Binding="{Binding CardSet.Name, Mode=OneWay}"
+              Binding="{Binding RawCardSet.Name, Mode=OneWay}"
               Header="Card Set Name" />
             <DataGridTextColumn
               MinWidth="100"
-              Binding="{Binding CardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}"
+              Binding="{Binding RawCardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}"
               Header="Released" />
           </DataGrid.Columns>
         </DataGrid>
@@ -60,11 +60,11 @@
           <DataGrid.Columns>
             <DataGridTextColumn
               MinWidth="50"
-              Binding="{Binding Card.Number, Mode=OneWay}"
+              Binding="{Binding RawCard.Number, Mode=OneWay}"
               Header="#" />
             <DataGridTextColumn
               MinWidth="220"
-              Binding="{Binding Card.Name, Mode=OneWay}"
+              Binding="{Binding RawCard.Name, Mode=OneWay}"
               Header="Card Name" />
           </DataGrid.Columns>
         </DataGrid>

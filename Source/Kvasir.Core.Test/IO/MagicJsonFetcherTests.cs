@@ -53,30 +53,30 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardSets = await fetcher.GetCardSetsAsync();
+                var rawCardSets = await fetcher.GetRawCardSetsAsync();
 
                 // Assert.
 
-                cardSets
+                rawCardSets
                     .Should().NotBeNull()
                     .And.HaveCountGreaterOrEqualTo(428);
 
-                foreach (var cardSet in cardSets)
+                foreach (var rawCardSet in rawCardSets)
                 {
-                    cardSet
+                    rawCardSet
                         .Should().NotBeNull();
 
-                    cardSet
+                    rawCardSet
                         .Name
                         .Should().NotBeNullOrWhiteSpace()
                         .And.NotMatchRegex(";");
 
-                    cardSet
+                    rawCardSet
                         .Code
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"\w{3,6}");
 
-                    cardSet
+                    rawCardSet
                         .ReleasedTimestamp
                         .Should().BeAfter(new DateTime(1993, 1, 1));
                 }
@@ -96,7 +96,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act &  Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.GetCardSetsAsync())
+                    .Awaiting(async self => await self.GetRawCardSetsAsync())
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach MTGJSON4.com when trying to fetch card sets! " +
@@ -118,7 +118,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "GRN",
                     Name = "[_MOCK_NAME_]",
@@ -127,71 +127,71 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await fetcher.GetCardsAsync(cardSet);
+                var rawCards = await fetcher.GetRawCardsAsync(rawCardSet);
 
                 // Assert.
 
-                cards
+                rawCards
                     .Should().NotBeNull()
                     .And.HaveCount(283);
 
-                foreach (var card in cards)
+                foreach (var rawCard in rawCards)
                 {
-                    card
+                    rawCard
                         .Should().NotBeNull();
 
-                    card
+                    rawCard
                         .MultiverseId
                         .Should().BePositive();
 
-                    card
+                    rawCard
                         .CardSetCode
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"\w{3,6}");
 
-                    card
+                    rawCard
                         .Name
                         .Should().NotBeNullOrWhiteSpace();
 
-                    card
+                    rawCard
                         .ManaCost
                         .Should().NotBeNull()
                         .And.MatchRegex(@"(\{[\dWUBRGX/]+\})*");
 
-                    card
+                    rawCard
                         .Type
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"[a-zA-Z\-\s]+");
 
-                    card
+                    rawCard
                         .Rarity
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"[a-zA-Z]+");
 
-                    card
+                    rawCard
                         .Text
                         .Should().NotBeNull();
 
-                    card
+                    rawCard
                         .FlavorText
                         .Should().NotBeNull();
 
-                    card
+                    rawCard
                         .Power
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[\d\*]*");
 
-                    card
+                    rawCard
                         .Toughness
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[\d\*]*");
 
-                    card
+                    rawCard
                         .Number
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[\da-z]+");
 
-                    card
+                    rawCard
                         .Artist
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"[a-zA-Z\s]+");
@@ -209,7 +209,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X42",
                     Name = "[_MOCK_NAME_]",
@@ -219,7 +219,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                     .Awaiting(async self => await self.GetCardsAsync(cardSet))
+                     .Awaiting(async self => await self.GetRawCardsAsync(rawCardSet))
                      .Should().Throw<KvasirException>()
                      .WithMessage("Response from MTGJSON4.com is missing cards!");
             }
@@ -235,7 +235,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X42",
                     Name = "[_MOCK_NAME_]",
@@ -245,7 +245,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                     .Awaiting(async self => await self.GetCardsAsync(cardSet))
+                     .Awaiting(async self => await self.GetRawCardsAsync(rawCardSet))
                      .Should().Throw<KvasirException>()
                      .WithMessage(
                         "Failed to reach MTGJSON4.com when trying to fetch cards! " +

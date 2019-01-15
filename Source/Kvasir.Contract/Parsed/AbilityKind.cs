@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardSuperKind.cs" company="nGratis">
+// <copyright file="AbilityKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,17 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 1:13:37 PM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 14 January 2019 11:43:53 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum CardSuperKind
+    public enum AbilityKind
     {
         Unknown = 0,
 
-        None,
-        Basic,
-        Legendary
+        NotSupported,
+        Static,
+        Activated,
+        Triggered
     }
 }

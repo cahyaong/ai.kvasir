@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Ability.cs" company="nGratis">
+// <copyright file="AbilityDefinition.NotSupported.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 11 January 2019 11:42:38 PM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 15 January 2019 10:06:33 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    // TODO: Remove Base- prefix from all abstract classes!
+    using System;
 
-    public abstract class Ability
+    internal sealed class NotSupportedAbilityDefinition : AbilityDefinition
     {
-        public static Ability NotSupported { get; } = NotSupportedAbility.Instance;
+        private NotSupportedAbilityDefinition()
+        {
+        }
+
+        public static NotSupportedAbilityDefinition Instance { get; } = new NotSupportedAbilityDefinition();
+
+        public override AbilityKind Kind
+        {
+            get => AbilityKind.NotSupported;
+            set => throw new NotSupportedException("Setting kind is not allowed!");
+        }
     }
 }

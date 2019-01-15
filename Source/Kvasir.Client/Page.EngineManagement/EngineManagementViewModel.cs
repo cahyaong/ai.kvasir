@@ -87,9 +87,9 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSetsAsync()
         {
-            var cardSets = await this._repository.GetCardSetsAsync();
+            var rawCardSets = await this._repository.GetRawCardSetsAsync();
 
-            this.CardSetViewModels = cardSets
+            this.CardSetViewModels = rawCardSets
                 .Where(cardSet => EngineManagementViewModel.TargetCardSetNames.Contains(cardSet.Name))
                 .OrderBy(cardSet => cardSet.Name)
                 .Select(cardSet => new CardSetViewModel(cardSet, this._repository))

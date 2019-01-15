@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="GameCard.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,24 +23,45 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 25 December 2018 1:23:57 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.Cop.Core.Vision.Imaging;
-
-    public interface IMagicFetcher : IDisposable
+    public class CardDefinition
     {
-        ExternalResources AvailableResources { get; }
+        public CardDefinition()
+        {
+            this.SubKinds = Default.SubKinds;
+            this.CostDefinition = CostDefinition.Unknown;
+            this.AbilityDefinitions = Default.AbilityDefinitions;
+        }
 
-        Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync();
+        public uint MultiverseId { get; set; }
 
-        Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet);
+        public string Name { get; set; }
 
-        Task<IImage> GetCardImageAsync(RawCard rawCard);
+        public CardKind Kind { get; set; }
+
+        public CardSuperKind SuperKind { get; set; }
+
+        public CardSubKind[] SubKinds { get; set; }
+
+        public bool IsTribal { get; set; }
+
+        public CostDefinition CostDefinition { get; set; }
+
+        public ushort Power { get; set; }
+
+        public ushort Toughness { get; set; }
+
+        public AbilityDefinition[] AbilityDefinitions { get; set; }
+
+        public static class Default
+        {
+            public static readonly CardSubKind[] SubKinds = new CardSubKind[0];
+
+            public static readonly AbilityDefinition[] AbilityDefinitions = new AbilityDefinition[0];
+        }
     }
 }

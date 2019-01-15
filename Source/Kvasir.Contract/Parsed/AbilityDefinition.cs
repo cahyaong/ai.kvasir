@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ManaCost.No.cs" company="nGratis">
+// <copyright file="AbilityDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,25 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 11 January 2019 8:02:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 11 January 2019 11:42:38 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
+    // TODO: Remove Base- prefix from all abstract classes!
 
-    internal class FreeManaCost : ManaCost
+    public class AbilityDefinition
     {
-        private FreeManaCost()
-        {
-        }
+        public static AbilityDefinition NotSupported { get; } = NotSupportedAbilityDefinition.Instance;
 
-        internal static FreeManaCost Instance { get; } = new FreeManaCost();
-
-        public override ushort this[Mana mana]
-        {
-            get => base[mana];
-            set => throw new NotSupportedException("Setting mana amount is not allowed.");
-        }
+        public virtual AbilityKind Kind { get; set; }
     }
 }

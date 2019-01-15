@@ -52,10 +52,10 @@ namespace nGratis.AI.Kvasir.Client
 
         private int _invalidCardCount;
 
-        public CardSetViewModel(RawCardSet cardSet, IMagicRepository repository)
+        public CardSetViewModel(RawCardSet rawCardSet, IMagicRepository repository)
         {
             Guard
-                .Require(cardSet, nameof(cardSet))
+                .Require(rawCardSet, nameof(rawCardSet))
                 .Is.Not.Null();
 
             Guard
@@ -64,14 +64,14 @@ namespace nGratis.AI.Kvasir.Client
 
             this._repository = repository;
 
-            this.CardSet = cardSet;
+            this.RawCardSet = rawCardSet;
             this.CardViewModels = Enumerable.Empty<CardViewModel>();
 
             this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
             this.ParseCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardsAysnc());
         }
 
-        public RawCardSet CardSet { get; }
+        public RawCardSet RawCardSet { get; }
 
         public IEnumerable<CardViewModel> CardViewModels
         {
@@ -114,9 +114,9 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardsAsync()
         {
-            var cards = await this._repository.GetCardsAsync(this.CardSet);
+            var rawCards = await this._repository.GetRawCardsAsync(this.RawCardSet);
 
-            this.CardViewModels = cards
+            this.CardViewModels = rawCards
                 .Select(card => new CardViewModel(card, this._repository))
                 .ToArray();
 
@@ -128,7 +128,7 @@ namespace nGratis.AI.Kvasir.Client
                 .Select(vm => vm.WhenPropertyChanged())
                 .Merge()
                 .Where(pattern =>
-                    pattern.EventArgs.PropertyName == nameof(CardViewModel.CardInfo) ||
+                    pattern.EventArgs.PropertyName == nameof(CardViewModel.CardDefinition) ||
                     pattern.EventArgs.PropertyName == nameof(CardViewModel.ParsingMessages))
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(_ => this.UpdateParsingStatistics());
@@ -161,7 +161,7 @@ namespace nGratis.AI.Kvasir.Client
         {
             var parsedCardViewModels = this
                 .CardViewModels
-                .Where(vm => vm.CardInfo != null)
+                .Where(vm => vm.CardDefinition != null)
                 .ToArray();
 
             this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;

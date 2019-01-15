@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GameCard.cs" company="nGratis">
+// <copyright file="CostDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,47 +23,19 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 1:23:57 PM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 14 January 2019 11:46:06 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public class CardInfo
+    public class CostDefinition
     {
-        public CardInfo()
-        {
-            this.SubKinds = Default.SubKinds;
-            this.ManaCost = Default.ManaCost;
-            this.Abilities = Default.Abilities;
-        }
+        public static CostDefinition Unknown { get; } = UnknownCostDefinition.Instance;
 
-        public uint MultiverseId { get; set; }
+        public static CostDefinition Free { get; } = FreeCostDefinition.Instance;
 
-        public string Name { get; set; }
+        public virtual CostKind Kind { get; set; }
 
-        public CardKind Kind { get; set; }
-
-        public CardSuperKind SuperKind { get; set; }
-
-        public CardSubKind[] SubKinds { get; set; }
-
-        public bool IsTribal { get; set; }
-
-        public ManaCost ManaCost { get; set; }
-
-        public ushort Power { get; set; }
-
-        public ushort Toughness { get; set; }
-
-        public Ability[] Abilities { get; set; }
-
-        public static class Default
-        {
-            public static readonly ManaCost ManaCost = ManaCost.Empty;
-
-            public static readonly CardSubKind[] SubKinds = new CardSubKind[0];
-
-            public static readonly Ability[] Abilities = new Ability[0];
-        }
+        public virtual string Amount { get; set; }
     }
 }

@@ -76,11 +76,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardSets = await stubFetcher.GetCardSetsAsync();
+                var rawCardSets = await stubFetcher.GetRawCardSetsAsync();
 
                 // Assert.
 
-                cardSets
+                rawCardSets
                     .Should().NotBeNullOrEmpty();
             }
 
@@ -98,7 +98,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.GetCardSetsAsync())
+                    .Awaiting(async self => await self.GetRawCardSetsAsync())
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -117,7 +117,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create(stubHandler)
                     .WithAvailableResources(ExternalResources.Card);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "[_MOCK_CODE_]",
                     Name = "[_MOCK_NAME_]"
@@ -125,11 +125,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await stubFetcher.GetCardsAsync(cardSet);
+                var rawCards = await stubFetcher.GetRawCardsAsync(rawCardSet);
 
                 // Assert.
 
-                cards
+                rawCards
                     .Should().NotBeNullOrEmpty();
             }
 
@@ -144,7 +144,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubFetcher = StubMagicHttpFetcher
                     .Create(stubHandler);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "[_MOCK_CODE_]",
                     Name = "[_MOCK_NAME_]"
@@ -153,7 +153,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.GetCardsAsync(cardSet))
+                    .Awaiting(async self => await self.GetRawCardsAsync(rawCardSet))
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -172,14 +172,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create(stubHandler)
                     .WithAvailableResources(ExternalResources.CardImage);
 
-                var card = new RawCard
+                var rawCard = new RawCard
                 {
                     Name = "[_MOCK_NAME_]"
                 };
 
                 // Act.
 
-                var cardImage = await stubFetcher.GetCardImageAsync(card);
+                var cardImage = await stubFetcher.GetCardImageAsync(rawCard);
 
                 // Assert.
 
@@ -198,7 +198,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubFetcher = StubMagicHttpFetcher
                     .Create(stubHandler);
 
-                var card = new RawCard
+                var rawCard = new RawCard
                 {
                     Name = "[_MOCK_NAME_]"
                 };
@@ -206,7 +206,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.GetCardImageAsync(card))
+                    .Awaiting(async self => await self.GetCardImageAsync(rawCard))
                     .Should().Throw<NotSupportedException>();
             }
         }

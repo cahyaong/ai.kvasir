@@ -76,13 +76,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().BeTrue();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
-                    .ManaCost
-                    .Should().NotBeNull();
+                    .GetValue<CardDefinition>()
+                    .CostDefinition
+                    .Should().NotBe(CostDefinition.Unknown);
             }
 
             [Fact]
@@ -110,8 +110,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().BeFalse();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<CardDefinition>()
+                    .CostDefinition
+                    .Should().Be(CostDefinition.Unknown);
             }
 
             [Fact]
@@ -134,11 +139,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .MultiverseId
                     .Should().Be(42);
             }
@@ -167,11 +172,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain("<MultiverseId> Value must be zero or positive.");
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .MultiverseId
                     .Should().Be(0);
             }
@@ -196,18 +201,18 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Name
                     .Should().Be("Llanowar Elves");
             }
 
             [Theory]
-            [MemberData(nameof(TestData.ValidCardKindTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidType_ShouldParseRawValue(CardKindTheory theory)
+            [MemberData(nameof(TestData.ValidTypeTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidType_ShouldParseRawValue(TypeTheory theory)
             {
                 // Arrange.
 
@@ -226,28 +231,28 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 using (new AssertionScope())
                 {
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .Kind
-                        .Should().Be(theory.ParsedKind);
+                        .Should().Be(theory.ParsedCardKind);
 
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .SuperKind
-                        .Should().Be(theory.ParsedSuperKind);
+                        .Should().Be(theory.ParsedCardSuperKind);
 
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .SubKinds
-                        .Should().BeEquivalentTo(theory.ParsedSubKinds);
+                        .Should().BeEquivalentTo(theory.ParsedCardSubKinds);
 
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .IsTribal
                         .Should().BeFalse();
                 }
@@ -273,36 +278,36 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 using (new AssertionScope())
                 {
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .IsTribal
                         .Should().BeTrue();
 
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .SuperKind
                         .Should().Be(CardSuperKind.None);
 
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .Kind
                         .Should().Be(CardKind.Creature);
 
                     parsingResult
-                        .GetValue<CardInfo>()
+                        .GetValue<CardDefinition>()
                         .SubKinds
                         .Should().BeEquivalentTo(CardSubKind.Merfolk, CardSubKind.Wizard);
                 }
             }
 
             [Theory]
-            [MemberData(nameof(TestData.InvalidCardKindTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidType_ShouldAddMessage(CardKindTheory theory)
+            [MemberData(nameof(TestData.InvalidTypeTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidType_ShouldAddMessage(TypeTheory theory)
             {
                 // Arrange.
 
@@ -346,9 +351,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
-                    .ManaCost
-                    .Should().Be(ManaCost.Free);
+                    .GetValue<CardDefinition>()
+                    .CostDefinition
+                    .Should().Be(CostDefinition.Free);
             }
 
             [Theory]
@@ -373,38 +378,23 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
-                    .ManaCost
+                    .GetValue<CardDefinition>()
+                    .CostDefinition
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
-                    .ManaCost.ConvertedAmount
-                    .Should().Be(theory.ParsedConvertedAmount);
+                    .GetValue<CardDefinition>()
+                    .CostDefinition.Kind
+                    .Should().Be(theory.ParsedCostKind);
 
-                using (new AssertionScope())
-                {
-                    theory
-                        .ParsedAmountLookup
-                        .ForEach(kvp => parsingResult
-                            .GetValue<CardInfo>()
-                            .ManaCost[kvp.Key]
-                            .Should().Be(kvp.Value));
-
-                    Enum
-                        .GetValues(typeof(Mana))
-                        .Cast<Mana>()
-                        .Where(mana => mana != Mana.Unknown)
-                        .Where(mana => !theory.ParsedAmountLookup.ContainsKey(mana))
-                        .ForEach(mana => parsingResult
-                            .GetValue<CardInfo>()
-                            .ManaCost[mana]
-                            .Should().Be(0));
-                }
+                parsingResult
+                    .GetValue<CardDefinition>()
+                    .CostDefinition.Amount
+                    .Should().Be(theory.ParsedAmount);
             }
 
             [Theory]
@@ -433,30 +423,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
-                    .ManaCost
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<CardInfo>()
-                    .ManaCost.ConvertedAmount
-                    .Should().Be(0);
-
-                using (new AssertionScope())
-                {
-                    Enum
-                        .GetValues(typeof(Mana))
-                        .Cast<Mana>()
-                        .Where(mana => mana != Mana.Unknown)
-                        .ForEach(mana => parsingResult
-                            .GetValue<CardInfo>()
-                            .ManaCost[mana]
-                            .Should().Be(0));
-                }
+                    .GetValue<CardDefinition>()
+                    .CostDefinition
+                    .Should().Be(CostDefinition.Unknown);
             }
 
             [Theory]
@@ -481,7 +454,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Power
                     .Should().Be(theory.ParsedPower);
             }
@@ -512,7 +485,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Power.Should().Be(0);
             }
 
@@ -538,7 +511,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Toughness
                     .Should().Be(theory.ParsedToughness);
             }
@@ -569,7 +542,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
 
                 parsingResult
-                    .GetValue<CardInfo>()
+                    .GetValue<CardDefinition>()
                     .Toughness.Should().Be(0);
             }
 
@@ -595,19 +568,19 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardInfo>()
-                    .Abilities
-                    .Should().BeEquivalentTo(Ability.NotSupported, Ability.NotSupported);
+                    .GetValue<CardDefinition>()
+                    .AbilityDefinitions
+                    .Should().AllBeEquivalentTo(AbilityDefinition.NotSupported);
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]
             private static class TestData
             {
-                public static IEnumerable<object[]> ValidCardKindTheories
+                public static IEnumerable<object[]> ValidTypeTheories
                 {
                     get
                     {
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Artifact")
                             .ExpectValid(
                                 CardKind.Artifact,
@@ -615,7 +588,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .WithLabel("CASE 01 -> Card type without sub-type.")
                             .ToXunitTheory();
 
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Creature - Elf Warrior")
                             .ExpectValid(
                                 CardKind.Creature,
@@ -625,7 +598,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .WithLabel("CASE 02 -> Card type with multiple sub-types.")
                             .ToXunitTheory();
 
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Legendary Creature - Goblin Shaman")
                             .ExpectValid(
                                 CardKind.Creature,
@@ -635,7 +608,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .WithLabel("CASE 03 -> Card type with super-type and multiple sub-types.")
                             .ToXunitTheory();
 
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Creature — Kithkin Soldier")
                             .ExpectValid(
                                 CardKind.Creature,
@@ -647,29 +620,29 @@ namespace nGratis.AI.Kvasir.Core.Test
                     }
                 }
 
-                public static IEnumerable<object[]> InvalidCardKindTheories
+                public static IEnumerable<object[]> InvalidTypeTheories
                 {
                     get
                     {
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create(string.Empty)
                             .ExpectInvalid("<Kind> Value must not be <null> or empty.")
                             .WithLabel("CASE 01 -> Empty type.")
                             .ToXunitTheory();
 
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Food")
                             .ExpectInvalid("<Kind> No mapping for value [Food].")
                             .WithLabel("CASE 02 -> Invalid card type.")
                             .ToXunitTheory();
 
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Extraordinary Creature")
                             .ExpectInvalid("<SuperKind> No mapping for value [Extraordinary].")
                             .WithLabel("CASE 03 -> Invalid card super-type.")
                             .ToXunitTheory();
 
-                        yield return CardKindTheory
+                        yield return TypeTheory
                             .Create("Creature - Quokka Ranger")
                             .ExpectInvalid("<SubKind> No mapping for value [Quokka], [Ranger].")
                             .WithLabel("CASE 04 -> Invalid card sub-types.")
@@ -683,45 +656,31 @@ namespace nGratis.AI.Kvasir.Core.Test
                     {
                         yield return ManaCostTheory
                             .Create("Creature", "{0}")
-                            .ExpectValid(new Dictionary<Mana, ushort>())
+                            .ExpectValid(CostKind.Mana, "{0}")
                             .WithLabel("CASE 01 -> Non-land with zero amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{42}")
-                            .ExpectValid(new Dictionary<Mana, ushort>
-                            {
-                                [Mana.Colorless] = 42
-                            })
+                            .ExpectValid(CostKind.Mana, "{42}")
                             .WithLabel("CASE 02 -> Non-land with colorless amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{G}")
-                            .ExpectValid(new Dictionary<Mana, ushort>
-                            {
-                                [Mana.Green] = 1
-                            })
+                            .ExpectValid(CostKind.Mana, "{G}")
                             .WithLabel("CASE 03 -> Non-land with mono-color amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
-                            .Create("Creature", "{1}{W}{W}{U}{U}{U}{B}{B}{B}{B}{R}{R}{R}{R}{R}{G}{G}{G}{G}{G}{G}")
-                            .ExpectValid(new Dictionary<Mana, ushort>
-                            {
-                                [Mana.Colorless] = 1,
-                                [Mana.White] = 2,
-                                [Mana.Blue] = 3,
-                                [Mana.Black] = 4,
-                                [Mana.Red] = 5,
-                                [Mana.Green] = 6
-                            })
+                            .Create("Creature", "{1}{W}{U}{B}{R}{G}")
+                            .ExpectValid(CostKind.Mana, "{1}{W}{U}{B}{R}{G}")
                             .WithLabel("CASE 04 -> Non-land with colorless and all colors amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Land", string.Empty)
-                            .ExpectValid(new Dictionary<Mana, ushort>())
+                            .ExpectValid(CostKind.Free, string.Empty)
                             .WithLabel("CASE 05 -> Land with empty amount.")
                             .ToXunitTheory();
                     }
@@ -837,67 +796,67 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class CardKindTheory : BaseParsingTheory
+        public class TypeTheory : ParsingTheory
         {
             public string RawType { get; private set; }
 
-            public CardKind ParsedKind { get; private set; }
+            public CardKind ParsedCardKind { get; private set; }
 
-            public CardSuperKind ParsedSuperKind { get; private set; }
+            public CardSuperKind ParsedCardSuperKind { get; private set; }
 
-            public IEnumerable<CardSubKind> ParsedSubKinds { get; private set; }
+            public IEnumerable<CardSubKind> ParsedCardSubKinds { get; private set; }
 
-            public static CardKindTheory Create(string rawType)
+            public static TypeTheory Create(string rawType)
             {
-                return new CardKindTheory
+                return new TypeTheory
                 {
                     RawType = rawType,
-                    ParsedKind = CardKind.Unknown,
-                    ParsedSuperKind = CardSuperKind.Unknown,
-                    ParsedSubKinds = Enumerable.Empty<CardSubKind>(),
+                    ParsedCardKind = CardKind.Unknown,
+                    ParsedCardSuperKind = CardSuperKind.Unknown,
+                    ParsedCardSubKinds = Enumerable.Empty<CardSubKind>(),
                     Message = string.Empty
                 };
             }
 
-            public CardKindTheory ExpectValid(
-                CardKind parsedKind,
-                CardSuperKind parsedSuperKind,
-                params CardSubKind[] parsedSubKinds)
+            public TypeTheory ExpectValid(
+                CardKind parsedCardKind,
+                CardSuperKind parsedCardSuperKind,
+                params CardSubKind[] parsedCardSubKinds)
             {
                 Guard
-                    .Require(parsedKind, nameof(parsedKind))
+                    .Require(parsedCardKind, nameof(parsedCardKind))
                     .Is.Not.EqualTo(CardKind.Unknown);
 
                 Guard
-                    .Require(parsedSuperKind, nameof(parsedSuperKind))
+                    .Require(parsedCardSuperKind, nameof(parsedCardSuperKind))
                     .Is.Not.EqualTo(CardSuperKind.Unknown);
 
                 // TODO: Extend <Guard> class to support collection check against specific value(s).
 
-                var hasInvalidSubKind = parsedSubKinds
+                var hasInvalidSubKind = parsedCardSubKinds
                     .Any(subKind => subKind == CardSubKind.Unknown);
 
                 Guard
                     .Require(hasInvalidSubKind, nameof(hasInvalidSubKind))
                     .Is.False();
 
-                this.ParsedKind = parsedKind;
-                this.ParsedSuperKind = parsedSuperKind;
-                this.ParsedSubKinds = parsedSubKinds;
+                this.ParsedCardKind = parsedCardKind;
+                this.ParsedCardSuperKind = parsedCardSuperKind;
+                this.ParsedCardSubKinds = parsedCardSubKinds;
 
                 return this;
             }
         }
 
-        public class ManaCostTheory : BaseParsingTheory
+        public class ManaCostTheory : ParsingTheory
         {
             public string RawType { get; private set; }
 
             public string RawManaCost { get; private set; }
 
-            public uint ParsedConvertedAmount { get; private set; }
+            public CostKind ParsedCostKind { get; private set; }
 
-            public IReadOnlyDictionary<Mana, ushort> ParsedAmountLookup { get; private set; }
+            public string ParsedAmount { get; private set; }
 
             public static ManaCostTheory Create(string rawType, string rawManaCost)
             {
@@ -905,22 +864,22 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     RawType = rawType,
                     RawManaCost = rawManaCost,
-                    ParsedConvertedAmount = 0,
-                    ParsedAmountLookup = new Dictionary<Mana, ushort>(),
+                    ParsedCostKind = CostKind.Unknown,
+                    ParsedAmount = string.Empty,
                     Message = string.Empty
                 };
             }
 
-            public ManaCostTheory ExpectValid(IReadOnlyDictionary<Mana, ushort> parsedAmountLookup)
+            public ManaCostTheory ExpectValid(CostKind parsedCostKind, string parsedAmount)
             {
-                this.ParsedConvertedAmount = (uint)parsedAmountLookup.Values.Sum(amount => amount);
-                this.ParsedAmountLookup = parsedAmountLookup;
+                this.ParsedCostKind = parsedCostKind;
+                this.ParsedAmount = parsedAmount;
 
                 return this;
             }
         }
 
-        public class PowerTheory : BaseParsingTheory
+        public class PowerTheory : ParsingTheory
         {
             public string RawType { get; private set; }
 
@@ -947,7 +906,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class ToughnessTheory : BaseParsingTheory
+        public class ToughnessTheory : ParsingTheory
         {
             public string RawType { get; private set; }
 
@@ -974,11 +933,11 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public abstract class BaseParsingTheory : CopTheory
+        public abstract class ParsingTheory : CopTheory
         {
             public string Message { get; protected set; }
 
-            public BaseParsingTheory ExpectInvalid(string message)
+            public ParsingTheory ExpectInvalid(string message)
             {
                 Guard
                     .Require(message, nameof(message))

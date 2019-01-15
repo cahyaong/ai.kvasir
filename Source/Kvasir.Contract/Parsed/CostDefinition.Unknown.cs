@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="UnknownCostDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,24 +23,32 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 15 January 2019 10:22:42 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
     using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using nGratis.Cop.Core.Contract;
 
-    public interface IMagicFetcher : IDisposable
+    internal sealed class UnknownCostDefinition : CostDefinition
     {
-        ExternalResources AvailableResources { get; }
+        private UnknownCostDefinition()
+        {
+        }
 
-        Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync();
+        public static UnknownCostDefinition Instance { get; } = new UnknownCostDefinition();
 
-        Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet);
+        public override CostKind Kind
+        {
+            get => CostKind.Unknown;
+            set => throw new NotSupportedException("Setting kind is not allowed!");
+        }
 
-        Task<IImage> GetCardImageAsync(RawCard rawCard);
+        public override string Amount
+        {
+            get => Text.Unknown;
+            set => throw new NotSupportedException("Setting amount is not allowed!");
+        }
     }
 }

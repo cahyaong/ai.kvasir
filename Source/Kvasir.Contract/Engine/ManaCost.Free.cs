@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardSubKind.cs" company="nGratis">
+// <copyright file="ManaCost.No.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,52 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 1:00:14 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 11 January 2019 8:02:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum CardSubKind
+    using System;
+
+    internal sealed class FreeManaCost : ManaCost
     {
-        Unknown = 0,
+        private FreeManaCost()
+        {
+        }
 
-        Equipment,
+        internal static FreeManaCost Instance { get; } = new FreeManaCost();
 
-        Advisor,
-        Archer,
-        Assassin,
-        Cleric,
-        Druid,
-        Elemental,
-        Elf,
-        Faerie,
-        Giant,
-        Goblin,
-        Kithkin,
-        Knight,
-        Incarnation,
-        Merfolk,
-        Rogue,
-        Scout,
-        Shaman,
-        Shapeshifter,
-        Soldier,
-        Treefolk,
-        Warrior,
-        Wizard,
-
-        Aura,
-
-        Plains,
-        Island,
-        Swamp,
-        Mountain,
-        Forest,
-
-        Ajani,
-        Chandra,
-        Garruk,
-        Jace,
-        Liliana
+        public override ushort this[Mana mana]
+        {
+            get => base[mana];
+            set => throw new NotSupportedException("Setting mana amount is not allowed.");
+        }
     }
 }

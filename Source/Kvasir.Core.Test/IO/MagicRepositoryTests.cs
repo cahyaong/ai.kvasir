@@ -170,7 +170,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class GetCardSetsAsyncMethod
+        public class GetRawCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
@@ -190,11 +190,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardSets = await repository.GetCardSetsAsync();
+                var rawCardSets = await repository.GetRawCardSetsAsync();
 
                 // Assert.
 
-                cardSets
+                rawCardSets
                     .Should().NotBeNullOrEmpty()
                     .And.HaveCount(3)
                     .And.Contain(set =>
@@ -211,7 +211,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetCardSetsAsync(),
+                    mock => mock.GetRawCardSetsAsync(),
                     Times.Once);
             }
 
@@ -234,26 +234,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardSets = await repository.GetCardSetsAsync();
+                var rawCardSets = await repository.GetRawCardSetsAsync();
 
                 // Assert.
 
-                cardSets
+                rawCardSets
                     .Should().NotBeNullOrEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var cardSet in cardSets)
+                foreach (var rawCardSet in rawCardSets)
                 {
-                    cardSet
+                    rawCardSet
                         .Code
                         .Should().NotBeEmpty();
 
-                    cardSet
+                    rawCardSet
                         .Name
                         .Should().NotBeNullOrEmpty();
 
-                    cardSet
+                    rawCardSet
                         .ReleasedTimestamp
                         .Should().BeOnOrAfter(Constant.EpochTimestamp);
                 }
@@ -267,12 +267,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Never);
 
                 mockFetcher.Verify(
-                    mock => mock.GetCardSetsAsync(),
+                    mock => mock.GetRawCardSetsAsync(),
                     Times.Never);
             }
         }
 
-        public class GetCardsAsyncMethod
+        public class GetRawCardsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
@@ -295,7 +295,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -304,26 +304,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await repository.GetCardsAsync(cardSet);
+                var rawCards = await repository.GetRawCardsAsync(rawCardSet);
 
                 // Assert.
 
-                cards
+                rawCards
                     .Should().NotBeEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var card in cards)
+                foreach (var rawCard in rawCards)
                 {
-                    card
+                    rawCard
                         .MultiverseId
                         .Should().BePositive();
 
-                    card
+                    rawCard
                         .CardSetCode
                         .Should().BeEquivalentTo("X03");
 
-                    card
+                    rawCard
                         .Number
                         .Should().NotBeNullOrEmpty();
                 }
@@ -337,11 +337,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()),
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetCardsAsync(Arg.RawCardSet.Is("X03")),
+                    mock => mock.GetRawCardsAsync(Arg.RawCardSet.Is("X03")),
                     Times.Once);
             }
 
@@ -367,7 +367,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -376,26 +376,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await repository.GetCardsAsync(cardSet);
+                var rawCards = await repository.GetRawCardsAsync(rawCardSet);
 
                 // Assert.
 
-                cards
+                rawCards
                     .Should().NotBeEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var card in cards)
+                foreach (var rawCard in rawCards)
                 {
-                    card
+                    rawCard
                         .MultiverseId
                         .Should().BePositive();
 
-                    card
+                    rawCard
                         .CardSetCode
                         .Should().BeEquivalentTo("X03");
 
-                    card
+                    rawCard
                         .Number
                         .Should().NotBeNullOrEmpty();
                 }
@@ -409,7 +409,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Never);
 
                 mockFetcher.Verify(
-                    mock => mock.GetCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()),
                     Times.Never);
             }
 
@@ -434,7 +434,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -443,26 +443,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await repository.GetCardsAsync(cardSet);
+                var rawCards = await repository.GetRawCardsAsync(rawCardSet);
 
                 // Assert.
 
-                cards
+                rawCards
                     .Should().NotBeEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var card in cards)
+                foreach (var rawCard in rawCards)
                 {
-                    card
+                    rawCard
                         .MultiverseId
                         .Should().BePositive();
 
-                    card
+                    rawCard
                         .CardSetCode
                         .Should().BeEquivalentTo("X03");
 
-                    card
+                    rawCard
                         .Number
                         .Should().NotBeNullOrEmpty();
                 }
@@ -476,12 +476,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()),
                     Times.Once);
             }
         }
 
-        public class CardSetIndexedEvent
+        public class RawCardSetIndexedEvent
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldRaiseEvent()
@@ -503,12 +503,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetCardSetsAsync();
+                    var _ = await repository.GetRawCardSetsAsync();
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.CardSetIndexed))
+                        .Should().Raise(nameof(IMagicRepository.RawCardSetIndexed))
                         .WithSender(repository)
                         .WithArgs<EventArgs>(args => args == EventArgs.Empty);
                 }
@@ -535,17 +535,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetCardSetsAsync();
+                    var _ = await repository.GetRawCardSetsAsync();
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().NotRaise(nameof(IMagicRepository.CardSetIndexed));
+                        .Should().NotRaise(nameof(IMagicRepository.RawCardSetIndexed));
                 }
             }
         }
 
-        public class CardIndexedEvent
+        public class RawCardIndexedEvent
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldFireEvent()
@@ -563,7 +563,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X01",
                     Name = "[_MOCK_NAME_]",
@@ -574,12 +574,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetCardsAsync(cardSet);
+                    var _ = await repository.GetRawCardsAsync(rawCardSet);
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
+                        .Should().Raise(nameof(IMagicRepository.RawCardIndexed))
                         .WithSender(repository)
                         .WithArgs<EventArgs>(args => args == EventArgs.Empty);
                 }
@@ -602,7 +602,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X01",
                     Name = "[_MOCK_NAME_]",
@@ -613,12 +613,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetCardsAsync(cardSet);
+                    var _ = await repository.GetRawCardsAsync(rawCardSet);
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().NotRaise(nameof(IMagicRepository.CardIndexed));
+                        .Should().NotRaise(nameof(IMagicRepository.RawCardIndexed));
                 }
             }
 
@@ -643,7 +643,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var cardSet = new RawCardSet
+                var rawCardSet = new RawCardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -654,12 +654,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetCardsAsync(cardSet);
+                    var _ = await repository.GetRawCardsAsync(rawCardSet);
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
+                        .Should().Raise(nameof(IMagicRepository.RawCardIndexed))
                         .WithSender(repository)
                         .WithArgs<EventArgs>(args => args == EventArgs.Empty);
                 }

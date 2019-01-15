@@ -86,7 +86,7 @@ namespace nGratis.AI.Kvasir.Core
 
         protected HttpClient HttpClient { get; }
 
-        public async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync()
+        public async Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync()
         {
             if (!this.AvailableResources.HasFlag(ExternalResources.CardSet))
             {
@@ -96,10 +96,10 @@ namespace nGratis.AI.Kvasir.Core
             return await this.GetCardSetsCoreAsync();
         }
 
-        public async Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet)
+        public async Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet)
         {
             Guard
-                .Require(cardSet, nameof(cardSet))
+                .Require(rawCardSet, nameof(rawCardSet))
                 .Is.Not.Null();
 
             if (!this.AvailableResources.HasFlag(ExternalResources.Card))
@@ -107,13 +107,13 @@ namespace nGratis.AI.Kvasir.Core
                 return await Task.FromException<IReadOnlyCollection<RawCard>>(new NotSupportedException());
             }
 
-            return await this.GetCardsCoreAsync(cardSet);
+            return await this.GetCardsCoreAsync(rawCardSet);
         }
 
-        public async Task<IImage> GetCardImageAsync(RawCard card)
+        public async Task<IImage> GetCardImageAsync(RawCard rawCard)
         {
             Guard
-                .Require(card, nameof(card))
+                .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
             if (!this.AvailableResources.HasFlag(ExternalResources.CardImage))
@@ -121,7 +121,7 @@ namespace nGratis.AI.Kvasir.Core
                 return await Task.FromException<IImage>(new NotSupportedException());
             }
 
-            return await this.GetCardImageCoreAsync(card);
+            return await this.GetCardImageCoreAsync(rawCard);
         }
 
         protected virtual async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()

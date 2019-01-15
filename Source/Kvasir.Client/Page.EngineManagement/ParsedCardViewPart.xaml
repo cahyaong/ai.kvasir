@@ -3,6 +3,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client"
+  xmlns:contract="clr-namespace:nGratis.Cop.Core.Contract;assembly=nGratis.Cop.Core.Contract"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:wpf="http://schemas.ngratis.com/2014/core"
@@ -19,38 +20,24 @@
         Header="Name"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardInfo.Name, Mode=OneWay}" />
+        Value="{Binding CardDefinition.Name, Mode=OneWay}" />
       <wpf:AweField
         Grid.Column="1"
         Header="Multiverse ID"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardInfo.MultiverseId, Mode=OneWay}" />
+        Value="{Binding CardDefinition.MultiverseId, Mode=OneWay}" />
     </Grid>
-    <Grid wpf:ChildrenMargin.Value="10,0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="3*" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
-      <wpf:AweField Grid.Column="0" Header="Mana Cost">
-        <wpf:AweField.CustomTemplate>
-          <DataTemplate DataType="client:CardViewModel">
-            <client:AweManaCostViewer ManaCost="{Binding CardInfo.ManaCost, Mode=OneWay}" />
-          </DataTemplate>
-        </wpf:AweField.CustomTemplate>
-      </wpf:AweField>
-      <wpf:AweField
-        Grid.Column="1"
-        Header="(Converted)"
-        Kind="Text"
-        Mode="Output"
-        Value="{Binding CardInfo.ManaCost.ConvertedAmount, Mode=OneWay}" />
-    </Grid>
+    <wpf:AweField
+      Header="Cost"
+      Kind="Text"
+      Mode="Output"
+      Value="{x:Static contract:Text.Unsupported}" />
     <wpf:AweField
       Header="Kinds (incl. Super- and Sub-)"
       Kind="Chips"
       Mode="Output"
-      Values="{Binding CombinedKinds, Mode=OneWay}" />
+      Values="{Binding CombinedCardKinds, Mode=OneWay}" />
     <Grid wpf:ChildrenMargin.Value="10,0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="2*" />
@@ -62,13 +49,13 @@
         Header="Power"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardInfo.Power, Mode=OneWay}" />
+        Value="{Binding CardDefinition.Power, Mode=OneWay}" />
       <wpf:AweField
         Grid.Column="2"
         Header="Toughness"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardInfo.Toughness, Mode=OneWay}" />
+        Value="{Binding CardDefinition.Toughness, Mode=OneWay}" />
     </Grid>
     <wpf:AweField
       Header="Messages"

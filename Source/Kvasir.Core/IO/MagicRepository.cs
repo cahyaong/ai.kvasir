@@ -111,11 +111,11 @@ namespace nGratis.AI.Kvasir.Core
                 .ToDictionary(grouping => grouping.Key, grouping => grouping.Single());
         }
 
-        public event EventHandler CardSetIndexed;
+        public event EventHandler RawCardSetIndexed;
 
-        public event EventHandler CardIndexed;
+        public event EventHandler RawCardIndexed;
 
-        public async Task<int> GetCardSetCountAsync()
+        public async Task<int> GetRawCardSetCountAsync()
         {
             var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
 
@@ -128,7 +128,7 @@ namespace nGratis.AI.Kvasir.Core
             return indexReader.NumDocs;
         }
 
-        public async Task<int> GetCardCountAsync()
+        public async Task<int> GetRawCardCountAsync()
         {
             return await Task.FromResult(this
                 ._indexManager
@@ -136,18 +136,18 @@ namespace nGratis.AI.Kvasir.Core
                 .NumDocs);
         }
 
-        public async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync()
+        public async Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync()
         {
-            return await this.GetCardSetsAsync(0, await this.GetCardSetCountAsync());
+            return await this.GetCardSetsAsync(0, await this.GetRawCardSetCountAsync());
         }
 
-        public async Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet)
+        public async Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet)
         {
             Guard
-                .Require(cardSet, nameof(cardSet))
+                .Require(rawCardSet, nameof(rawCardSet))
                 .Is.Not.Null();
 
-            var cards = default(IReadOnlyCollection<RawCard>);
+            var rawCards = default(IReadOnlyCollection<RawCard>);
 
             if (this._indexManager.HasIndex(IndexKind.Card))
             {
@@ -155,9 +155,9 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     var indexReader = this._indexManager.FindIndexReader(IndexKind.Card);
                     var indexSearcher = new IndexSearcher(indexReader);
-                    var query = new TermQuery(new Term("card-set-code", cardSet.Code));
+                    var query = new TermQuery(new Term("card-set-code", rawCardSet.Code));
 
-                    cards = indexSearcher
+                    rawCards = indexSearcher
                          .Search(query, 1000)
                          .ScoreDocs
                          .Select(document => indexReader.Document(document.Doc))
@@ -166,21 +166,21 @@ namespace nGratis.AI.Kvasir.Core
                 });
             }
 
-            if (cards?.Any() != true)
+            if (rawCards?.Any() != true)
             {
-                cards = await this
+                rawCards = await this
                     ._fetcherLookup[ExternalResources.Card]
-                    .GetCardsAsync(cardSet);
+                    .GetRawCardsAsync(rawCardSet);
 
                 Guard
-                    .Ensure(cards, nameof(cards))
+                    .Ensure(rawCards, nameof(rawCards))
                     .Is.Not.Null();
 
                 await Task.Run(() =>
                 {
                     var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Card);
 
-                    var documents = cards
+                    var documents = rawCards
                         .Select(card => card.ToLuceneDocument())
                         .ToArray();
 
@@ -192,21 +192,21 @@ namespace nGratis.AI.Kvasir.Core
                 });
             }
 
-            return cards;
+            return rawCards;
         }
 
-        public async Task<IImage> GetCardImageAsync(RawCard card)
+        public async Task<IImage> GetCardImageAsync(RawCard rawCard)
         {
             return await this
                 ._fetcherLookup[ExternalResources.CardImage]
-                .GetCardImageAsync(card);
+                .GetCardImageAsync(rawCard);
         }
 
         RawCardSet IPagingDataProvider<RawCardSet>.DefaultItem => default(RawCardSet);
 
         async Task<int> IPagingDataProvider<RawCardSet>.GetCountAsync()
         {
-            return await this.GetCardSetCountAsync();
+            return await this.GetRawCardSetCountAsync();
         }
 
         async Task<IReadOnlyCollection<RawCardSet>> IPagingDataProvider<RawCardSet>.GetItemsAsync(
@@ -257,7 +257,7 @@ namespace nGratis.AI.Kvasir.Core
 
             var cardSets = await this
                 ._fetcherLookup[ExternalResources.CardSet]
-                .GetCardSetsAsync();
+                .GetRawCardSetsAsync();
 
             var documents = cardSets
                 .Select(cardSet => cardSet.ToLuceneDocument())
@@ -271,11 +271,11 @@ namespace nGratis.AI.Kvasir.Core
         }
 
         private void RaiseCardSetIndexed() => this
-            .CardSetIndexed?
+            .RawCardSetIndexed?
             .Invoke(this, EventArgs.Empty);
 
         private void RaiseCardIndexed() => this
-            .CardIndexed?
+            .RawCardIndexed?
             .Invoke(this, EventArgs.Empty);
     }
 }

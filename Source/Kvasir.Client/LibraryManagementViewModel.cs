@@ -123,13 +123,13 @@ namespace nGratis.AI.Kvasir.Client
                 .Subscribe(async _ =>
                 {
                     this.CardSetCount = this.CardSetViewModels.Count;
-                    this.CardCount = await this._repository.GetCardCountAsync();
+                    this.CardCount = await this._repository.GetRawCardCountAsync();
                 });
 
             Observable
-                .FromEventPattern<EventArgs>(this._repository, "CardIndexed")
+                .FromEventPattern<EventArgs>(this._repository, "RawCardIndexed")
                 .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(async _ => this.CardCount = await this._repository.GetCardCountAsync());
+                .Subscribe(async _ => this.CardCount = await this._repository.GetRawCardCountAsync());
         }
 
         private void Dispose(bool isDisposing)
@@ -177,7 +177,7 @@ namespace nGratis.AI.Kvasir.Client
 
             public async Task<int> GetCountAsync()
             {
-                return await this._repository.GetCardSetCountAsync();
+                return await this._repository.GetRawCardSetCountAsync();
             }
 
             public async Task<IReadOnlyCollection<CardSetViewModel>> GetItemsAsync(int pagingIndex, int itemCount)

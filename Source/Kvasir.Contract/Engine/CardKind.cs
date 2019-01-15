@@ -40,4 +40,57 @@ namespace nGratis.AI.Kvasir.Contract
         Planeswalker,
         Sorcery
     }
+
+    public enum CardSuperKind
+    {
+        Unknown = 0,
+
+        None,
+        Basic,
+        Legendary
+    }
+
+    public enum CardSubKind
+    {
+        Unknown = 0,
+
+        Equipment,
+
+        Advisor,
+        Archer,
+        Assassin,
+        Cleric,
+        Druid,
+        Elemental,
+        Elf,
+        Faerie,
+        Giant,
+        Goblin,
+        Kithkin,
+        Knight,
+        Incarnation,
+        Merfolk,
+        Rogue,
+        Scout,
+        Shaman,
+        Shapeshifter,
+        Soldier,
+        Treefolk,
+        Warrior,
+        Wizard,
+
+        Aura,
+
+        Plains,
+        Island,
+        Swamp,
+        Mountain,
+        Forest,
+
+        Ajani,
+        Chandra,
+        Garruk,
+        Jace,
+        Liliana
+    }
 }

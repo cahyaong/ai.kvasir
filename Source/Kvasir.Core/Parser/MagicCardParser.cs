@@ -50,7 +50,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
-            var cardInfo = new CardInfo
+            var cardDefinition = new CardDefinition
             {
                 Name = !string.IsNullOrEmpty(rawCard.Name)
                     ? rawCard.Name
@@ -58,27 +58,18 @@ namespace nGratis.AI.Kvasir.Core
             };
 
             return ValidParsingResult
-                .Create(cardInfo)
+                .Create(cardDefinition)
                 .ThenParseMultiverseId(rawCard.MultiverseId)
                 .ThenParseType(rawCard.Type)
-                .ThenParseManaCost(cardInfo.Kind, rawCard.ManaCost)
-                .ThenParsePower(cardInfo.Kind, rawCard.Power)
-                .ThenParseToughness(cardInfo.Kind, rawCard.Toughness)
+                .ThenParseManaCost(cardDefinition.Kind, rawCard.ManaCost)
+                .ThenParsePower(cardDefinition.Kind, rawCard.Power)
+                .ThenParseToughness(cardDefinition.Kind, rawCard.Toughness)
                 .ThenParseText(rawCard.Text);
         }
     }
 
     internal static class MagicParserExtensions
     {
-        private static readonly IReadOnlyDictionary<string, Mana> ManaLookup = new Dictionary<string, Mana>
-        {
-            ["W"] = Mana.White,
-            ["U"] = Mana.Blue,
-            ["B"] = Mana.Black,
-            ["R"] = Mana.Red,
-            ["G"] = Mana.Green
-        };
-
         public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int rawMultiverseId)
         {
             Guard
@@ -92,7 +83,7 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(ValidParsingResult.Create((uint)rawMultiverseId))
-                .BindToCardInfo(info => info.MultiverseId);
+                .BindToCardDefinition(definition => definition.MultiverseId);
         }
 
         public static ParsingResult ThenParseType(this ParsingResult parsingResult, string rawType)
@@ -145,8 +136,8 @@ namespace nGratis.AI.Kvasir.Core
                 if (string.IsNullOrEmpty(rawManaCost))
                 {
                     return parsingResult
-                        .WithChildResult(ValidParsingResult.Create(ManaCost.Free))
-                        .BindToCardInfo(info => info.ManaCost);
+                        .WithChildResult(ValidParsingResult.Create(CostDefinition.Free))
+                        .BindToCardDefinition(definition => definition.CostDefinition);
                 }
 
                 return parsingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
@@ -157,33 +148,20 @@ namespace nGratis.AI.Kvasir.Core
                 return parsingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
             }
 
-            var manaCostMatch = Pattern.Card.ManaCost.Match(rawManaCost);
-
-            if (!manaCostMatch.Success)
+            if (!Pattern.Card.ManaCost.IsMatch(rawManaCost))
             {
                 return parsingResult.WithMessage($"<ManaCost> Symbol(s) has no mapping for value [{rawManaCost}].");
             }
 
-            var manaCost = new ManaCost();
-
-            var colorlessValue = manaCostMatch
-                .FindCaptureValues("colorless")
-                .SingleOrDefault();
-
-            if (!string.IsNullOrEmpty(colorlessValue))
+            var costDefinition = new CostDefinition
             {
-                manaCost[Mana.Colorless] = ushort.Parse(colorlessValue);
-            }
-
-            manaCostMatch
-                .FindCaptureValues("color")
-                .Select(symbol => MagicParserExtensions.ManaLookup[symbol])
-                .GroupBy(mana => mana)
-                .ForEach(grouping => manaCost[grouping.Key] = (ushort)grouping.Count());
+                Kind = CostKind.Mana,
+                Amount = rawManaCost
+            };
 
             return parsingResult
-                .WithChildResult(ValidParsingResult.Create(manaCost))
-                .BindToCardInfo(info => info.ManaCost);
+                .WithChildResult(ValidParsingResult.Create(costDefinition))
+                .BindToCardDefinition(definition => definition.CostDefinition);
         }
 
         public static ParsingResult ThenParsePower(this ParsingResult parsingResult, CardKind kind, string rawPower)
@@ -207,7 +185,7 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(powerResult)
-                .BindToCardInfo(info => info.Power);
+                .BindToCardDefinition(definition => definition.Power);
         }
 
         public static ParsingResult ThenParseToughness(
@@ -234,24 +212,24 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(toughnessResult)
-                .BindToCardInfo(info => info.Toughness);
+                .BindToCardDefinition(definition => definition.Toughness);
         }
 
         public static ParsingResult ThenParseText(this ParsingResult parsingResult, string rawText)
         {
-            var abilities = CardInfo.Default.Abilities;
+            var abilities = CardDefinition.Default.AbilityDefinitions;
 
             if (!string.IsNullOrEmpty(rawText))
             {
                 abilities = rawText
                     .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(_ => Ability.NotSupported)
+                    .Select(_ => AbilityDefinition.NotSupported)
                     .ToArray();
             }
 
             return parsingResult
                 .WithChildResult(ValidParsingResult.Create(abilities))
-                .BindToCardInfo(info => info.Abilities);
+                .BindToCardDefinition(definition => definition.AbilityDefinitions);
         }
 
         private static ParsingResult ThenParseKind(this ParsingResult parsingResult, string rawKind)
@@ -262,7 +240,7 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(kindResult)
-                .BindToCardInfo(info => info.Kind);
+                .BindToCardDefinition(definition => definition.Kind);
         }
 
         private static ParsingResult ThenParseSuperKind(this ParsingResult parsingResult, string rawSuperKind)
@@ -273,9 +251,9 @@ namespace nGratis.AI.Kvasir.Core
             {
                 return parsingResult
                     .WithChildResult(ValidParsingResult.Create(true))
-                    .BindToCardInfo(info => info.IsTribal)
+                    .BindToCardDefinition(definition => definition.IsTribal)
                     .WithChildResult(ValidParsingResult.Create(CardSuperKind.None))
-                    .BindToCardInfo(info => info.SuperKind);
+                    .BindToCardDefinition(definition => definition.SuperKind);
             }
 
             if (string.IsNullOrEmpty(rawSuperKind))
@@ -291,7 +269,7 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(superKindResult)
-                .BindToCardInfo(info => info.SuperKind);
+                .BindToCardDefinition(definition => definition.SuperKind);
         }
 
         private static ParsingResult ThenParseSubKinds(this ParsingResult parsingResult, params string[] rawSubKinds)
@@ -327,12 +305,12 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(subKindsResult)
-                .BindToCardInfo(info => info.SubKinds);
+                .BindToCardDefinition(definition => definition.SubKinds);
         }
 
-        private static ParsingResult BindToCardInfo(
+        private static ParsingResult BindToCardDefinition(
             this ParsingResult parsingResult,
-            Expression<Func<CardInfo, object>> bindingExpression)
+            Expression<Func<CardDefinition, object>> bindingExpression)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))

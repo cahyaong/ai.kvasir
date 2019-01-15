@@ -38,18 +38,18 @@ namespace nGratis.AI.Kvasir.Contract
 
     public interface IMagicRepository : IPagingDataProvider<RawCardSet>
     {
-        event EventHandler CardSetIndexed;
+        event EventHandler RawCardSetIndexed;
 
-        event EventHandler CardIndexed;
+        event EventHandler RawCardIndexed;
 
-        Task<int> GetCardSetCountAsync();
+        Task<int> GetRawCardSetCountAsync();
 
-        Task<int> GetCardCountAsync();
+        Task<int> GetRawCardCountAsync();
 
-        Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync();
+        Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync();
 
-        Task<IReadOnlyCollection<RawCard>> GetCardsAsync(RawCardSet cardSet);
+        Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet);
 
-        Task<IImage> GetCardImageAsync(RawCard card);
+        Task<IImage> GetCardImageAsync(RawCard rawCard);
     }
 }

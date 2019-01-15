@@ -45,9 +45,9 @@ namespace nGratis.AI.Kvasir.Client
     {
         private static readonly Int32Rect CroppingBound = new Int32Rect(3, 4, 217, 303);
 
-        // TODO: Need to make <CardInfo> class as immutable as possible!
+        // TODO: Need to make <CardDefinition> class as immutable as possible!
 
-        private static readonly CardInfo InvalidCardInfo = new CardInfo();
+        private static readonly CardDefinition InvalidCardDefinition = new CardDefinition();
 
         private readonly IMagicRepository _repository;
 
@@ -55,21 +55,21 @@ namespace nGratis.AI.Kvasir.Client
 
         private ImageSource _originalImage;
 
-        private CardInfo _cardInfo;
+        private CardDefinition _cardDefinition;
 
-        private IEnumerable _combinedKinds;
+        private IEnumerable _combinedCardKinds;
 
         private IEnumerable<string> _parsingMessages;
 
-        public CardViewModel(RawCard card, IMagicRepository repository)
-            : this(card, repository, MagicCardParser.Instance)
+        public CardViewModel(RawCard rawCard, IMagicRepository repository)
+            : this(rawCard, repository, MagicCardParser.Instance)
         {
         }
 
-        internal CardViewModel(RawCard card, IMagicRepository repository, IMagicCardParser cardParser)
+        internal CardViewModel(RawCard rawCard, IMagicRepository repository, IMagicCardParser cardParser)
         {
             Guard
-                .Require(card, nameof(card))
+                .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
             Guard
@@ -83,13 +83,13 @@ namespace nGratis.AI.Kvasir.Client
             this._repository = repository;
             this._cardParser = cardParser;
 
-            this.Card = card;
+            this.RawCard = rawCard;
 
             this.PopulateDetailsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateDetailAsync());
             this.ParseCardCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardAsync());
         }
 
-        public RawCard Card { get; }
+        public RawCard RawCard { get; }
 
         public ImageSource OriginalImage
         {
@@ -97,16 +97,16 @@ namespace nGratis.AI.Kvasir.Client
             private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
         }
 
-        public CardInfo CardInfo
+        public CardDefinition CardDefinition
         {
-            get => this._cardInfo;
-            private set => this.RaiseAndSetIfChanged(ref this._cardInfo, value);
+            get => this._cardDefinition;
+            private set => this.RaiseAndSetIfChanged(ref this._cardDefinition, value);
         }
 
-        public IEnumerable CombinedKinds
+        public IEnumerable CombinedCardKinds
         {
-            get => this._combinedKinds;
-            private set => this.RaiseAndSetIfChanged(ref this._combinedKinds, value);
+            get => this._combinedCardKinds;
+            private set => this.RaiseAndSetIfChanged(ref this._combinedCardKinds, value);
         }
 
         public IEnumerable<string> ParsingMessages
@@ -121,7 +121,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateDetailAsync()
         {
-            var cardImage = await this._repository.GetCardImageAsync(this.Card);
+            var cardImage = await this._repository.GetCardImageAsync(this.RawCard);
 
             // TODO: Need to handle larger image size, e.g. Planechase card!
 
@@ -130,40 +130,40 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task ParseCardAsync()
         {
-            if (this.Card == null)
+            if (this.RawCard == null)
             {
-                this.CardInfo = null;
+                this.CardDefinition = null;
             }
             else
             {
-                var parsingResult = await Task.Run(() => this._cardParser.Parse(this.Card));
+                var parsingResult = await Task.Run(() => this._cardParser.Parse(this.RawCard));
 
                 if (parsingResult.IsValid)
                 {
-                    this.CardInfo = parsingResult.GetValue<CardInfo>();
+                    this.CardDefinition = parsingResult.GetValue<CardDefinition>();
 
                     var combinedKinds = new List<object>();
 
-                    if (this.CardInfo.IsTribal)
+                    if (this.CardDefinition.IsTribal)
                     {
                         combinedKinds.Add("Tribal");
                     }
 
-                    if (this.CardInfo.SuperKind != CardSuperKind.None)
+                    if (this.CardDefinition.SuperKind != CardSuperKind.None)
                     {
-                        combinedKinds.Add(this.CardInfo.SuperKind);
+                        combinedKinds.Add(this.CardDefinition.SuperKind);
                     }
 
-                    combinedKinds.Add(this.CardInfo.Kind);
-                    combinedKinds.AddRange(this.CardInfo.SubKinds.Cast<object>());
+                    combinedKinds.Add(this.CardDefinition.Kind);
+                    combinedKinds.AddRange(this.CardDefinition.SubKinds.Cast<object>());
 
-                    this.CombinedKinds = combinedKinds;
+                    this.CombinedCardKinds = combinedKinds;
                     this.ParsingMessages = Enumerable.Empty<string>();
                 }
                 else
                 {
-                    this.CardInfo = CardViewModel.InvalidCardInfo;
-                    this.CombinedKinds = Enumerable.Empty<object>();
+                    this.CardDefinition = CardViewModel.InvalidCardDefinition;
+                    this.CombinedCardKinds = Enumerable.Empty<object>();
                     this.ParsingMessages = parsingResult.Messages;
                 }
             }

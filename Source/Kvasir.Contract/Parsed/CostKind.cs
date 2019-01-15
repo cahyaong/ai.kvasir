@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="CostKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,24 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 14 January 2019 11:46:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.Cop.Core.Vision.Imaging;
-
-    public interface IMagicFetcher : IDisposable
+    public enum CostKind
     {
-        ExternalResources AvailableResources { get; }
+        Unknown = 0,
 
-        Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync();
-
-        Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet);
-
-        Task<IImage> GetCardImageAsync(RawCard rawCard);
+        Free,
+        Mana,
+        Tapping
     }
 }

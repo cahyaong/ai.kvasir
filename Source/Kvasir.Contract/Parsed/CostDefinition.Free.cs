@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NotSupportedAbility.cs" company="nGratis">
+// <copyright file="FreeCostDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,17 +23,31 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 11 January 2019 11:43:10 PM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 15 January 2019 10:03:14 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    internal class NotSupportedAbility : Ability
+    using System;
+
+    internal sealed class FreeCostDefinition : CostDefinition
     {
-        private NotSupportedAbility()
+        private FreeCostDefinition()
         {
         }
 
-        public static NotSupportedAbility Instance { get; } = new NotSupportedAbility();
+        public static FreeCostDefinition Instance { get; } = new FreeCostDefinition();
+
+        public override CostKind Kind
+        {
+            get => CostKind.Free;
+            set => throw new NotSupportedException("Setting kind is not allowed!");
+        }
+
+        public override string Amount
+        {
+            get => string.Empty;
+            set => throw new NotSupportedException("Setting amount is not allowed!");
+        }
     }
 }

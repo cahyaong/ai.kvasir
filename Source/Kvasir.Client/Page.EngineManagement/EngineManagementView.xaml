@@ -30,7 +30,7 @@
           Grid.Column="0"
           Width="120"
           HorizontalAlignment="Right"
-          DisplayMemberPath="CardSet.Name"
+          DisplayMemberPath="RawCardSet.Name"
           Header="Card Set"
           Kind="DropDown"
           Mode="Input"
@@ -65,7 +65,7 @@
           <DataGrid.Columns>
             <DataGridTextColumn
               Width="230"
-              Binding="{Binding Card.Name, Mode=OneWay}"
+              Binding="{Binding RawCard.Name, Mode=OneWay}"
               Header="Card" />
           </DataGrid.Columns>
         </DataGrid>
