@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\_test\xunit.core\build\xunit.core.props" Condition="Exists('..\packages\_test\xunit.core\build\xunit.core.props')" Label="Paket" />
+  <Import Project="..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props" Condition="Exists('..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -64,6 +65,7 @@
     <Compile Include="MockExtensions.StorageManager.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Parser\MagicCardAbilityParserTests.cs" />
     <Compile Include="Parser\MagicCardParserTests.cs" />
     <Compile Include="StubDirectory.cs" />
     <Compile Include="StubHttpMessageHandler.cs" />
@@ -104,6 +106,17 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="Antlr4.Runtime">
+          <HintPath>..\packages\_io\Antlr4.Runtime\lib\net45\Antlr4.Runtime.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
@@ -198,6 +211,7 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Import Project="..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.targets" Condition="Exists('..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\packages\_test\xunit.analyzers\analyzers\dotnet\cs\xunit.analyzers.dll">
       <Paket>True</Paket>

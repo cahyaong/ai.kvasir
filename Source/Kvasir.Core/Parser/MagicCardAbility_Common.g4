@@ -28,3 +28,7 @@ fragment W : [Ww];
 fragment X : [Xx];
 fragment Y : [Yy];
 fragment Z : [Zz];
+
+WHITESPACE
+	: ' '+ -> skip
+	;

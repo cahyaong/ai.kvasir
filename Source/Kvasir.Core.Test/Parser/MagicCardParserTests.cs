@@ -585,7 +585,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .ExpectValid(
                                 CardKind.Artifact,
                                 CardSuperKind.None)
-                            .WithLabel("CASE 01 -> Card type without sub-type.")
+                            .WithLabel(1, "Card type without sub-type.")
                             .ToXunitTheory();
 
                         yield return TypeTheory
@@ -595,7 +595,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 CardSuperKind.None,
                                 CardSubKind.Elf,
                                 CardSubKind.Warrior)
-                            .WithLabel("CASE 02 -> Card type with multiple sub-types.")
+                            .WithLabel(2, "Card type with multiple sub-types.")
                             .ToXunitTheory();
 
                         yield return TypeTheory
@@ -605,7 +605,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 CardSuperKind.Legendary,
                                 CardSubKind.Goblin,
                                 CardSubKind.Shaman)
-                            .WithLabel("CASE 03 -> Card type with super-type and multiple sub-types.")
+                            .WithLabel(3, "Card type with super-type and multiple sub-types.")
                             .ToXunitTheory();
 
                         yield return TypeTheory
@@ -615,7 +615,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 CardSuperKind.None,
                                 CardSubKind.Kithkin,
                                 CardSubKind.Soldier)
-                            .WithLabel("CASE 04 -> Card type with separator from MTGJSON.")
+                            .WithLabel(4, "Card type with separator from MTGJSON.")
                             .ToXunitTheory();
                     }
                 }
@@ -627,25 +627,25 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return TypeTheory
                             .Create(string.Empty)
                             .ExpectInvalid("<Kind> Value must not be <null> or empty.")
-                            .WithLabel("CASE 01 -> Empty type.")
+                            .WithLabel(1, "Empty type.")
                             .ToXunitTheory();
 
                         yield return TypeTheory
                             .Create("Food")
                             .ExpectInvalid("<Kind> No mapping for value [Food].")
-                            .WithLabel("CASE 02 -> Invalid card type.")
+                            .WithLabel(2, "Invalid card type.")
                             .ToXunitTheory();
 
                         yield return TypeTheory
                             .Create("Extraordinary Creature")
                             .ExpectInvalid("<SuperKind> No mapping for value [Extraordinary].")
-                            .WithLabel("CASE 03 -> Invalid card super-type.")
+                            .WithLabel(3, "Invalid card super-type.")
                             .ToXunitTheory();
 
                         yield return TypeTheory
                             .Create("Creature - Quokka Ranger")
                             .ExpectInvalid("<SubKind> No mapping for value [Quokka], [Ranger].")
-                            .WithLabel("CASE 04 -> Invalid card sub-types.")
+                            .WithLabel(4, "Invalid card sub - types.")
                             .ToXunitTheory();
                     }
                 }
@@ -657,31 +657,31 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return ManaCostTheory
                             .Create("Creature", "{0}")
                             .ExpectValid(CostKind.Mana, "{0}")
-                            .WithLabel("CASE 01 -> Non-land with zero amount.")
+                            .WithLabel(1, "Non-land with zero amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{42}")
                             .ExpectValid(CostKind.Mana, "{42}")
-                            .WithLabel("CASE 02 -> Non-land with colorless amount.")
+                            .WithLabel(2, "Non-land with colorless amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{G}")
                             .ExpectValid(CostKind.Mana, "{G}")
-                            .WithLabel("CASE 03 -> Non-land with mono-color amount.")
+                            .WithLabel(3, "Non-land with mono-color amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{1}{W}{U}{B}{R}{G}")
                             .ExpectValid(CostKind.Mana, "{1}{W}{U}{B}{R}{G}")
-                            .WithLabel("CASE 04 -> Non-land with colorless and all colors amount.")
+                            .WithLabel(4, "Non-land with colorless and all colors amount.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Land", string.Empty)
                             .ExpectValid(CostKind.Free, string.Empty)
-                            .WithLabel("CASE 05 -> Land with empty amount.")
+                            .WithLabel(5, "Land with empty amount.")
                             .ToXunitTheory();
                     }
                 }
@@ -693,19 +693,19 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return ManaCostTheory
                             .Create("Creature", string.Empty)
                             .ExpectInvalid("<ManaCost> Value must not be <null> or empty.")
-                            .WithLabel("CASE 01 -> Non-land with empty mana cost.")
+                            .WithLabel(1, "Non-land with empty mana cost.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}")
                             .ExpectInvalid("<ManaCost> Symbol(s) has no mapping for value [{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}].")
-                            .WithLabel("CASE 02 -> Non-land with invalid mana symbol.")
+                            .WithLabel(2, "Non-land with invalid mana symbol.")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Land", "{42}")
                             .ExpectInvalid("<ManaCost> Non-empty value for type [Land].")
-                            .WithLabel("CASE 03 -> Land with non-empty mana cost.")
+                            .WithLabel(3, "Land with non-empty mana cost.")
                             .ToXunitTheory();
                     }
                 }
@@ -717,19 +717,19 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return PowerTheory
                             .Create("Creature", "42")
                             .ExpectValid(42)
-                            .WithLabel("CASE 01 -> Creature with non-zero power.")
+                            .WithLabel(1, "Creature with non-zero power.")
                             .ToXunitTheory();
 
                         yield return PowerTheory
                             .Create("Legendary Creature - Elf Warrior", "42")
                             .ExpectValid(42)
-                            .WithLabel("CASE 02 -> Creature with super-, sub-types and non-zero power.")
+                            .WithLabel(2, "Creature with super-, sub-types and non-zero power.")
                             .ToXunitTheory();
 
                         yield return PowerTheory
                             .Create("Artifact", string.Empty)
                             .ExpectValid(0)
-                            .WithLabel("CASE 03 -> Non-creature with empty power.")
+                            .WithLabel(3, "Non-creature with empty power.")
                             .ToXunitTheory();
                     }
                 }
@@ -741,13 +741,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return PowerTheory
                             .Create("Creature", "X")
                             .ExpectInvalid("<Power> Invalid value [X].")
-                            .WithLabel("CASE 01 -> Creature with invalid power.")
+                            .WithLabel(1, "Creature with invalid power.")
                             .ToXunitTheory();
 
                         yield return PowerTheory
                             .Create("Basic Land - Forest", "42")
                             .ExpectInvalid("<Power> Non-empty value for non-creature type [Land].")
-                            .WithLabel("CASE 02 -> Non-creature with non-empty power.")
+                            .WithLabel(2, "Non-creature with non-empty power.")
                             .ToXunitTheory();
                     }
                 }
@@ -759,19 +759,19 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return ToughnessTheory
                             .Create("Creature", "42")
                             .ExpectValid(42)
-                            .WithLabel("CASE 01 -> Creature with non-zero toughness.")
+                            .WithLabel(1, "Creature with non-zero toughness.")
                             .ToXunitTheory();
 
                         yield return ToughnessTheory
                             .Create("Legendary Creature - Elf Warrior", "42")
                             .ExpectValid(42)
-                            .WithLabel("CASE 02 -> Creature with super-, sub-types and non-zero toughness.")
+                            .WithLabel(2, "Creature with super-, sub-types and non-zero toughness.")
                             .ToXunitTheory();
 
                         yield return ToughnessTheory
                             .Create("Artifact", string.Empty)
                             .ExpectValid(0)
-                            .WithLabel("CASE 03 -> Non-creature with empty toughness.")
+                            .WithLabel(3, "Non-creature with empty toughness.")
                             .ToXunitTheory();
                     }
                 }
@@ -783,13 +783,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                         yield return ToughnessTheory
                             .Create("Creature", "X")
                             .ExpectInvalid("<Toughness> Invalid value [X].")
-                            .WithLabel("CASE 01 -> Creature with invalid toughness.")
+                            .WithLabel(1, "Creature with invalid toughness.")
                             .ToXunitTheory();
 
                         yield return ToughnessTheory
                             .Create("Basic Land - Forest", "42")
                             .ExpectInvalid("<Toughness> Non-empty value for non-creature type [Land].")
-                            .WithLabel("CASE 02 -> Non-creature with non-empty toughness.")
+                            .WithLabel(2, "Non-creature with non-empty toughness.")
                             .ToXunitTheory();
                     }
                 }

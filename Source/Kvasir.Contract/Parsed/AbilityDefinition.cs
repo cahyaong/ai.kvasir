@@ -35,5 +35,16 @@ namespace nGratis.AI.Kvasir.Contract
         public static AbilityDefinition NotSupported { get; } = NotSupportedAbilityDefinition.Instance;
 
         public virtual AbilityKind Kind { get; set; }
+
+        public virtual CostDefinition[] CostDefinitions { get; set; } = Default.CostDefinitions;
+
+        public virtual EffectDefinition[] EffectDefinitions { get; set; } = Default.EffectDefinitions;
+
+        protected static class Default
+        {
+            public static readonly CostDefinition[] CostDefinitions = new CostDefinition[0];
+
+            public static readonly EffectDefinition[] EffectDefinitions = new EffectDefinition[0];
+        }
     }
 }

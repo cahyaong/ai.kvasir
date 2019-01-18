@@ -3,13 +3,9 @@ grammar MagicCardAbility;
 import MagicCardAbility_Keyword, MagicCardAbility_Symbol;
 
 ability
-	: mana_ability EOF
+	: producingManaAbility EOF
 	;
 
-mana_ability
-	: '(' TAP_SYMBOL ':' ADD MANA_SYMBOL '.)'
-	;
-
-WS 
-	: ' '+ -> skip
+producingManaAbility
+	: '(' TAPPING_SYMBOL ':' ADD MANA_SYMBOL '.)'
 	;

@@ -43,5 +43,17 @@ namespace nGratis.AI.Kvasir.Contract
             get => AbilityKind.NotSupported;
             set => throw new NotSupportedException("Setting kind is not allowed!");
         }
+
+        public override CostDefinition[] CostDefinitions
+        {
+            get => Default.CostDefinitions;
+            set => throw new NotSupportedException("Setting cost definitions is not allowed!");
+        }
+
+        public override EffectDefinition[] EffectDefinitions
+        {
+            get => Default.EffectDefinitions;
+            set => throw new NotSupportedException("Setting effect definitions is not allowed!");
+        }
     }
 }

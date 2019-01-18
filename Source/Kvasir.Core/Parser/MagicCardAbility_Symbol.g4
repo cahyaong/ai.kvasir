@@ -2,7 +2,7 @@ lexer grammar MagicCardAbility_Symbol;
 
 import MagicCardAbility_Common;
 
-TAP_SYMBOL
+TAPPING_SYMBOL
 	: '{T}'
 	;
 

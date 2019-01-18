@@ -28,7 +28,76 @@
 
 namespace nGratis.AI.Kvasir.Core
 {
+    using System.IO;
+    using Antlr4.Runtime;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
+
     public partial class MagicCardAbilityParser
     {
+        public static ParsingResult Parse(string rawAbility)
+        {
+            Guard
+                .Require(rawAbility, nameof(rawAbility))
+                .Is.Not.Empty();
+
+            using (var reader = new StringReader(rawAbility))
+            {
+                var stream = new AntlrInputStream(reader);
+                var lexer = new MagicCardAbilityLexer(stream);
+                var tokens = new CommonTokenStream(lexer);
+                var parser = new MagicCardAbilityParser(tokens);
+
+                var ability = Visitor.Instance.VisitAbility(parser.ability());
+
+                return ValidParsingResult.Create(ability);
+            }
+        }
+
+        private sealed class Visitor : MagicCardAbilityBaseVisitor<AbilityDefinition>
+        {
+            private Visitor()
+            {
+            }
+
+            public static Visitor Instance { get; } = new Visitor();
+
+            public override AbilityDefinition VisitAbility(AbilityContext context)
+            {
+                Guard
+                    .Require(context, nameof(context))
+                    .Is.Not.Null();
+
+                return this.Visit(context.GetChild(0));
+            }
+
+            public override AbilityDefinition VisitProducingManaAbility(ProducingManaAbilityContext context)
+            {
+                Guard
+                    .Require(context, nameof(context))
+                    .Is.Not.Null();
+
+                return new AbilityDefinition
+                {
+                    Kind = AbilityKind.Activated,
+                    CostDefinitions = new[]
+                    {
+                        new CostDefinition
+                        {
+                            Kind = CostKind.Tapping,
+                            Amount = string.Empty
+                        }
+                    },
+                    EffectDefinitions = new[]
+                    {
+                        new EffectDefinition
+                        {
+                            Kind = EffectKind.ProducingMana,
+                            Amount = context.MANA_SYMBOL().GetText()
+                        }
+                    }
+                };
+            }
+        }
     }
 }

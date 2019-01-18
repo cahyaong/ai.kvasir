@@ -42,7 +42,7 @@
     </Compile>
     <Compile Include="Constant.cs" />
     <Compile Include="Parsed\AbilityDefinition.cs" />
-    <Compile Include="Engine\CardKind.cs" />
+    <Compile Include="Parsed\CardKind.cs" />
     <Compile Include="Parsed\AbilityDefinition.NotSupported.cs">
       <DependentUpon>AbilityDefinition.cs</DependentUpon>
     </Compile>
@@ -75,6 +75,8 @@
       <DependentUpon>CostDefinition.cs</DependentUpon>
     </Compile>
     <Compile Include="Parsed\CostKind.cs" />
+    <Compile Include="Parsed\EffectDefinition.cs" />
+    <Compile Include="Parsed\EffectKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
