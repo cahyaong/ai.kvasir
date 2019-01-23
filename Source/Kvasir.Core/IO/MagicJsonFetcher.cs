@@ -43,7 +43,7 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicJsonFetcher : BaseMagicHttpFetcher
     {
-        private static readonly Uri LandingUri = new Uri("https://mtgjson.com/v4/");
+        private static readonly Uri LandingUri = new Uri("https://mtgjson.com");
 
         public MagicJsonFetcher(IStorageManager storageManager)
             : base("MTGJSON4", MagicJsonFetcher.LandingUri, storageManager)
@@ -163,7 +163,7 @@ namespace nGratis.AI.Kvasir.Core
         private static class Pattern
         {
             public static readonly Regex CodeWithReleasedTimestamp = new Regex(
-                @"^(?<code>\w{3,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
+                @"^(?<code>\w{2,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
                 RegexOptions.Compiled);
         }
     }

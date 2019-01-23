@@ -47,7 +47,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithSuccessfulResponseInSession("https://mtgjson.com/v4/sets.html", "Raw_MTGJSON4");
+                    .WithSuccessfulResponseInSession("https://mtgjson.com/sets.html", "Raw_MTGJSON4");
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 rawCardSets
                     .Should().NotBeNull()
-                    .And.HaveCountGreaterOrEqualTo(428);
+                    .And.HaveCountGreaterOrEqualTo(438);
 
                 foreach (var rawCardSet in rawCardSets)
                 {
@@ -74,7 +74,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     rawCardSet
                         .Code
                         .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"\w{3,6}");
+                        .And.MatchRegex(@"\w{2,6}");
 
                     rawCardSet
                         .ReleasedTimestamp
@@ -89,7 +89,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithResponse("https://mtgjson.com/v4/sets.html", HttpStatusCode.NotFound);
+                    .WithResponse("https://mtgjson.com/sets.html", HttpStatusCode.NotFound);
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
@@ -114,7 +114,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithSuccessfulResponseInSession("https://mtgjson.com/v4/json/GRN.json", "Raw_MTGJSON4");
+                    .WithSuccessfulResponseInSession("https://mtgjson.com/json/GRN.json", "Raw_MTGJSON4");
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
@@ -205,7 +205,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithSuccessfulResponse("https://mtgjson.com/v4/json/X42.json", "{ }");
+                    .WithSuccessfulResponse("https://mtgjson.com/json/X42.json", "{ }");
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
@@ -231,7 +231,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var stubHandler = StubHttpMessageHandler
                     .Create()
-                    .WithResponse("https://mtgjson.com/v4/json/X42.json", HttpStatusCode.NotFound);
+                    .WithResponse("https://mtgjson.com/json/X42.json", HttpStatusCode.NotFound);
 
                 var fetcher = new MagicJsonFetcher(stubHandler);
 
