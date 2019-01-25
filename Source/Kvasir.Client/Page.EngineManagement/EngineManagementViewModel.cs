@@ -42,6 +42,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private static readonly IEnumerable<string> TargetCardSetNames = new[]
         {
+            "Duel Decks: Elves vs. Goblins",
             "Lorwyn",
             "Morningtide"
         };
