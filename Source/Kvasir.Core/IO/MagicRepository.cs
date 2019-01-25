@@ -138,7 +138,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public async Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync()
         {
-            return await this.GetCardSetsAsync(0, await this.GetRawCardSetCountAsync());
+            return await this.GetRawCardSetsAsync(0, await this.GetRawCardSetCountAsync());
         }
 
         public async Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet)
@@ -158,7 +158,7 @@ namespace nGratis.AI.Kvasir.Core
                     var query = new TermQuery(new Term("card-set-code", rawCardSet.Code));
 
                     rawCards = indexSearcher
-                         .Search(query, 1000)
+                         .Search(query, int.MaxValue)
                          .ScoreDocs
                          .Select(document => indexReader.Document(document.Doc))
                          .Select(document => document.ToInstance<RawCard>())
@@ -213,10 +213,10 @@ namespace nGratis.AI.Kvasir.Core
             int pagingIndex,
             int itemCount)
         {
-            return await this.GetCardSetsAsync(pagingIndex, itemCount);
+            return await this.GetRawCardSetsAsync(pagingIndex, itemCount);
         }
 
-        private async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
+        private async Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync(int pagingIndex, int itemCount)
         {
             Guard
                 .Require(pagingIndex, nameof(pagingIndex))
@@ -236,13 +236,14 @@ namespace nGratis.AI.Kvasir.Core
             await Task.Run(() =>
             {
                 var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
+                var itemIndex = pagingIndex * itemCount;
 
                 itemCount = Math.Min(
-                    indexReader.MaxDoc - pagingIndex * itemCount,
+                    indexReader.MaxDoc - itemIndex,
                     itemCount);
 
                 cardSets = Enumerable
-                    .Range(pagingIndex * itemCount, itemCount)
+                    .Range(itemIndex, itemCount)
                     .Select(index => indexReader.Document(index))
                     .Select(document => document.ToInstance<RawCardSet>())
                     .ToArray();
@@ -260,6 +261,7 @@ namespace nGratis.AI.Kvasir.Core
                 .GetRawCardSetsAsync();
 
             var documents = cardSets
+                .OrderByDescending(cardSet => cardSet.ReleasedTimestamp)
                 .Select(cardSet => cardSet.ToLuceneDocument())
                 .ToArray();
 
