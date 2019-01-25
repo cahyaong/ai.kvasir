@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ManaCost.cs" company="nGratis">
+// <copyright file="ManaCost.No.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,60 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 29 December 2018 10:38:28 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 11 January 2019 8:02:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using nGratis.Cop.Core.Contract;
-
-    public class ManaCost
+    internal sealed class FreeManaCost : ManaCost
     {
-        private readonly IDictionary<Mana, ushort> _amountLookup;
-
-        public ManaCost()
+        private FreeManaCost()
         {
-            this._amountLookup = new Dictionary<Mana, ushort>();
         }
 
-        public static ManaCost Empty { get; } = EmptyManaCost.Instance;
-
-        public static ManaCost Free { get; } = FreeManaCost.Instance;
-
-        public uint ConvertedAmount => (uint)this
-            ._amountLookup.Values
-            .Sum(amount => amount);
-
-        public virtual ushort this[Mana mana]
-        {
-            get
-            {
-                Guard
-                    .Require(mana, nameof(mana))
-                    .Is.Not.Default();
-
-                return this._amountLookup.TryGetValue(mana, out var amount)
-                    ? amount
-                    : (ushort)0;
-            }
-
-            set
-            {
-                Guard
-                    .Require(mana, nameof(mana))
-                    .Is.Not.Default();
-
-                if (this._amountLookup.ContainsKey(mana))
-                {
-                    this._amountLookup[mana] += value;
-                }
-                else
-                {
-                    this._amountLookup.Add(mana, value);
-                }
-            }
-        }
+        internal static FreeManaCost Instance { get; } = new FreeManaCost();
     }
 }

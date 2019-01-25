@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ManaCost.Empty.cs" company="nGratis">
+// <copyright file="Cost.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,25 +23,12 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 11 January 2019 8:01:50 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 10:23:14 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    using System;
-
-    internal sealed class EmptyManaCost : ManaCost
+    public abstract class Cost
     {
-        private EmptyManaCost()
-        {
-        }
-
-        internal static EmptyManaCost Instance { get; } = new EmptyManaCost();
-
-        public override ushort this[Mana mana]
-        {
-            get => base[mana];
-            set => throw new NotSupportedException("Setting mana amount is not allowed.");
-        }
     }
 }

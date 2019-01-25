@@ -54,6 +54,7 @@
       <DependentUpon>Arg.cs</DependentUpon>
     </Compile>
     <Compile Include="Arg.cs" />
+    <Compile Include="Engine.Cost\ManaCostTests.cs" />
     <Compile Include="IO\BaseMagicHttpFetcherTests.cs" />
     <Compile Include="IO\CachingMessageHandlerTests.cs" />
     <Compile Include="IO\MagicJsonFetcherTests.cs" />
