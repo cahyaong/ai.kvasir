@@ -24,7 +24,7 @@
         <core:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
       </StackPanel>
     </core:AweTileGroup>
-    <core:AweTileGroup Width="815" Header="CARD SET">
+    <core:AweTileGroup Width="825" Header="CARD SET">
       <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
         <DataGrid
           AutoGenerateColumns="False"
@@ -39,7 +39,7 @@
               Binding="{Binding RawCardSet.Code, Mode=OneWay}"
               Header="Code" />
             <DataGridTextColumn
-              MinWidth="280"
+              MinWidth="290"
               Binding="{Binding RawCardSet.Name, Mode=OneWay}"
               Header="Card Set Name" />
             <DataGridTextColumn
