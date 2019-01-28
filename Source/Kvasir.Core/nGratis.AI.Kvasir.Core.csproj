@@ -52,6 +52,8 @@
     <Compile Include="Engine.Cost\ManaCost.Free.cs">
       <DependentUpon>ManaCost.cs</DependentUpon>
     </Compile>
+    <Compile Include="Engine\GameContext.cs" />
+    <Compile Include="Engine.Common\RandomGenerator.cs" />
     <Compile Include="IO\BaseMagicHttpFetcher.cs" />
     <Compile Include="IO\CachingMessageHandler.cs" />
     <Compile Include="IO\DefaultUniqueKeyCalculator.cs" />

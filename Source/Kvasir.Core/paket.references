@@ -1,6 +1,7 @@
 ﻿Humanizer.Core
 JetBrains.Annotations
 Newtonsoft.Json
+Stateless
 System.Reactive.Linq
 
 group _IO

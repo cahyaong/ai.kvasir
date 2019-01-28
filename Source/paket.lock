@@ -5,6 +5,7 @@ NUGET
     JetBrains.Annotations (2018.2.1)
     Newtonsoft.Json (12.0.1)
     NLog (4.5.11)
+    Stateless (4.2.1)
     System.Configuration.ConfigurationManager (4.5)
       System.Security.Permissions (>= 4.5)
     System.Reactive (4.1.2)

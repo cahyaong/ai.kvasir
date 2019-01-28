@@ -41,12 +41,14 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constant.cs" />
+    <Compile Include="Engine.Common\IRandomGenerator.cs" />
+    <Compile Include="Engine\Player.cs" />
     <Compile Include="Parsed\AbilityDefinition.cs" />
-    <Compile Include="Parsed\CardKind.cs" />
+    <Compile Include="Engine\CardKind.cs" />
     <Compile Include="Parsed\AbilityDefinition.NotSupported.cs">
       <DependentUpon>AbilityDefinition.cs</DependentUpon>
     </Compile>
-    <Compile Include="Parsed\AbilityKind.cs" />
+    <Compile Include="Engine\AbilityKind.cs" />
     <Compile Include="Parsed\CardDefinition.cs" />
     <Compile Include="Engine\Mana.cs" />
     <Compile Include="IO\ExternalResources.cs" />
@@ -67,9 +69,9 @@
     <Compile Include="Parsed\CostDefinition.Unknown.cs">
       <DependentUpon>CostDefinition.cs</DependentUpon>
     </Compile>
-    <Compile Include="Parsed\CostKind.cs" />
+    <Compile Include="Engine\CostKind.cs" />
     <Compile Include="Parsed\EffectDefinition.cs" />
-    <Compile Include="Parsed\EffectKind.cs" />
+    <Compile Include="Engine\EffectKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
