@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Player.cs" company="nGratis">
+// <copyright file="MagicObjectFactory.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,19 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 28 January 2019 5:04:00 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public class Player
-    {
-        public bool HasPriority { get; set; }
+    using System;
+    using nGratis.AI.Kvasir.Contract;
 
-        public int Life { get; set; }
+    internal class MagicObjectFactory : IMagicObjectFactory
+    {
+        public Agent CreateAgent(AgentDefinition agentDefinition)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

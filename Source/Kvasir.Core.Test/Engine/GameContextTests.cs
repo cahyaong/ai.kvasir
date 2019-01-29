@@ -42,14 +42,20 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var firstPlayer = new Player();
-                var secondPlayer = new Player();
+                var agentDefinitions = new[]
+                {
+                    new AgentDefinition { Name = "[_AGENT_01_]" },
+                    new AgentDefinition { Name = "[_AGENT_02_]" }
+                };
 
-                var randomGenerator = new RandomGenerator();
+                var mockFactory = MockBuilder
+                    .CreateMock<IMagicObjectFactory>()
+                    .WithAgent("[_AGENT_01_]")
+                    .WithAgent("[_AGENT_02_]");
 
                 // Act.
 
-                var gameContext = new GameContext(firstPlayer, secondPlayer, randomGenerator);
+                var gameContext = new GameContext(agentDefinitions, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
@@ -59,50 +65,56 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayer()
+            public void WhenGettingValidParameter_ShouldSetupAgent()
             {
                 // Arrange.
 
-                var firstPlayer = new Player();
-                var secondPlayer = new Player();
+                var agentDefinitions = new[]
+                {
+                    new AgentDefinition { Name = "[_AGENT_01_]" },
+                    new AgentDefinition { Name = "[_AGENT_02_]" }
+                };
 
-                var randomGenerator = new RandomGenerator();
+                var mockFactory = MockBuilder
+                    .CreateMock<IMagicObjectFactory>()
+                    .WithAgent("[_AGENT_01_]")
+                    .WithAgent("[_AGENT_02_]");
 
                 // Act.
 
-                var gameContext = new GameContext(firstPlayer, secondPlayer, randomGenerator);
+                var gameContext = new GameContext(agentDefinitions, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
                 gameContext
-                    .FirstPlayer
+                    .ActiveAgent
                     .Should().NotBeNull();
 
                 gameContext
-                    .SecondPlayer
+                    .PassiveAgent
                     .Should().NotBeNull();
 
-                if (gameContext.FirstPlayer.HasPriority)
+                if (gameContext.ActiveAgent.Name == "[_AGENT_01_]")
                 {
                     gameContext
-                        .SecondPlayer.HasPriority
-                        .Should().BeFalse();
+                        .PassiveAgent.Name
+                        .Should().Be("[_AGENT_02_]");
                 }
                 else
                 {
                     gameContext
-                        .SecondPlayer.HasPriority
-                        .Should().BeTrue();
+                        .PassiveAgent.Name
+                        .Should().Be("[_AGENT_01_]");
                 }
 
                 using (new AssertionScope())
                 {
                     gameContext
-                        .FirstPlayer.Life
+                        .ActiveAgent.Life
                         .Should().Be(20);
 
                     gameContext
-                        .SecondPlayer.Life
+                        .PassiveAgent.Life
                         .Should().Be(20);
                 }
             }

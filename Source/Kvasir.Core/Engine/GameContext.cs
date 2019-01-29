@@ -28,7 +28,9 @@
 
 namespace nGratis.AI.Kvasir.Core
 {
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
     using Stateless;
@@ -54,27 +56,33 @@ namespace nGratis.AI.Kvasir.Core
             End
         }
 
-        private readonly StateMachine<Phase, Action> _stateMachine;
+        private readonly AgentDefinition[] _agentDefinitions;
+
+        private readonly IMagicObjectFactory _objectFactory;
 
         private readonly IRandomGenerator _randomGenerator;
 
-        public GameContext(Player firstPlayer, Player secondPlayer, IRandomGenerator randomGenerator)
+        private readonly StateMachine<Phase, Action> _stateMachine;
+
+        public GameContext(
+            IReadOnlyCollection<AgentDefinition> agentDefinitions,
+            IMagicObjectFactory objectFactory,
+            IRandomGenerator randomGenerator)
         {
             Guard
-                .Require(firstPlayer, nameof(firstPlayer))
+                .Require(agentDefinitions, nameof(agentDefinitions))
                 .Is.Not.Null();
 
             Guard
-                .Require(secondPlayer, nameof(secondPlayer))
+                .Require(objectFactory, nameof(objectFactory))
                 .Is.Not.Null();
 
             Guard
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
-            this.FirstPlayer = firstPlayer;
-            this.SecondPlayer = secondPlayer;
-
+            this._agentDefinitions = agentDefinitions.ToArray();
+            this._objectFactory = objectFactory;
             this._randomGenerator = randomGenerator;
             this._stateMachine = new StateMachine<Phase, Action>(Phase.Unknown);
 
@@ -101,13 +109,13 @@ namespace nGratis.AI.Kvasir.Core
 
         public Phase CurrentPhase => this._stateMachine.State;
 
-        public Player FirstPlayer { get; }
+        public Agent ActiveAgent { get; private set; }
 
-        public Player SecondPlayer { get; }
+        public Agent PassiveAgent { get; private set; }
 
         private void OnBeginningActivated()
         {
-            this.SetupPlayer();
+            this.SetupAgent();
         }
 
         private void OnPlayingActivated()
@@ -118,8 +126,16 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        private void SetupPlayer()
+        private void SetupAgent()
         {
+            if (this._agentDefinitions.Length != 2)
+            {
+                throw new KvasirException("Currently supporting 1 vs. 1 match!");
+            }
+
+            var firstAgent = this._objectFactory.CreateAgent(this._agentDefinitions[0]);
+            var secondAgent = this._objectFactory.CreateAgent(this._agentDefinitions[1]);
+
             var firstValue = 0;
             var secondValue = 0;
 
@@ -131,17 +147,17 @@ namespace nGratis.AI.Kvasir.Core
 
             if (firstValue > secondValue)
             {
-                this.FirstPlayer.HasPriority = true;
-                this.SecondPlayer.HasPriority = false;
+                this.ActiveAgent = firstAgent;
+                this.PassiveAgent = secondAgent;
             }
             else
             {
-                this.FirstPlayer.HasPriority = false;
-                this.SecondPlayer.HasPriority = true;
+                this.ActiveAgent = secondAgent;
+                this.PassiveAgent = firstAgent;
             }
 
-            this.FirstPlayer.Life = 20;
-            this.SecondPlayer.Life = 20;
+            this.ActiveAgent.Life = 20;
+            this.PassiveAgent.Life = 20;
         }
     }
 }

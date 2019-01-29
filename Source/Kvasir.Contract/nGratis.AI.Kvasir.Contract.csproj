@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -41,15 +41,18 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Constant.cs" />
+    <Compile Include="Data\AgentDefinition.cs" />
+    <Compile Include="Engine.Common\IMagicObjectFactory.cs" />
     <Compile Include="Engine.Common\IRandomGenerator.cs" />
-    <Compile Include="Engine\Player.cs" />
-    <Compile Include="Parsed\AbilityDefinition.cs" />
+    <Compile Include="Engine\AgentKind.cs" />
+    <Compile Include="Engine\Agent.cs" />
+    <Compile Include="Data\AbilityDefinition.cs" />
     <Compile Include="Engine\CardKind.cs" />
-    <Compile Include="Parsed\AbilityDefinition.NotSupported.cs">
+    <Compile Include="Data\AbilityDefinition.NotSupported.cs">
       <DependentUpon>AbilityDefinition.cs</DependentUpon>
     </Compile>
     <Compile Include="Engine\AbilityKind.cs" />
-    <Compile Include="Parsed\CardDefinition.cs" />
+    <Compile Include="Data\CardDefinition.cs" />
     <Compile Include="Engine\Mana.cs" />
     <Compile Include="IO\ExternalResources.cs" />
     <Compile Include="IO\IIndexManager.cs" />
@@ -62,15 +65,15 @@
     <Compile Include="IO\IMagicFetcher.cs" />
     <Compile Include="IO\IMagicRepository.cs" />
     <Compile Include="Engine\Rarity.cs" />
-    <Compile Include="Parsed\CostDefinition.cs" />
-    <Compile Include="Parsed\CostDefinition.Free.cs">
+    <Compile Include="Data\CostDefinition.cs" />
+    <Compile Include="Data\CostDefinition.Free.cs">
       <DependentUpon>CostDefinition.cs</DependentUpon>
     </Compile>
-    <Compile Include="Parsed\CostDefinition.Unknown.cs">
+    <Compile Include="Data\CostDefinition.Unknown.cs">
       <DependentUpon>CostDefinition.cs</DependentUpon>
     </Compile>
     <Compile Include="Engine\CostKind.cs" />
-    <Compile Include="Parsed\EffectDefinition.cs" />
+    <Compile Include="Data\EffectDefinition.cs" />
     <Compile Include="Engine\EffectKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -35,15 +35,12 @@ namespace nGratis.AI.Kvasir.Core
     {
         private readonly Random _random;
 
-        public RandomGenerator()
-            : this(Environment.TickCount)
-        {
-        }
-
         internal RandomGenerator(int seed)
         {
             this._random = new Random(seed);
         }
+
+        public static RandomGenerator Default { get; } = new RandomGenerator(Environment.TickCount);
 
         public ushort RollDice(ushort sideCount)
         {

@@ -32,7 +32,6 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using JetBrains.Annotations;
     using Lucene.Net.Analysis.Core;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
@@ -41,8 +40,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    [PublicAPI]
-    public static partial class MockExtensions
+    internal static partial class MockExtensions
     {
         public static Mock<IIndexManager> WithDefault(this Mock<IIndexManager> mockManager, IndexKind indexKind)
         {

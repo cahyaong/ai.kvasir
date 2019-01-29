@@ -36,7 +36,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    public static partial class MockExtensions
+    internal static partial class MockExtensions
     {
         public static Mock<IStorageManager> WithEmptyCaching(this Mock<IStorageManager> mockManager, string name)
         {

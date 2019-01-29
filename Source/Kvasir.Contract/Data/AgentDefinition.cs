@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Arg.cs" company="nGratis">
+// <copyright file="AgentDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,38 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 23 November 2018 9:26:00 PM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 28 January 2019 4:56:44 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Test
+namespace nGratis.AI.Kvasir.Contract
 {
-    using Moq;
-    using nGratis.Cop.Core.Contract;
-
-    internal partial class Arg : Moq.Arg
+    public class AgentDefinition
     {
-        public class RawCardSet
-        {
-            public static Contract.RawCardSet Is(string code)
-            {
-                Guard
-                    .Require(code, nameof(code))
-                    .Is.Not.Empty();
+        public AgentKind Kind { get; set; }
 
-                return Match.Create<Contract.RawCardSet>(card => card.Code == code);
-            }
-        }
-
-        public class AgentDefinition
-        {
-            public static Contract.AgentDefinition Is(string name)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
-
-                return Match.Create<Contract.AgentDefinition>(definition => definition.Name == name);
-            }
-        }
+        public string Name { get; set; }
     }
 }

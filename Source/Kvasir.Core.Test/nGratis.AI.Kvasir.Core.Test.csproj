@@ -64,6 +64,9 @@
     <Compile Include="IO\WizardFetcherTests.cs" />
     <Compile Include="MockBuilder.cs" />
     <Compile Include="MockExtensions.cs" />
+    <Compile Include="MockExtensions.MagicObjectFactory.cs">
+      <DependentUpon>MockExtensions.cs</DependentUpon>
+    </Compile>
     <Compile Include="MockExtensions.StorageManager.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
     </Compile>
