@@ -34,22 +34,19 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal static partial class MockExtensions
     {
-        public static Mock<IMagicObjectFactory> WithAgent(this Mock<IMagicObjectFactory> mockFactory, string name)
+        public static Mock<IMagicObjectFactory> WithDefaultAgent(this Mock<IMagicObjectFactory> mockFactory)
         {
             Guard
                 .Require(mockFactory, nameof(mockFactory))
                 .Is.Not.Null();
 
-            Guard
-                .Require(name, nameof(name))
-                .Is.Not.Empty();
-
             mockFactory
-                .Setup(mock => mock.CreateAgent(Arg.AgentDefinition.Is(name)))
-                .Returns(new Agent
+                .Setup(mock => mock.CreateAgent(Arg.IsAny<AgentDefinition>()))
+                .Returns<AgentDefinition>(agentDefinition => new Agent
                 {
                     Kind = AgentKind.Testing,
-                    Name = name
+                    Name = agentDefinition.Name,
+                    Deck = new StubDeck(agentDefinition.DeckDefinition)
                 })
                 .Verifiable();
 

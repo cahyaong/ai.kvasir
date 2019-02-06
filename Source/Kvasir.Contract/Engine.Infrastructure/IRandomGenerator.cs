@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IndexKind.cs" company="nGratis">
+// <copyright file="IRandomGenerator.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,16 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 23 January 2019 11:31:53 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum IndexKind
-    {
-        Unknown = 0,
+    using System.Collections.Generic;
 
-        CardSet,
-        Card
+    public interface IRandomGenerator
+    {
+        ushort RollDice(ushort sideCount);
+
+        IEnumerable<ushort> GenerateShufflingIndexes(ushort objectCount);
     }
 }

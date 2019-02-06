@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IndexKind.cs" company="nGratis">
+// <copyright file="Agent.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,16 +23,23 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public enum IndexKind
-    {
-        Unknown = 0,
+    using nGratis.AI.Kvasir.Contract;
 
-        CardSet,
-        Card
+    public class Agent
+    {
+        public AgentKind Kind { get; set; }
+
+        public string Name { get; set; }
+
+        public int Life { get; set; }
+
+        public Deck Deck { get; set; }
+
+        public Library Library { get; set; }
     }
 }

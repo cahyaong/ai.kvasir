@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IRandomGenerator.cs" company="nGratis">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="KvasirAssertions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,13 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:31:53 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core.Test
 {
-    public interface IRandomGenerator
+    internal static class KvasirAssertions
     {
-        ushort RollDice(ushort sideCount);
+        public static LibraryAssertions Must(this Library library)
+        {
+            return new LibraryAssertions(library);
+        }
     }
 }

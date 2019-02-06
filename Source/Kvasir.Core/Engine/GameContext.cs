@@ -115,7 +115,10 @@ namespace nGratis.AI.Kvasir.Core
 
         private void OnBeginningActivated()
         {
-            this.SetupAgent();
+            this
+                .SetupAgents()
+                .SetupZones(this.ActiveAgent)
+                .SetupZones(this.PassiveAgent);
         }
 
         private void OnPlayingActivated()
@@ -126,7 +129,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        private void SetupAgent()
+        private GameContext SetupAgents()
         {
             if (this._agentDefinitions.Length != 2)
             {
@@ -158,6 +161,30 @@ namespace nGratis.AI.Kvasir.Core
 
             this.ActiveAgent.Life = 20;
             this.PassiveAgent.Life = 20;
+
+            return this;
+        }
+
+        private GameContext SetupZones(Agent agent)
+        {
+            if (agent.Deck == null)
+            {
+                throw new KvasirException($"Agent [{agent.Name}] does NOT have valid deck!");
+            }
+
+            var cards = agent
+                .Deck.Cards
+                .ToArray();
+
+            agent.Library = new Library();
+
+            this
+                ._randomGenerator
+                .GenerateShufflingIndexes((ushort)cards.Length)
+                .Select(index => cards[index])
+                .ForEach(card => agent.Library.AddCard(card));
+
+            return this;
         }
     }
 }

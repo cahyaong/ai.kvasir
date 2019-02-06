@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IGameFactory.cs" company="nGratis">
+// <copyright file="StubDeck.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,13 +23,40 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 28 January 2019 5:02:42 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, 3 February 2019 11:13:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core.Test
 {
-    public interface IMagicObjectFactory
+    using System.Linq;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
+
+    internal class StubDeck : Deck
     {
-        Agent CreateAgent(AgentDefinition agentDefinition);
+        public StubDeck(DeckDefinition deckDefinition)
+        {
+            Guard
+                .Require(deckDefinition, nameof(deckDefinition))
+                .Is.Not.Null();
+
+            this.Name = !string.IsNullOrEmpty(deckDefinition.Name)
+                ? deckDefinition.Name
+                : Text.Empty;
+
+            this.Cards = deckDefinition
+                .CardNames
+                .Select(cardName => new CardDefinition
+                {
+                    Name = cardName,
+                    CostDefinition = CostDefinition.Free
+                })
+                .SelectMany(cardDefinition => Enumerable
+                    .Range(0, deckDefinition[cardDefinition.Name])
+                    .Select(_ => new StubCard(cardDefinition)))
+                .ToArray();
+        }
+
+        public string Name { get; }
     }
 }

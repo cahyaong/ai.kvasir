@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicObjectFactory.cs" company="nGratis">
+// <copyright file="Deck.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,19 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 28 January 2019 5:04:00 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, 3 February 2019 12:26:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
-    using System;
-    using nGratis.AI.Kvasir.Contract;
+    using System.Collections.Generic;
 
-    internal class MagicObjectFactory : IMagicObjectFactory
+    public class Deck
     {
-        public Agent CreateAgent(AgentDefinition agentDefinition)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<Card> Cards { get; set; }
     }
 }

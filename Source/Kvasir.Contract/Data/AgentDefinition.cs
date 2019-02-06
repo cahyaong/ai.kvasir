@@ -33,5 +33,7 @@ namespace nGratis.AI.Kvasir.Contract
         public AgentKind Kind { get; set; }
 
         public string Name { get; set; }
+
+        public DeckDefinition DeckDefinition { get; set; }
     }
 }

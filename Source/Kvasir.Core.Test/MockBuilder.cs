@@ -73,5 +73,27 @@ namespace nGratis.AI.Kvasir.Core.Test
                 })
                 .ToArray();
         }
+
+        public static DeckDefinition CreateElfDeckDefinition()
+        {
+            return new DeckDefinition("[_MOCK_DECK_ELF_]")
+            {
+                ["Elvish Eulogist"] = 4,
+                ["Elvish Warrior"] = 4,
+                ["Llanowar Elves"] = 4,
+                ["Forest"] = 6
+            };
+        }
+
+        public static DeckDefinition CreateGoblinDeckDefinition()
+        {
+            return new DeckDefinition("[_MOCK_DECK_GOBLIN_]")
+            {
+                ["Goblin Cohort"] = 4,
+                ["Goblin Sledder"] = 4,
+                ["Goblin Warchief"] = 4,
+                ["Mountain"] = 6
+            };
+        }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IndexKind.cs" company="nGratis">
+// <copyright file="Zone.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,16 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 9:55:01 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public enum IndexKind
-    {
-        Unknown = 0,
+    using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
 
-        CardSet,
-        Card
+    public abstract class Zone
+    {
+        private readonly HashSet<Card> _cards;
+
+        protected Zone()
+        {
+            this._cards = new HashSet<Card>();
+        }
+
+        public abstract ZoneKind Kind { get; }
+
+        public IEnumerable<Card> Cards => this._cards;
+
+        public void AddCard(Card card)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            if (this._cards.Contains(card))
+            {
+                throw new KvasirException(
+                    $"Card instance [{card.GetHashCode()}] with name [{card.Name}] is in found " +
+                    $"in zone [{this.Kind}].");
+            }
+
+            this._cards.Add(card);
+        }
     }
 }

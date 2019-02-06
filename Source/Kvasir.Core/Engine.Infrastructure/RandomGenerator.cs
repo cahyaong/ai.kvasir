@@ -29,6 +29,8 @@
 namespace nGratis.AI.Kvasir.Core
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using nGratis.AI.Kvasir.Contract;
 
     internal class RandomGenerator : IRandomGenerator
@@ -45,6 +47,24 @@ namespace nGratis.AI.Kvasir.Core
         public ushort RollDice(ushort sideCount)
         {
             return (ushort)(this._random.Next(sideCount) + 1);
+        }
+
+        public IEnumerable<ushort> GenerateShufflingIndexes(ushort objectCount)
+        {
+            var indexes = Enumerable
+                .Range(0, objectCount)
+                .ToArray();
+
+            // NOTE: This implementation is based on Fisher-Yates algorithm.
+
+            for (var count = indexes.Length - 1; count >= 0; count--)
+            {
+                var index = this._random.Next(count);
+
+                yield return (ushort)indexes[index];
+
+                indexes[index] = indexes[count];
+            }
         }
     }
 }

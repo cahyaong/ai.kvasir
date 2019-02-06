@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Agent.cs" company="nGratis">
+// <copyright file="Creature.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,17 +23,31 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 10:08:32 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public class Agent
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
+
+    public class Creature : Card
     {
-        public AgentKind Kind { get; set; }
+        internal Creature(CardDefinition cardDefinition)
+            : base(cardDefinition)
+        {
+            Guard
+                .Require(cardDefinition, nameof(cardDefinition))
+                .Is.Not.Null();
 
-        public string Name { get; set; }
+            this.Power = cardDefinition.Power;
+            this.Toughness = cardDefinition.Toughness;
+        }
 
-        public int Life { get; set; }
+        public override CardKind Kind => CardKind.Creature;
+
+        public ushort Power { get; }
+
+        public ushort Toughness { get; }
     }
 }

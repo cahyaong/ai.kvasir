@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IndexKind.cs" company="nGratis">
+// <copyright file="Library.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,16 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 30 January 2019 8:22:35 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public enum IndexKind
-    {
-        Unknown = 0,
+    using nGratis.AI.Kvasir.Contract;
 
-        CardSet,
-        Card
+    public class Library : Zone
+    {
+        public override ZoneKind Kind => ZoneKind.Library;
     }
 }

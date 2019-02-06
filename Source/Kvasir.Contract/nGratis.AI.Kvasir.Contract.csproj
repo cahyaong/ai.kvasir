@@ -42,10 +42,9 @@
     </Compile>
     <Compile Include="Constant.cs" />
     <Compile Include="Data\AgentDefinition.cs" />
-    <Compile Include="Engine.Common\IMagicObjectFactory.cs" />
-    <Compile Include="Engine.Common\IRandomGenerator.cs" />
+    <Compile Include="Data\DeckDefinition.cs" />
+    <Compile Include="Engine.Infrastructure\IRandomGenerator.cs" />
     <Compile Include="Engine\AgentKind.cs" />
-    <Compile Include="Engine\Agent.cs" />
     <Compile Include="Data\AbilityDefinition.cs" />
     <Compile Include="Engine\CardKind.cs" />
     <Compile Include="Data\AbilityDefinition.NotSupported.cs">
@@ -54,14 +53,15 @@
     <Compile Include="Engine\AbilityKind.cs" />
     <Compile Include="Data\CardDefinition.cs" />
     <Compile Include="Engine\Mana.cs" />
+    <Compile Include="Engine\ZoneKind.cs" />
     <Compile Include="IO\ExternalResources.cs" />
     <Compile Include="IO\IIndexManager.cs" />
     <Compile Include="IO\IndexKind.cs" />
     <Compile Include="KvasirException.cs" />
     <Compile Include="KvasirMime.cs" />
     <Compile Include="KvasirTestingException.cs" />
-    <Compile Include="IO\RawCardSet.cs" />
-    <Compile Include="IO\RawCard.cs" />
+    <Compile Include="Data\RawCardSet.cs" />
+    <Compile Include="Data\RawCard.cs" />
     <Compile Include="IO\IMagicFetcher.cs" />
     <Compile Include="IO\IMagicRepository.cs" />
     <Compile Include="Engine\Rarity.cs" />

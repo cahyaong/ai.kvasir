@@ -55,13 +55,18 @@
     </Compile>
     <Compile Include="Arg.cs" />
     <Compile Include="Engine.Cost\ManaCostTests.cs" />
+    <Compile Include="Engine.Infrastructure\RandomGeneratorTests.cs" />
     <Compile Include="Engine\GameContextTests.cs" />
+    <Compile Include="KvasirAssertions.cs" />
     <Compile Include="IO\BaseMagicHttpFetcherTests.cs" />
     <Compile Include="IO\CachingMessageHandlerTests.cs" />
     <Compile Include="IO\MagicJsonFetcherTests.cs" />
     <Compile Include="IO\MagicRepositoryTests.cs" />
     <Compile Include="IO\ThrottlingMessageHandlerTests.cs" />
     <Compile Include="IO\WizardFetcherTests.cs" />
+    <Compile Include="KvasirAssertions.Library.cs">
+      <DependentUpon>KvasirAssertions.cs</DependentUpon>
+    </Compile>
     <Compile Include="MockBuilder.cs" />
     <Compile Include="MockExtensions.cs" />
     <Compile Include="MockExtensions.MagicObjectFactory.cs">
@@ -72,6 +77,8 @@
     </Compile>
     <Compile Include="Parser\MagicCardAbilityParserTests.cs" />
     <Compile Include="Parser\MagicCardParserTests.cs" />
+    <Compile Include="StubCard.cs" />
+    <Compile Include="StubDeck.cs" />
     <Compile Include="StubDirectory.cs" />
     <Compile Include="StubHttpMessageHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

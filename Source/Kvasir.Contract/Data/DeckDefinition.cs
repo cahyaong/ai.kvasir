@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IndexKind.cs" company="nGratis">
+// <copyright file="DeckDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,16 +23,59 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 29 January 2019 10:41:13 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum IndexKind
-    {
-        Unknown = 0,
+    using System.Collections.Generic;
+    using System.Linq;
+    using nGratis.Cop.Core.Contract;
 
-        CardSet,
-        Card
+    public class DeckDefinition
+    {
+        private readonly IDictionary<string, ushort> _cardQuantityLookup;
+
+        public DeckDefinition(string name)
+        {
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
+
+            this._cardQuantityLookup = new Dictionary<string, ushort>();
+
+            this.Name = name;
+        }
+
+        public ushort this[string cardName]
+        {
+            get
+            {
+                Guard
+                    .Require(cardName, nameof(cardName))
+                    .Is.Not.Empty();
+
+                return this._cardQuantityLookup.TryGetValue(cardName, out var quantity)
+                    ? quantity
+                    : (ushort)0;
+            }
+
+            set
+            {
+                Guard
+                    .Require(cardName, nameof(cardName))
+                    .Is.Not.Empty();
+
+                this._cardQuantityLookup[cardName] = value;
+            }
+        }
+
+        public string Name { get; }
+
+        public IEnumerable<string> CardNames => this._cardQuantityLookup.Keys;
+
+        public ushort CardCount => (ushort)this
+            ._cardQuantityLookup
+            .Sum(kvp => kvp.Value);
     }
 }

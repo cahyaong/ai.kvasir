@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IndexKind.cs" company="nGratis">
+// <copyright file="Card.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,16 +23,37 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public enum IndexKind
-    {
-        Unknown = 0,
+    using System;
+    using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
 
-        CardSet,
-        Card
+    public abstract class Card
+    {
+        protected Card(CardDefinition cardDefinition)
+        {
+            Guard
+                .Require(cardDefinition, nameof(cardDefinition))
+                .Is.Not.Null();
+
+            this.Name = !string.IsNullOrEmpty(cardDefinition.Name)
+                ? cardDefinition.Name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+
+            this.Costs = cardDefinition.CostDefinition == CostDefinition.Free
+                ? new[] { ManaCost.Free }
+                : throw new NotSupportedException();
+        }
+
+        public abstract CardKind Kind { get; }
+
+        public string Name { get; }
+
+        public IEnumerable<Cost> Costs { get; }
     }
 }

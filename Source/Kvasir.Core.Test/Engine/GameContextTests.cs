@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
+    using System.Linq;
     using FluentAssertions;
     using FluentAssertions.Execution;
     using nGratis.AI.Kvasir.Contract;
@@ -44,14 +45,21 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var agentDefinitions = new[]
                 {
-                    new AgentDefinition { Name = "[_AGENT_01_]" },
-                    new AgentDefinition { Name = "[_AGENT_02_]" }
+                    new AgentDefinition
+                    {
+                        Name = "[_MOCK_AGENT_01_]",
+                        DeckDefinition = MockBuilder.CreateElfDeckDefinition()
+                    },
+                    new AgentDefinition
+                    {
+                        Name = "[_MOCK_AGENT_02_]",
+                        DeckDefinition = MockBuilder.CreateGoblinDeckDefinition()
+                    }
                 };
 
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicObjectFactory>()
-                    .WithAgent("[_AGENT_01_]")
-                    .WithAgent("[_AGENT_02_]");
+                    .WithDefaultAgent();
 
                 // Act.
 
@@ -61,7 +69,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 gameContext
                     .CurrentPhase
-                    .Should().Be(GameContext.Phase.Beginning);
+                    .Should().Be(GameContext.Phase.Beginning, "game context should start with <Beginning> phase");
             }
 
             [Fact]
@@ -71,14 +79,21 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var agentDefinitions = new[]
                 {
-                    new AgentDefinition { Name = "[_AGENT_01_]" },
-                    new AgentDefinition { Name = "[_AGENT_02_]" }
+                    new AgentDefinition
+                    {
+                        Name = "[_MOCK_AGENT_01_]",
+                        DeckDefinition = MockBuilder.CreateElfDeckDefinition()
+                    },
+                    new AgentDefinition
+                    {
+                        Name = "[_MOCK_AGENT_02_]",
+                        DeckDefinition = MockBuilder.CreateGoblinDeckDefinition()
+                    }
                 };
 
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicObjectFactory>()
-                    .WithAgent("[_AGENT_01_]")
-                    .WithAgent("[_AGENT_02_]");
+                    .WithDefaultAgent();
 
                 // Act.
 
@@ -86,36 +101,97 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Assert.
 
-                gameContext
-                    .ActiveAgent
-                    .Should().NotBeNull();
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .ActiveAgent
+                        .Should().NotBeNull("game context should have active agent");
 
-                gameContext
-                    .PassiveAgent
-                    .Should().NotBeNull();
+                    gameContext
+                        .PassiveAgent
+                        .Should().NotBeNull("game context should have passive agent");
+                }
 
-                if (gameContext.ActiveAgent.Name == "[_AGENT_01_]")
+                if (gameContext.ActiveAgent.Name == "[_MOCK_AGENT_01_]")
                 {
                     gameContext
                         .PassiveAgent.Name
-                        .Should().Be("[_AGENT_02_]");
+                        .Should().Be("[_MOCK_AGENT_02_]", "passive agent should be different from active agent");
                 }
                 else
                 {
                     gameContext
                         .PassiveAgent.Name
-                        .Should().Be("[_AGENT_01_]");
+                        .Should().Be("[_MOCK_AGENT_01_]", "passive agent should be different from active agent");
                 }
 
                 using (new AssertionScope())
                 {
                     gameContext
                         .ActiveAgent.Life
-                        .Should().Be(20);
+                        .Should().Be(20, "active agent should begin with full life");
 
                     gameContext
                         .PassiveAgent.Life
-                        .Should().Be(20);
+                        .Should().Be(20, "passive agent should begin with full life");
+                }
+            }
+
+            [Fact]
+            public void WhenGettingValidParameter_ShouldSetupLibrary()
+            {
+                // Arrange.
+
+                var agentDefinitions = new[]
+                {
+                    new AgentDefinition
+                    {
+                        Name = "[_MOCK_AGENT_01_]",
+                        DeckDefinition = MockBuilder.CreateElfDeckDefinition()
+                    },
+                    new AgentDefinition
+                    {
+                        Name = "[_MOCK_AGENT_02_]",
+                        DeckDefinition = MockBuilder.CreateGoblinDeckDefinition()
+                    }
+                };
+
+                var mockFactory = MockBuilder
+                    .CreateMock<IMagicObjectFactory>()
+                    .WithDefaultAgent();
+
+                // Act.
+
+                var gameContext = new GameContext(agentDefinitions, mockFactory.Object, RandomGenerator.Default);
+
+                // Assert.
+
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .ActiveAgent
+                        .Should().NotBeNull("game context should have active agent");
+
+                    gameContext
+                        .PassiveAgent
+                        .Should().NotBeNull("game context should have passive agent");
+                }
+
+                var deckDefinitionLookup = agentDefinitions.ToDictionary(
+                    agentDefinition => agentDefinition.Name,
+                    agentDefinition => agentDefinition.DeckDefinition);
+
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .ActiveAgent.Library
+                        .Must().NotBeNull("active agent should have library")
+                        .And.MatchDeckDefinition(deckDefinitionLookup[gameContext.ActiveAgent.Name]);
+
+                    gameContext
+                        .PassiveAgent.Library
+                        .Must().NotBeNull("passive agent should have library")
+                        .And.MatchDeckDefinition(deckDefinitionLookup[gameContext.PassiveAgent.Name]);
                 }
             }
         }
