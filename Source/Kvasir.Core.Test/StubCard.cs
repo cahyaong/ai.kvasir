@@ -32,12 +32,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal class StubCard : Card
     {
-        public StubCard(CardDefinition cardDefinition)
-            : base(cardDefinition)
+        public StubCard(string name)
+            : base(name)
         {
-            this.Kind = cardDefinition.Kind;
         }
 
-        public override CardKind Kind { get; }
+        public override CardKind Kind => CardKind.Stub;
     }
 }

@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Contract
 
     public class DeckDefinition
     {
-        private readonly IDictionary<string, ushort> _cardQuantityLookup;
+        private readonly IDictionary<string, ushort> _quantityByNameLookup;
 
         public DeckDefinition(string name)
         {
@@ -42,7 +42,7 @@ namespace nGratis.AI.Kvasir.Contract
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            this._cardQuantityLookup = new Dictionary<string, ushort>();
+            this._quantityByNameLookup = new Dictionary<string, ushort>();
 
             this.Name = name;
         }
@@ -55,7 +55,7 @@ namespace nGratis.AI.Kvasir.Contract
                     .Require(cardName, nameof(cardName))
                     .Is.Not.Empty();
 
-                return this._cardQuantityLookup.TryGetValue(cardName, out var quantity)
+                return this._quantityByNameLookup.TryGetValue(cardName, out var quantity)
                     ? quantity
                     : (ushort)0;
             }
@@ -66,16 +66,16 @@ namespace nGratis.AI.Kvasir.Contract
                     .Require(cardName, nameof(cardName))
                     .Is.Not.Empty();
 
-                this._cardQuantityLookup[cardName] = value;
+                this._quantityByNameLookup[cardName] = value;
             }
         }
 
         public string Name { get; }
 
-        public IEnumerable<string> CardNames => this._cardQuantityLookup.Keys;
+        public IEnumerable<string> CardNames => this._quantityByNameLookup.Keys;
 
-        public ushort CardCount => (ushort)this
-            ._cardQuantityLookup
+        public ushort CardQuantity => (ushort)this
+            ._quantityByNameLookup
             .Sum(kvp => kvp.Value);
     }
 }

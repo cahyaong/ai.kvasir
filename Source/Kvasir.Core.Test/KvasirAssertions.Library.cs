@@ -53,7 +53,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             this
                 .Subject
-                .Must().HaveCardCount(deckDefinition.CardCount);
+                .Must().HaveCardQuantity(deckDefinition.CardQuantity);
 
             var actualCardNames = this
                 .Subject?.Cards?
@@ -61,7 +61,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             actualCardNames
                 .Distinct()
-                .Should().BeEquivalentTo(deckDefinition.CardNames, "library should have cards defined by deck");
+                .Should().BeEquivalentTo(deckDefinition.CardNames, "library should have card names defined by deck");
 
             using (new AssertionScope())
             {
@@ -69,44 +69,44 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .CardNames?
                     .ForEach(cardName => this
                         .Subject
-                        .Must().HaveCardCount(cardName, deckDefinition[cardName]));
+                        .Must().HaveCardQuantity(cardName, deckDefinition[cardName]));
             }
 
             return new AndConstraint<LibraryAssertions>(this);
         }
 
-        public AndConstraint<LibraryAssertions> HaveCardCount(ushort expectedCount)
+        public AndConstraint<LibraryAssertions> HaveCardQuantity(ushort expectedQuantity)
         {
-            var actualCount = this
+            var actualQuantity = this
                 .Subject?.Cards?
                 .Count() ?? 0;
 
             Execute
                 .Assertion
-                .ForCondition(actualCount == expectedCount)
+                .ForCondition(actualQuantity == expectedQuantity)
                 .FailWith(
-                    $"Expected {{context:library}} to have {expectedCount} cards, " +
-                    $"but found {actualCount}.");
+                    $"Expected {{context:library}} to have {expectedQuantity} cards, " +
+                    $"but found {actualQuantity}.");
 
             return new AndConstraint<LibraryAssertions>(this);
         }
 
-        public AndConstraint<LibraryAssertions> HaveCardCount(string cardName, ushort expectedCount)
+        public AndConstraint<LibraryAssertions> HaveCardQuantity(string cardName, ushort expectedQuantity)
         {
             Guard
                 .Require(cardName, nameof(cardName))
                 .Is.Not.Empty();
 
-            var actualCount = this
+            var actualQuantity = this
                 .Subject?.Cards?
                 .Count(card => card.Name == cardName) ?? 0;
 
             Execute
                 .Assertion
-                .ForCondition(actualCount == expectedCount)
+                .ForCondition(actualQuantity == expectedQuantity)
                 .FailWith(
-                    $"Expected {{context:library}} to have {expectedCount} [{cardName}] cards, " +
-                    $"but found {actualCount}.");
+                    $"Expected {{context:library}} to have {expectedQuantity} [{cardName}] cards, " +
+                    $"but found {actualQuantity}.");
 
             return new AndConstraint<LibraryAssertions>(this);
         }

@@ -50,6 +50,15 @@ namespace nGratis.AI.Kvasir.Core
                 : throw new NotSupportedException();
         }
 
+        protected internal Card(string name)
+        {
+            this.Name = !string.IsNullOrEmpty(name)
+                ? name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+
+            this.Costs = new[] { ManaCost.Free };
+        }
+
         public abstract CardKind Kind { get; }
 
         public string Name { get; }

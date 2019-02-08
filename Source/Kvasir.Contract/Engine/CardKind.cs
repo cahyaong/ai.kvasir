@@ -38,7 +38,9 @@ namespace nGratis.AI.Kvasir.Contract
         Instant,
         Land,
         Planeswalker,
-        Sorcery
+        Sorcery,
+
+        Stub
     }
 
     public enum CardSuperKind

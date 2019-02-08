@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
+    using System.Collections.Generic;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
@@ -44,17 +45,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 ? deckDefinition.Name
                 : Text.Empty;
 
-            this.Cards = deckDefinition
+            deckDefinition
                 .CardNames
-                .Select(cardName => new CardDefinition
-                {
-                    Name = cardName,
-                    CostDefinition = CostDefinition.Free
-                })
-                .SelectMany(cardDefinition => Enumerable
-                    .Range(0, deckDefinition[cardDefinition.Name])
-                    .Select(_ => new StubCard(cardDefinition)))
-                .ToArray();
+                .SelectMany(cardName => Enumerable
+                    .Range(0, deckDefinition[cardName])
+                    .Select(_ => new StubCard(cardName)))
+                .ForEach(card => this.AddCard(card));
         }
 
         public string Name { get; }
