@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
-    using System.Collections.Generic;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
@@ -45,12 +44,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 ? deckDefinition.Name
                 : Text.Empty;
 
-            deckDefinition
+            this.Cards = deckDefinition
                 .CardNames
                 .SelectMany(cardName => Enumerable
                     .Range(0, deckDefinition[cardName])
                     .Select(_ => new StubCard(cardName)))
-                .ForEach(card => this.AddCard(card));
+                .ToArray();
         }
 
         public string Name { get; }
