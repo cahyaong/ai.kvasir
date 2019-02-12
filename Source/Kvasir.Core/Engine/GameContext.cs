@@ -176,7 +176,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Deck.Cards
                 .ToArray();
 
-            agent.Library = new Library();
+            agent.Library = new Zone(ZoneKind.Library);
 
             this
                 ._randomGenerator

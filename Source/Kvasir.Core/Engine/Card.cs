@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StubCard.cs" company="nGratis">
+// <copyright file="Card.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,20 +23,49 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 31 January 2019 8:12:50 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Test
+namespace nGratis.AI.Kvasir.Core
 {
+    using System;
+    using System.Collections.Generic;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
 
-    internal class StubCard : Card
+    public class Card
     {
-        public StubCard(string name)
-            : base(name)
+        protected Card(CardDefinition cardDefinition)
         {
+            Guard
+                .Require(cardDefinition, nameof(cardDefinition))
+                .Is.Not.Null();
+
+            this.Name = !string.IsNullOrEmpty(cardDefinition.Name)
+                ? cardDefinition.Name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+
+            this.Kind = cardDefinition.Kind;
+
+            this.Costs = cardDefinition.CostDefinition == CostDefinition.Free
+                ? new[] { ManaCost.Free }
+                : throw new NotSupportedException();
         }
 
-        public override CardKind Kind => CardKind.Stub;
+        protected internal Card(string name)
+        {
+            this.Name = !string.IsNullOrEmpty(name)
+                ? name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+
+            this.Kind = CardKind.Stub;
+            this.Costs = new[] { ManaCost.Free };
+        }
+
+        public CardKind Kind { get; }
+
+        public string Name { get; }
+
+        public IEnumerable<Cost> Costs { get; }
     }
 }

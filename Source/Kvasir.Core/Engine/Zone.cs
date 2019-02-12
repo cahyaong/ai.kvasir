@@ -32,16 +32,22 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    public abstract class Zone
+    public class Zone
     {
         private readonly HashSet<Card> _cards;
 
-        protected Zone()
+        public Zone(ZoneKind kind)
         {
+            Guard
+                .Require(kind, nameof(kind))
+                .Is.Not.Default();
+
             this._cards = new HashSet<Card>();
+
+            this.Kind = kind;
         }
 
-        public abstract ZoneKind Kind { get; }
+        public ZoneKind Kind { get; }
 
         public IEnumerable<Card> Cards => this._cards;
 

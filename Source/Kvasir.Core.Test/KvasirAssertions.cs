@@ -30,9 +30,9 @@ namespace nGratis.AI.Kvasir.Core.Test
 {
     internal static class KvasirAssertions
     {
-        public static LibraryAssertions Must(this Library library)
+        public static ZoneAssertions Must(this Zone zone)
         {
-            return new LibraryAssertions(library);
+            return new ZoneAssertions(zone);
         }
     }
 }

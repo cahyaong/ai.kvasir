@@ -36,20 +36,34 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    internal class LibraryAssertions : ReferenceTypeAssertions<Library, LibraryAssertions>
+    internal class ZoneAssertions : ReferenceTypeAssertions<Zone, ZoneAssertions>
     {
-        public LibraryAssertions(Library library)
+        public ZoneAssertions(Zone zone)
         {
-            this.Subject = library;
+            Guard
+                .Require(zone, nameof(zone))
+                .Is.Not.Null();
+
+            // TODO: Extend <Guard> implementation to support property checking fluently!
+
+            Guard
+                .Require(zone.Kind, $"{nameof(zone)}.{nameof(zone.Kind)}")
+                .Is.Not.Default();
+
+            this.Subject = zone;
         }
 
-        protected override string Identifier { get; } = "library";
+        protected override string Identifier { get; } = "zone";
 
-        public AndConstraint<LibraryAssertions> MatchDeckDefinition(DeckDefinition deckDefinition)
+        public AndConstraint<ZoneAssertions> MatchDeckDefinition(DeckDefinition deckDefinition)
         {
             Guard
                 .Require(deckDefinition, nameof(deckDefinition))
                 .Is.Not.Null();
+
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Library, "zone should be library");
 
             this
                 .Subject
@@ -72,10 +86,10 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Must().HaveCardQuantity(cardName, deckDefinition[cardName]));
             }
 
-            return new AndConstraint<LibraryAssertions>(this);
+            return new AndConstraint<ZoneAssertions>(this);
         }
 
-        public AndConstraint<LibraryAssertions> HaveCardQuantity(ushort expectedQuantity)
+        public AndConstraint<ZoneAssertions> HaveCardQuantity(ushort expectedQuantity)
         {
             var actualQuantity = this
                 .Subject?.Cards?
@@ -85,13 +99,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Assertion
                 .ForCondition(actualQuantity == expectedQuantity)
                 .FailWith(
-                    $"Expected {{context:library}} to have {expectedQuantity} cards, " +
+                    $"Expected {{context:zone}} to have {expectedQuantity} cards, " +
                     $"but found {actualQuantity}.");
 
-            return new AndConstraint<LibraryAssertions>(this);
+            return new AndConstraint<ZoneAssertions>(this);
         }
 
-        public AndConstraint<LibraryAssertions> HaveCardQuantity(string cardName, ushort expectedQuantity)
+        public AndConstraint<ZoneAssertions> HaveCardQuantity(string cardName, ushort expectedQuantity)
         {
             Guard
                 .Require(cardName, nameof(cardName))
@@ -105,10 +119,10 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Assertion
                 .ForCondition(actualQuantity == expectedQuantity)
                 .FailWith(
-                    $"Expected {{context:library}} to have {expectedQuantity} [{cardName}] cards, " +
+                    $"Expected {{context:zone}} to have {expectedQuantity} [{cardName}] cards, " +
                     $"but found {actualQuantity}.");
 
-            return new AndConstraint<LibraryAssertions>(this);
+            return new AndConstraint<ZoneAssertions>(this);
         }
     }
 }

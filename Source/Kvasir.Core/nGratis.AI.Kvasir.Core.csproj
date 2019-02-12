@@ -44,8 +44,7 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Engine.Card\Card.cs" />
-    <Compile Include="Engine.Card\Creature.cs" />
+    <Compile Include="Engine\Card.cs" />
     <Compile Include="Engine.Infrastructure\IMagicObjectFactory.cs" />
     <Compile Include="Engine.Infrastructure\MagicObjectFactory.cs" />
     <Compile Include="Engine.Cost\Cost.cs" />
@@ -60,7 +59,6 @@
     <Compile Include="Engine\Deck.cs" />
     <Compile Include="Engine\GameContext.cs" />
     <Compile Include="Engine.Infrastructure\RandomGenerator.cs" />
-    <Compile Include="Engine\Library.cs" />
     <Compile Include="Engine\Zone.cs" />
     <Compile Include="IO\BaseMagicHttpFetcher.cs" />
     <Compile Include="IO\CachingMessageHandler.cs" />

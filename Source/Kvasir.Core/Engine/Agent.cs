@@ -40,6 +40,6 @@ namespace nGratis.AI.Kvasir.Core
 
         public Deck Deck { get; set; }
 
-        public Library Library { get; set; }
+        public Zone Library { get; set; }
     }
 }

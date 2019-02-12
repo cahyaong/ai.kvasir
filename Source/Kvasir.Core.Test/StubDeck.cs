@@ -48,7 +48,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .CardNames
                 .SelectMany(cardName => Enumerable
                     .Range(0, deckDefinition[cardName])
-                    .Select(_ => new StubCard(cardName)))
+                    .Select(_ => new Card(cardName)))
                 .ToArray();
         }
 

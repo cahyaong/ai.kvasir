@@ -77,7 +77,6 @@
     </Compile>
     <Compile Include="Parser\MagicCardAbilityParserTests.cs" />
     <Compile Include="Parser\MagicCardParserTests.cs" />
-    <Compile Include="StubCard.cs" />
     <Compile Include="StubDeck.cs" />
     <Compile Include="StubDirectory.cs" />
     <Compile Include="StubHttpMessageHandler.cs" />
