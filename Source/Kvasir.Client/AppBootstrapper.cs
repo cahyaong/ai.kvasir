@@ -149,12 +149,8 @@ namespace nGratis.AI.Kvasir.Client
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(dataFolderUri));
 
-            unityContainer.RegisterType<IMagicFetcher, MagicJsonFetcher>(
-                "MTGJSON",
-                new ContainerControlledLifetimeManager());
-
-            unityContainer.RegisterType<IMagicFetcher, WizardFetcher>(
-                "WOTC",
+            unityContainer.RegisterType<IMagicFetcher, ScryfallFetcher>(
+                "SCRYFALL",
                 new ContainerControlledLifetimeManager());
 
             unityContainer.RegisterType<IIndexManager, IndexManager>(

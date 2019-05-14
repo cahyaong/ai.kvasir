@@ -93,8 +93,9 @@ namespace nGratis.AI.Kvasir.Core
                     $"Status Code: [{response.StatusCode}].");
             }
 
-            var content = await response.Content.ReadAsStringAsync();
-            var cardsToken = JObject.Parse(content)["cards"];
+            var cardsToken = JObject
+                .Parse(await response.Content.ReadAsStringAsync())
+                .SelectToken("cards");
 
             if (cardsToken == null)
             {

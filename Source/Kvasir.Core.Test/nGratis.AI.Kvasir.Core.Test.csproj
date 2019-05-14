@@ -57,6 +57,7 @@
     <Compile Include="Engine.Cost\ManaCostTests.cs" />
     <Compile Include="Engine.Infrastructure\RandomGeneratorTests.cs" />
     <Compile Include="Engine\GameContextTests.cs" />
+    <Compile Include="IO\ScryfallFetcherTests.cs" />
     <Compile Include="KvasirAssertions.cs" />
     <Compile Include="IO\BaseMagicHttpFetcherTests.cs" />
     <Compile Include="IO\CachingMessageHandlerTests.cs" />
@@ -114,6 +115,7 @@
     <EmbeddedResource Include="Session\Raw_MTGJSON4.ngts" />
     <None Include="paket.references" />
     <EmbeddedResource Include="Session\Raw_WOTC.ngts" />
+    <EmbeddedResource Include="Session\Raw_SCRYFALL.ngts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

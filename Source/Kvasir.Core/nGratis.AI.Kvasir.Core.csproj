@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="IO\MagicRepository.cs" />
     <Compile Include="IO\MagicJsonFetcher.cs" />
+    <Compile Include="IO\ScryfallFetcher.cs" />
     <Compile Include="IO\ThrottlingMessageHandler.cs" />
     <Compile Include="IO\WizardFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />
