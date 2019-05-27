@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DefaultUniqueKeyCalculator.cs" company="nGratis">
+// <copyright file="IKeyCalculator.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,30 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 21 December 2018 11:40:37 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 21 December 2018 11:38:56 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
     using System;
-    using System.Linq;
+    using nGratis.Cop.Core.Contract;
 
-    internal class DefaultUniqueKeyCalculator : IUniqueKeyCalculator
+    public interface IKeyCalculator
     {
-        private DefaultUniqueKeyCalculator()
-        {
-        }
-
-        public static DefaultUniqueKeyCalculator Instance { get; } = new DefaultUniqueKeyCalculator();
-
-        public string Calculate(Uri uri)
-        {
-            return uri?.Segments.Last() ?? DefaultValue.Uri;
-        }
-
-        public static class DefaultValue
-        {
-            public const string Uri = "_unknown.uri";
-        }
+        DataSpec Calculate(Uri uri);
     }
 }

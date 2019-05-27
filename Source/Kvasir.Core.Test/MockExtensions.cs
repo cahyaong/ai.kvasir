@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using Lucene.Net.Analysis.Core;
@@ -264,8 +265,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             return mockFetcher;
         }
 
-        public static Mock<IUniqueKeyCalculator> WithMapping(
-            this Mock<IUniqueKeyCalculator> mockCalculator,
+        public static Mock<IKeyCalculator> WithMapping(
+            this Mock<IKeyCalculator> mockCalculator,
             string url,
             string key)
         {
@@ -281,9 +282,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(key, nameof(key))
                 .Is.Not.Empty();
 
+            var name = Path.GetFileNameWithoutExtension(key);
+            var extension = Path.GetExtension(key);
+
+            var mime = !string.IsNullOrEmpty(extension)
+                ? Mime.ParseByExtension(extension)
+                : Mime.Text;
+
             mockCalculator
                 .Setup(mock => mock.Calculate(It.Is<Uri>(uri => uri.ToString() == url)))
-                .Returns(key)
+                .Returns(new DataSpec(name, mime))
                 .Verifiable();
 
             return mockCalculator;

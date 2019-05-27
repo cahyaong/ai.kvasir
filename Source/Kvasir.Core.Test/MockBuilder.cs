@@ -59,6 +59,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Select(index => new RawCard
                 {
                     MultiverseId = index,
+                    ScryfallId = "[_MOCK_SCRYFALL_ID_]",
+                    ScryfallImageId = 1_000_000_000 + index,
                     CardSetCode = cardSetCode,
                     Name = $"[_MOCK_CODE_{index:D2}_]",
                     ManaCost = "[_MOCK_MANA_COST_]",

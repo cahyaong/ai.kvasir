@@ -54,7 +54,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithSelfCaching();
 
                 var mockKeyCalculator = MockBuilder
-                    .CreateMock<IUniqueKeyCalculator>()
+                    .CreateMock<IKeyCalculator>()
                     .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
                 var cachingHandler = new CachingMessageHandler(
@@ -112,7 +112,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
 
                 var mockKeyCalculator = MockBuilder
-                    .CreateMock<IUniqueKeyCalculator>()
+                    .CreateMock<IKeyCalculator>()
                     .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
                 var cachingHandler = new CachingMessageHandler(
@@ -170,7 +170,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithCaching("[_MOCK_CACHING_NAME_]", "mock.html", "[_MOCK_CACHED_HTML_CONTENT_]");
 
                 var mockKeyCalculator = MockBuilder
-                    .CreateMock<IUniqueKeyCalculator>()
+                    .CreateMock<IKeyCalculator>()
                     .WithMapping("http://www.mock-url.com/mock.html", "mock.html");
 
                 var cachingHandler = new CachingMessageHandler(
@@ -226,7 +226,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
 
                 var mockKeyCalculator = MockBuilder
-                    .CreateMock<IUniqueKeyCalculator>()
+                    .CreateMock<IKeyCalculator>()
                     .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
                 var cachingHandler = new CachingMessageHandler(

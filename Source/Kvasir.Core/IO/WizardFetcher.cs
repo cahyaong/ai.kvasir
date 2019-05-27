@@ -43,7 +43,7 @@ namespace nGratis.AI.Kvasir.Core
         public override ExternalResources AvailableResources => ExternalResources.CardImage;
 
         public WizardFetcher(IStorageManager storageManager)
-            : base("WOTC", WizardFetcher.LandingUri, storageManager, UniqueKeyCalculator.Instance)
+            : base("WOTC", WizardFetcher.LandingUri, storageManager, KeyCalculator.Instance)
         {
         }
 
@@ -71,15 +71,15 @@ namespace nGratis.AI.Kvasir.Core
             return cardImage;
         }
 
-        private sealed class UniqueKeyCalculator : IUniqueKeyCalculator
+        private sealed class KeyCalculator : IKeyCalculator
         {
-            private UniqueKeyCalculator()
+            private KeyCalculator()
             {
             }
 
-            public static UniqueKeyCalculator Instance { get; } = new UniqueKeyCalculator();
+            public static KeyCalculator Instance { get; } = new KeyCalculator();
 
-            public string Calculate(Uri uri)
+            public DataSpec Calculate(Uri uri)
             {
                 var match = Pattern.CardImageUrl.Match(uri.PathAndQuery);
 
@@ -88,7 +88,7 @@ namespace nGratis.AI.Kvasir.Core
                     throw new KvasirException($"Failed to calculate unique key for URI [{uri}].");
                 }
 
-                return $"{match.Groups["id"].Value}{Mime.Png.FileExtension}";
+                return new DataSpec(match.Groups["id"].Value, Mime.Png);
             }
         }
 

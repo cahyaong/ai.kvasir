@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IUniqueKeyCalculator.cs" company="nGratis">
+// <copyright file="SimpleKeyCalculator.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 21 December 2018 11:38:56 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 21 December 2018 11:40:37 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
     using System;
+    using System.IO;
+    using System.Linq;
+    using nGratis.Cop.Core.Contract;
 
-    public interface IUniqueKeyCalculator
+    internal class SimpleKeyCalculator : IKeyCalculator
     {
-        string Calculate(Uri uri);
+        private SimpleKeyCalculator()
+        {
+        }
+
+        public static SimpleKeyCalculator Instance { get; } = new SimpleKeyCalculator();
+
+        public DataSpec Calculate(Uri uri)
+        {
+            var key = uri?.Segments.LastOrDefault();
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return new DataSpec(Default.Name, Mime.Unknown);
+            }
+
+            var name = Path.GetFileNameWithoutExtension(key);
+            var mime = Mime.ParseByExtension(Path.GetExtension(key));
+
+            return new DataSpec(name, mime);
+        }
+
+        public static class Default
+        {
+            public const string Name = "_unknown";
+        }
     }
 }

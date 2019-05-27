@@ -42,17 +42,13 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
-    internal class CachingMessageHandler : DelegatingHandler
+    internal sealed class CachingMessageHandler : DelegatingHandler
     {
-        private readonly DataSpec _cachingSpec;
+        private readonly CachingPool _sharedCachingPool;
 
-        private readonly IStorageManager _storageManager;
+        private readonly CachingPool _imageCachingPool;
 
-        private readonly ReaderWriterLockSlim _storageLock;
-
-        private readonly IUniqueKeyCalculator _keyCalculator;
-
-        private readonly Lazy<ZipArchive> _deferredArchive;
+        private readonly IKeyCalculator _keyCalculator;
 
         private readonly Subject<SavingRequest> _whenEntrySavingRequested;
 
@@ -61,7 +57,7 @@ namespace nGratis.AI.Kvasir.Core
         public CachingMessageHandler(
             string name,
             IStorageManager storageManager,
-            IUniqueKeyCalculator keyCalculator,
+            IKeyCalculator keyCalculator,
             HttpMessageHandler delegatingHandler)
             : base(delegatingHandler)
         {
@@ -69,19 +65,11 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(name, nameof(name))
                 .Is.Not.Null();
 
-            Guard
-                .Require(storageManager, nameof(storageManager))
-                .Is.Not.Null();
+            this._sharedCachingPool = new CachingPool(name, storageManager);
+            this._imageCachingPool = new CachingPool($"{name}_Image", storageManager);
 
-            this._cachingSpec = new DataSpec(name, KvasirMime.Caching);
-            this._storageManager = storageManager;
-            this._storageLock = new ReaderWriterLockSlim();
-            this._keyCalculator = keyCalculator ?? DefaultUniqueKeyCalculator.Instance;
+            this._keyCalculator = keyCalculator ?? SimpleKeyCalculator.Instance;
             this._whenEntrySavingRequested = new Subject<SavingRequest>();
-
-            this._deferredArchive = new Lazy<ZipArchive>(
-                this.LoadArchive,
-                LazyThreadSafetyMode.ExecutionAndPublication);
 
             this._whenEntrySavingRequested
                 .ObserveOn(ThreadPoolScheduler.Instance)
@@ -98,39 +86,27 @@ namespace nGratis.AI.Kvasir.Core
 
             var responseMessage = default(HttpResponseMessage);
 
-            var foundEntry = default(ZipArchiveEntry);
-            var entryKey = this._keyCalculator.Calculate(requestMessage.RequestUri);
+            var entrySpec = this._keyCalculator.Calculate(requestMessage.RequestUri);
 
-            if (string.IsNullOrEmpty(entryKey))
+            if (entrySpec == null)
             {
                 throw new KvasirException(
-                    $"Entry key is not calculated properly for URL [{requestMessage.RequestUri}]. " +
+                    $"Entry spec. is not calculated properly for URL [{requestMessage.RequestUri}]. " +
                     $"Calculator: [{this._keyCalculator.GetType().FullName}].");
             }
 
-            this._storageLock.EnterReadLock();
+            var cachingPool = entrySpec.Mime.IsImage
+                ? this._imageCachingPool
+                : this._sharedCachingPool;
 
-            try
-            {
-                foundEntry = this
-                    ._deferredArchive.Value
-                    .Entries
-                    .SingleOrDefault(entry => entry.FullName == entryKey);
-            }
-            finally
-            {
-                this._storageLock.ExitReadLock();
-            }
+            var foundBlob = cachingPool.LoadEntry($"{entrySpec.Name}{entrySpec.Mime.FileExtension}");
 
-            if (foundEntry != null)
+            if (foundBlob.Any())
             {
-                using (var entryStream = foundEntry.Open())
+                responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
                 {
-                    responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new ByteArrayContent(entryStream.ReadBlob())
-                    };
-                }
+                    Content = new ByteArrayContent(foundBlob)
+                };
             }
             else
             {
@@ -140,7 +116,7 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     this._whenEntrySavingRequested.OnNext(new SavingRequest
                     {
-                        EntryKey = entryKey,
+                        EntrySpec = entrySpec,
                         Blob = await responseMessage.Content.ReadAsByteArrayAsync()
                     });
                 }
@@ -158,50 +134,14 @@ namespace nGratis.AI.Kvasir.Core
 
             if (isDisposing)
             {
+                this._sharedCachingPool.Dispose();
+                this._imageCachingPool.Dispose();
                 this._whenEntrySavingRequested.Dispose();
-
-                this._storageLock.EnterWriteLock();
-
-                if (this._deferredArchive.IsValueCreated)
-                {
-                    try
-                    {
-                        this._deferredArchive.Value.Dispose();
-                    }
-                    finally
-                    {
-                        this._storageLock.ExitWriteLock();
-                    }
-                }
             }
 
             base.Dispose(isDisposing);
 
             this._isDisposed = true;
-        }
-
-        private ZipArchive LoadArchive()
-        {
-            if (!this._storageManager.HasEntry(this._cachingSpec))
-            {
-                var archiveStream = new MemoryStream();
-
-                try
-                {
-                    var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, true);
-                    archive.Dispose();
-
-                    this._storageManager.SaveEntry(this._cachingSpec, archiveStream, false);
-                }
-                finally
-                {
-                    archiveStream.Dispose();
-                }
-            }
-
-            var dataStream = this._storageManager.LoadEntry(this._cachingSpec);
-
-            return new ZipArchive(dataStream, ZipArchiveMode.Update, true);
         }
 
         private void SaveEntry(SavingRequest request)
@@ -211,41 +151,193 @@ namespace nGratis.AI.Kvasir.Core
                 return;
             }
 
-            var isEntryExisted = this
-                ._deferredArchive.Value
-                .Entries
-                .Any(entry => entry.Name == request.EntryKey);
+            var cachingPool = request.EntrySpec.Mime.IsImage
+                ? this._imageCachingPool
+                : this._sharedCachingPool;
 
-            if (isEntryExisted)
-            {
-                return;
-            }
-
-            this._storageLock.EnterWriteLock();
-
-            try
-            {
-                var createdEntry = this
-                    ._deferredArchive.Value
-                    .CreateEntry(request.EntryKey, CompressionLevel.Optimal);
-
-                using (var entryStream = createdEntry.Open())
-                {
-                    entryStream.Write(request.Blob, 0, request.Blob.Length);
-                    entryStream.Flush();
-                }
-            }
-            finally
-            {
-                this._storageLock.ExitWriteLock();
-            }
+            cachingPool.SaveEntry(
+                $"{request.EntrySpec.Name}{request.EntrySpec.Mime.FileExtension}",
+                request.Blob);
         }
 
         private sealed class SavingRequest
         {
-            public string EntryKey { get; set; }
+            public DataSpec EntrySpec { get; set; }
 
             public byte[] Blob { get; set; }
+        }
+
+        private sealed class CachingPool : IDisposable
+        {
+            private readonly DataSpec _archiveSpec;
+
+            private readonly ReaderWriterLockSlim _archiveLock;
+
+            private readonly IStorageManager _storageManager;
+
+            private readonly Lazy<ZipArchive> _deferredArchive;
+
+            private bool _isDisposed;
+
+            public CachingPool(string name, IStorageManager storageManager)
+            {
+                Guard
+                    .Require(name, nameof(name))
+                    .Is.Not.Empty();
+
+                Guard
+                    .Require(storageManager, nameof(storageManager))
+                    .Is.Not.Null();
+
+                this._archiveSpec = new DataSpec(name, KvasirMime.Caching);
+                this._archiveLock = new ReaderWriterLockSlim();
+                this._storageManager = storageManager;
+
+                this._deferredArchive = new Lazy<ZipArchive>(
+                    this.LoadArchive,
+                    LazyThreadSafetyMode.ExecutionAndPublication);
+            }
+
+            ~CachingPool()
+            {
+                this.Dispose(false);
+            }
+
+            public byte[] LoadEntry(string key)
+            {
+                Guard
+                    .Require(key, nameof(key))
+                    .Is.Not.Empty();
+
+                var foundEntry = default(ZipArchiveEntry);
+
+                this._archiveLock.EnterReadLock();
+
+                try
+                {
+                    foundEntry = this
+                        ._deferredArchive.Value
+                        .Entries
+                        .SingleOrDefault(entry => entry.FullName == key);
+                }
+                finally
+                {
+                    this._archiveLock.ExitReadLock();
+                }
+
+                if (foundEntry == null)
+                {
+                    return new byte[0];
+                }
+
+                using (var entryStream = foundEntry.Open())
+                {
+                    return entryStream.ReadBlob();
+                }
+            }
+
+            public void SaveEntry(string key, byte[] blob)
+            {
+                Guard
+                    .Require(key, nameof(key))
+                    .Is.Not.Empty();
+
+                Guard
+                    .Require(blob, nameof(blob))
+                    .Is.Not.Null()
+                    .Is.Not.Empty();
+
+                if (this._isDisposed)
+                {
+                    return;
+                }
+
+                var isEntryExisted = this
+                    ._deferredArchive.Value
+                    .Entries
+                    .Any(entry => entry.Name == key);
+
+                if (isEntryExisted)
+                {
+                    return;
+                }
+
+                this._archiveLock.EnterWriteLock();
+
+                try
+                {
+                    var createdEntry = this
+                        ._deferredArchive.Value
+                        .CreateEntry(key, CompressionLevel.Optimal);
+
+                    using (var entryStream = createdEntry.Open())
+                    {
+                        entryStream.Write(blob, 0, blob.Length);
+                        entryStream.Flush();
+                    }
+                }
+                finally
+                {
+                    this._archiveLock.ExitWriteLock();
+                }
+            }
+
+            public void Dispose()
+            {
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private ZipArchive LoadArchive()
+            {
+                if (!this._storageManager.HasEntry(this._archiveSpec))
+                {
+                    var archiveStream = new MemoryStream();
+
+                    try
+                    {
+                        var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, true);
+                        archive.Dispose();
+
+                        this._storageManager.SaveEntry(this._archiveSpec, archiveStream, false);
+                    }
+                    finally
+                    {
+                        archiveStream.Dispose();
+                    }
+                }
+
+                var dataStream = this._storageManager.LoadEntry(this._archiveSpec);
+
+                return new ZipArchive(dataStream, ZipArchiveMode.Update, true);
+            }
+
+            private void Dispose(bool isDisposing)
+            {
+                if (this._isDisposed)
+                {
+                    return;
+                }
+
+                if (isDisposing)
+                {
+                    if (this._deferredArchive.IsValueCreated)
+                    {
+                        this._archiveLock.EnterWriteLock();
+
+                        try
+                        {
+                            this._deferredArchive.Value.Dispose();
+                        }
+                        finally
+                        {
+                            this._archiveLock.ExitWriteLock();
+                        }
+                    }
+                }
+
+                this._isDisposed = true;
+            }
         }
     }
 }

@@ -49,8 +49,8 @@ namespace nGratis.AI.Kvasir.Core
             string id,
             Uri landingUri,
             IStorageManager storageManager,
-            IUniqueKeyCalculator uniqueKeyCalculator = null)
-            : this(landingUri, BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager, uniqueKeyCalculator))
+            IKeyCalculator keyCalculator = null)
+            : this(landingUri, BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager, keyCalculator))
         {
         }
 
@@ -147,7 +147,7 @@ namespace nGratis.AI.Kvasir.Core
         private static HttpMessageHandler CreateMessageHandler(
             string id,
             IStorageManager storageManager,
-            IUniqueKeyCalculator uniqueKeyCalculator)
+            IKeyCalculator keyCalculator)
         {
             Guard
                 .Require(id, nameof(id))
@@ -158,12 +158,12 @@ namespace nGratis.AI.Kvasir.Core
                 .Is.Not.Null();
 
             var messageHandler = (HttpMessageHandler)new HttpClientHandler();
-            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(500), messageHandler);
+            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(100), messageHandler);
 
             messageHandler = new CachingMessageHandler(
                 $"Raw_{id}",
                 storageManager,
-                uniqueKeyCalculator,
+                keyCalculator,
                 messageHandler);
 
             return messageHandler;

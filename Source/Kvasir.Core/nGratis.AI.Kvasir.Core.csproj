@@ -62,8 +62,8 @@
     <Compile Include="Engine\Zone.cs" />
     <Compile Include="IO\BaseMagicHttpFetcher.cs" />
     <Compile Include="IO\CachingMessageHandler.cs" />
-    <Compile Include="IO\DefaultUniqueKeyCalculator.cs" />
-    <Compile Include="IO\IUniqueKeyCalculator.cs" />
+    <Compile Include="IO\SimpleKeyCalculator.cs" />
+    <Compile Include="IO\IKeyCalculator.cs" />
     <Compile Include="IO\LuceneExtensions.cs" />
     <Compile Include="IO\IndexManager.cs" />
     <Compile Include="IO\LuceneExtensions.Serialization.cs">

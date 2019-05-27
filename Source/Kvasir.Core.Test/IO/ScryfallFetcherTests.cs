@@ -151,6 +151,15 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().BePositive();
 
                     rawCard
+                        .ScryfallId
+                        .Should().NotBeNull()
+                        .And.MatchRegex(@"[0-9a-f]{8}\-([0-9a-f]{4}\-){3}[0-9a-f]{12}");
+
+                    rawCard
+                        .ScryfallImageId
+                        .Should().BePositive();
+
+                    rawCard
                         .CardSetCode
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"\w{3,6}");

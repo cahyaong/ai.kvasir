@@ -45,7 +45,7 @@ namespace nGratis.AI.Kvasir.Core
         private static readonly Uri LandingUri = new Uri("https://api.scryfall.com");
 
         public ScryfallFetcher(IStorageManager storageManager)
-            : base("SCRYFALL", ScryfallFetcher.LandingUri, storageManager, UniqueKeyCalculator.Instance)
+            : base("SCRYFALL", ScryfallFetcher.LandingUri, storageManager, KeyCalculator.Instance)
         {
         }
 
@@ -119,6 +119,8 @@ namespace nGratis.AI.Kvasir.Core
                             .Children()
                             .FirstOrDefault()?
                             .Value<int>() ?? 0,
+                        ScryfallId = token["id"].Value<string>(),
+                        ScryfallImageId = token.FindScryfallImageId(),
                         CardSetCode = cardSet.Code,
                         Name = token["name"]?.Value<string>() ?? string.Empty,
                         ManaCost = token["mana_cost"]?.Value<string>() ?? string.Empty,
@@ -151,19 +153,19 @@ namespace nGratis.AI.Kvasir.Core
             return await Task.FromResult(EmptyImage.Instance);
         }
 
-        private sealed class UniqueKeyCalculator : IUniqueKeyCalculator
+        private sealed class KeyCalculator : IKeyCalculator
         {
-            private UniqueKeyCalculator()
+            private KeyCalculator()
             {
             }
 
-            public static UniqueKeyCalculator Instance { get; } = new UniqueKeyCalculator();
+            public static KeyCalculator Instance { get; } = new KeyCalculator();
 
-            public string Calculate(Uri uri)
+            public DataSpec Calculate(Uri uri)
             {
                 if (uri.PathAndQuery.EndsWith("sets"))
                 {
-                    return $"sets{Mime.Json.FileExtension}";
+                    return new DataSpec("sets", Mime.Json);
                 }
 
                 var match = Pattern.CardSetPaging.Match(uri.PathAndQuery);
@@ -173,7 +175,7 @@ namespace nGratis.AI.Kvasir.Core
                     var code = match.Groups["code"].Value.ToUpperInvariant();
                     var page = int.Parse(match.Groups["page"].Value);
 
-                    return $"{code}_{page:D2}{Mime.Json.FileExtension}";
+                    return new DataSpec($"{code}_{page:D2}", Mime.Json);
                 }
 
                 throw new KvasirException($"Failed to calculate unique key for URI [{uri}].");
@@ -185,6 +187,25 @@ namespace nGratis.AI.Kvasir.Core
             public static readonly Regex CardSetPaging = new Regex(
                 @"/cards/search\?q=e%3a(?<code>\w+)&unique=prints&order=name&page=(?<page>\d+)",
                 RegexOptions.Compiled);
+        }
+    }
+
+    internal static class ScryfallExtensions
+    {
+        public static int FindScryfallImageId(this JToken token)
+        {
+            Guard
+                .Require(token, nameof(token))
+                .Is.Not.Null();
+
+            var imageUri = new Uri(token
+                .SelectToken("image_uris")
+                .SelectToken("border_crop")
+                .Value<string>());
+
+            return int.Parse(imageUri
+                .Query
+                .Replace("?", string.Empty));
         }
     }
 }
