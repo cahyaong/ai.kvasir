@@ -32,10 +32,8 @@ namespace nGratis.AI.Kvasir.Client
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System.Windows;
     using System.Windows.Input;
     using System.Windows.Media;
-    using System.Windows.Media.Imaging;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
@@ -43,8 +41,6 @@ namespace nGratis.AI.Kvasir.Client
 
     public class CardViewModel : ReactiveObject
     {
-        private static readonly Int32Rect CroppingBound = new Int32Rect(3, 4, 217, 303);
-
         // TODO: Need to make <CardDefinition> class as immutable as possible!
 
         private static readonly CardDefinition InvalidCardDefinition = new CardDefinition();
@@ -125,7 +121,7 @@ namespace nGratis.AI.Kvasir.Client
 
             // TODO: Need to handle larger image size, e.g. Planechase card!
 
-            this.OriginalImage = new CroppedBitmap(cardImage.ToBitmapSource(), CardViewModel.CroppingBound);
+            this.OriginalImage = cardImage.ToBitmapSource();
         }
 
         private async Task ParseCardAsync()

@@ -43,15 +43,13 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicJsonFetcher : BaseMagicHttpFetcher
     {
-        private static readonly Uri LandingUri = new Uri("https://mtgjson.com");
-
         public MagicJsonFetcher(IStorageManager storageManager)
-            : base("MTGJSON4", MagicJsonFetcher.LandingUri, storageManager)
+            : base("MTGJSON4", storageManager)
         {
         }
 
         internal MagicJsonFetcher(HttpMessageHandler messageHandler)
-            : base(MagicJsonFetcher.LandingUri, messageHandler)
+            : base(messageHandler)
         {
         }
 
@@ -59,7 +57,7 @@ namespace nGratis.AI.Kvasir.Core
 
         protected override async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
         {
-            var response = await this.HttpClient.GetAsync("sets.html");
+            var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, "sets.html"));
 
             if (!response.IsSuccessStatusCode)
             {
@@ -81,15 +79,15 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet cardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
         {
-            var response = await this.HttpClient.GetAsync($"json/{cardSet.Code}.json");
+            var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{rawCardSet.Code}.json"));
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new KvasirException(
                     @"Failed to reach MTGJSON4.com when trying to fetch cards! " +
-                    $"Card Set: [{cardSet.Name}]. " +
+                    $"Card Set: [{rawCardSet.Name}]. " +
                     $"Status Code: [{response.StatusCode}].");
             }
 
@@ -108,7 +106,7 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     var card = token.ToObject<RawCard>();
 
-                    card.CardSetCode = cardSet.Code;
+                    card.CardSetCode = rawCardSet.Code;
                     card.ManaCost = card.ManaCost ?? string.Empty;
                     card.Text = card.Text ?? string.Empty;
                     card.FlavorText = card.FlavorText ?? string.Empty;
@@ -159,6 +157,11 @@ namespace nGratis.AI.Kvasir.Core
                 Code = foundMatch.Groups["code"].Value,
                 ReleasedTimestamp = releasedTimestamp
             };
+        }
+
+        private static class Link
+        {
+            public static readonly Uri LandingUri = new Uri("https://mtgjson.com");
         }
 
         private static class Pattern

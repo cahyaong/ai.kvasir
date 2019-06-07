@@ -47,27 +47,19 @@ namespace nGratis.AI.Kvasir.Core
 
         protected BaseMagicHttpFetcher(
             string id,
-            Uri landingUri,
             IStorageManager storageManager,
             IKeyCalculator keyCalculator = null)
-            : this(landingUri, BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager, keyCalculator))
+            : this(BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager, keyCalculator))
         {
         }
 
-        protected internal BaseMagicHttpFetcher(Uri landingUri, HttpMessageHandler messageHandler)
+        protected internal BaseMagicHttpFetcher(HttpMessageHandler messageHandler)
         {
-            Guard
-                .Require(landingUri, nameof(landingUri))
-                .Is.Not.Null()
-                .Is.Url();
-
             this._messageHandler = messageHandler;
 
             this.HttpClient = messageHandler != null
                 ? new HttpClient(messageHandler)
                 : new HttpClient();
-
-            this.HttpClient.BaseAddress = landingUri;
 
             if (!Debugger.IsAttached)
             {
@@ -129,12 +121,12 @@ namespace nGratis.AI.Kvasir.Core
             return await Task.FromResult(new RawCardSet[0]);
         }
 
-        protected virtual async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet cardSet)
+        protected virtual async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
         {
             return await Task.FromResult(new RawCard[0]);
         }
 
-        protected virtual async Task<IImage> GetCardImageCoreAsync(RawCard card)
+        protected virtual async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
         {
             return await Task.FromResult(EmptyImage.Instance);
         }

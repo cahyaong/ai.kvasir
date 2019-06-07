@@ -156,8 +156,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .And.MatchRegex(@"[0-9a-f]{8}\-([0-9a-f]{4}\-){3}[0-9a-f]{12}");
 
                     rawCard
-                        .ScryfallImageId
-                        .Should().BePositive();
+                        .ScryfallImageUrl
+                        .Should().NotBeNullOrEmpty();
 
                     rawCard
                         .CardSetCode
@@ -245,6 +245,76 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch cards! " +
                         "Card Set: [[_MOCK_NAME_]]. " +
+                        "Status Code: [NotFound].");
+            }
+        }
+
+        public class GetCardImageAsyncMethod
+        {
+            [Fact]
+            public async Task WhenGettingSuccessfulResponse_ShouldLoadJpegImage()
+            {
+                // Arrange.
+
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithSuccessfulResponseInSession(
+                        "https://img.scryfall.com/cards/border_crop/mock_image.jpeg",
+                        "Raw_SCRYFALL",
+                        "64.jpeg");
+
+                var fetcher = new ScryfallFetcher(stubHandler);
+
+                var rawCard = new RawCard
+                {
+                    ScryfallImageUrl = "mock_image.jpeg"
+                };
+
+                // Act.
+
+                var cardImage = await fetcher.GetCardImageAsync(rawCard);
+
+                // Assert.
+
+                cardImage
+                    .Should().NotBeNull();
+
+                cardImage
+                    .Width
+                    .Should().Be(64);
+
+                cardImage
+                    .Height
+                    .Should().Be(64);
+            }
+
+            [Fact]
+            public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
+            {
+                // Arrange.
+
+                var stubHandler = StubHttpMessageHandler
+                    .Create()
+                    .WithResponse(
+                        "https://img.scryfall.com/cards/border_crop/mock_image.jpeg",
+                        HttpStatusCode.NotFound);
+
+                var fetcher = new ScryfallFetcher(stubHandler);
+
+                var rawCard = new RawCard
+                {
+                    Name = "[_MOCK_NAME_]",
+                    ScryfallImageUrl = "mock_image.jpeg"
+                };
+
+                // Act & Assert.
+
+                fetcher
+                    .Awaiting(async self => await self.GetCardImageAsync(rawCard))
+                    .Should().Throw<KvasirException>()
+                    .WithMessage(
+                        "Failed to reach SCRYFALL.com when trying to fetch card image! " +
+                        "Card: [[_MOCK_NAME_]]. " +
                         "Status Code: [NotFound].");
             }
         }

@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
@@ -42,7 +41,7 @@ namespace nGratis.AI.Kvasir.Core.Test
         private ExternalResources _availableResources;
 
         private StubMagicHttpFetcher(HttpMessageHandler messageHandler)
-            : base(new Uri("http://www.mock-url.com"), messageHandler)
+            : base(messageHandler)
         {
         }
 
@@ -76,18 +75,18 @@ namespace nGratis.AI.Kvasir.Core.Test
             return await Task.FromResult(new[] { cardSet });
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet cardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
         {
             var card = new RawCard
             {
-                CardSetCode = cardSet.Code,
+                CardSetCode = rawCardSet.Code,
                 Name = "[_MOCK_NAME_]"
             };
 
             return await Task.FromResult(new[] { card });
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(RawCard card)
+        protected override async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
         {
             return await Task.FromResult(EmptyImage.Instance);
         }

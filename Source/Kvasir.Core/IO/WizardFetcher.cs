@@ -38,30 +38,31 @@ namespace nGratis.AI.Kvasir.Core
 
     public class WizardFetcher : BaseMagicHttpFetcher
     {
-        private static readonly Uri LandingUri = new Uri("http://gatherer.wizards.com");
-
         public override ExternalResources AvailableResources => ExternalResources.CardImage;
 
         public WizardFetcher(IStorageManager storageManager)
-            : base("WOTC", WizardFetcher.LandingUri, storageManager, KeyCalculator.Instance)
+            : base("WOTC", storageManager, KeyCalculator.Instance)
         {
         }
 
         internal WizardFetcher(HttpMessageHandler messageHandler)
-            : base(WizardFetcher.LandingUri, messageHandler)
+            : base(messageHandler)
         {
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(RawCard card)
+        protected override async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
         {
-            var path = $"Handlers/Image.ashx?multiverseid={card.MultiverseId}&type=card";
-            var response = await this.HttpClient.GetAsync(path);
+            var path =
+                @"Handlers/Image.ashx" +
+                $"?multiverseid={rawCard.MultiverseId}&type=card";
+
+            var response = await this.HttpClient.GetAsync(new Uri(Link.GathererUri, path));
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new KvasirException(
-                    @"Failed to reach gatherer.wizard.com when trying to fetch card image! " +
-                    $"Card: [{card.Name}]. " +
+                    @"Failed to reach WIZARD.com when trying to fetch card image! " +
+                    $"Card: [{rawCard.Name}]. " +
                     $"Status Code: [{response.StatusCode}].");
             }
 
@@ -69,6 +70,11 @@ namespace nGratis.AI.Kvasir.Core
             cardImage.LoadData(await response.Content.ReadAsStreamAsync());
 
             return cardImage;
+        }
+
+        private static class Link
+        {
+            public static readonly Uri GathererUri = new Uri("http://gatherer.wizards.com");
         }
 
         private sealed class KeyCalculator : IKeyCalculator
@@ -85,7 +91,7 @@ namespace nGratis.AI.Kvasir.Core
 
                 if (!match.Success)
                 {
-                    throw new KvasirException($"Failed to calculate unique key for URI [{uri}].");
+                    throw new KvasirException($"Failed to calculate unique key for URL [{uri}].");
                 }
 
                 return new DataSpec(match.Groups["id"].Value, Mime.Png);

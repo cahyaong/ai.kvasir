@@ -28,7 +28,7 @@
         <core:AweField
           Grid.Row="0"
           Grid.Column="0"
-          Width="120"
+          Width="140"
           HorizontalAlignment="Right"
           DisplayMemberPath="RawCardSet.Name"
           Header="Card Set"
@@ -64,7 +64,7 @@
           Style="{StaticResource Cop.DataGrid.Virtualizing}">
           <DataGrid.Columns>
             <DataGridTextColumn
-              Width="230"
+              MinWidth="200"
               Binding="{Binding RawCard.Name, Mode=OneWay}"
               Header="Card" />
           </DataGrid.Columns>
@@ -77,10 +77,10 @@
           Orientation="Vertical">
           <client:ParsingStatisticsViewPart />
           <Image
-            Width="217"
-            Height="303"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
+            Width="240"
+            Height="340"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
             Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
         </StackPanel>
       </Grid>

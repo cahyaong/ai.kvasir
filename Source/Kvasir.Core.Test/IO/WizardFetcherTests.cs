@@ -50,16 +50,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                         "Raw_WOTC",
                         "64.jpeg");
 
-                var wizardFetcher = new WizardFetcher(stubHandler);
+                var fetcher = new WizardFetcher(stubHandler);
 
-                var card = new RawCard
+                var rawCard = new RawCard
                 {
                     MultiverseId = 64
                 };
 
                 // Act.
 
-                var cardImage = await wizardFetcher.GetCardImageAsync(card);
+                var cardImage = await fetcher.GetCardImageAsync(rawCard);
 
                 // Assert.
 
@@ -86,9 +86,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                         "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=64&type=card",
                         HttpStatusCode.NotFound);
 
-                var wizardFetcher = new WizardFetcher(stubHandler);
+                var fetcher = new WizardFetcher(stubHandler);
 
-                var card = new RawCard
+                var rawCard = new RawCard
                 {
                     Name = "[_MOCK_NAME_]",
                     MultiverseId = 64
@@ -96,11 +96,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act & Assert.
 
-                wizardFetcher
-                    .Awaiting(async self => await self.GetCardImageAsync(card))
+                fetcher
+                    .Awaiting(async self => await self.GetCardImageAsync(rawCard))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
-                        "Failed to reach gatherer.wizard.com when trying to fetch card image! " +
+                        "Failed to reach WIZARD.com when trying to fetch card image! " +
                         "Card: [[_MOCK_NAME_]]. " +
                         "Status Code: [NotFound].");
             }

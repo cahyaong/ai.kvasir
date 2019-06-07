@@ -60,7 +60,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     MultiverseId = index,
                     ScryfallId = "[_MOCK_SCRYFALL_ID_]",
-                    ScryfallImageId = 1_000_000_000 + index,
+                    ScryfallImageUrl = "[_MOCK_SCRYFALL_IMAGE_URL_]",
                     CardSetCode = cardSetCode,
                     Name = $"[_MOCK_CODE_{index:D2}_]",
                     ManaCost = "[_MOCK_MANA_COST_]",

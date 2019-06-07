@@ -24,7 +24,7 @@
         <core:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
       </StackPanel>
     </core:AweTileGroup>
-    <core:AweTileGroup Width="825" Header="CARD SET">
+    <core:AweTileGroup Width="800" Header="CARD SET">
       <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
         <DataGrid
           AutoGenerateColumns="False"
@@ -35,15 +35,15 @@
           Style="{StaticResource Cop.DataGrid.Virtualizing}">
           <DataGrid.Columns>
             <DataGridTextColumn
-              MinWidth="70"
+              Width="60"
               Binding="{Binding RawCardSet.Code, Mode=OneWay}"
               Header="Code" />
             <DataGridTextColumn
-              MinWidth="290"
+              Width="290"
               Binding="{Binding RawCardSet.Name, Mode=OneWay}"
               Header="Card Set Name" />
             <DataGridTextColumn
-              MinWidth="100"
+              Width="100"
               Binding="{Binding RawCardSet.ReleasedTimestamp, Mode=OneWay, Converter={StaticResource Kvasir.Converter.MagicTimestampToStringConverter}}"
               Header="Released" />
           </DataGrid.Columns>
@@ -59,11 +59,11 @@
           Style="{StaticResource Cop.DataGrid.Virtualizing}">
           <DataGrid.Columns>
             <DataGridTextColumn
-              MinWidth="50"
+              Width="50"
               Binding="{Binding RawCard.Number, Mode=OneWay}"
               Header="#" />
             <DataGridTextColumn
-              MinWidth="220"
+              Width="205"
               Binding="{Binding RawCard.Name, Mode=OneWay}"
               Header="Card Name" />
           </DataGrid.Columns>
@@ -72,8 +72,8 @@
     </core:AweTileGroup>
     <core:AweTileGroup DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}" Header="CARD">
       <Image
-        Width="217"
-        Height="303"
+        Width="240"
+        Height="340"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
         Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />

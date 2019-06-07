@@ -42,15 +42,13 @@ namespace nGratis.AI.Kvasir.Core
 
     public class ScryfallFetcher : BaseMagicHttpFetcher
     {
-        private static readonly Uri LandingUri = new Uri("https://api.scryfall.com");
-
         public ScryfallFetcher(IStorageManager storageManager)
-            : base("SCRYFALL", ScryfallFetcher.LandingUri, storageManager, KeyCalculator.Instance)
+            : base("SCRYFALL", storageManager, KeyCalculator.Instance)
         {
         }
 
         internal ScryfallFetcher(HttpMessageHandler messageHandler)
-            : base(ScryfallFetcher.LandingUri, messageHandler)
+            : base(messageHandler)
         {
         }
 
@@ -58,7 +56,7 @@ namespace nGratis.AI.Kvasir.Core
 
         protected override async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
         {
-            var response = await this.HttpClient.GetAsync("sets");
+            var response = await this.HttpClient.GetAsync(new Uri(Link.ApiUri, "sets"));
 
             if (!response.IsSuccessStatusCode)
             {
@@ -81,7 +79,7 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet cardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
         {
             var rawCards = new List<RawCard>();
             var pageCount = 1;
@@ -91,18 +89,18 @@ namespace nGratis.AI.Kvasir.Core
             {
                 var parameters = HttpUtility.ParseQueryString(string.Empty);
 
-                parameters["q"] = $"e:{cardSet.Code}";
+                parameters["q"] = $"e:{rawCardSet.Code}";
                 parameters["unique"] = "prints";
                 parameters["order"] = "name";
                 parameters["page"] = pageCount.ToString();
 
-                var response = await this.HttpClient.GetAsync($"cards/search?{parameters}");
+                var response = await this.HttpClient.GetAsync(new Uri(Link.ApiUri, $"cards/search?{parameters}"));
 
                 if (!response.IsSuccessStatusCode)
                 {
                     throw new KvasirException(
                         @"Failed to reach SCRYFALL.com when trying to fetch cards! " +
-                        $"Card Set: [{cardSet.Name}]. " +
+                        $"Card Set: [{rawCardSet.Name}]. " +
                         $"Status Code: [{response.StatusCode}].");
                 }
 
@@ -120,8 +118,8 @@ namespace nGratis.AI.Kvasir.Core
                             .FirstOrDefault()?
                             .Value<int>() ?? 0,
                         ScryfallId = token["id"].Value<string>(),
-                        ScryfallImageId = token.FindScryfallImageId(),
-                        CardSetCode = cardSet.Code,
+                        ScryfallImageUrl = ScryfallFetcher.FindScryfallImageUrl(token),
+                        CardSetCode = rawCardSet.Code,
                         Name = token["name"]?.Value<string>() ?? string.Empty,
                         ManaCost = token["mana_cost"]?.Value<string>() ?? string.Empty,
                         Type = token["type_line"]?.Value<string>() ?? string.Empty,
@@ -148,9 +146,54 @@ namespace nGratis.AI.Kvasir.Core
             return rawCards;
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(RawCard card)
+        protected override async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
         {
-            return await Task.FromResult(EmptyImage.Instance);
+            var path = $"cards/border_crop/{rawCard.ScryfallImageUrl}";
+
+            var response = await this.HttpClient.GetAsync(new Uri(Link.ImageUri, path));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new KvasirException(
+                    @"Failed to reach SCRYFALL.com when trying to fetch card image! " +
+                    $"Card: [{rawCard.Name}]. " +
+                    $"Status Code: [{response.StatusCode}].");
+            }
+
+            var cardImage = new WritableImage();
+            cardImage.LoadData(await response.Content.ReadAsStreamAsync());
+
+            return cardImage;
+        }
+
+        private static string FindScryfallImageUrl(JToken token)
+        {
+            Guard
+                .Require(token, nameof(token))
+                .Is.Not.Null();
+
+            var imageUri = new Uri(token
+                .SelectToken("image_uris")
+                .SelectToken("border_crop")
+                .Value<string>());
+
+            var urlMatch = Pattern.CardImageUrl.Match(imageUri.PathAndQuery);
+
+            if (!urlMatch.Success)
+            {
+                throw new KvasirException(
+                    @"Failed to find SCRYFALL.com image URL! " +
+                    $"URL: [{imageUri.AbsoluteUri}].");
+            }
+
+            return urlMatch.Groups["url"].Value;
+        }
+
+        private static class Link
+        {
+            public static readonly Uri ApiUri = new Uri("https://api.scryfall.com");
+
+            public static readonly Uri ImageUri = new Uri("https://img.scryfall.com/");
         }
 
         private sealed class KeyCalculator : IKeyCalculator
@@ -168,44 +211,38 @@ namespace nGratis.AI.Kvasir.Core
                     return new DataSpec("sets", Mime.Json);
                 }
 
-                var match = Pattern.CardSetPaging.Match(uri.PathAndQuery);
+                var urlMatch = Pattern.CardSetPagingUrl.Match(uri.PathAndQuery);
 
-                if (match.Success)
+                if (urlMatch.Success)
                 {
-                    var code = match.Groups["code"].Value.ToUpperInvariant();
-                    var page = int.Parse(match.Groups["page"].Value);
+                    var code = urlMatch.Groups["code"].Value.ToUpperInvariant();
+                    var page = int.Parse(urlMatch.Groups["page"].Value);
 
                     return new DataSpec($"{code}_{page:D2}", Mime.Json);
                 }
 
-                throw new KvasirException($"Failed to calculate unique key for URI [{uri}].");
+                urlMatch = Pattern.CardImageUrl.Match(uri.PathAndQuery);
+
+                if (urlMatch.Success)
+                {
+                    return new DataSpec(
+                        $"{urlMatch.Groups["salt"].Value}_{urlMatch.Groups["url"].Value.CalculateMd5Hash()}",
+                        Mime.Jpeg);
+                }
+
+                throw new KvasirException($"Failed to calculate unique key for URL [{uri}].");
             }
         }
 
         private static class Pattern
         {
-            public static readonly Regex CardSetPaging = new Regex(
+            public static readonly Regex CardSetPagingUrl = new Regex(
                 @"/cards/search\?q=e%3a(?<code>\w+)&unique=prints&order=name&page=(?<page>\d+)",
                 RegexOptions.Compiled);
-        }
-    }
 
-    internal static class ScryfallExtensions
-    {
-        public static int FindScryfallImageId(this JToken token)
-        {
-            Guard
-                .Require(token, nameof(token))
-                .Is.Not.Null();
-
-            var imageUri = new Uri(token
-                .SelectToken("image_uris")
-                .SelectToken("border_crop")
-                .Value<string>());
-
-            return int.Parse(imageUri
-                .Query
-                .Replace("?", string.Empty));
+            public static readonly Regex CardImageUrl = new Regex(
+                @"/cards/border_crop/(?<url>[a-z0-9/]+/[0-9a-f\-%]+\.jpg\?(?<salt>\d+))",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }
     }
 }

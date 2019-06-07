@@ -39,7 +39,7 @@ namespace nGratis.AI.Kvasir.Contract
 
         public string ScryfallId { get; set; }
 
-        public int ScryfallImageId { get; set; }
+        public string ScryfallImageUrl { get; set; }
 
         public string CardSetCode { get; set; }
 
