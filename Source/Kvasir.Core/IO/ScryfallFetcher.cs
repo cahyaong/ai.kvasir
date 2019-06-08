@@ -241,7 +241,7 @@ namespace nGratis.AI.Kvasir.Core
                 RegexOptions.Compiled);
 
             public static readonly Regex CardImageUrl = new Regex(
-                @"/cards/border_crop/(?<url>[a-z0-9/]+/[0-9a-f\-%]+\.jpg\?(?<salt>\d+))",
+                @"/cards/border_crop/(?<url>[a-z0-9/]+/[a-z0-9\-%]+\.jpg\?(?<salt>\d+))",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }
     }
