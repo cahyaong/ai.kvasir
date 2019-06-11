@@ -54,7 +54,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public override ExternalResources AvailableResources => ExternalResources.All;
 
-        protected override async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
         {
             var response = await this.HttpClient.GetAsync(new Uri(Link.ApiUri, "sets"));
 
@@ -79,7 +79,7 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
         {
             var rawCards = new List<RawCard>();
             var pageCount = 1;
@@ -146,7 +146,7 @@ namespace nGratis.AI.Kvasir.Core
             return rawCards;
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
+        protected override async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
         {
             var path = $"cards/border_crop/{rawCard.ScryfallImageUrl}";
 

@@ -211,7 +211,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetRawCardSetsAsync(),
+                    mock => mock.FetchRawCardSetsAsync(),
                     Times.Once);
             }
 
@@ -267,7 +267,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Never);
 
                 mockFetcher.Verify(
-                    mock => mock.GetRawCardSetsAsync(),
+                    mock => mock.FetchRawCardSetsAsync(),
                     Times.Never);
             }
         }
@@ -337,11 +337,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()),
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetRawCardsAsync(Arg.RawCardSet.Is("X03")),
+                    mock => mock.FetchRawCardsAsync(Arg.RawCardSet.Is("X03")),
                     Times.Once);
             }
 
@@ -409,7 +409,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Never);
 
                 mockFetcher.Verify(
-                    mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()),
                     Times.Never);
             }
 
@@ -476,7 +476,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()),
                     Times.Once);
             }
         }

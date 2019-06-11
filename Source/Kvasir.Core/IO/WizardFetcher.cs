@@ -50,7 +50,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
+        protected override async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
         {
             var path =
                 @"Handlers/Image.ashx" +

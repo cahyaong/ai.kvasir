@@ -36,7 +36,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class WizardFetcherTests
     {
-        public class GetCardImageAsyncMethod
+        public class FetchCardImageAsyncMethod
         {
             [Fact]
             public async Task WhenGettingSuccessfulResponse_ShouldLoadJpegImage()
@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardImage = await fetcher.GetCardImageAsync(rawCard);
+                var cardImage = await fetcher.FetchCardImageAsync(rawCard);
 
                 // Assert.
 
@@ -97,7 +97,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.GetCardImageAsync(rawCard))
+                    .Awaiting(async self => await self.FetchCardImageAsync(rawCard))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach WIZARD.com when trying to fetch card image! " +

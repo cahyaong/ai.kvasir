@@ -170,7 +170,7 @@ namespace nGratis.AI.Kvasir.Core
             {
                 rawCards = await this
                     ._fetcherLookup[ExternalResources.Card]
-                    .GetRawCardsAsync(rawCardSet);
+                    .FetchRawCardsAsync(rawCardSet);
 
                 Guard
                     .Ensure(rawCards, nameof(rawCards))
@@ -199,7 +199,7 @@ namespace nGratis.AI.Kvasir.Core
         {
             return await this
                 ._fetcherLookup[ExternalResources.CardImage]
-                .GetCardImageAsync(rawCard);
+                .FetchCardImageAsync(rawCard);
         }
 
         RawCardSet IPagingDataProvider<RawCardSet>.DefaultItem => default(RawCardSet);
@@ -258,7 +258,7 @@ namespace nGratis.AI.Kvasir.Core
 
             var cardSets = await this
                 ._fetcherLookup[ExternalResources.CardSet]
-                .GetRawCardSetsAsync();
+                .FetchRawCardSetsAsync();
 
             var documents = cardSets
                 .OrderByDescending(cardSet => cardSet.ReleasedTimestamp)

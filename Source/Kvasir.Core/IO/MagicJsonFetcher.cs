@@ -55,7 +55,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public override ExternalResources AvailableResources => ExternalResources.CardSet | ExternalResources.Card;
 
-        protected override async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
         {
             var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, "sets.html"));
 
@@ -79,7 +79,7 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
         {
             var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{rawCardSet.Code}.json"));
 

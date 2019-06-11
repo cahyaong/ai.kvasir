@@ -63,7 +63,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             return this;
         }
 
-        protected override async Task<IReadOnlyCollection<RawCardSet>> GetCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
         {
             var cardSet = new RawCardSet
             {
@@ -75,7 +75,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             return await Task.FromResult(new[] { cardSet });
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> GetCardsCoreAsync(RawCardSet rawCardSet)
+        protected override async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
         {
             var card = new RawCard
             {
@@ -86,7 +86,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             return await Task.FromResult(new[] { card });
         }
 
-        protected override async Task<IImage> GetCardImageCoreAsync(RawCard rawCard)
+        protected override async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
         {
             return await Task.FromResult(EmptyImage.Instance);
         }

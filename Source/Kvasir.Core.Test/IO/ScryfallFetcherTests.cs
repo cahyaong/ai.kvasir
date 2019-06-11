@@ -38,7 +38,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class ScryfallFetcherTests
     {
-        public class GetCardSetsAsyncMethod
+        public class FetchRawCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
@@ -53,7 +53,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCardSets = await fetcher.GetRawCardSetsAsync();
+                var rawCardSets = await fetcher.FetchRawCardSetsAsync();
 
                 // Assert.
 
@@ -95,7 +95,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act &  Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.GetRawCardSetsAsync())
+                    .Awaiting(async self => await self.FetchRawCardSetsAsync())
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch card sets! " +
@@ -103,7 +103,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class GetCardsAsyncMethod
+        public class FetchRawCardsAsyncMethod
         {
             [Fact]
             [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -133,7 +133,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await fetcher.GetRawCardsAsync(rawCardSet);
+                var rawCards = await fetcher.FetchRawCardsAsync(rawCardSet);
 
                 // Assert.
 
@@ -240,7 +240,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.GetRawCardsAsync(rawCardSet))
+                    .Awaiting(async self => await self.FetchRawCardsAsync(rawCardSet))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch cards! " +
@@ -249,7 +249,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class GetCardImageAsyncMethod
+        public class FetchCardImageAsyncMethod
         {
             [Fact]
             public async Task WhenGettingSuccessfulResponse_ShouldLoadJpegImage()
@@ -272,7 +272,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardImage = await fetcher.GetCardImageAsync(rawCard);
+                var cardImage = await fetcher.FetchCardImageAsync(rawCard);
 
                 // Assert.
 
@@ -310,7 +310,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.GetCardImageAsync(rawCard))
+                    .Awaiting(async self => await self.FetchCardImageAsync(rawCard))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch card image! " +

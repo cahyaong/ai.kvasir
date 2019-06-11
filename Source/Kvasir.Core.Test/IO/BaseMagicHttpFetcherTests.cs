@@ -60,7 +60,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class GetCardSetsAsyncMethod
+        public class FetchRawCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenDetectingCardSetAsAvailableResource_ShouldInvokeOverridingMethod()
@@ -76,7 +76,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCardSets = await stubFetcher.GetRawCardSetsAsync();
+                var rawCardSets = await stubFetcher.FetchRawCardSetsAsync();
 
                 // Assert.
 
@@ -98,12 +98,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.GetRawCardSetsAsync())
+                    .Awaiting(async self => await self.FetchRawCardSetsAsync())
                     .Should().Throw<NotSupportedException>();
             }
         }
 
-        public class GetCardsAsyncMethod
+        public class FetchRawCardsAsyncMethod
         {
             [Fact]
             public async Task WhenDetectingCardAsAvailableResource_ShouldInvokeOverridingMethod()
@@ -125,7 +125,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await stubFetcher.GetRawCardsAsync(rawCardSet);
+                var rawCards = await stubFetcher.FetchRawCardsAsync(rawCardSet);
 
                 // Assert.
 
@@ -153,12 +153,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.GetRawCardsAsync(rawCardSet))
+                    .Awaiting(async self => await self.FetchRawCardsAsync(rawCardSet))
                     .Should().Throw<NotSupportedException>();
             }
         }
 
-        public class GetCardImageAsyncMethod
+        public class FetchCardImageAsyncMethod
         {
             [Fact]
             public async Task WhenDetectingCardImageAsAvailableResource_ShouldInvokeOverridingMethod()
@@ -179,7 +179,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cardImage = await stubFetcher.GetCardImageAsync(rawCard);
+                var cardImage = await stubFetcher.FetchCardImageAsync(rawCard);
 
                 // Assert.
 
@@ -206,7 +206,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.GetCardImageAsync(rawCard))
+                    .Awaiting(async self => await self.FetchCardImageAsync(rawCard))
                     .Should().Throw<NotSupportedException>();
             }
         }

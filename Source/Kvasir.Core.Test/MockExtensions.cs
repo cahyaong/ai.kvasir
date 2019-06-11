@@ -202,7 +202,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Is.Not.Empty();
 
             mockFetcher
-                .Setup(mock => mock.GetRawCardSetsAsync())
+                .Setup(mock => mock.FetchRawCardSetsAsync())
                 .Returns(Task.FromResult<IReadOnlyCollection<RawCardSet>>(cardSets))
                 .Verifiable();
 
@@ -216,7 +216,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Is.Not.Null();
 
             mockFetcher
-                .Setup(mock => mock.GetRawCardSetsAsync())
+                .Setup(mock => mock.FetchRawCardSetsAsync())
                 .Returns(Task.FromResult<IReadOnlyCollection<RawCardSet>>(new RawCardSet[0]))
                 .Verifiable();
 
@@ -243,7 +243,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .ForEach(anon =>
                 {
                     mockFetcher
-                        .Setup(mock => mock.GetRawCardsAsync(Arg.RawCardSet.Is(anon.CardSetCode)))
+                        .Setup(mock => mock.FetchRawCardsAsync(Arg.RawCardSet.Is(anon.CardSetCode)))
                         .Returns(Task.FromResult<IReadOnlyCollection<RawCard>>(anon.Cards))
                         .Verifiable();
                 });
@@ -258,7 +258,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Is.Not.Null();
 
             mockFetcher
-                .Setup(mock => mock.GetRawCardsAsync(It.IsAny<RawCardSet>()))
+                .Setup(mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()))
                 .Returns(Task.FromResult<IReadOnlyCollection<RawCard>>(new RawCard[0]))
                 .Verifiable();
 
