@@ -10,13 +10,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: PaketRestore@0
+- task: CmdLine@2
+  displayName: Restore COP.Core packages
   inputs:
-    PaketPath: '$(Build.Repository.LocalPath)/External/cop.core/Source/.paket'
+    script: '.paket\paket.exe restore'
+    workingDirectory: '$(Build.Repository.LocalPath)/External/cop.core/Source'
 
-- task: PaketRestore@0
+- task: CmdLine@2
+  displayName: Restore AI.Kvasir packages
   inputs:
-    PaketPath: '$(Build.Repository.LocalPath)/Source/.paket'
+    script: '.paket\paket.exe restore'
+    workingDirectory: '$(Build.Repository.LocalPath)/Source'
 
 - task: VSBuild@1
   inputs:
