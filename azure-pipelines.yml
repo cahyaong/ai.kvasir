@@ -1,0 +1,30 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/nGratis.AI.Kvasir.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+steps:
+- task: PaketRestore@0
+  inputs:
+    PaketPath: '$(Build.Repository.LocalPath)/External/cop.core/Source/.paket'
+
+- task: PaketRestore@0
+  inputs:
+    PaketPath: '$(Build.Repository.LocalPath)/Source/.paket'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  inputs:
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
