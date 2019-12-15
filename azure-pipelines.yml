@@ -13,14 +13,12 @@ steps:
 - task: CmdLine@2
   displayName: Restore COP.Core packages
   inputs:
-    script: '.paket\paket.exe restore'
-    workingDirectory: '$(Build.Repository.LocalPath)/External/cop.core/Source'
+    script: 'External\cop.core\Source\.paket\paket.exe restore'
 
 - task: CmdLine@2
   displayName: Restore AI.Kvasir packages
   inputs:
-    script: '.paket\paket.exe restore'
-    workingDirectory: '$(Build.Repository.LocalPath)/Source'
+    script: 'Source\.paket\paket.exe restore'
 
 - task: VSBuild@1
   inputs:
