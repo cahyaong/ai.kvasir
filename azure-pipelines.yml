@@ -11,14 +11,9 @@ variables:
 
 steps:
 - task: CmdLine@2
-  displayName: Restore COP.Core packages
+  displayName: 'Execute AppVeyor pre-build steps'
   inputs:
-    script: 'External\cop.core\Source\.paket\paket.exe restore'
-
-- task: CmdLine@2
-  displayName: Restore AI.Kvasir packages
-  inputs:
-    script: 'Source\.paket\paket.exe restore'
+    script: 'appveyor_prebuild.cmd'
 
 - task: VSBuild@1
   inputs:
