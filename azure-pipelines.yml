@@ -23,5 +23,7 @@ steps:
 
 - task: VSTest@2
   inputs:
+    testSelector: 'testAssemblies'
+    searchFolder: '$(System.DefaultWorkingDirectory)/Source'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
