@@ -25,6 +25,7 @@ steps:
   inputs:
     testSelector: 'testAssemblies'
     testAssemblyVer2: '**/bin/$(buildConfiguration)/*Test.dll'
-    searchFolder: '$(System.DefaultWorkingDirectory)/Source'
+    searchFolder: 'Source'
+    pathToCustomTestAdapters: 'Source/packages/_test/xunit.runner.visualstudio/build/_common'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'

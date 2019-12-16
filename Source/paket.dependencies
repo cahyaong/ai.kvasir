@@ -40,3 +40,4 @@ group _Test
     nuget FluentAssertions
     nuget Moq
     nuget xunit
+    nuget xunit.runner.visualstudio
