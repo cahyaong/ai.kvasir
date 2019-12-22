@@ -38,6 +38,7 @@ namespace nGratis.AI.Kvasir.Client
     using FirstFloor.ModernUI.Presentation;
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Wpf;
     using ReactiveUI;

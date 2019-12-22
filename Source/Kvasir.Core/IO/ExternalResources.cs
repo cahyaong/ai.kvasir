@@ -26,7 +26,7 @@
 // <creation_timestamp>Sunday, 16 December 2018 11:26:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
     using System;
 

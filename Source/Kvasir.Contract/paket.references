@@ -1,1 +1,2 @@
-﻿JetBrains.Annotations
+﻿group _Contract
+	JetBrains.Annotations

@@ -27,6 +27,12 @@ NUGET
       System.Configuration.ConfigurationManager (>= 4.4.1)
       System.Reflection.Emit (>= 4.3)
 
+GROUP _Contract
+RESTRICTION: == netstandard2.0
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    JetBrains.Annotations (2019.1.3)
+
 GROUP _IO
 RESTRICTION: == net472
 NUGET

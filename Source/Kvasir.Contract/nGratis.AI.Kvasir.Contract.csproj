@@ -1,104 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{35D185C9-F565-4ABD-B1A7-D84A14277673}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>nGratis.AI.Kvasir.Contract</RootNamespace>
-    <AssemblyName>nGratis.AI.Kvasir.Contract</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
+    <None Remove="nGratis.AI.Kvasir.Contract.csproj.DotSettings" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="Constant.cs" />
-    <Compile Include="Data\AgentDefinition.cs" />
-    <Compile Include="Data\DeckDefinition.cs" />
-    <Compile Include="Engine.Infrastructure\IRandomGenerator.cs" />
-    <Compile Include="Engine\AgentKind.cs" />
-    <Compile Include="Data\AbilityDefinition.cs" />
-    <Compile Include="Engine\CardKind.cs" />
-    <Compile Include="Data\AbilityDefinition.NotSupported.cs">
-      <DependentUpon>AbilityDefinition.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Engine\AbilityKind.cs" />
-    <Compile Include="Data\CardDefinition.cs" />
-    <Compile Include="Engine\Mana.cs" />
-    <Compile Include="Engine\ZoneKind.cs" />
-    <Compile Include="IO\ExternalResources.cs" />
-    <Compile Include="KvasirException.cs" />
-    <Compile Include="KvasirMime.cs" />
-    <Compile Include="KvasirTestingException.cs" />
-    <Compile Include="Data\RawCardSet.cs" />
-    <Compile Include="Data\RawCard.cs" />
-    <Compile Include="IO\IMagicFetcher.cs" />
-    <Compile Include="IO\IMagicRepository.cs" />
-    <Compile Include="Engine\Rarity.cs" />
-    <Compile Include="Data\CostDefinition.cs" />
-    <Compile Include="Data\CostDefinition.Free.cs">
-      <DependentUpon>CostDefinition.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Data\CostDefinition.Unknown.cs">
-      <DependentUpon>CostDefinition.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Engine\CostKind.cs" />
-    <Compile Include="Data\EffectDefinition.cs" />
-    <Compile Include="Engine\EffectKind.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj">
-      <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
-      <Name>nGratis.Cop.Core.Contract</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Vision\nGratis.Cop.Core.Vision.csproj">
-      <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>
-      <Name>nGratis.Cop.Core.Vision</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="paket.references" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
-        <Reference Include="JetBrains.Annotations">
-          <HintPath>..\packages\JetBrains.Annotations\lib\net20\JetBrains.Annotations.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

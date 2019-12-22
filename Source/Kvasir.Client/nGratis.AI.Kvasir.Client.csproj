@@ -152,7 +152,7 @@
       <Name>nGratis.Cop.Core.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
-      <Project>{35d185c9-f565-4abd-b1a7-d84a14277673}</Project>
+      <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>
       <Name>nGratis.AI.Kvasir.Contract</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj">

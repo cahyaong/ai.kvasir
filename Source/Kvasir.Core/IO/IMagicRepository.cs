@@ -26,11 +26,12 @@
 // <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
     using nGratis.Cop.Core.Vision.Imaging;
 

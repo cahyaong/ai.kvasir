@@ -202,7 +202,7 @@ namespace nGratis.AI.Kvasir.Core
                 .FetchCardImageAsync(rawCard);
         }
 
-        RawCardSet IPagingDataProvider<RawCardSet>.DefaultItem => default(RawCardSet);
+        RawCardSet IPagingDataProvider<RawCardSet>.DefaultItem => default;
 
         async Task<int> IPagingDataProvider<RawCardSet>.GetCountAsync()
         {

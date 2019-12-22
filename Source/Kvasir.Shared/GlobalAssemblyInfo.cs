@@ -30,7 +30,7 @@ using System.Reflection;
 
 [assembly: AssemblyCompany("nGratis")]
 [assembly: AssemblyProduct("AI.Kvasir")]
-[assembly: AssemblyCopyright("Copyright © 2014 - 2018 Cahya Ong")]
+[assembly: AssemblyCopyright("Copyright © 2014 - 2019 Cahya Ong")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyVersion("0.1.0.0")]
 [assembly: AssemblyFileVersion("0.1.0.0")]

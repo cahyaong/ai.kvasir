@@ -11,6 +11,13 @@ nuget System.Reactive.Linq
 nuget System.Threading.Tasks.Extensions
 nuget Unity
 
+group _Contract
+    
+    framework: netstandard2.0
+    source https://api.nuget.org/v3/index.json
+
+    nuget JetBrains.Annotations
+
 group _IO
 
     framework: net472

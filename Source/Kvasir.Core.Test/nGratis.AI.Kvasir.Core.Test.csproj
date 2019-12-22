@@ -102,7 +102,7 @@
       <Name>nGratis.Cop.Core.Vision</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
-      <Project>{35D185C9-F565-4ABD-B1A7-D84A14277673}</Project>
+      <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>
       <Name>nGratis.AI.Kvasir.Contract</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj">
