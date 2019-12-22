@@ -26,7 +26,7 @@
 // <creation_timestamp>Saturday, 10 November 2018 5:48:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
     public enum IndexKind
     {
