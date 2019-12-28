@@ -38,7 +38,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class ScryfallFetcherTests
     {
-        public class FetchRawCardSetsAsyncMethod
+        public class FetchCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
@@ -53,29 +53,29 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCardSets = await fetcher.FetchRawCardSetsAsync();
+                var cardSets = await fetcher.FetchCardSetsAsync();
 
                 // Assert.
 
-                rawCardSets
+                cardSets
                     .Should().NotBeNull()
                     .And.HaveCountGreaterOrEqualTo(544);
 
-                foreach (var rawCardSet in rawCardSets)
+                foreach (var cardSet in cardSets)
                 {
-                    rawCardSet
+                    cardSet
                         .Should().NotBeNull();
 
-                    rawCardSet
+                    cardSet
                         .Name
                         .Should().NotBeNullOrWhiteSpace();
 
-                    rawCardSet
+                    cardSet
                         .Code
                         .Should().NotBeNullOrWhiteSpace()
                         .And.MatchRegex(@"\w{2,6}");
 
-                    rawCardSet
+                    cardSet
                         .ReleasedTimestamp
                         .Should().BeAfter(new DateTime(1993, 1, 1));
                 }
@@ -95,7 +95,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act &  Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.FetchRawCardSetsAsync())
+                    .Awaiting(async self => await self.FetchCardSetsAsync())
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch card sets! " +
@@ -103,7 +103,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class FetchRawCardsAsyncMethod
+        public class FetchCardsAsyncMethod
         {
             [Fact]
             [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -124,7 +124,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new ScryfallFetcher(stubHandler);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "WAR",
                     Name = "[_MOCK_NAME_]",
@@ -133,80 +133,80 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await fetcher.FetchRawCardsAsync(rawCardSet);
+                var cards = await fetcher.FetchCardsAsync(cardSet);
 
                 // Assert.
 
-                rawCards
+                cards
                     .Should().NotBeNull()
                     .And.HaveCount(275);
 
-                foreach (var rawCard in rawCards)
+                foreach (var card in cards)
                 {
-                    rawCard
+                    card
                         .Should().NotBeNull();
 
-                    rawCard
+                    card
                         .MultiverseId
                         .Should().BePositive();
 
-                    rawCard
+                    card
                         .ScryfallId
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[0-9a-f]{8}\-([0-9a-f]{4}\-){3}[0-9a-f]{12}");
 
-                    rawCard
+                    card
                         .ScryfallImageUrl
                         .Should().NotBeNullOrEmpty();
 
-                    rawCard
+                    card
                         .CardSetCode
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"\w{3,6}");
 
-                    rawCard
+                    card
                         .Name
                         .Should().NotBeNullOrWhiteSpace();
 
-                    rawCard
+                    card
                         .ManaCost
                         .Should().NotBeNull()
                         .And.MatchRegex(@"(\{[\dWUBRGX/]+\})*");
 
-                    rawCard
+                    card
                         .Type
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"[a-zA-Z\-\s]+");
 
-                    rawCard
+                    card
                         .Rarity
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"[a-zA-Z]+");
 
-                    rawCard
+                    card
                         .Text
                         .Should().NotBeNull();
 
-                    rawCard
+                    card
                         .FlavorText
                         .Should().NotBeNull();
 
-                    rawCard
+                    card
                         .Power
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[\d\*]*");
 
-                    rawCard
+                    card
                         .Toughness
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[\d\*]*");
 
-                    rawCard
+                    card
                         .Number
                         .Should().NotBeNull()
                         .And.MatchRegex(@"[\da-z]+");
 
-                    rawCard
+                    card
                         .Artist
                         .Should().NotBeNullOrEmpty()
                         .And.MatchRegex(@"[a-zA-Z\s]+");
@@ -230,7 +230,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new ScryfallFetcher(stubHandler);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X42",
                     Name = "[_MOCK_NAME_]",
@@ -240,7 +240,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.FetchRawCardsAsync(rawCardSet))
+                    .Awaiting(async self => await self.FetchCardsAsync(cardSet))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch cards! " +
@@ -265,14 +265,14 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new ScryfallFetcher(stubHandler);
 
-                var rawCard = new RawCard
+                var card = new UnparsedBlob.Card
                 {
                     ScryfallImageUrl = "mock_image.jpeg"
                 };
 
                 // Act.
 
-                var cardImage = await fetcher.FetchCardImageAsync(rawCard);
+                var cardImage = await fetcher.FetchCardImageAsync(card);
 
                 // Assert.
 
@@ -301,7 +301,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new ScryfallFetcher(stubHandler);
 
-                var rawCard = new RawCard
+                var card = new UnparsedBlob.Card
                 {
                     Name = "[_MOCK_NAME_]",
                     ScryfallImageUrl = "mock_image.jpeg"
@@ -310,7 +310,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.FetchCardImageAsync(rawCard))
+                    .Awaiting(async self => await self.FetchCardImageAsync(card))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch card image! " +

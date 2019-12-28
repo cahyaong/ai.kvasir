@@ -54,7 +54,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public override ExternalResources AvailableResources => ExternalResources.All;
 
-        protected override async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
         {
             var response = await this.HttpClient.GetAsync(new Uri(Link.ApiUri, "sets"));
 
@@ -70,7 +70,7 @@ namespace nGratis.AI.Kvasir.Core
             return contentToken
                 .SelectToken("$.data")
                 .Children()
-                .Select(token => new RawCardSet
+                .Select(token => new UnparsedBlob.CardSet
                 {
                     Code = token["code"].Value<string>().ToUpperInvariant(),
                     Name = token["name"].Value<string>(),
@@ -79,9 +79,9 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
         {
-            var rawCards = new List<RawCard>();
+            var cards = new List<UnparsedBlob.Card>();
             var pageCount = 1;
             var hasAnotherPage = true;
 
@@ -89,7 +89,7 @@ namespace nGratis.AI.Kvasir.Core
             {
                 var parameters = HttpUtility.ParseQueryString(string.Empty);
 
-                parameters["q"] = $"e:{rawCardSet.Code}";
+                parameters["q"] = $"e:{cardSet.Code}";
                 parameters["unique"] = "prints";
                 parameters["order"] = "name";
                 parameters["page"] = pageCount.ToString();
@@ -100,7 +100,7 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     throw new KvasirException(
                         @"Failed to reach SCRYFALL.com when trying to fetch cards! " +
-                        $"Card Set: [{rawCardSet.Name}]. " +
+                        $"Card Set: [{cardSet.Name}]. " +
                         $"Status Code: [{response.StatusCode}].");
                 }
 
@@ -110,7 +110,7 @@ namespace nGratis.AI.Kvasir.Core
                     .SelectToken("$.data")
                     .Children()
                     .Where(token => token["lang"]?.Value<string>() == "en")
-                    .Select(token => new RawCard
+                    .Select(token => new UnparsedBlob.Card
                     {
                         MultiverseId = token
                             .SelectToken("multiverse_ids")?
@@ -119,7 +119,7 @@ namespace nGratis.AI.Kvasir.Core
                             .Value<int>() ?? 0,
                         ScryfallId = token["id"].Value<string>(),
                         ScryfallImageUrl = ScryfallFetcher.FindScryfallImageUrl(token),
-                        CardSetCode = rawCardSet.Code,
+                        CardSetCode = cardSet.Code,
                         Name = token["name"]?.Value<string>() ?? string.Empty,
                         ManaCost = token["mana_cost"]?.Value<string>() ?? string.Empty,
                         Type = token["type_line"]?.Value<string>() ?? string.Empty,
@@ -131,7 +131,7 @@ namespace nGratis.AI.Kvasir.Core
                         Number = token["collector_number"]?.Value<string>() ?? string.Empty,
                         Artist = token["artist"]?.Value<string>() ?? string.Empty
                     })
-                    .ForEach(rawCards.Add);
+                    .ForEach(cards.Add);
 
                 hasAnotherPage = contentToken
                     .SelectToken("$.has_more")
@@ -143,12 +143,12 @@ namespace nGratis.AI.Kvasir.Core
                 }
             }
 
-            return rawCards;
+            return cards;
         }
 
-        protected override async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
+        protected override async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card card)
         {
-            var path = $"cards/border_crop/{rawCard.ScryfallImageUrl}";
+            var path = $"cards/border_crop/{card.ScryfallImageUrl}";
 
             var response = await this.HttpClient.GetAsync(new Uri(Link.ImageUri, path));
 
@@ -156,7 +156,7 @@ namespace nGratis.AI.Kvasir.Core
             {
                 throw new KvasirException(
                     @"Failed to reach SCRYFALL.com when trying to fetch card image! " +
-                    $"Card: [{rawCard.Name}]. " +
+                    $"Card: [{card.Name}]. " +
                     $"Status Code: [{response.StatusCode}].");
             }
 

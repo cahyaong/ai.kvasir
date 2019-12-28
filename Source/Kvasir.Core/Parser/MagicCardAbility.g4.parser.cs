@@ -35,13 +35,13 @@ namespace nGratis.AI.Kvasir.Core
 
     public partial class MagicCardAbilityParser
     {
-        public static ParsingResult Parse(string rawAbility)
+        public static ParsingResult Parse(string unparsedAbility)
         {
             Guard
-                .Require(rawAbility, nameof(rawAbility))
+                .Require(unparsedAbility, nameof(unparsedAbility))
                 .Is.Not.Empty();
 
-            using (var reader = new StringReader(rawAbility))
+            using (var reader = new StringReader(unparsedAbility))
             {
                 var stream = new AntlrInputStream(reader);
                 var lexer = new MagicCardAbilityLexer(stream);

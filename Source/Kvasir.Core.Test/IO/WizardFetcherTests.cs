@@ -52,14 +52,14 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new WizardFetcher(stubHandler);
 
-                var rawCard = new RawCard
+                var card = new UnparsedBlob.Card
                 {
                     MultiverseId = 64
                 };
 
                 // Act.
 
-                var cardImage = await fetcher.FetchCardImageAsync(rawCard);
+                var cardImage = await fetcher.FetchCardImageAsync(card);
 
                 // Assert.
 
@@ -88,7 +88,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var fetcher = new WizardFetcher(stubHandler);
 
-                var rawCard = new RawCard
+                var card = new UnparsedBlob.Card
                 {
                     Name = "[_MOCK_NAME_]",
                     MultiverseId = 64
@@ -97,7 +97,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.FetchCardImageAsync(rawCard))
+                    .Awaiting(async self => await self.FetchCardImageAsync(card))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach WIZARD.com when trying to fetch card image! " +

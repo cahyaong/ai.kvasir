@@ -63,9 +63,9 @@ namespace nGratis.AI.Kvasir.Core.Test
             return this;
         }
 
-        protected override async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
         {
-            var cardSet = new RawCardSet
+            var cardSet = new UnparsedBlob.CardSet
             {
                 Code = "[_MOCK_CODE_]",
                 Name = "[_MOCK_NAME_]",
@@ -75,18 +75,18 @@ namespace nGratis.AI.Kvasir.Core.Test
             return await Task.FromResult(new[] { cardSet });
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
         {
-            var card = new RawCard
+            var card = new UnparsedBlob.Card
             {
-                CardSetCode = rawCardSet.Code,
+                CardSetCode = cardSet.Code,
                 Name = "[_MOCK_NAME_]"
             };
 
             return await Task.FromResult(new[] { card });
         }
 
-        protected override async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
+        protected override async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card card)
         {
             return await Task.FromResult(EmptyImage.Instance);
         }

@@ -48,7 +48,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     Name = "Llanowar Elves",
                     Type = "Creature - Elf Druid",
@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -90,11 +90,11 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard();
+                var unparsedCard = new UnparsedBlob.Card();
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -124,14 +124,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     MultiverseId = 42
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -153,14 +153,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     MultiverseId = -42
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -186,14 +186,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     Name = "Llanowar Elves"
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -212,18 +212,18 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidTypeTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidType_ShouldParseRawValue(TypeTheory theory)
+            public void WhenGettingValidType_ShouldParseValue(TypeTheory theory)
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType
+                    Type = theory.UnparsedType
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -263,14 +263,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     Type = "Tribal Creature - Merfolk Wizard"
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -311,14 +311,14 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType
+                    Type = theory.UnparsedType
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -335,7 +335,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     Type = "Land",
                     ManaCost = string.Empty
@@ -343,7 +343,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -358,19 +358,19 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidManaCost_ShouldParseRawValue(ManaCostTheory theory)
+            public void WhenGettingValidManaCost_ShouldParseValue(ManaCostTheory theory)
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType,
-                    ManaCost = theory.RawManaCost
+                    Type = theory.UnparsedType,
+                    ManaCost = theory.UnparsedManaCost
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -403,15 +403,15 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType,
-                    ManaCost = theory.RawManaCost
+                    Type = theory.UnparsedType,
+                    ManaCost = theory.UnparsedManaCost
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -434,19 +434,19 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidPowerTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidPower_ShouldParseRawValue(PowerTheory theory)
+            public void WhenGettingValidPower_ShouldParseValue(PowerTheory theory)
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType,
-                    Power = theory.RawPower
+                    Type = theory.UnparsedType,
+                    Power = theory.UnparsedPower
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -465,15 +465,15 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType,
-                    Power = theory.RawPower
+                    Type = theory.UnparsedType,
+                    Power = theory.UnparsedPower
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -491,19 +491,19 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             [Theory]
             [MemberData(nameof(TestData.ValidToughnessTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidToughness_ShouldParseRawValue(ToughnessTheory theory)
+            public void WhenGettingValidToughness_ShouldParseValue(ToughnessTheory theory)
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType,
-                    Toughness = theory.RawToughness
+                    Type = theory.UnparsedType,
+                    Toughness = theory.UnparsedToughness
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -522,15 +522,15 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
-                    Type = theory.RawType,
-                    Toughness = theory.RawToughness
+                    Type = theory.UnparsedType,
+                    Toughness = theory.UnparsedToughness
                 };
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -551,7 +551,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawCard = new RawCard
+                var unparsedCard = new UnparsedBlob.Card
                 {
                     Text =
                         "[_MOCK_UNPARSED_ABILITY_01_]" + Environment.NewLine +
@@ -560,7 +560,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(rawCard);
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
 
                 // Assert.
 
@@ -798,7 +798,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class TypeTheory : ParsingTheory
         {
-            public string RawType { get; private set; }
+            public string UnparsedType { get; private set; }
 
             public CardKind ParsedCardKind { get; private set; }
 
@@ -806,11 +806,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public IEnumerable<CardSubKind> ParsedCardSubKinds { get; private set; }
 
-            public static TypeTheory Create(string rawType)
+            public static TypeTheory Create(string unparsedType)
             {
                 return new TypeTheory
                 {
-                    RawType = rawType,
+                    UnparsedType = unparsedType,
                     ParsedCardKind = CardKind.Unknown,
                     ParsedCardSuperKind = CardSuperKind.Unknown,
                     ParsedCardSubKinds = Enumerable.Empty<CardSubKind>(),
@@ -850,20 +850,20 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class ManaCostTheory : ParsingTheory
         {
-            public string RawType { get; private set; }
+            public string UnparsedType { get; private set; }
 
-            public string RawManaCost { get; private set; }
+            public string UnparsedManaCost { get; private set; }
 
             public CostKind ParsedCostKind { get; private set; }
 
             public string ParsedAmount { get; private set; }
 
-            public static ManaCostTheory Create(string rawType, string rawManaCost)
+            public static ManaCostTheory Create(string unparsedType, string unparsedManaCost)
             {
                 return new ManaCostTheory
                 {
-                    RawType = rawType,
-                    RawManaCost = rawManaCost,
+                    UnparsedType = unparsedType,
+                    UnparsedManaCost = unparsedManaCost,
                     ParsedCostKind = CostKind.Unknown,
                     ParsedAmount = string.Empty,
                     Message = string.Empty
@@ -881,18 +881,18 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class PowerTheory : ParsingTheory
         {
-            public string RawType { get; private set; }
+            public string UnparsedType { get; private set; }
 
-            public string RawPower { get; private set; }
+            public string UnparsedPower { get; private set; }
 
             public ushort ParsedPower { get; private set; }
 
-            public static PowerTheory Create(string rawType, string rawPower)
+            public static PowerTheory Create(string unparsedType, string unparsedPower)
             {
                 return new PowerTheory
                 {
-                    RawType = rawType,
-                    RawPower = rawPower,
+                    UnparsedType = unparsedType,
+                    UnparsedPower = unparsedPower,
                     ParsedPower = 0,
                     Message = string.Empty
                 };
@@ -908,18 +908,18 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class ToughnessTheory : ParsingTheory
         {
-            public string RawType { get; private set; }
+            public string UnparsedType { get; private set; }
 
-            public string RawToughness { get; private set; }
+            public string UnparsedToughness { get; private set; }
 
             public ushort ParsedToughness { get; private set; }
 
-            public static ToughnessTheory Create(string rawType, string rawToughness)
+            public static ToughnessTheory Create(string unparsedType, string unparsedToughness)
             {
                 return new ToughnessTheory
                 {
-                    RawType = rawType,
-                    RawToughness = rawToughness,
+                    UnparsedType = unparsedType,
+                    UnparsedToughness = unparsedToughness,
                     ParsedToughness = 0,
                     Message = string.Empty
                 };

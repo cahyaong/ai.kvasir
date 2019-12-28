@@ -78,34 +78,34 @@ namespace nGratis.AI.Kvasir.Core
 
         protected HttpClient HttpClient { get; }
 
-        public async Task<IReadOnlyCollection<RawCardSet>> FetchRawCardSetsAsync()
+        public async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsAsync()
         {
             if (!this.AvailableResources.HasFlag(ExternalResources.CardSet))
             {
-                return await Task.FromException<IReadOnlyCollection<RawCardSet>>(new NotSupportedException());
+                return await Task.FromException<IReadOnlyCollection<UnparsedBlob.CardSet>>(new NotSupportedException());
             }
 
             return await this.FetchCardSetsCoreAsync();
         }
 
-        public async Task<IReadOnlyCollection<RawCard>> FetchRawCardsAsync(RawCardSet rawCardSet)
+        public async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsAsync(UnparsedBlob.CardSet cardSet)
         {
             Guard
-                .Require(rawCardSet, nameof(rawCardSet))
+                .Require(cardSet, nameof(cardSet))
                 .Is.Not.Null();
 
             if (!this.AvailableResources.HasFlag(ExternalResources.Card))
             {
-                return await Task.FromException<IReadOnlyCollection<RawCard>>(new NotSupportedException());
+                return await Task.FromException<IReadOnlyCollection<UnparsedBlob.Card>>(new NotSupportedException());
             }
 
-            return await this.FetchCardsCoreAsync(rawCardSet);
+            return await this.FetchCardsCoreAsync(cardSet);
         }
 
-        public async Task<IImage> FetchCardImageAsync(RawCard rawCard)
+        public async Task<IImage> FetchCardImageAsync(UnparsedBlob.Card card)
         {
             Guard
-                .Require(rawCard, nameof(rawCard))
+                .Require(card, nameof(card))
                 .Is.Not.Null();
 
             if (!this.AvailableResources.HasFlag(ExternalResources.CardImage))
@@ -113,20 +113,20 @@ namespace nGratis.AI.Kvasir.Core
                 return await Task.FromException<IImage>(new NotSupportedException());
             }
 
-            return await this.FetchCardImageCoreAsync(rawCard);
+            return await this.FetchCardImageCoreAsync(card);
         }
 
-        protected virtual async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
+        protected virtual async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
         {
-            return await Task.FromResult(new RawCardSet[0]);
+            return await Task.FromResult(new UnparsedBlob.CardSet[0]);
         }
 
-        protected virtual async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
+        protected virtual async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet _)
         {
-            return await Task.FromResult(new RawCard[0]);
+            return await Task.FromResult(new UnparsedBlob.Card[0]);
         }
 
-        protected virtual async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
+        protected virtual async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card _)
         {
             return await Task.FromResult(EmptyImage.Instance);
         }

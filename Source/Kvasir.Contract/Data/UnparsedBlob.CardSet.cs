@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RawCardSet.cs" company="nGratis">
+// <copyright file="UnparsedBlob.CardSet.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,7 +23,7 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 8 November 2018 8:27:59 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, December 28, 2019 6:11:22 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
@@ -31,15 +31,16 @@ namespace nGratis.AI.Kvasir.Contract
     using System;
     using System.Diagnostics;
 
-    // TODO: Make this class immutable once constructed!
-
-    [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
-    public class RawCardSet
+    public static partial class UnparsedBlob
     {
-        public string Code { get; set; }
+        [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
+        public class CardSet
+        {
+            public string Code { get; set; }
 
-        public string Name { get; set; }
+            public string Name { get; set; }
 
-        public DateTime ReleasedTimestamp { get; set; }
+            public DateTime ReleasedTimestamp { get; set; }
+        }
     }
 }

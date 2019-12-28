@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicFetcher.cs" company="nGratis">
+// <copyright file="UnparsedBlob.Card.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2018 Cahya Ong
+//  Copyright (c) 2014 - 2019 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,47 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, December 28, 2019 6:09:39 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using System.Diagnostics;
 
-    public interface IMagicFetcher : IDisposable
+    public static partial class UnparsedBlob
     {
-        ExternalResources AvailableResources { get; }
+        // TODO: Make this class immutable once constructed!
 
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsAsync();
+        [DebuggerDisplay("[{this.MultiverseId}]: {this.Name ?? \"<undefined>\"}")]
+        public class Card
+        {
+            public int MultiverseId { get; set; }
 
-        Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsAsync(UnparsedBlob.CardSet cardSet);
+            public string ScryfallId { get; set; }
 
-        Task<IImage> FetchCardImageAsync(UnparsedBlob.Card card);
+            public string ScryfallImageUrl { get; set; }
+
+            public string CardSetCode { get; set; }
+
+            public string Name { get; set; }
+
+            public string ManaCost { get; set; }
+
+            public string Type { get; set; }
+
+            public string Rarity { get; set; }
+
+            public string Text { get; set; }
+
+            public string FlavorText { get; set; }
+
+            public string Power { get; set; }
+
+            public string Toughness { get; set; }
+
+            public string Number { get; set; }
+
+            public string Artist { get; set; }
+        }
     }
 }

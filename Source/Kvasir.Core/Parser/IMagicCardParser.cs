@@ -32,6 +32,6 @@ namespace nGratis.AI.Kvasir.Core
 
     public interface IMagicCardParser
     {
-        ParsingResult Parse(RawCard rawCard);
+        ParsingResult Parse(UnparsedBlob.Card unparsedCard);
     }
 }

@@ -15,7 +15,7 @@
     </i:EventTrigger>
   </i:Interaction.Triggers>
   <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
-    <core:AweTileGroup Width="500" Header="RAW">
+    <core:AweTileGroup Width="500" Header="UNPARSED">
       <Grid core:ChildrenMargin.Value="10,10">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
@@ -30,7 +30,7 @@
           Grid.Column="0"
           Width="140"
           HorizontalAlignment="Right"
-          DisplayMemberPath="RawCardSet.Name"
+          DisplayMemberPath="UnparsedCardSet.Name"
           Header="Card Set"
           Kind="DropDown"
           Mode="Input"
@@ -65,7 +65,7 @@
           <DataGrid.Columns>
             <DataGridTextColumn
               MinWidth="200"
-              Binding="{Binding RawCard.Name, Mode=OneWay}"
+              Binding="{Binding UnparsedCard.Name, Mode=OneWay}"
               Header="Card" />
           </DataGrid.Columns>
         </DataGrid>

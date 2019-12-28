@@ -77,7 +77,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(value, nameof(value))
                 .Is.Not.Empty();
 
-            var match = Pattern.RawValue.Match(value);
+            var match = Pattern.UnparsedValue.Match(value);
 
             if (!match.Success)
             {
@@ -106,7 +106,7 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Pattern
         {
-            public static readonly Regex RawValue = new Regex(
+            public static readonly Regex UnparsedValue = new Regex(
                 @"^(?:{(?:(?<colorless>\d+)|(?<color>[WUBRG]))})+$",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }

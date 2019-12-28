@@ -124,13 +124,13 @@ namespace nGratis.AI.Kvasir.Client
                 .Subscribe(async _ =>
                 {
                     this.CardSetCount = this.CardSetViewModels.Count;
-                    this.CardCount = await this._repository.GetRawCardCountAsync();
+                    this.CardCount = await this._repository.GetCardCountAsync();
                 });
 
             Observable
-                .FromEventPattern<EventArgs>(this._repository, "RawCardIndexed")
+                .FromEventPattern<EventArgs>(this._repository, "CardIndexed")
                 .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(async _ => this.CardCount = await this._repository.GetRawCardCountAsync());
+                .Subscribe(async _ => this.CardCount = await this._repository.GetCardCountAsync());
         }
 
         private void Dispose(bool isDisposing)
@@ -165,28 +165,28 @@ namespace nGratis.AI.Kvasir.Client
             {
                 get
                 {
-                    var cardSet = new RawCardSet
+                    var unparsedCardSet = new UnparsedBlob.CardSet
                     {
                         Code = "---",
                         Name = "Loading...",
                         ReleasedTimestamp = DateTime.MinValue
                     };
 
-                    return new CardSetViewModel(cardSet, this._repository);
+                    return new CardSetViewModel(unparsedCardSet, this._repository);
                 }
             }
 
             public async Task<int> GetCountAsync()
             {
-                return await this._repository.GetRawCardSetCountAsync();
+                return await this._repository.GetCardSetCountAsync();
             }
 
             public async Task<IReadOnlyCollection<CardSetViewModel>> GetItemsAsync(int pagingIndex, int itemCount)
             {
-                var cardSets = await this._repository.GetItemsAsync(pagingIndex, itemCount);
+                var unparsedCardSets = await this._repository.GetItemsAsync(pagingIndex, itemCount);
 
-                return cardSets
-                    .Select(cardSet => new CardSetViewModel(cardSet, this._repository))
+                return unparsedCardSets
+                    .Select(unparsedCardSet => new CardSetViewModel(unparsedCardSet, this._repository))
                     .ToArray();
             }
         }

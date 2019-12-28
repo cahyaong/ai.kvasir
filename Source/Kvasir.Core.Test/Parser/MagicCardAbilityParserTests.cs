@@ -41,13 +41,13 @@ namespace nGratis.AI.Kvasir.Core.Test
         {
             [Theory]
             [MemberData(nameof(TestData.ProducingManaTheories), MemberType = typeof(TestData))]
-            public void WhenGettingAbilityToProduceMana_ShouldParseRawAbility(AbilityTheory theory)
+            public void WhenGettingAbilityToProduceMana_ShouldParseValue(AbilityTheory theory)
             {
                 // Arrange.
 
                 // Act.
 
-                var parsingResult = MagicCardAbilityParser.Parse(theory.RawAbility);
+                var parsingResult = MagicCardAbilityParser.Parse(theory.UnparsedAbility);
 
                 // Assert.
 
@@ -106,20 +106,20 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class AbilityTheory : CopTheory
         {
-            public string RawAbility { get; private set; }
+            public string UnparsedAbility { get; private set; }
 
             public DefinedBlob.Ability DefinedAbility { get; private set; }
 
-            public static AbilityTheory Create(string rawAbility)
+            public static AbilityTheory Create(string unparsedAbility)
             {
                 return new AbilityTheory
                 {
-                    RawAbility = rawAbility,
+                    UnparsedAbility = unparsedAbility,
                     DefinedAbility = DefinedBlob.Ability.NotSupported
                 };
             }
 
-            public AbilityTheory ExpectProducingMana(string rawMana)
+            public AbilityTheory ExpectProducingMana(string unparsedMana)
             {
                 this.DefinedAbility = new DefinedBlob.Ability
                 {
@@ -137,7 +137,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         new DefinedBlob.Effect
                         {
                             Kind = EffectKind.ProducingMana,
-                            Amount = rawMana
+                            Amount = unparsedMana
                         }
                     }
                 };

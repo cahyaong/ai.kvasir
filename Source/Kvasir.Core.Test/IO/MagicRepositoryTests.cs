@@ -170,7 +170,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class GetRawCardSetsAsyncMethod
+        public class GetCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
@@ -184,17 +184,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithRawCardSets(MockBuilder.CreateRawCardSets(3));
+                    .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
                 // Act.
 
-                var rawCardSets = await repository.GetRawCardSetsAsync();
+                var cardSets = await repository.GetCardSetsAsync();
 
                 // Assert.
 
-                rawCardSets
+                cardSets
                     .Should().NotBeNullOrEmpty()
                     .And.HaveCount(3)
                     .And.Contain(set =>
@@ -211,7 +211,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.FetchRawCardSetsAsync(),
+                    mock => mock.FetchCardSetsAsync(),
                     Times.Once);
             }
 
@@ -223,37 +223,37 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
                     .WithDefault(IndexKind.CardSet)
-                    .WithExistingRawCardSets(MockBuilder.CreateRawCardSets(3));
+                    .WithExistingCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithoutRawCardSets();
+                    .WithoutCardSets();
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
                 // Act.
 
-                var rawCardSets = await repository.GetRawCardSetsAsync();
+                var cardSets = await repository.GetCardSetsAsync();
 
                 // Assert.
 
-                rawCardSets
+                cardSets
                     .Should().NotBeNullOrEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var rawCardSet in rawCardSets)
+                foreach (var cardSet in cardSets)
                 {
-                    rawCardSet
+                    cardSet
                         .Code
                         .Should().NotBeEmpty();
 
-                    rawCardSet
+                    cardSet
                         .Name
                         .Should().NotBeNullOrEmpty();
 
-                    rawCardSet
+                    cardSet
                         .ReleasedTimestamp
                         .Should().BeOnOrAfter(Constant.EpochTimestamp);
                 }
@@ -267,12 +267,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Never);
 
                 mockFetcher.Verify(
-                    mock => mock.FetchRawCardSetsAsync(),
+                    mock => mock.FetchCardSetsAsync(),
                     Times.Never);
             }
         }
 
-        public class GetRawCardsAsyncMethod
+        public class GetCardsAsyncMethod
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
@@ -286,16 +286,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithRawCards(Enumerable
-                        .Empty<RawCard>()
-                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
-                        .AppendItems(MockBuilder.CreteRawCards("X03", 3))
-                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
+                    .WithCards(Enumerable
+                        .Empty<UnparsedBlob.Card>()
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X03", 3))
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -304,26 +304,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await repository.GetRawCardsAsync(rawCardSet);
+                var cards = await repository.GetCardsAsync(cardSet);
 
                 // Assert.
 
-                rawCards
+                cards
                     .Should().NotBeEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var rawCard in rawCards)
+                foreach (var card in cards)
                 {
-                    rawCard
+                    card
                         .MultiverseId
                         .Should().BePositive();
 
-                    rawCard
+                    card
                         .CardSetCode
                         .Should().BeEquivalentTo("X03");
 
-                    rawCard
+                    card
                         .Number
                         .Should().NotBeNullOrEmpty();
                 }
@@ -337,11 +337,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.FetchRawCardsAsync(Arg.RawCardSet.Is("X03")),
+                    mock => mock.FetchCardsAsync(Arg.UnparsedCardSet.Is("X03")),
                     Times.Once);
             }
 
@@ -353,21 +353,21 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
                     .WithDefault(IndexKind.Card)
-                    .WithExistingRawCards(Enumerable
-                        .Empty<RawCard>()
-                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
-                        .AppendItems(MockBuilder.CreteRawCards("X03", 3))
-                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
+                    .WithExistingCards(Enumerable
+                        .Empty<UnparsedBlob.Card>()
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X03", 3))
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithoutRawCards();
+                    .WithoutCards();
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -376,26 +376,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await repository.GetRawCardsAsync(rawCardSet);
+                var cards = await repository.GetCardsAsync(cardSet);
 
                 // Assert.
 
-                rawCards
+                cards
                     .Should().NotBeEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var rawCard in rawCards)
+                foreach (var card in cards)
                 {
-                    rawCard
+                    card
                         .MultiverseId
                         .Should().BePositive();
 
-                    rawCard
+                    card
                         .CardSetCode
                         .Should().BeEquivalentTo("X03");
 
-                    rawCard
+                    card
                         .Number
                         .Should().NotBeNullOrEmpty();
                 }
@@ -409,7 +409,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Never);
 
                 mockFetcher.Verify(
-                    mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
                     Times.Never);
             }
 
@@ -421,20 +421,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
                     .WithDefault(IndexKind.Card)
-                    .WithExistingRawCards(Enumerable
-                        .Empty<RawCard>()
-                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
-                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
+                    .WithExistingCards(Enumerable
+                        .Empty<UnparsedBlob.Card>()
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithRawCards(MockBuilder.CreteRawCards("X03", 3));
+                    .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -443,26 +443,26 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await repository.GetRawCardsAsync(rawCardSet);
+                var cards = await repository.GetCardsAsync(cardSet);
 
                 // Assert.
 
-                rawCards
+                cards
                     .Should().NotBeEmpty()
                     .And.HaveCount(3)
                     .And.NotContainNulls();
 
-                foreach (var rawCard in rawCards)
+                foreach (var card in cards)
                 {
-                    rawCard
+                    card
                         .MultiverseId
                         .Should().BePositive();
 
-                    rawCard
+                    card
                         .CardSetCode
                         .Should().BeEquivalentTo("X03");
 
-                    rawCard
+                    card
                         .Number
                         .Should().NotBeNullOrEmpty();
                 }
@@ -476,12 +476,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Times.Once);
 
                 mockFetcher.Verify(
-                    mock => mock.FetchRawCardsAsync(It.IsAny<RawCardSet>()),
+                    mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
                     Times.Once);
             }
         }
 
-        public class RawCardSetIndexedEvent
+        public class CardSetIndexedEvent
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldRaiseEvent()
@@ -495,7 +495,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithRawCardSets(MockBuilder.CreateRawCardSets(3));
+                    .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
@@ -503,12 +503,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetRawCardSetsAsync();
+                    var _ = await repository.GetCardSetsAsync();
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.RawCardSetIndexed))
+                        .Should().Raise(nameof(IMagicRepository.CardSetIndexed))
                         .WithSender(repository)
                         .WithArgs<EventArgs>(args => args == EventArgs.Empty);
                 }
@@ -522,12 +522,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
                     .WithDefault(IndexKind.CardSet)
-                    .WithExistingRawCardSets(MockBuilder.CreateRawCardSets(3));
+                    .WithExistingCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithoutRawCardSets();
+                    .WithoutCardSets();
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
@@ -535,17 +535,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetRawCardSetsAsync();
+                    var _ = await repository.GetCardSetsAsync();
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().NotRaise(nameof(IMagicRepository.RawCardSetIndexed));
+                        .Should().NotRaise(nameof(IMagicRepository.CardSetIndexed));
                 }
             }
         }
 
-        public class RawCardIndexedEvent
+        public class CardIndexedEvent
         {
             [Fact]
             public async Task WhenGettingEmptyIndex_ShouldFireEvent()
@@ -559,11 +559,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithRawCards(MockBuilder.CreteRawCards("X01", 1));
+                    .WithCards(MockBuilder.CreateUnparsedCards("X01", 1));
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X01",
                     Name = "[_MOCK_NAME_]",
@@ -574,12 +574,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetRawCardsAsync(rawCardSet);
+                    var _ = await repository.GetCardsAsync(cardSet);
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.RawCardIndexed))
+                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
                         .WithSender(repository)
                         .WithArgs<EventArgs>(args => args == EventArgs.Empty);
                 }
@@ -593,16 +593,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
                     .WithDefault(IndexKind.Card)
-                    .WithExistingRawCards(MockBuilder.CreteRawCards("X01", 1));
+                    .WithExistingCards(MockBuilder.CreateUnparsedCards("X01", 1));
 
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithoutRawCards();
+                    .WithoutCards();
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X01",
                     Name = "[_MOCK_NAME_]",
@@ -613,12 +613,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetRawCardsAsync(rawCardSet);
+                    var _ = await repository.GetCardsAsync(cardSet);
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().NotRaise(nameof(IMagicRepository.RawCardIndexed));
+                        .Should().NotRaise(nameof(IMagicRepository.CardIndexed));
                 }
             }
 
@@ -630,20 +630,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var mockIndexManager = MockBuilder
                     .CreateMock<IIndexManager>()
                     .WithDefault(IndexKind.Card)
-                    .WithExistingRawCards(Enumerable
-                        .Empty<RawCard>()
-                        .AppendItems(MockBuilder.CreteRawCards("X02", 2))
-                        .AppendItems(MockBuilder.CreteRawCards("X05", 5))
+                    .WithExistingCards(Enumerable
+                        .Empty<UnparsedBlob.Card>()
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var mockFetcher = MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithRawCards(MockBuilder.CreteRawCards("X03", 3));
+                    .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "X03",
                     Name = "[_MOCK_NAME_]",
@@ -654,12 +654,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     // Act.
 
-                    var _ = await repository.GetRawCardsAsync(rawCardSet);
+                    var _ = await repository.GetCardsAsync(cardSet);
 
                     // Assert.
 
                     monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.RawCardIndexed))
+                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
                         .WithSender(repository)
                         .WithArgs<EventArgs>(args => args == EventArgs.Empty);
                 }

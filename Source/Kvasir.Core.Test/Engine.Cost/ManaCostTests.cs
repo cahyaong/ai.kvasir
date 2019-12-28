@@ -50,7 +50,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var manaCost = ManaCost.Parse(theory.RawValue);
+                var manaCost = ManaCost.Parse(theory.UnparsedValue);
 
                 // Assert.
 
@@ -79,20 +79,20 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var rawValue = "{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}";
+                var unparsedValue = "{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}";
 
                 // Act.
 
                 var action = new Action(() =>
                 {
-                    var _ = ManaCost.Parse(rawValue);
+                    var _ = ManaCost.Parse(unparsedValue);
                 });
 
                 // Assert.
 
                 action
                     .Should().Throw<ArgumentException>()
-                    .WithMessage($"Value [{rawValue}] should contain colorless and/or color mana symbol.");
+                    .WithMessage($"Value [{unparsedValue}] should contain colorless and/or color mana symbol.");
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]
@@ -141,41 +141,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                             .ToXunitTheory();
                     }
                 }
-
-                /*
-
-                public static IEnumerable<object[]> InvalidManaCostTheories
-                {
-                    get
-                    {
-                        yield return ManaCostTheory
-                            .Create(string.Empty)
-                            .ExpectInvalid("<ManaCost> Value must not be <null> or empty.")
-                            .WithLabel("CASE 01 -> Empty mana cost.")
-                            .ToXunitTheory();
-
-                        yield return ManaCostTheory
-                            .Create("{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}")
-                            .ExpectInvalid("<ManaCost> Symbol(s) has no mapping for value [{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}].")
-                            .WithLabel("CASE 02 -> Invalid mana symbol.")
-                            .ToXunitTheory();
-                    }
-                }
-                 */
             }
         }
 
         public class ManaCostTheory : CopTheory
         {
-            public string RawValue { get; private set; }
+            public string UnparsedValue { get; private set; }
 
             public IReadOnlyDictionary<Mana, ushort> ParsedAmountLookup { get; private set; }
 
-            public static ManaCostTheory Create(string rawValue)
+            public static ManaCostTheory Create(string unparsedValue)
             {
                 return new ManaCostTheory
                 {
-                    RawValue = rawValue,
+                    UnparsedValue = unparsedValue,
                     ParsedAmountLookup = new Dictionary<Mana, ushort>()
                 };
             }

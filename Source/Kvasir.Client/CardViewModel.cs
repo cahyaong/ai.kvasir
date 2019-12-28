@@ -55,15 +55,15 @@ namespace nGratis.AI.Kvasir.Client
 
         private IEnumerable<string> _parsingMessages;
 
-        public CardViewModel(RawCard rawCard, IMagicRepository repository)
-            : this(rawCard, repository, MagicCardParser.Instance)
+        public CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository)
+            : this(unparsedCard, repository, MagicCardParser.Instance)
         {
         }
 
-        internal CardViewModel(RawCard rawCard, IMagicRepository repository, IMagicCardParser cardParser)
+        internal CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository, IMagicCardParser cardParser)
         {
             Guard
-                .Require(rawCard, nameof(rawCard))
+                .Require(unparsedCard, nameof(unparsedCard))
                 .Is.Not.Null();
 
             Guard
@@ -77,13 +77,13 @@ namespace nGratis.AI.Kvasir.Client
             this._repository = repository;
             this._cardParser = cardParser;
 
-            this.RawCard = rawCard;
+            this.UnparsedCard = unparsedCard;
 
             this.PopulateDetailsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateDetailAsync());
             this.ParseCardCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardAsync());
         }
 
-        public RawCard RawCard { get; }
+        public UnparsedBlob.Card UnparsedCard { get; }
 
         public ImageSource OriginalImage
         {
@@ -115,7 +115,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateDetailAsync()
         {
-            var cardImage = await this._repository.GetCardImageAsync(this.RawCard);
+            var cardImage = await this._repository.GetCardImageAsync(this.UnparsedCard);
 
             // TODO: Need to handle larger image size, e.g. Planechase card!
 
@@ -124,13 +124,13 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task ParseCardAsync()
         {
-            if (this.RawCard == null)
+            if (this.UnparsedCard == null)
             {
                 this.DefinedCard = null;
             }
             else
             {
-                var parsingResult = await Task.Run(() => this._cardParser.Parse(this.RawCard));
+                var parsingResult = await Task.Run(() => this._cardParser.Parse(this.UnparsedCard));
 
                 if (parsingResult.IsValid)
                 {

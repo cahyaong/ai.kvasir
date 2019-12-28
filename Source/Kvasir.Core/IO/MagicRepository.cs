@@ -111,11 +111,11 @@ namespace nGratis.AI.Kvasir.Core
                 .ToDictionary(grouping => grouping.Key, grouping => grouping.Single());
         }
 
-        public event EventHandler RawCardSetIndexed;
+        public event EventHandler CardSetIndexed;
 
-        public event EventHandler RawCardIndexed;
+        public event EventHandler CardIndexed;
 
-        public async Task<int> GetRawCardSetCountAsync()
+        public async Task<int> GetCardSetCountAsync()
         {
             var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
 
@@ -128,7 +128,7 @@ namespace nGratis.AI.Kvasir.Core
             return indexReader.NumDocs;
         }
 
-        public async Task<int> GetRawCardCountAsync()
+        public async Task<int> GetCardCountAsync()
         {
             return await Task.FromResult(this
                 ._indexManager
@@ -136,18 +136,18 @@ namespace nGratis.AI.Kvasir.Core
                 .NumDocs);
         }
 
-        public async Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync()
+        public async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync()
         {
-            return await this.GetRawCardSetsAsync(0, await this.GetRawCardSetCountAsync());
+            return await this.GetCardSetsAsync(0, await this.GetCardSetCountAsync());
         }
 
-        public async Task<IReadOnlyCollection<RawCard>> GetRawCardsAsync(RawCardSet rawCardSet)
+        public async Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet)
         {
             Guard
-                .Require(rawCardSet, nameof(rawCardSet))
+                .Require(cardSet, nameof(cardSet))
                 .Is.Not.Null();
 
-            var rawCards = default(IReadOnlyCollection<RawCard>);
+            var cards = default(IReadOnlyCollection<UnparsedBlob.Card>);
 
             if (this._indexManager.HasIndex(IndexKind.Card))
             {
@@ -155,32 +155,32 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     var indexReader = this._indexManager.FindIndexReader(IndexKind.Card);
                     var indexSearcher = new IndexSearcher(indexReader);
-                    var query = new TermQuery(new Term("card-set-code", rawCardSet.Code));
+                    var query = new TermQuery(new Term("card-set-code", cardSet.Code));
 
-                    rawCards = indexSearcher
+                    cards = indexSearcher
                          .Search(query, int.MaxValue)
                          .ScoreDocs
                          .Select(document => indexReader.Document(document.Doc))
-                         .Select(document => document.ToInstance<RawCard>())
+                         .Select(document => document.ToInstance<UnparsedBlob.Card>())
                          .ToArray();
                 });
             }
 
-            if (rawCards?.Any() != true)
+            if (cards?.Any() != true)
             {
-                rawCards = await this
+                cards = await this
                     ._fetcherLookup[ExternalResources.Card]
-                    .FetchRawCardsAsync(rawCardSet);
+                    .FetchCardsAsync(cardSet);
 
                 Guard
-                    .Ensure(rawCards, nameof(rawCards))
+                    .Ensure(cards, nameof(cards))
                     .Is.Not.Null();
 
                 await Task.Run(() =>
                 {
                     var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Card);
 
-                    var documents = rawCards
+                    var documents = cards
                         .Select(card => card.ToLuceneDocument())
                         .ToArray();
 
@@ -192,31 +192,31 @@ namespace nGratis.AI.Kvasir.Core
                 });
             }
 
-            return rawCards;
+            return cards;
         }
 
-        public async Task<IImage> GetCardImageAsync(RawCard rawCard)
+        public async Task<IImage> GetCardImageAsync(UnparsedBlob.Card card)
         {
             return await this
                 ._fetcherLookup[ExternalResources.CardImage]
-                .FetchCardImageAsync(rawCard);
+                .FetchCardImageAsync(card);
         }
 
-        RawCardSet IPagingDataProvider<RawCardSet>.DefaultItem => default;
+        UnparsedBlob.CardSet IPagingDataProvider<UnparsedBlob.CardSet>.DefaultItem => default;
 
-        async Task<int> IPagingDataProvider<RawCardSet>.GetCountAsync()
+        async Task<int> IPagingDataProvider<UnparsedBlob.CardSet>.GetCountAsync()
         {
-            return await this.GetRawCardSetCountAsync();
+            return await this.GetCardSetCountAsync();
         }
 
-        async Task<IReadOnlyCollection<RawCardSet>> IPagingDataProvider<RawCardSet>.GetItemsAsync(
+        async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> IPagingDataProvider<UnparsedBlob.CardSet>.GetItemsAsync(
             int pagingIndex,
             int itemCount)
         {
-            return await this.GetRawCardSetsAsync(pagingIndex, itemCount);
+            return await this.GetCardSetsAsync(pagingIndex, itemCount);
         }
 
-        private async Task<IReadOnlyCollection<RawCardSet>> GetRawCardSetsAsync(int pagingIndex, int itemCount)
+        private async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
         {
             Guard
                 .Require(pagingIndex, nameof(pagingIndex))
@@ -226,7 +226,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(itemCount, nameof(itemCount))
                 .Is.Positive();
 
-            var cardSets = default(IReadOnlyCollection<RawCardSet>);
+            var cardSets = default(IReadOnlyCollection<UnparsedBlob.CardSet>);
 
             if (!this._indexManager.HasIndex(IndexKind.CardSet))
             {
@@ -245,7 +245,7 @@ namespace nGratis.AI.Kvasir.Core
                 cardSets = Enumerable
                     .Range(itemIndex, itemCount)
                     .Select(index => indexReader.Document(index))
-                    .Select(document => document.ToInstance<RawCardSet>())
+                    .Select(document => document.ToInstance<UnparsedBlob.CardSet>())
                     .ToArray();
             });
 
@@ -258,7 +258,7 @@ namespace nGratis.AI.Kvasir.Core
 
             var cardSets = await this
                 ._fetcherLookup[ExternalResources.CardSet]
-                .FetchRawCardSetsAsync();
+                .FetchCardSetsAsync();
 
             var documents = cardSets
                 .OrderByDescending(cardSet => cardSet.ReleasedTimestamp)
@@ -273,11 +273,11 @@ namespace nGratis.AI.Kvasir.Core
         }
 
         private void RaiseCardSetIndexed() => this
-            .RawCardSetIndexed?
+            .CardSetIndexed?
             .Invoke(this, EventArgs.Empty);
 
         private void RaiseCardIndexed() => this
-            .RawCardIndexed?
+            .CardIndexed?
             .Invoke(this, EventArgs.Empty);
     }
 }

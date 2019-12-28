@@ -60,7 +60,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class FetchRawCardSetsAsyncMethod
+        public class FetchCardSetsAsyncMethod
         {
             [Fact]
             public async Task WhenDetectingCardSetAsAvailableResource_ShouldInvokeOverridingMethod()
@@ -76,11 +76,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCardSets = await stubFetcher.FetchRawCardSetsAsync();
+                var cardSets = await stubFetcher.FetchCardSetsAsync();
 
                 // Assert.
 
-                rawCardSets
+                cardSets
                     .Should().NotBeNullOrEmpty();
             }
 
@@ -98,12 +98,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.FetchRawCardSetsAsync())
+                    .Awaiting(async self => await self.FetchCardSetsAsync())
                     .Should().Throw<NotSupportedException>();
             }
         }
 
-        public class FetchRawCardsAsyncMethod
+        public class FetchCardsAsyncMethod
         {
             [Fact]
             public async Task WhenDetectingCardAsAvailableResource_ShouldInvokeOverridingMethod()
@@ -117,7 +117,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create(stubHandler)
                     .WithAvailableResources(ExternalResources.Card);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "[_MOCK_CODE_]",
                     Name = "[_MOCK_NAME_]"
@@ -125,11 +125,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var rawCards = await stubFetcher.FetchRawCardsAsync(rawCardSet);
+                var cards = await stubFetcher.FetchCardsAsync(cardSet);
 
                 // Assert.
 
-                rawCards
+                cards
                     .Should().NotBeNullOrEmpty();
             }
 
@@ -144,7 +144,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubFetcher = StubMagicHttpFetcher
                     .Create(stubHandler);
 
-                var rawCardSet = new RawCardSet
+                var cardSet = new UnparsedBlob.CardSet
                 {
                     Code = "[_MOCK_CODE_]",
                     Name = "[_MOCK_NAME_]"
@@ -153,7 +153,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.FetchRawCardsAsync(rawCardSet))
+                    .Awaiting(async self => await self.FetchCardsAsync(cardSet))
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -172,14 +172,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create(stubHandler)
                     .WithAvailableResources(ExternalResources.CardImage);
 
-                var rawCard = new RawCard
+                var card = new UnparsedBlob.Card
                 {
                     Name = "[_MOCK_NAME_]"
                 };
 
                 // Act.
 
-                var cardImage = await stubFetcher.FetchCardImageAsync(rawCard);
+                var cardImage = await stubFetcher.FetchCardImageAsync(card);
 
                 // Assert.
 
@@ -198,7 +198,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 var stubFetcher = StubMagicHttpFetcher
                     .Create(stubHandler);
 
-                var rawCard = new RawCard
+                var card = new UnparsedBlob.Card
                 {
                     Name = "[_MOCK_NAME_]"
                 };
@@ -206,7 +206,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.FetchCardImageAsync(rawCard))
+                    .Awaiting(async self => await self.FetchCardImageAsync(card))
                     .Should().Throw<NotSupportedException>();
             }
         }

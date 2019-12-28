@@ -35,11 +35,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal class MockBuilder : Moq.MockBuilder
     {
-        public static RawCardSet[] CreateRawCardSets(ushort count)
+        public static UnparsedBlob.CardSet[] CreateUnparsedCardSets(ushort count)
         {
             return Enumerable
                 .Range(1, count)
-                .Select(index => new RawCardSet
+                .Select(index => new UnparsedBlob.CardSet
                 {
                     Code = $"[_MOCK_CODE_{index:D2}_]",
                     Name = $"[_MOCK_NAME_{index:D2}_]",
@@ -48,7 +48,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .ToArray();
         }
 
-        public static RawCard[] CreteRawCards(string cardSetCode, ushort count)
+        public static UnparsedBlob.Card[] CreateUnparsedCards(string cardSetCode, ushort count)
         {
             Guard
                 .Require(cardSetCode, nameof(cardSetCode))
@@ -56,7 +56,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             return Enumerable
                 .Range(1, count)
-                .Select(index => new RawCard
+                .Select(index => new UnparsedBlob.Card
                 {
                     MultiverseId = index,
                     ScryfallId = "[_MOCK_SCRYFALL_ID_]",

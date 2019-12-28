@@ -55,7 +55,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public override ExternalResources AvailableResources => ExternalResources.CardSet | ExternalResources.Card;
 
-        protected override async Task<IReadOnlyCollection<RawCardSet>> FetchCardSetsCoreAsync()
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
         {
             var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, "sets.html"));
 
@@ -79,15 +79,15 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<RawCard>> FetchCardsCoreAsync(RawCardSet rawCardSet)
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
         {
-            var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{rawCardSet.Code}.json"));
+            var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{cardSet.Code}.json"));
 
             if (!response.IsSuccessStatusCode)
             {
                 throw new KvasirException(
                     @"Failed to reach MTGJSON4.com when trying to fetch cards! " +
-                    $"Card Set: [{rawCardSet.Name}]. " +
+                    $"Card Set: [{cardSet.Name}]. " +
                     $"Status Code: [{response.StatusCode}].");
             }
 
@@ -104,9 +104,9 @@ namespace nGratis.AI.Kvasir.Core
                 .Children()
                 .Select(token =>
                 {
-                    var card = token.ToObject<RawCard>();
+                    var card = token.ToObject<UnparsedBlob.Card>();
 
-                    card.CardSetCode = rawCardSet.Code;
+                    card.CardSetCode = cardSet.Code;
                     card.ManaCost = card.ManaCost ?? string.Empty;
                     card.Text = card.Text ?? string.Empty;
                     card.FlavorText = card.FlavorText ?? string.Empty;
@@ -118,7 +118,7 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        private static RawCardSet ConvertToCardSet(HtmlNode rootNode)
+        private static UnparsedBlob.CardSet ConvertToCardSet(HtmlNode rootNode)
         {
             var nameNode = rootNode
                 .ChildNodes
@@ -151,7 +151,7 @@ namespace nGratis.AI.Kvasir.Core
                     DateTimeStyles.AdjustToUniversal);
             }
 
-            return new RawCardSet
+            return new UnparsedBlob.CardSet
             {
                 Name = HttpUtility.HtmlDecode(nameNode.InnerText),
                 Code = foundMatch.Groups["code"].Value,

@@ -29,31 +29,32 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using Moq;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
     internal partial class Arg : Moq.Arg
     {
-        public class RawCardSet
+        public class UnparsedCardSet
         {
-            public static Contract.RawCardSet Is(string code)
+            public static UnparsedBlob.CardSet Is(string code)
             {
                 Guard
                     .Require(code, nameof(code))
                     .Is.Not.Empty();
 
-                return Match.Create<Contract.RawCardSet>(card => card.Code == code);
+                return Match.Create<UnparsedBlob.CardSet>(cardSet => cardSet.Code == code);
             }
         }
 
         public class DefinedAgent
         {
-            public static Contract.DefinedBlob.Agent Is(string name)
+            public static DefinedBlob.Agent Is(string name)
             {
                 Guard
                     .Require(name, nameof(name))
                     .Is.Not.Empty();
 
-                return Match.Create<Contract.DefinedBlob.Agent>(agent => agent.Name == name);
+                return Match.Create<DefinedBlob.Agent>(agent => agent.Name == name);
             }
         }
     }

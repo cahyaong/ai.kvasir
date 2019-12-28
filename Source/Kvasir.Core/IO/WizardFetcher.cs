@@ -50,11 +50,11 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        protected override async Task<IImage> FetchCardImageCoreAsync(RawCard rawCard)
+        protected override async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card card)
         {
             var path =
                 @"Handlers/Image.ashx" +
-                $"?multiverseid={rawCard.MultiverseId}&type=card";
+                $"?multiverseid={card.MultiverseId}&type=card";
 
             var response = await this.HttpClient.GetAsync(new Uri(Link.GathererUri, path));
 
@@ -62,7 +62,7 @@ namespace nGratis.AI.Kvasir.Core
             {
                 throw new KvasirException(
                     @"Failed to reach WIZARD.com when trying to fetch card image! " +
-                    $"Card: [{rawCard.Name}]. " +
+                    $"Card: [{card.Name}]. " +
                     $"Status Code: [{response.StatusCode}].");
             }
 

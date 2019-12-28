@@ -88,12 +88,12 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSetsAsync()
         {
-            var rawCardSets = await this._repository.GetRawCardSetsAsync();
+            var unparsedCardSets = await this._repository.GetCardSetsAsync();
 
-            this.CardSetViewModels = rawCardSets
-                .Where(cardSet => EngineManagementViewModel.TargetCardSetNames.Contains(cardSet.Name))
-                .OrderBy(cardSet => cardSet.Name)
-                .Select(cardSet => new CardSetViewModel(cardSet, this._repository))
+            this.CardSetViewModels = unparsedCardSets
+                .Where(unparsedCardSet => EngineManagementViewModel.TargetCardSetNames.Contains(unparsedCardSet.Name))
+                .OrderBy(unparsedCardSet => unparsedCardSet.Name)
+                .Select(unparsedCardSet => new CardSetViewModel(unparsedCardSet, this._repository))
                 .ToArray();
         }
     }
