@@ -32,6 +32,6 @@ namespace nGratis.AI.Kvasir.Core
 
     public interface IMagicObjectFactory
     {
-        Agent CreateAgent(AgentDefinition agentDefinition);
+        Agent CreateAgent(DefinedBlob.Agent definedAgent);
     }
 }

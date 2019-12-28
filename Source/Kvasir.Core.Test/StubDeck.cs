@@ -34,20 +34,20 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal class StubDeck : Deck
     {
-        public StubDeck(DeckDefinition deckDefinition)
+        public StubDeck(DefinedBlob.Deck definedDeck)
         {
             Guard
-                .Require(deckDefinition, nameof(deckDefinition))
+                .Require(definedDeck, nameof(definedDeck))
                 .Is.Not.Null();
 
-            this.Name = !string.IsNullOrEmpty(deckDefinition.Name)
-                ? deckDefinition.Name
+            this.Name = !string.IsNullOrEmpty(definedDeck.Name)
+                ? definedDeck.Name
                 : Text.Empty;
 
-            this.Cards = deckDefinition
+            this.Cards = definedDeck
                 .CardNames
                 .SelectMany(cardName => Enumerable
-                    .Range(0, deckDefinition[cardName])
+                    .Range(0, definedDeck[cardName])
                     .Select(_ => new Card(cardName)))
                 .ToArray();
         }

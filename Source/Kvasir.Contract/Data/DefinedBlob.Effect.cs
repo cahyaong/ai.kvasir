@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CostDefinition.cs" company="nGratis">
+// <copyright file="DefinedBlob.Effect.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,19 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 14 January 2019 11:46:06 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, December 27, 2019 7:31:42 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public class CostDefinition
+    public static partial class DefinedBlob
     {
-        public static CostDefinition Unknown { get; } = UnknownCostDefinition.Instance;
+        public class Effect
+        {
+            public EffectKind Kind { get; set; }
 
-        public static CostDefinition Free { get; } = FreeCostDefinition.Instance;
-
-        public virtual CostKind Kind { get; set; }
-
-        public virtual string Amount { get; set; }
+            public string Amount { get; set; }
+        }
     }
 }

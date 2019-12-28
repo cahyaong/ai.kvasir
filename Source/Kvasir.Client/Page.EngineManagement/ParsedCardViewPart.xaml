@@ -20,13 +20,13 @@
         Header="Name"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardDefinition.Name, Mode=OneWay}" />
+        Value="{Binding DefinedCard.Name, Mode=OneWay}" />
       <wpf:AweField
         Grid.Column="1"
         Header="Multiverse ID"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardDefinition.MultiverseId, Mode=OneWay}" />
+        Value="{Binding DefinedCard.MultiverseId, Mode=OneWay}" />
     </Grid>
     <wpf:AweField
       Header="Cost"
@@ -49,13 +49,13 @@
         Header="Power"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardDefinition.Power, Mode=OneWay}" />
+        Value="{Binding DefinedCard.Power, Mode=OneWay}" />
       <wpf:AweField
         Grid.Column="2"
         Header="Toughness"
         Kind="Text"
         Mode="Output"
-        Value="{Binding CardDefinition.Toughness, Mode=OneWay}" />
+        Value="{Binding DefinedCard.Toughness, Mode=OneWay}" />
     </Grid>
     <wpf:AweField
       Header="Messages"

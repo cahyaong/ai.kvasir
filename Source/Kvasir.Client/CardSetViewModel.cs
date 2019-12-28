@@ -129,7 +129,7 @@ namespace nGratis.AI.Kvasir.Client
                 .Select(vm => vm.WhenPropertyChanged())
                 .Merge()
                 .Where(pattern =>
-                    pattern.EventArgs.PropertyName == nameof(CardViewModel.CardDefinition) ||
+                    pattern.EventArgs.PropertyName == nameof(CardViewModel.DefinedCard) ||
                     pattern.EventArgs.PropertyName == nameof(CardViewModel.ParsingMessages))
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(_ => this.UpdateParsingStatistics());
@@ -162,7 +162,7 @@ namespace nGratis.AI.Kvasir.Client
         {
             var parsedCardViewModels = this
                 .CardViewModels
-                .Where(vm => vm.CardDefinition != null)
+                .Where(vm => vm.DefinedCard != null)
                 .ToArray();
 
             this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;

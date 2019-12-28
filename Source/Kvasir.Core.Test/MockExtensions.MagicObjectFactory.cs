@@ -41,12 +41,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Is.Not.Null();
 
             mockFactory
-                .Setup(mock => mock.CreateAgent(Arg.IsAny<AgentDefinition>()))
-                .Returns<AgentDefinition>(agentDefinition => new Agent
+                .Setup(mock => mock.CreateAgent(Arg.IsAny<DefinedBlob.Agent>()))
+                .Returns<DefinedBlob.Agent>(definedAgent => new Agent
                 {
                     Kind = AgentKind.Testing,
-                    Name = agentDefinition.Name,
-                    Deck = new StubDeck(agentDefinition.DeckDefinition)
+                    Name = definedAgent.Name,
+                    Deck = new StubDeck(definedAgent.Deck)
                 })
                 .Verifiable();
 

@@ -76,13 +76,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().BeTrue();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition
-                    .Should().NotBe(CostDefinition.Unknown);
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost
+                    .Should().NotBe(DefinedBlob.Cost.Unknown);
             }
 
             [Fact]
@@ -110,13 +110,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().BeFalse();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition
-                    .Should().Be(CostDefinition.Unknown);
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost
+                    .Should().Be(DefinedBlob.Cost.Unknown);
             }
 
             [Fact]
@@ -139,11 +139,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .MultiverseId
                     .Should().Be(42);
             }
@@ -172,11 +172,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain("<MultiverseId> Value must be zero or positive.");
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .MultiverseId
                     .Should().Be(0);
             }
@@ -201,11 +201,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Name
                     .Should().Be("Llanowar Elves");
             }
@@ -231,28 +231,28 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 using (new AssertionScope())
                 {
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .Kind
                         .Should().Be(theory.ParsedCardKind);
 
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .SuperKind
                         .Should().Be(theory.ParsedCardSuperKind);
 
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .SubKinds
                         .Should().BeEquivalentTo(theory.ParsedCardSubKinds);
 
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .IsTribal
                         .Should().BeFalse();
                 }
@@ -278,28 +278,28 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 using (new AssertionScope())
                 {
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .IsTribal
                         .Should().BeTrue();
 
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .SuperKind
                         .Should().Be(CardSuperKind.None);
 
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .Kind
                         .Should().Be(CardKind.Creature);
 
                     parsingResult
-                        .GetValue<CardDefinition>()
+                        .GetValue<DefinedBlob.Card>()
                         .SubKinds
                         .Should().BeEquivalentTo(CardSubKind.Merfolk, CardSubKind.Wizard);
                 }
@@ -351,9 +351,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition
-                    .Should().Be(CostDefinition.Free);
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost
+                    .Should().Be(DefinedBlob.Cost.Free);
             }
 
             [Theory]
@@ -378,22 +378,22 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition.Kind
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost.Kind
                     .Should().Be(theory.ParsedCostKind);
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition.Amount
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost.Amount
                     .Should().Be(theory.ParsedAmount);
             }
 
@@ -423,13 +423,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .CostDefinition
-                    .Should().Be(CostDefinition.Unknown);
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost
+                    .Should().Be(DefinedBlob.Cost.Unknown);
             }
 
             [Theory]
@@ -454,7 +454,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Power
                     .Should().Be(theory.ParsedPower);
             }
@@ -485,7 +485,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Power.Should().Be(0);
             }
 
@@ -511,7 +511,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Toughness
                     .Should().Be(theory.ParsedToughness);
             }
@@ -542,7 +542,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Contain(theory.Message);
 
                 parsingResult
-                    .GetValue<CardDefinition>()
+                    .GetValue<DefinedBlob.Card>()
                     .Toughness.Should().Be(0);
             }
 
@@ -568,9 +568,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .GetValue<CardDefinition>()
-                    .AbilityDefinitions
-                    .Should().AllBeEquivalentTo(AbilityDefinition.NotSupported);
+                    .GetValue<DefinedBlob.Card>()
+                    .Abilities
+                    .Should().AllBeEquivalentTo(DefinedBlob.Ability.NotSupported);
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]

@@ -59,8 +59,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().BeEmpty();
 
                 parsingResult
-                    .GetValue<AbilityDefinition>()
-                    .Should().BeEquivalentTo(theory.ParsedAbilityDefinition);
+                    .GetValue<DefinedBlob.Ability>()
+                    .Should().BeEquivalentTo(theory.DefinedAbility);
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
@@ -108,33 +108,33 @@ namespace nGratis.AI.Kvasir.Core.Test
         {
             public string RawAbility { get; private set; }
 
-            public AbilityDefinition ParsedAbilityDefinition { get; private set; }
+            public DefinedBlob.Ability DefinedAbility { get; private set; }
 
             public static AbilityTheory Create(string rawAbility)
             {
                 return new AbilityTheory
                 {
                     RawAbility = rawAbility,
-                    ParsedAbilityDefinition = AbilityDefinition.NotSupported
+                    DefinedAbility = DefinedBlob.Ability.NotSupported
                 };
             }
 
             public AbilityTheory ExpectProducingMana(string rawMana)
             {
-                this.ParsedAbilityDefinition = new AbilityDefinition
+                this.DefinedAbility = new DefinedBlob.Ability
                 {
                     Kind = AbilityKind.Activated,
-                    CostDefinitions = new[]
+                    Costs = new[]
                     {
-                        new CostDefinition
+                        new DefinedBlob.Cost
                         {
                             Kind = CostKind.Tapping,
                             Amount = string.Empty
                         }
                     },
-                    EffectDefinitions = new[]
+                    Effects = new[]
                     {
-                        new EffectDefinition
+                        new DefinedBlob.Effect
                         {
                             Kind = EffectKind.ProducingMana,
                             Amount = rawMana

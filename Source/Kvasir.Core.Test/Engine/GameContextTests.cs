@@ -43,17 +43,17 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var agentDefinitions = new[]
+                var definedAgents = new[]
                 {
-                    new AgentDefinition
+                    new DefinedBlob.Agent
                     {
                         Name = "[_MOCK_AGENT_01_]",
-                        DeckDefinition = MockBuilder.CreateElfDeckDefinition()
+                        Deck = MockBuilder.CreateDefinedElfDeck()
                     },
-                    new AgentDefinition
+                    new DefinedBlob.Agent
                     {
                         Name = "[_MOCK_AGENT_02_]",
-                        DeckDefinition = MockBuilder.CreateGoblinDeckDefinition()
+                        Deck = MockBuilder.CreateDefinedGoblinDeck()
                     }
                 };
 
@@ -63,7 +63,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var gameContext = new GameContext(agentDefinitions, mockFactory.Object, RandomGenerator.Default);
+                var gameContext = new GameContext(definedAgents, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
@@ -77,17 +77,17 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var agentDefinitions = new[]
+                var definedAgents = new[]
                 {
-                    new AgentDefinition
+                    new DefinedBlob.Agent
                     {
                         Name = "[_MOCK_AGENT_01_]",
-                        DeckDefinition = MockBuilder.CreateElfDeckDefinition()
+                        Deck = MockBuilder.CreateDefinedElfDeck()
                     },
-                    new AgentDefinition
+                    new DefinedBlob.Agent
                     {
                         Name = "[_MOCK_AGENT_02_]",
-                        DeckDefinition = MockBuilder.CreateGoblinDeckDefinition()
+                        Deck = MockBuilder.CreateDefinedGoblinDeck()
                     }
                 };
 
@@ -97,7 +97,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var gameContext = new GameContext(agentDefinitions, mockFactory.Object, RandomGenerator.Default);
+                var gameContext = new GameContext(definedAgents, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
@@ -142,17 +142,17 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var agentDefinitions = new[]
+                var definedAgents = new[]
                 {
-                    new AgentDefinition
+                    new DefinedBlob.Agent
                     {
                         Name = "[_MOCK_AGENT_01_]",
-                        DeckDefinition = MockBuilder.CreateElfDeckDefinition()
+                        Deck = MockBuilder.CreateDefinedElfDeck()
                     },
-                    new AgentDefinition
+                    new DefinedBlob.Agent
                     {
                         Name = "[_MOCK_AGENT_02_]",
-                        DeckDefinition = MockBuilder.CreateGoblinDeckDefinition()
+                        Deck = MockBuilder.CreateDefinedGoblinDeck()
                     }
                 };
 
@@ -162,7 +162,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var gameContext = new GameContext(agentDefinitions, mockFactory.Object, RandomGenerator.Default);
+                var gameContext = new GameContext(definedAgents, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
@@ -177,21 +177,25 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().NotBeNull("game context should have passive agent");
                 }
 
-                var deckDefinitionLookup = agentDefinitions.ToDictionary(
-                    agentDefinition => agentDefinition.Name,
-                    agentDefinition => agentDefinition.DeckDefinition);
+                var definedAgent = definedAgents.ToDictionary(
+                    agent => agent.Name,
+                    agent => agent.Deck);
 
                 using (new AssertionScope())
                 {
                     gameContext
                         .ActiveAgent.Library
                         .Must().NotBeNull("active agent should have library")
-                        .And.MatchDeckDefinition(deckDefinitionLookup[gameContext.ActiveAgent.Name]);
+                        .And.MatchDefinedDeck(definedAgents
+                            .Single(agent => agent.Name == gameContext.ActiveAgent.Name)
+                            .Deck);
 
                     gameContext
                         .PassiveAgent.Library
                         .Must().NotBeNull("passive agent should have library")
-                        .And.MatchDeckDefinition(deckDefinitionLookup[gameContext.PassiveAgent.Name]);
+                        .And.MatchDefinedDeck(definedAgents
+                            .Single(agent => agent.Name == gameContext.PassiveAgent.Name)
+                            .Deck);
                 }
             }
         }

@@ -41,9 +41,7 @@ namespace nGratis.AI.Kvasir.Client
 
     public class CardViewModel : ReactiveObject
     {
-        // TODO: Need to make <CardDefinition> class as immutable as possible!
-
-        private static readonly CardDefinition InvalidCardDefinition = new CardDefinition();
+        // TODO: Need to make <DefinedCard> class as immutable as possible!
 
         private readonly IMagicRepository _repository;
 
@@ -51,7 +49,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private ImageSource _originalImage;
 
-        private CardDefinition _cardDefinition;
+        private DefinedBlob.Card _definedCard;
 
         private IEnumerable _combinedCardKinds;
 
@@ -93,10 +91,10 @@ namespace nGratis.AI.Kvasir.Client
             private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
         }
 
-        public CardDefinition CardDefinition
+        public DefinedBlob.Card DefinedCard
         {
-            get => this._cardDefinition;
-            private set => this.RaiseAndSetIfChanged(ref this._cardDefinition, value);
+            get => this._definedCard;
+            private set => this.RaiseAndSetIfChanged(ref this._definedCard, value);
         }
 
         public IEnumerable CombinedCardKinds
@@ -128,7 +126,7 @@ namespace nGratis.AI.Kvasir.Client
         {
             if (this.RawCard == null)
             {
-                this.CardDefinition = null;
+                this.DefinedCard = null;
             }
             else
             {
@@ -136,29 +134,29 @@ namespace nGratis.AI.Kvasir.Client
 
                 if (parsingResult.IsValid)
                 {
-                    this.CardDefinition = parsingResult.GetValue<CardDefinition>();
+                    this.DefinedCard = parsingResult.GetValue<DefinedBlob.Card>();
 
                     var combinedKinds = new List<object>();
 
-                    if (this.CardDefinition.IsTribal)
+                    if (this.DefinedCard.IsTribal)
                     {
                         combinedKinds.Add("Tribal");
                     }
 
-                    if (this.CardDefinition.SuperKind != CardSuperKind.None)
+                    if (this.DefinedCard.SuperKind != CardSuperKind.None)
                     {
-                        combinedKinds.Add(this.CardDefinition.SuperKind);
+                        combinedKinds.Add(this.DefinedCard.SuperKind);
                     }
 
-                    combinedKinds.Add(this.CardDefinition.Kind);
-                    combinedKinds.AddRange(this.CardDefinition.SubKinds.Cast<object>());
+                    combinedKinds.Add(this.DefinedCard.Kind);
+                    combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
 
                     this.CombinedCardKinds = combinedKinds;
                     this.ParsingMessages = Enumerable.Empty<string>();
                 }
                 else
                 {
-                    this.CardDefinition = CardViewModel.InvalidCardDefinition;
+                    this.DefinedCard = new DefinedBlob.Card();
                     this.CombinedCardKinds = Enumerable.Empty<object>();
                     this.ParsingMessages = parsingResult.Messages;
                 }

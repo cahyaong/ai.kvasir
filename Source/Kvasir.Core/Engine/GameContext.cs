@@ -56,7 +56,7 @@ namespace nGratis.AI.Kvasir.Core
             End
         }
 
-        private readonly AgentDefinition[] _agentDefinitions;
+        private readonly DefinedBlob.Agent[] _definedAgents;
 
         private readonly IMagicObjectFactory _objectFactory;
 
@@ -65,12 +65,12 @@ namespace nGratis.AI.Kvasir.Core
         private readonly StateMachine<Phase, Action> _stateMachine;
 
         public GameContext(
-            IReadOnlyCollection<AgentDefinition> agentDefinitions,
+            IReadOnlyCollection<DefinedBlob.Agent> definedAgents,
             IMagicObjectFactory objectFactory,
             IRandomGenerator randomGenerator)
         {
             Guard
-                .Require(agentDefinitions, nameof(agentDefinitions))
+                .Require(definedAgents, nameof(definedAgents))
                 .Is.Not.Null();
 
             Guard
@@ -81,7 +81,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
-            this._agentDefinitions = agentDefinitions.ToArray();
+            this._definedAgents = definedAgents.ToArray();
             this._objectFactory = objectFactory;
             this._randomGenerator = randomGenerator;
             this._stateMachine = new StateMachine<Phase, Action>(Phase.Unknown);
@@ -131,13 +131,13 @@ namespace nGratis.AI.Kvasir.Core
 
         private GameContext SetupAgents()
         {
-            if (this._agentDefinitions.Length != 2)
+            if (this._definedAgents.Length != 2)
             {
                 throw new KvasirException("Currently supporting 1 vs. 1 match!");
             }
 
-            var firstAgent = this._objectFactory.CreateAgent(this._agentDefinitions[0]);
-            var secondAgent = this._objectFactory.CreateAgent(this._agentDefinitions[1]);
+            var firstAgent = this._objectFactory.CreateAgent(this._definedAgents[0]);
+            var secondAgent = this._objectFactory.CreateAgent(this._definedAgents[1]);
 
             var firstValue = 0;
             var secondValue = 0;

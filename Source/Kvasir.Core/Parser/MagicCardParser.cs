@@ -50,7 +50,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(rawCard, nameof(rawCard))
                 .Is.Not.Null();
 
-            var cardDefinition = new CardDefinition
+            var definedCard = new DefinedBlob.Card
             {
                 Name = !string.IsNullOrEmpty(rawCard.Name)
                     ? rawCard.Name
@@ -58,12 +58,12 @@ namespace nGratis.AI.Kvasir.Core
             };
 
             return ValidParsingResult
-                .Create(cardDefinition)
+                .Create(definedCard)
                 .ThenParseMultiverseId(rawCard.MultiverseId)
                 .ThenParseType(rawCard.Type)
-                .ThenParseManaCost(cardDefinition.Kind, rawCard.ManaCost)
-                .ThenParsePower(cardDefinition.Kind, rawCard.Power)
-                .ThenParseToughness(cardDefinition.Kind, rawCard.Toughness)
+                .ThenParseManaCost(definedCard.Kind, rawCard.ManaCost)
+                .ThenParsePower(definedCard.Kind, rawCard.Power)
+                .ThenParseToughness(definedCard.Kind, rawCard.Toughness)
                 .ThenParseText(rawCard.Text);
         }
     }
@@ -83,7 +83,7 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(ValidParsingResult.Create((uint)rawMultiverseId))
-                .BindToCardDefinition(definition => definition.MultiverseId);
+                .BindToDefinedCard(card => card.MultiverseId);
         }
 
         public static ParsingResult ThenParseType(this ParsingResult parsingResult, string rawType)
@@ -124,20 +124,20 @@ namespace nGratis.AI.Kvasir.Core
 
         public static ParsingResult ThenParseManaCost(
             this ParsingResult parsingResult,
-            CardKind kind,
+            CardKind definedKind,
             string rawManaCost)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))
                 .Is.Not.Null();
 
-            if (kind == CardKind.Land)
+            if (definedKind == CardKind.Land)
             {
                 if (string.IsNullOrEmpty(rawManaCost))
                 {
                     return parsingResult
-                        .WithChildResult(ValidParsingResult.Create(CostDefinition.Free))
-                        .BindToCardDefinition(definition => definition.CostDefinition);
+                        .WithChildResult(ValidParsingResult.Create(DefinedBlob.Cost.Free))
+                        .BindToDefinedCard(card => card.Cost);
                 }
 
                 return parsingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
@@ -153,94 +153,97 @@ namespace nGratis.AI.Kvasir.Core
                 return parsingResult.WithMessage($"<ManaCost> Symbol(s) has no mapping for value [{rawManaCost}].");
             }
 
-            var costDefinition = new CostDefinition
+            var definedCost = new DefinedBlob.Cost
             {
                 Kind = CostKind.Mana,
                 Amount = rawManaCost
             };
 
             return parsingResult
-                .WithChildResult(ValidParsingResult.Create(costDefinition))
-                .BindToCardDefinition(definition => definition.CostDefinition);
+                .WithChildResult(ValidParsingResult.Create(definedCost))
+                .BindToDefinedCard(card => card.Cost);
         }
 
-        public static ParsingResult ThenParsePower(this ParsingResult parsingResult, CardKind kind, string rawPower)
+        public static ParsingResult ThenParsePower(
+            this ParsingResult parsingResult,
+            CardKind definedKind,
+            string rawPower)
         {
-            var power = (ushort)0;
+            var definedPower = (ushort)0;
 
             var isValid =
                 !string.IsNullOrEmpty(rawPower) &&
-                ushort.TryParse(rawPower, out power);
+                ushort.TryParse(rawPower, out definedPower);
 
-            if (kind != CardKind.Creature)
+            if (definedKind != CardKind.Creature)
             {
                 return isValid
-                    ? parsingResult.WithMessage($"<Power> Non-empty value for non-creature type [{kind}].")
+                    ? parsingResult.WithMessage($"<Power> Non-empty value for non-creature type [{definedKind}].")
                     : parsingResult;
             }
 
             var powerResult = isValid
-                ? ValidParsingResult.Create(power)
+                ? ValidParsingResult.Create(definedPower)
                 : InvalidParsingResult.Create($"<Power> Invalid value [{rawPower}].");
 
             return parsingResult
                 .WithChildResult(powerResult)
-                .BindToCardDefinition(definition => definition.Power);
+                .BindToDefinedCard(card => card.Power);
         }
 
         public static ParsingResult ThenParseToughness(
             this ParsingResult parsingResult,
-            CardKind kind,
+            CardKind definedKind,
             string rawToughness)
         {
-            var toughness = (ushort)0;
+            var definedToughness = (ushort)0;
 
             var isValid =
                 !string.IsNullOrEmpty(rawToughness) &&
-                ushort.TryParse(rawToughness, out toughness);
+                ushort.TryParse(rawToughness, out definedToughness);
 
-            if (kind != CardKind.Creature)
+            if (definedKind != CardKind.Creature)
             {
                 return isValid
-                    ? parsingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{kind}].")
+                    ? parsingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{definedKind}].")
                     : parsingResult;
             }
 
             var toughnessResult = isValid
-                ? ValidParsingResult.Create(toughness)
+                ? ValidParsingResult.Create(definedToughness)
                 : InvalidParsingResult.Create($"<Toughness> Invalid value [{rawToughness}].");
 
             return parsingResult
                 .WithChildResult(toughnessResult)
-                .BindToCardDefinition(definition => definition.Toughness);
+                .BindToDefinedCard(card => card.Toughness);
         }
 
         public static ParsingResult ThenParseText(this ParsingResult parsingResult, string rawText)
         {
-            var abilities = CardDefinition.Default.AbilityDefinitions;
+            var definedAbilities = DefinedBlob.Card.Default.Abilities;
 
             if (!string.IsNullOrEmpty(rawText))
             {
-                abilities = rawText
+                definedAbilities = rawText
                     .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(_ => AbilityDefinition.NotSupported)
+                    .Select(_ => DefinedBlob.Ability.NotSupported)
                     .ToArray();
             }
 
             return parsingResult
-                .WithChildResult(ValidParsingResult.Create(abilities))
-                .BindToCardDefinition(definition => definition.AbilityDefinitions);
+                .WithChildResult(ValidParsingResult.Create(definedAbilities))
+                .BindToDefinedCard(card => card.Abilities);
         }
 
         private static ParsingResult ThenParseKind(this ParsingResult parsingResult, string rawKind)
         {
-            var kindResult = Enum.TryParse(rawKind, out CardKind kind)
-                ? ValidParsingResult.Create(kind)
+            var kindResult = Enum.TryParse(rawKind, out CardKind definedKind)
+                ? ValidParsingResult.Create(definedKind)
                 : InvalidParsingResult.Create($"<Kind> No mapping for value [{rawKind}].");
 
             return parsingResult
                 .WithChildResult(kindResult)
-                .BindToCardDefinition(definition => definition.Kind);
+                .BindToDefinedCard(card => card.Kind);
         }
 
         private static ParsingResult ThenParseSuperKind(this ParsingResult parsingResult, string rawSuperKind)
@@ -251,9 +254,9 @@ namespace nGratis.AI.Kvasir.Core
             {
                 return parsingResult
                     .WithChildResult(ValidParsingResult.Create(true))
-                    .BindToCardDefinition(definition => definition.IsTribal)
+                    .BindToDefinedCard(card => card.IsTribal)
                     .WithChildResult(ValidParsingResult.Create(CardSuperKind.None))
-                    .BindToCardDefinition(definition => definition.SuperKind);
+                    .BindToDefinedCard(card => card.SuperKind);
             }
 
             if (string.IsNullOrEmpty(rawSuperKind))
@@ -262,14 +265,14 @@ namespace nGratis.AI.Kvasir.Core
             }
             else
             {
-                superKindResult = Enum.TryParse(rawSuperKind, out CardSuperKind superKind)
-                    ? ValidParsingResult.Create(superKind)
+                superKindResult = Enum.TryParse(rawSuperKind, out CardSuperKind definedSuperKind)
+                    ? ValidParsingResult.Create(definedSuperKind)
                     : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{rawSuperKind}].");
             }
 
             return parsingResult
                 .WithChildResult(superKindResult)
-                .BindToCardDefinition(definition => definition.SuperKind);
+                .BindToDefinedCard(card => card.SuperKind);
         }
 
         private static ParsingResult ThenParseSubKinds(this ParsingResult parsingResult, params string[] rawSubKinds)
@@ -279,9 +282,9 @@ namespace nGratis.AI.Kvasir.Core
 
             foreach (var rawSubKind in rawSubKinds)
             {
-                if (Enum.TryParse(rawSubKind, out CardSubKind subKind))
+                if (Enum.TryParse(rawSubKind, out CardSubKind definedSubKind))
                 {
-                    subKinds.Add(subKind);
+                    subKinds.Add(definedSubKind);
                 }
                 else
                 {
@@ -305,12 +308,12 @@ namespace nGratis.AI.Kvasir.Core
 
             return parsingResult
                 .WithChildResult(subKindsResult)
-                .BindToCardDefinition(definition => definition.SubKinds);
+                .BindToDefinedCard(card => card.SubKinds);
         }
 
-        private static ParsingResult BindToCardDefinition(
+        private static ParsingResult BindToDefinedCard(
             this ParsingResult parsingResult,
-            Expression<Func<CardDefinition, object>> bindingExpression)
+            Expression<Func<DefinedBlob.Card, object>> bindingExpression)
         {
             Guard
                 .Require(parsingResult, nameof(parsingResult))

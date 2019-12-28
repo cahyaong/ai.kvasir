@@ -54,7 +54,7 @@ namespace nGratis.AI.Kvasir.Core
             }
         }
 
-        private sealed class Visitor : MagicCardAbilityBaseVisitor<AbilityDefinition>
+        private sealed class Visitor : MagicCardAbilityBaseVisitor<DefinedBlob.Ability>
         {
             private Visitor()
             {
@@ -62,7 +62,7 @@ namespace nGratis.AI.Kvasir.Core
 
             public static Visitor Instance { get; } = new Visitor();
 
-            public override AbilityDefinition VisitAbility(AbilityContext context)
+            public override DefinedBlob.Ability VisitAbility(AbilityContext context)
             {
                 Guard
                     .Require(context, nameof(context))
@@ -71,26 +71,26 @@ namespace nGratis.AI.Kvasir.Core
                 return this.Visit(context.GetChild(0));
             }
 
-            public override AbilityDefinition VisitProducingManaAbility(ProducingManaAbilityContext context)
+            public override DefinedBlob.Ability VisitProducingManaAbility(ProducingManaAbilityContext context)
             {
                 Guard
                     .Require(context, nameof(context))
                     .Is.Not.Null();
 
-                return new AbilityDefinition
+                return new DefinedBlob.Ability
                 {
                     Kind = AbilityKind.Activated,
-                    CostDefinitions = new[]
+                    Costs = new[]
                     {
-                        new CostDefinition
+                        new DefinedBlob.Cost
                         {
                             Kind = CostKind.Tapping,
                             Amount = string.Empty
                         }
                     },
-                    EffectDefinitions = new[]
+                    Effects = new[]
                     {
-                        new EffectDefinition
+                        new DefinedBlob.Effect
                         {
                             Kind = EffectKind.ProducingMana,
                             Amount = context.MANA_SYMBOL().GetText()

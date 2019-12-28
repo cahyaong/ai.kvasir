@@ -45,15 +45,15 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class AgentDefinition
+        public class DefinedAgent
         {
-            public static Contract.AgentDefinition Is(string name)
+            public static Contract.DefinedBlob.Agent Is(string name)
             {
                 Guard
                     .Require(name, nameof(name))
                     .Is.Not.Empty();
 
-                return Match.Create<Contract.AgentDefinition>(definition => definition.Name == name);
+                return Match.Create<Contract.DefinedBlob.Agent>(agent => agent.Name == name);
             }
         }
     }

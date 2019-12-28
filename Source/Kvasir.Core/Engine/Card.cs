@@ -35,19 +35,19 @@ namespace nGratis.AI.Kvasir.Core
 
     public class Card
     {
-        protected Card(CardDefinition cardDefinition)
+        protected Card(DefinedBlob.Card definedCard)
         {
             Guard
-                .Require(cardDefinition, nameof(cardDefinition))
+                .Require(definedCard, nameof(definedCard))
                 .Is.Not.Null();
 
-            this.Name = !string.IsNullOrEmpty(cardDefinition.Name)
-                ? cardDefinition.Name
+            this.Name = !string.IsNullOrEmpty(definedCard.Name)
+                ? definedCard.Name
                 : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
 
-            this.Kind = cardDefinition.Kind;
+            this.Kind = definedCard.Kind;
 
-            this.Costs = cardDefinition.CostDefinition == CostDefinition.Free
+            this.Costs = definedCard.Cost == DefinedBlob.Cost.Free
                 ? new[] { ManaCost.Free }
                 : throw new NotSupportedException();
         }

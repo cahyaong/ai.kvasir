@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="FreeCostDefinition.cs" company="nGratis">
+// <copyright file="DefinedBlob.Card.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2018 Cahya Ong
+//  Copyright (c) 2014 - 2019 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 15 January 2019 10:03:14 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, December 27, 2019 7:22:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-
-    internal sealed class FreeCostDefinition : CostDefinition
+    public static partial class DefinedBlob
     {
-        private FreeCostDefinition()
+        public class Card
         {
-        }
+            public Card()
+            {
+                this.SubKinds = Default.SubKinds;
+                this.Cost = Cost.Unknown;
+                this.Abilities = Default.Abilities;
+            }
 
-        public static FreeCostDefinition Instance { get; } = new FreeCostDefinition();
+            public uint MultiverseId { get; set; }
 
-        public override CostKind Kind
-        {
-            get => CostKind.Free;
-            set => throw new NotSupportedException("Setting kind is not allowed!");
-        }
+            public string Name { get; set; }
 
-        public override string Amount
-        {
-            get => string.Empty;
-            set => throw new NotSupportedException("Setting amount is not allowed!");
+            public CardKind Kind { get; set; }
+
+            public CardSuperKind SuperKind { get; set; }
+
+            public CardSubKind[] SubKinds { get; set; }
+
+            public bool IsTribal { get; set; }
+
+            public Cost Cost { get; set; }
+
+            public ushort Power { get; set; }
+
+            public ushort Toughness { get; set; }
+
+            public Ability[] Abilities { get; set; }
+
+            public static class Default
+            {
+                public static readonly CardSubKind[] SubKinds = new CardSubKind[0];
+
+                public static readonly Ability[] Abilities = new Ability[0];
+            }
         }
     }
 }

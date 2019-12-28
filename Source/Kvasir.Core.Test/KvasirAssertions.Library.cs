@@ -55,10 +55,10 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         protected override string Identifier { get; } = "zone";
 
-        public AndConstraint<ZoneAssertions> MatchDeckDefinition(DeckDefinition deckDefinition)
+        public AndConstraint<ZoneAssertions> MatchDefinedDeck(DefinedBlob.Deck definedDeck)
         {
             Guard
-                .Require(deckDefinition, nameof(deckDefinition))
+                .Require(definedDeck, nameof(definedDeck))
                 .Is.Not.Null();
 
             this
@@ -67,7 +67,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             this
                 .Subject
-                .Must().HaveCardQuantity(deckDefinition.CardQuantity);
+                .Must().HaveCardQuantity(definedDeck.CardQuantity);
 
             var actualCardNames = this
                 .Subject?.Cards?
@@ -75,15 +75,15 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             actualCardNames
                 .Distinct()
-                .Should().BeEquivalentTo(deckDefinition.CardNames, "library should have card names defined by deck");
+                .Should().BeEquivalentTo(definedDeck.CardNames, "library should have card names defined by deck");
 
             using (new AssertionScope())
             {
-                deckDefinition
+                definedDeck
                     .CardNames?
                     .ForEach(cardName => this
                         .Subject
-                        .Must().HaveCardQuantity(cardName, deckDefinition[cardName]));
+                        .Must().HaveCardQuantity(cardName, definedDeck[cardName]));
             }
 
             return new AndConstraint<ZoneAssertions>(this);

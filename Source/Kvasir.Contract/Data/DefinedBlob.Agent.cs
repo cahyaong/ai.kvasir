@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EffectDefinition.cs" company="nGratis">
+// <copyright file="DefinedBlob.Agent.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2018 Cahya Ong
+//  Copyright (c) 2014 - 2019 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,20 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 17 January 2019 8:24:07 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, December 27, 2019 7:42:46 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public class EffectDefinition
+    public static partial class DefinedBlob
     {
-        public EffectKind Kind { get; set; }
+        public class Agent
+        {
+            public AgentKind Kind { get; set; }
 
-        public string Amount { get; set; }
+            public string Name { get; set; }
+
+            public Deck Deck { get; set; }
+        }
     }
 }

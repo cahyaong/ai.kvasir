@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DeckDefinition.cs" company="nGratis">
+// <copyright file="DefinedBlob.Deck.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2018 Cahya Ong
+//  Copyright (c) 2014 - 2019 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 29 January 2019 10:41:13 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, December 27, 2019 7:41:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
@@ -32,50 +32,53 @@ namespace nGratis.AI.Kvasir.Contract
     using System.Linq;
     using nGratis.Cop.Core.Contract;
 
-    public class DeckDefinition
+    public static partial class DefinedBlob
     {
-        private readonly IDictionary<string, ushort> _quantityByNameLookup;
-
-        public DeckDefinition(string name)
+        public class Deck
         {
-            Guard
-                .Require(name, nameof(name))
-                .Is.Not.Empty();
+            private readonly IDictionary<string, ushort> _quantityByNameLookup;
 
-            this._quantityByNameLookup = new Dictionary<string, ushort>();
-
-            this.Name = name;
-        }
-
-        public ushort this[string cardName]
-        {
-            get
+            public Deck(string name)
             {
                 Guard
-                    .Require(cardName, nameof(cardName))
+                    .Require(name, nameof(name))
                     .Is.Not.Empty();
 
-                return this._quantityByNameLookup.TryGetValue(cardName, out var quantity)
-                    ? quantity
-                    : (ushort)0;
+                this._quantityByNameLookup = new Dictionary<string, ushort>();
+
+                this.Name = name;
             }
 
-            set
+            public ushort this[string cardName]
             {
-                Guard
-                    .Require(cardName, nameof(cardName))
-                    .Is.Not.Empty();
+                get
+                {
+                    Guard
+                        .Require(cardName, nameof(cardName))
+                        .Is.Not.Empty();
 
-                this._quantityByNameLookup[cardName] = value;
+                    return this._quantityByNameLookup.TryGetValue(cardName, out var quantity)
+                        ? quantity
+                        : (ushort)0;
+                }
+
+                set
+                {
+                    Guard
+                        .Require(cardName, nameof(cardName))
+                        .Is.Not.Empty();
+
+                    this._quantityByNameLookup[cardName] = value;
+                }
             }
+
+            public string Name { get; }
+
+            public IEnumerable<string> CardNames => this._quantityByNameLookup.Keys;
+
+            public ushort CardQuantity => (ushort)this
+                ._quantityByNameLookup
+                .Sum(kvp => kvp.Value);
         }
-
-        public string Name { get; }
-
-        public IEnumerable<string> CardNames => this._quantityByNameLookup.Keys;
-
-        public ushort CardQuantity => (ushort)this
-            ._quantityByNameLookup
-            .Sum(kvp => kvp.Value);
     }
 }

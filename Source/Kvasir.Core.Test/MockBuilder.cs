@@ -76,9 +76,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .ToArray();
         }
 
-        public static DeckDefinition CreateElfDeckDefinition()
+        public static DefinedBlob.Deck CreateDefinedElfDeck()
         {
-            return new DeckDefinition("[_MOCK_DECK_ELF_]")
+            return new DefinedBlob.Deck("[_MOCK_DECK_ELF_]")
             {
                 ["Elvish Eulogist"] = 4,
                 ["Elvish Warrior"] = 4,
@@ -87,9 +87,9 @@ namespace nGratis.AI.Kvasir.Core.Test
             };
         }
 
-        public static DeckDefinition CreateGoblinDeckDefinition()
+        public static DefinedBlob.Deck CreateDefinedGoblinDeck()
         {
-            return new DeckDefinition("[_MOCK_DECK_GOBLIN_]")
+            return new DefinedBlob.Deck("[_MOCK_DECK_GOBLIN_]")
             {
                 ["Goblin Cohort"] = 4,
                 ["Goblin Sledder"] = 4,

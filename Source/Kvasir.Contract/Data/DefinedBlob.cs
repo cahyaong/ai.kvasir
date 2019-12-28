@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AgentDefinition.cs" company="nGratis">
+// <copyright file="DefinedBlob.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2018 Cahya Ong
+//  Copyright (c) 2014 - 2019 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,12 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 28 January 2019 4:56:44 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, December 27, 2019 7:20:12 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public class AgentDefinition
+    public static partial class DefinedBlob
     {
-        public AgentKind Kind { get; set; }
-
-        public string Name { get; set; }
-
-        public DeckDefinition DeckDefinition { get; set; }
     }
 }

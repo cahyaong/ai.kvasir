@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicObjectFactory : IMagicObjectFactory
     {
-        public Agent CreateAgent(AgentDefinition agentDefinition)
+        public Agent CreateAgent(DefinedBlob.Agent definedAgent)
         {
             throw new NotImplementedException();
         }
