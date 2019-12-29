@@ -69,7 +69,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 stopwatch
                     .Elapsed
-                    .Should().BeGreaterOrEqualTo(3.Seconds());
+                    .Should().BeGreaterOrEqualTo(2950.Milliseconds());
 
                 responseMessage
                     .Should().NotBeNull();
