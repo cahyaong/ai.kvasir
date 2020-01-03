@@ -58,7 +58,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
 
                 var mockFactory = MockBuilder
-                    .CreateMock<IMagicObjectFactory>()
+                    .CreateMock<IMagicEntityFactory>()
                     .WithDefaultAgent();
 
                 // Act.
@@ -92,7 +92,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
 
                 var mockFactory = MockBuilder
-                    .CreateMock<IMagicObjectFactory>()
+                    .CreateMock<IMagicEntityFactory>()
                     .WithDefaultAgent();
 
                 // Act.
@@ -157,7 +157,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
 
                 var mockFactory = MockBuilder
-                    .CreateMock<IMagicObjectFactory>()
+                    .CreateMock<IMagicEntityFactory>()
                     .WithDefaultAgent();
 
                 // Act.

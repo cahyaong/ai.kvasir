@@ -58,7 +58,7 @@ namespace nGratis.AI.Kvasir.Core
 
         private readonly DefinedBlob.Agent[] _definedAgents;
 
-        private readonly IMagicObjectFactory _objectFactory;
+        private readonly IMagicEntityFactory _entityFactory;
 
         private readonly IRandomGenerator _randomGenerator;
 
@@ -66,7 +66,7 @@ namespace nGratis.AI.Kvasir.Core
 
         public GameContext(
             IReadOnlyCollection<DefinedBlob.Agent> definedAgents,
-            IMagicObjectFactory objectFactory,
+            IMagicEntityFactory entityFactory,
             IRandomGenerator randomGenerator)
         {
             Guard
@@ -74,7 +74,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Is.Not.Null();
 
             Guard
-                .Require(objectFactory, nameof(objectFactory))
+                .Require(entityFactory, nameof(entityFactory))
                 .Is.Not.Null();
 
             Guard
@@ -82,7 +82,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Is.Not.Null();
 
             this._definedAgents = definedAgents.ToArray();
-            this._objectFactory = objectFactory;
+            this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
             this._stateMachine = new StateMachine<Phase, Action>(Phase.Unknown);
 
@@ -136,8 +136,8 @@ namespace nGratis.AI.Kvasir.Core
                 throw new KvasirException("Currently supporting 1 vs. 1 match!");
             }
 
-            var firstAgent = this._objectFactory.CreateAgent(this._definedAgents[0]);
-            var secondAgent = this._objectFactory.CreateAgent(this._definedAgents[1]);
+            var firstAgent = this._entityFactory.CreateAgent(this._definedAgents[0]);
+            var secondAgent = this._entityFactory.CreateAgent(this._definedAgents[1]);
 
             var firstValue = 0;
             var secondValue = 0;

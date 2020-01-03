@@ -70,7 +70,7 @@
     </Compile>
     <Compile Include="MockBuilder.cs" />
     <Compile Include="MockExtensions.cs" />
-    <Compile Include="MockExtensions.MagicObjectFactory.cs">
+    <Compile Include="MockExtensions.MagicEntityFactory.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
     </Compile>
     <Compile Include="MockExtensions.StorageManager.cs">

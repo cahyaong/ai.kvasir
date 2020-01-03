@@ -45,8 +45,8 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Engine\Card.cs" />
-    <Compile Include="Engine.Infrastructure\IMagicObjectFactory.cs" />
-    <Compile Include="Engine.Infrastructure\MagicObjectFactory.cs" />
+    <Compile Include="Engine.Infrastructure\IMagicEntityFactory.cs" />
+    <Compile Include="Engine.Infrastructure\MagicEntityFactory.cs" />
     <Compile Include="Engine.Cost\Cost.cs" />
     <Compile Include="Engine.Cost\ManaCost.cs" />
     <Compile Include="Engine.Cost\ManaCost.Empty.cs">

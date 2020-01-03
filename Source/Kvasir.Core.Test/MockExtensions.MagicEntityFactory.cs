@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.MagicObjectFactory.cs" company="nGratis">
+// <copyright file="MockExtensions.MagicEntityFactory.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal static partial class MockExtensions
     {
-        public static Mock<IMagicObjectFactory> WithDefaultAgent(this Mock<IMagicObjectFactory> mockFactory)
+        public static Mock<IMagicEntityFactory> WithDefaultAgent(this Mock<IMagicEntityFactory> mockFactory)
         {
             Guard
                 .Require(mockFactory, nameof(mockFactory))

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IGameFactory.cs" company="nGratis">
+// <copyright file="MagicEntityFactory.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2018 Cahya Ong
@@ -23,15 +23,19 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 28 January 2019 5:02:42 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 28 January 2019 5:04:00 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
+    using System;
     using nGratis.AI.Kvasir.Contract;
 
-    public interface IMagicObjectFactory
+    public class MagicEntityFactory : IMagicEntityFactory
     {
-        Agent CreateAgent(DefinedBlob.Agent definedAgent);
+        public Agent CreateAgent(DefinedBlob.Agent definedAgent)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

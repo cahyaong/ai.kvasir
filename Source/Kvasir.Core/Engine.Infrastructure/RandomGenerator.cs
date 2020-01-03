@@ -49,10 +49,10 @@ namespace nGratis.AI.Kvasir.Core
             return (ushort)(this._random.Next(sideCount) + 1);
         }
 
-        public IEnumerable<ushort> GenerateShufflingIndexes(ushort objectCount)
+        public IEnumerable<ushort> GenerateShufflingIndexes(ushort entityCount)
         {
             var indexes = Enumerable
-                .Range(0, objectCount)
+                .Range(0, entityCount)
                 .ToArray();
 
             // NOTE: This implementation is based on Fisher-Yates algorithm.

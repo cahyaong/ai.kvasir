@@ -34,6 +34,6 @@ namespace nGratis.AI.Kvasir.Contract
     {
         ushort RollDice(ushort sideCount);
 
-        IEnumerable<ushort> GenerateShufflingIndexes(ushort objectCount);
+        IEnumerable<ushort> GenerateShufflingIndexes(ushort entityCount);
     }
 }
