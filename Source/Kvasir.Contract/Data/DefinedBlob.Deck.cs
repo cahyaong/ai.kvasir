@@ -78,7 +78,7 @@ namespace nGratis.AI.Kvasir.Contract
 
             public ushort CardQuantity => (ushort)this
                 ._quantityByNameLookup
-                .Sum(kvp => kvp.Value);
+                .Sum(pair => pair.Value);
         }
     }
 }

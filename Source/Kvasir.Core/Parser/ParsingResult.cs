@@ -40,7 +40,7 @@
             }
             else
             {
-                this._childValue = default(object);
+                this._childValue = default;
             }
 
             return this;
@@ -49,7 +49,7 @@
         protected override ParsingResult BindToCore(PropertyInfo propertyInfo)
         {
             propertyInfo.SetValue(this._value, this._childValue);
-            this._childValue = default(object);
+            this._childValue = default;
 
             return this;
         }

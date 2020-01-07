@@ -61,8 +61,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     theory
                         .ParsedAmountLookup
-                        .ForEach(kvp => manaCost[kvp.Key]
-                            .Should().Be(kvp.Value));
+                        .ForEach(pair => manaCost[pair.Key]
+                            .Should().Be(pair.Value));
 
                     Enum
                         .GetValues(typeof(Mana))
