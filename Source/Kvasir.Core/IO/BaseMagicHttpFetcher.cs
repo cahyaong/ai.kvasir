@@ -34,6 +34,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Linq;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
@@ -116,24 +117,43 @@ namespace nGratis.AI.Kvasir.Core
             return await this.FetchCardImageCoreAsync(card);
         }
 
+        public async Task<IReadOnlyCollection<UnparsedBlob.Rule>> FetchRulesAsync()
+        {
+            if (!this.AvailableResources.HasFlag(ExternalResources.Rule))
+            {
+                return await Task.FromException<IReadOnlyCollection<UnparsedBlob.Rule>>(new NotSupportedException());
+            }
+
+            return await this.FetchRulesCoreAsync();
+        }
+
         protected virtual async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
         {
-            return await Task.FromResult(new UnparsedBlob.CardSet[0]);
+            return await Task.FromException<IReadOnlyCollection<UnparsedBlob.CardSet>>(new NotSupportedException());
         }
 
         protected virtual async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet _)
         {
-            return await Task.FromResult(new UnparsedBlob.Card[0]);
+            return await Task.FromException<IReadOnlyCollection<UnparsedBlob.Card>>(new NotSupportedException());
         }
 
         protected virtual async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card _)
         {
-            return await Task.FromResult(EmptyImage.Instance);
+            return await Task.FromException<IImage>(new NotSupportedException());
+        }
+
+        protected virtual async Task<IReadOnlyCollection<UnparsedBlob.Rule>> FetchRulesCoreAsync()
+        {
+            return await Task.FromException<IReadOnlyCollection<UnparsedBlob.Rule>>(new NotSupportedException());
         }
 
         protected virtual string CreateUniqueKey(Uri uri)
         {
-            return uri?.Segments.Last() ?? "_unknown.file";
+            var key =
+                uri?.Segments.Last() ??
+                "_unknown.file";
+
+            return Regex.Replace(key, @"\s+", "_");
         }
 
         private static HttpMessageHandler CreateMessageHandler(

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExternalResources.cs" company="nGratis">
+// <copyright file="UnparsedBlob.Rule.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,22 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, 16 December 2018 11:26:02 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, January 10, 2020 7:54:28 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-
-    [Flags]
-    public enum ExternalResources
+    public static partial class UnparsedBlob
     {
-        None = 0,
-        CardSet = 1 << 1,
-        Card = 1 << 2,
-        CardImage = 1 << 3,
-        Rule = 1 << 4,
+        public class Rule
+        {
+            public string Id { get; set; }
 
-        All = CardSet | Card | CardImage | Rule
+            public string Text { get; set; }
+        }
     }
 }

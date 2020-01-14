@@ -56,7 +56,10 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
                     MockBuilder
                         .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.CardImage)
+                        .WithAvailableResources(ExternalResources.CardImage),
+                    MockBuilder
+                        .CreateMock<IMagicFetcher>()
+                        .WithAvailableResources(ExternalResources.Rule)
                 };
 
                 // Act.
@@ -97,7 +100,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "One or more external resource(s) are invalid! " +
-                        "Missing Resource(s): [CardSet], [Card], [CardImage].");
+                        "Missing Resource(s): [CardSet], [Card], [CardImage], [Rule].");
             }
 
             [Fact]
@@ -131,7 +134,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "One or more external resource(s) are invalid! " +
-                        "Duplicating Resource(s): [CardSet], [Card], [CardImage].");
+                        "Duplicating Resource(s): [CardSet], [Card], [CardImage], [Rule].");
             }
 
             [Fact]
@@ -165,7 +168,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "One or more external resource(s) are invalid! " +
-                        "Missing Resource(s): [CardImage]. " +
+                        "Missing Resource(s): [CardImage], [Rule]. " +
                         "Duplicating Resource(s): [Card].");
             }
         }

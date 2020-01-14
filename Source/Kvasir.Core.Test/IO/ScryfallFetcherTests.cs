@@ -59,13 +59,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 cardSets
                     .Should().NotBeNull()
-                    .And.HaveCountGreaterOrEqualTo(544);
+                    .And.HaveCountGreaterOrEqualTo(544)
+                    .And.NotContainNulls();
 
                 foreach (var cardSet in cardSets)
                 {
-                    cardSet
-                        .Should().NotBeNull();
-
                     cardSet
                         .Name
                         .Should().NotBeNullOrWhiteSpace();
@@ -139,13 +137,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 cards
                     .Should().NotBeNull()
-                    .And.HaveCount(275);
+                    .And.HaveCount(275)
+                    .And.NotContainNulls();
 
                 foreach (var card in cards)
                 {
-                    card
-                        .Should().NotBeNull();
-
                     card
                         .MultiverseId
                         .Should().BePositive();

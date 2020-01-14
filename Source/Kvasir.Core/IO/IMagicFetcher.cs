@@ -43,5 +43,7 @@ namespace nGratis.AI.Kvasir.Core
         Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsAsync(UnparsedBlob.CardSet cardSet);
 
         Task<IImage> FetchCardImageAsync(UnparsedBlob.Card card);
+
+        Task<IReadOnlyCollection<UnparsedBlob.Rule>> FetchRulesAsync();
     }
 }
