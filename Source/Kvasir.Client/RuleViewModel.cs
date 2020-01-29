@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicRepository.cs" company="nGratis">
+// <copyright file="RuleViewModel.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,41 +23,26 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, January 18, 2020 7:21:21 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using nGratis.Cop.Core.Contract;
+    using ReactiveUI;
 
-    // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
-
-    public interface IMagicRepository
+    public class RuleViewModel : ReactiveObject
     {
-        event EventHandler CardSetIndexed;
+        public RuleViewModel(UnparsedBlob.Rule unparsedRule)
+        {
+            Guard
+                .Require(unparsedRule, nameof(unparsedRule))
+                .Is.Not.Null();
 
-        event EventHandler CardIndexed;
+            this.UnparsedRule = unparsedRule;
+        }
 
-        Task<int> GetCardSetCountAsync();
-
-        Task<int> GetCardCountAsync();
-
-        Task<int> GetRuleCountAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet);
-
-        Task<IImage> GetCardImageAsync(UnparsedBlob.Card card);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount);
+        public UnparsedBlob.Rule UnparsedRule { get; }
     }
 }

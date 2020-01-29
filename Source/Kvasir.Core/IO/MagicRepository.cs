@@ -121,7 +121,7 @@ namespace nGratis.AI.Kvasir.Core
 
             if (indexReader.NumDocs <= 0)
             {
-                await this.ReindexCardSetAsync();
+                await this.ReindexCardSetsAsync();
                 indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
             }
 
@@ -136,9 +136,58 @@ namespace nGratis.AI.Kvasir.Core
                 .NumDocs);
         }
 
+        public async Task<int> GetRuleCountAsync()
+        {
+            var indexReader = this._indexManager.FindIndexReader(IndexKind.Rule);
+
+            if (indexReader.NumDocs <= 0)
+            {
+                await this.ReindexRulesAsync();
+                indexReader = this._indexManager.FindIndexReader(IndexKind.Rule);
+            }
+
+            return indexReader.NumDocs;
+        }
+
         public async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync()
         {
             return await this.GetCardSetsAsync(0, await this.GetCardSetCountAsync());
+        }
+
+        public async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
+        {
+            Guard
+                .Require(pagingIndex, nameof(pagingIndex))
+                .Is.ZeroOrPositive();
+
+            Guard
+                .Require(itemCount, nameof(itemCount))
+                .Is.Positive();
+
+            var cardSets = default(IReadOnlyCollection<UnparsedBlob.CardSet>);
+
+            if (!this._indexManager.HasIndex(IndexKind.CardSet))
+            {
+                await this.ReindexCardSetsAsync();
+            }
+
+            await Task.Run(() =>
+            {
+                var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
+                var itemIndex = pagingIndex * itemCount;
+
+                itemCount = Math.Min(
+                    indexReader.MaxDoc - itemIndex,
+                    itemCount);
+
+                cardSets = Enumerable
+                    .Range(itemIndex, itemCount)
+                    .Select(index => indexReader.Document(index))
+                    .Select(document => document.ToInstance<UnparsedBlob.CardSet>())
+                    .ToArray();
+            });
+
+            return cardSets;
         }
 
         public async Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet)
@@ -202,21 +251,12 @@ namespace nGratis.AI.Kvasir.Core
                 .FetchCardImageAsync(card);
         }
 
-        UnparsedBlob.CardSet IPagingDataProvider<UnparsedBlob.CardSet>.DefaultItem => default;
-
-        async Task<int> IPagingDataProvider<UnparsedBlob.CardSet>.GetCountAsync()
+        public async Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync()
         {
-            return await this.GetCardSetCountAsync();
+            return await this.GetRulesAsync(0, await this.GetRuleCountAsync());
         }
 
-        async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> IPagingDataProvider<UnparsedBlob.CardSet>.GetItemsAsync(
-            int pagingIndex,
-            int itemCount)
-        {
-            return await this.GetCardSetsAsync(pagingIndex, itemCount);
-        }
-
-        private async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount)
+        public async Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount)
         {
             Guard
                 .Require(pagingIndex, nameof(pagingIndex))
@@ -226,33 +266,28 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(itemCount, nameof(itemCount))
                 .Is.Positive();
 
-            var cardSets = default(IReadOnlyCollection<UnparsedBlob.CardSet>);
-
-            if (!this._indexManager.HasIndex(IndexKind.CardSet))
-            {
-                await this.ReindexCardSetAsync();
-            }
+            var rules = default(IReadOnlyCollection<UnparsedBlob.Rule>);
 
             await Task.Run(() =>
             {
-                var indexReader = this._indexManager.FindIndexReader(IndexKind.CardSet);
+                var indexReader = this._indexManager.FindIndexReader(IndexKind.Rule);
                 var itemIndex = pagingIndex * itemCount;
 
                 itemCount = Math.Min(
                     indexReader.MaxDoc - itemIndex,
                     itemCount);
 
-                cardSets = Enumerable
+                rules = Enumerable
                     .Range(itemIndex, itemCount)
                     .Select(index => indexReader.Document(index))
-                    .Select(document => document.ToInstance<UnparsedBlob.CardSet>())
+                    .Select(document => document.ToInstance<UnparsedBlob.Rule>())
                     .ToArray();
             });
 
-            return cardSets;
+            return rules;
         }
 
-        private async Task ReindexCardSetAsync()
+        private async Task ReindexCardSetsAsync()
         {
             var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
 
@@ -270,6 +305,24 @@ namespace nGratis.AI.Kvasir.Core
             indexWriter.Flush(true, true);
 
             this.RaiseCardSetIndexed();
+        }
+
+        private async Task ReindexRulesAsync()
+        {
+            var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Rule);
+
+            var rules = await this
+                ._fetcherLookup[ExternalResources.Rule]
+                .FetchRulesAsync();
+
+            var documents = rules
+                .OrderBy(rule => rule.Id)
+                .Select(rule => rule.ToLuceneDocument())
+                .ToArray();
+
+            indexWriter.AddDocuments(documents);
+            indexWriter.Commit();
+            indexWriter.Flush(true, true);
         }
 
         private void RaiseCardSetIndexed() => this

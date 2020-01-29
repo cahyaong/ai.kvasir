@@ -153,6 +153,10 @@ namespace nGratis.AI.Kvasir.Client
                 "SCRYFALL",
                 new ContainerControlledLifetimeManager());
 
+            unityContainer.RegisterType<IMagicFetcher, WizardFetcher>(
+                "WIZARD",
+                new ContainerControlledLifetimeManager());
+
             unityContainer.RegisterType<IIndexManager, IndexManager>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(dataFolderUri));

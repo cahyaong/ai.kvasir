@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Net.Http;
     using System.Text.RegularExpressions;
@@ -42,7 +43,6 @@ namespace nGratis.AI.Kvasir.Core
     public class WizardFetcher : BaseMagicHttpFetcher
     {
         public override ExternalResources AvailableResources =>
-            ExternalResources.CardImage |
             ExternalResources.Rule;
 
         public WizardFetcher(IStorageManager storageManager)
@@ -95,7 +95,7 @@ namespace nGratis.AI.Kvasir.Core
 
             var textNode = landingDocument
                 .DocumentNode
-                .SelectNodes("//a[@class='cta learn-more']")
+                .SelectNodes("//a[@class='cta']")
                 .Single(node => node.InnerText.Contains("TXT"));
 
             var textUri = new Uri(textNode.Attributes["href"].Value);
@@ -114,7 +114,16 @@ namespace nGratis.AI.Kvasir.Core
 
             var rules = ruleContent
                 .Substring(startingIndex, endingIndex - startingIndex)
-                .Split(new[] { $"{Environment.NewLine}{Environment.NewLine}" }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(
+                    new[]
+                    {
+                        $"{Environment.NewLine}{Environment.NewLine}",
+                        $"{Environment.NewLine} {Environment.NewLine}"
+                    },
+                    StringSplitOptions.RemoveEmptyEntries)
+                .Select(token => token
+                    .Replace(Environment.NewLine, " ")
+                    .Trim())
                 .Select(token => Pattern.Rule.Match(token))
                 .Where(match => match.Success)
                 .Select(match => new UnparsedBlob.Rule
@@ -144,14 +153,26 @@ namespace nGratis.AI.Kvasir.Core
 
             public DataSpec Calculate(Uri uri)
             {
-                var match = Pattern.CardImageUrl.Match(uri.PathAndQuery);
+                var imageUrlMatch = Pattern.CardImageUrl.Match(uri.PathAndQuery);
 
-                if (!match.Success)
+                if (imageUrlMatch.Success)
                 {
-                    throw new KvasirException($"Failed to calculate unique key for URL [{uri}].");
+                    return new DataSpec(imageUrlMatch.Groups["id"].Value, Mime.Png);
                 }
 
-                return new DataSpec(match.Groups["id"].Value, Mime.Png);
+                var nameTokens = Path
+                    .GetFileName(uri.LocalPath)
+                    .Split('.');
+
+                var isText =
+                    nameTokens.Length == 2 &&
+                    Mime.Text.Extensions.Contains(nameTokens.Last());
+
+                return isText
+                    ? new DataSpec(
+                        Regex.Replace(nameTokens.First(), @"\s+", "_"),
+                        Mime.Text)
+                    : DataSpec.None;
             }
         }
 
@@ -162,7 +183,7 @@ namespace nGratis.AI.Kvasir.Core
                 RegexOptions.Compiled);
 
             public static readonly Regex Rule = new Regex(
-                @"(?<id>\d{1,3}(\.\d[a-z]?)?)\.? (?<text>.+)",
+                @"^(?<id>\d{1,3}(\.\d{1,3}[a-z]?)?)\.? (?<text>.+)$",
                 RegexOptions.Compiled);
         }
     }

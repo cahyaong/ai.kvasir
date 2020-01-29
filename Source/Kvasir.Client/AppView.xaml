@@ -21,6 +21,7 @@
         <mui:LinkGroup.Links>
           <mui:Link DisplayName="Library" Source="/nGratis.AI.Kvasir.Client;component/LibraryManagementView.xaml" />
           <mui:Link DisplayName="Engine" Source="/nGratis.AI.Kvasir.Client;component/Page.EngineManagement/EngineManagementView.xaml" />
+          <mui:Link DisplayName="Rule" Source="/nGratis.AI.Kvasir.Client;component/RuleManagementView.xaml" />
         </mui:LinkGroup.Links>
       </mui:LinkGroup>
     </mui:LinkGroupCollection>

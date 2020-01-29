@@ -183,7 +183,7 @@ namespace nGratis.AI.Kvasir.Client
 
             public async Task<IReadOnlyCollection<CardSetViewModel>> GetItemsAsync(int pagingIndex, int itemCount)
             {
-                var unparsedCardSets = await this._repository.GetItemsAsync(pagingIndex, itemCount);
+                var unparsedCardSets = await this._repository.GetCardSetsAsync(pagingIndex, itemCount);
 
                 return unparsedCardSets
                     .Select(unparsedCardSet => new CardSetViewModel(unparsedCardSet, this._repository))

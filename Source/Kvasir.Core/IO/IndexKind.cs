@@ -33,6 +33,7 @@ namespace nGratis.AI.Kvasir.Core
         Unknown = 0,
 
         CardSet,
-        Card
+        Card,
+        Rule
     }
 }

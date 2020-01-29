@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
-    using System;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
@@ -40,7 +39,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     {
         public class FetchCardImageAsyncMethod
         {
-            [Fact]
+            [Fact(Skip = "Fetching card image is supported by Scryfall fetcher.")]
             public async Task WhenGettingSuccessfulResponse_ShouldLoadJpegImage()
             {
                 // Arrange.
@@ -77,7 +76,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().Be(64);
             }
 
-            [Fact]
+            [Fact(Skip = "Fetching card image is supported by Scryfall fetcher.")]
             public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
             {
                 // Arrange.
@@ -136,7 +135,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 rules
                     .Should().NotBeNull()
-                    .And.HaveCount(2066)
+                    .And.HaveCount(2527)
                     .And.NotContainNulls();
 
                 rules
@@ -162,7 +161,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     rule
                         .Id
                         .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"^\d{1,3}(\.\d[a-z]?)?$");
+                        .And.MatchRegex(@"^\d{1,3}(\.\d+[a-z]?)?$");
 
                     rule
                         .Text

@@ -99,7 +99,9 @@ namespace nGratis.AI.Kvasir.Core
                 ? this._imageCachingPool
                 : this._sharedCachingPool;
 
-            var foundBlob = cachingPool.LoadEntry($"{entrySpec.Name}{entrySpec.Mime.FileExtension}");
+            var foundBlob = entrySpec != DataSpec.None
+                ? cachingPool.LoadEntry($"{entrySpec.Name}{entrySpec.Mime.FileExtension}")
+                : new byte[0];
 
             if (foundBlob.Any())
             {
@@ -155,9 +157,12 @@ namespace nGratis.AI.Kvasir.Core
                 ? this._imageCachingPool
                 : this._sharedCachingPool;
 
-            cachingPool.SaveEntry(
-                $"{request.EntrySpec.Name}{request.EntrySpec.Mime.FileExtension}",
-                request.Blob);
+            if (request.EntrySpec != DataSpec.None)
+            {
+                cachingPool.SaveEntry(
+                    $"{request.EntrySpec.Name}{request.EntrySpec.Mime.FileExtension}",
+                    request.Blob);
+            }
         }
 
         private sealed class SavingRequest

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicRepository.cs" company="nGratis">
+// <copyright file="RuleManagementView.xaml.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,41 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, January 18, 2020 7:02:48 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Vision.Imaging;
-
-    // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
-
-    public interface IMagicRepository
+    public partial class RuleManagementView
     {
-        event EventHandler CardSetIndexed;
-
-        event EventHandler CardIndexed;
-
-        Task<int> GetCardSetCountAsync();
-
-        Task<int> GetCardCountAsync();
-
-        Task<int> GetRuleCountAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet);
-
-        Task<IImage> GetCardImageAsync(UnparsedBlob.Card card);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount);
+        public RuleManagementView()
+        {
+            this.InitializeComponent();
+        }
     }
 }

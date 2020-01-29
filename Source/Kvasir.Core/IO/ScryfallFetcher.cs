@@ -52,7 +52,10 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        public override ExternalResources AvailableResources => ExternalResources.All;
+        public override ExternalResources AvailableResources =>
+            ExternalResources.CardSet |
+            ExternalResources.Card |
+            ExternalResources.CardImage;
 
         protected override async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
         {
