@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
+    using System;
     using System.Collections.Generic;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
@@ -36,6 +37,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using Lucene.Net.Util;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
+    using Polly;
 
     internal class StubDirectory : RAMDirectory
     {
@@ -67,7 +69,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     luceneWriter.AddDocument(document);
                 }
 
-                luceneWriter.Commit();
+                luceneWriter.CommitWithRetrying();
             }
 
             return this;
@@ -103,7 +105,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     luceneWriter.AddDocument(document);
                 }
 
-                luceneWriter.Commit();
+                luceneWriter.CommitWithRetrying();
             }
 
             return this;
@@ -118,7 +120,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
             {
                 luceneWriter.AddDocuments(documents);
-                luceneWriter.Commit();
+                luceneWriter.CommitWithRetrying();
             }
 
             return this;
@@ -132,6 +134,21 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 OpenMode = OpenMode.CREATE_OR_APPEND
             };
+        }
+    }
+
+    internal static class LuceneExtensions
+    {
+        internal static void CommitWithRetrying(this IndexWriter luceneWriter)
+        {
+            Guard
+                .Require(luceneWriter, nameof(luceneWriter))
+                .Is.Not.Null();
+
+            Policy
+                .Handle<InvalidCastException>()
+                .Retry(3)
+                .Execute(luceneWriter.Commit);
         }
     }
 }

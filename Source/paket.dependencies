@@ -5,6 +5,7 @@ nuget JetBrains.Annotations
 nuget Humanizer.Core
 nuget Newtonsoft.Json
 nuget NLog
+nuget Polly
 nuget Stateless
 nuget System.Reactive
 nuget System.Reactive.Linq
