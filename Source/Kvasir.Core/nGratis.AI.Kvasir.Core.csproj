@@ -55,7 +55,7 @@
     <Compile Include="Engine.Cost\ManaCost.Free.cs">
       <DependentUpon>ManaCost.cs</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Agent.cs" />
+    <Compile Include="Engine\Player.cs" />
     <Compile Include="Engine\Deck.cs" />
     <Compile Include="Engine\GameContext.cs" />
     <Compile Include="Engine.Infrastructure\RandomGenerator.cs" />

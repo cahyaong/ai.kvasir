@@ -56,7 +56,7 @@ namespace nGratis.AI.Kvasir.Core
             End
         }
 
-        private readonly DefinedBlob.Agent[] _definedAgents;
+        private readonly DefinedBlob.Player[] _definedPlayers;
 
         private readonly IMagicEntityFactory _entityFactory;
 
@@ -65,12 +65,12 @@ namespace nGratis.AI.Kvasir.Core
         private readonly StateMachine<Phase, Action> _stateMachine;
 
         public GameContext(
-            IReadOnlyCollection<DefinedBlob.Agent> definedAgents,
+            IReadOnlyCollection<DefinedBlob.Player> definedPlayers,
             IMagicEntityFactory entityFactory,
             IRandomGenerator randomGenerator)
         {
             Guard
-                .Require(definedAgents, nameof(definedAgents))
+                .Require(definedPlayers, nameof(definedPlayers))
                 .Is.Not.Null();
 
             Guard
@@ -81,7 +81,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
-            this._definedAgents = definedAgents.ToArray();
+            this._definedPlayers = definedPlayers.ToArray();
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
             this._stateMachine = new StateMachine<Phase, Action>(Phase.Unknown);
@@ -109,16 +109,16 @@ namespace nGratis.AI.Kvasir.Core
 
         public Phase CurrentPhase => this._stateMachine.State;
 
-        public Agent ActiveAgent { get; private set; }
+        public Player ActivePlayer { get; private set; }
 
-        public Agent PassiveAgent { get; private set; }
+        public Player NonactivePlayer { get; private set; }
 
         private void OnBeginningActivated()
         {
             this
-                .SetupAgents()
-                .SetupZones(this.ActiveAgent)
-                .SetupZones(this.PassiveAgent);
+                .SetupPlayers()
+                .SetupZones(this.ActivePlayer)
+                .SetupZones(this.NonactivePlayer);
         }
 
         private void OnPlayingActivated()
@@ -129,15 +129,15 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        private GameContext SetupAgents()
+        private GameContext SetupPlayers()
         {
-            if (this._definedAgents.Length != 2)
+            if (this._definedPlayers.Length != 2)
             {
                 throw new KvasirException("Currently supporting 1 vs. 1 match!");
             }
 
-            var firstAgent = this._entityFactory.CreateAgent(this._definedAgents[0]);
-            var secondAgent = this._entityFactory.CreateAgent(this._definedAgents[1]);
+            var firstPlayer = this._entityFactory.CreatePlayer(this._definedPlayers[0]);
+            var secondPlayer = this._entityFactory.CreatePlayer(this._definedPlayers[1]);
 
             var firstValue = 0;
             var secondValue = 0;
@@ -150,39 +150,39 @@ namespace nGratis.AI.Kvasir.Core
 
             if (firstValue > secondValue)
             {
-                this.ActiveAgent = firstAgent;
-                this.PassiveAgent = secondAgent;
+                this.ActivePlayer = firstPlayer;
+                this.NonactivePlayer = secondPlayer;
             }
             else
             {
-                this.ActiveAgent = secondAgent;
-                this.PassiveAgent = firstAgent;
+                this.ActivePlayer = secondPlayer;
+                this.NonactivePlayer = firstPlayer;
             }
 
-            this.ActiveAgent.Life = 20;
-            this.PassiveAgent.Life = 20;
+            this.ActivePlayer.Life = 20;
+            this.NonactivePlayer.Life = 20;
 
             return this;
         }
 
-        private GameContext SetupZones(Agent agent)
+        private GameContext SetupZones(Player player)
         {
-            if (agent.Deck == null)
+            if (player.Deck == null)
             {
-                throw new KvasirException($"Agent [{agent.Name}] does NOT have valid deck!");
+                throw new KvasirException($"Player [{player.Name}] does NOT have valid deck!");
             }
 
-            var cards = agent
+            var cards = player
                 .Deck.Cards
                 .ToArray();
 
-            agent.Library = new Zone(ZoneKind.Library);
+            player.Library = new Zone(ZoneKind.Library);
 
             this
                 ._randomGenerator
                 .GenerateShufflingIndexes((ushort)cards.Length)
                 .Select(index => cards[index])
-                .ForEach(card => agent.Library.AddCard(card));
+                .ForEach(card => player.Library.AddCard(card));
 
             return this;
         }

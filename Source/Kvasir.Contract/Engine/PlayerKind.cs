@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AgentKind.cs" company="nGratis">
+// <copyright file="PlayerKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -28,7 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    public enum AgentKind
+    public enum PlayerKind
     {
         Unknown = 0,
 

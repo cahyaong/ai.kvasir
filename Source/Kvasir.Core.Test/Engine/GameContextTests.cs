@@ -45,21 +45,21 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var definedAgents = new[]
                 {
-                    new DefinedBlob.Agent
+                    new DefinedBlob.Player
                     {
-                        Name = "[_MOCK_AGENT_01_]",
+                        Name = "[_MOCK_PLAYER_01_]",
                         Deck = MockBuilder.CreateDefinedElfDeck()
                     },
-                    new DefinedBlob.Agent
+                    new DefinedBlob.Player
                     {
-                        Name = "[_MOCK_AGENT_02_]",
+                        Name = "[_MOCK_PLAYER_02_]",
                         Deck = MockBuilder.CreateDefinedGoblinDeck()
                     }
                 };
 
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultAgent();
+                    .WithDefaultPlayer();
 
                 // Act.
 
@@ -77,63 +77,63 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var definedAgents = new[]
+                var definedPlayers = new[]
                 {
-                    new DefinedBlob.Agent
+                    new DefinedBlob.Player
                     {
-                        Name = "[_MOCK_AGENT_01_]",
+                        Name = "[_MOCK_PLAYER_01_]",
                         Deck = MockBuilder.CreateDefinedElfDeck()
                     },
-                    new DefinedBlob.Agent
+                    new DefinedBlob.Player
                     {
-                        Name = "[_MOCK_AGENT_02_]",
+                        Name = "[_MOCK_PLAYER_02_]",
                         Deck = MockBuilder.CreateDefinedGoblinDeck()
                     }
                 };
 
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultAgent();
+                    .WithDefaultPlayer();
 
                 // Act.
 
-                var gameContext = new GameContext(definedAgents, mockFactory.Object, RandomGenerator.Default);
+                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
                 using (new AssertionScope())
                 {
                     gameContext
-                        .ActiveAgent
-                        .Should().NotBeNull("game context should have active agent");
+                        .ActivePlayer
+                        .Should().NotBeNull("game context should have active player");
 
                     gameContext
-                        .PassiveAgent
-                        .Should().NotBeNull("game context should have passive agent");
+                        .NonactivePlayer
+                        .Should().NotBeNull("game context should have nonactive player");
                 }
 
-                if (gameContext.ActiveAgent.Name == "[_MOCK_AGENT_01_]")
+                if (gameContext.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
                 {
                     gameContext
-                        .PassiveAgent.Name
-                        .Should().Be("[_MOCK_AGENT_02_]", "passive agent should be different from active agent");
+                        .NonactivePlayer.Name
+                        .Should().Be("[_MOCK_PLAYER_02_]", "nonactive player should be different from active player");
                 }
                 else
                 {
                     gameContext
-                        .PassiveAgent.Name
-                        .Should().Be("[_MOCK_AGENT_01_]", "passive agent should be different from active agent");
+                        .NonactivePlayer.Name
+                        .Should().Be("[_MOCK_PLAYER_01_]", "nonactive player should be different from active player");
                 }
 
                 using (new AssertionScope())
                 {
                     gameContext
-                        .ActiveAgent.Life
-                        .Should().Be(20, "active agent should begin with full life");
+                        .ActivePlayer.Life
+                        .Should().Be(20, "active player should begin with full life");
 
                     gameContext
-                        .PassiveAgent.Life
-                        .Should().Be(20, "passive agent should begin with full life");
+                        .NonactivePlayer.Life
+                        .Should().Be(20, "nonactive player should begin with full life");
                 }
             }
 
@@ -142,57 +142,57 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 // Arrange.
 
-                var definedAgents = new[]
+                var definedPlayers = new[]
                 {
-                    new DefinedBlob.Agent
+                    new DefinedBlob.Player
                     {
-                        Name = "[_MOCK_AGENT_01_]",
+                        Name = "[_MOCK_PLAYER_01_]",
                         Deck = MockBuilder.CreateDefinedElfDeck()
                     },
-                    new DefinedBlob.Agent
+                    new DefinedBlob.Player
                     {
-                        Name = "[_MOCK_AGENT_02_]",
+                        Name = "[_MOCK_PLAYER_02_]",
                         Deck = MockBuilder.CreateDefinedGoblinDeck()
                     }
                 };
 
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultAgent();
+                    .WithDefaultPlayer();
 
                 // Act.
 
-                var gameContext = new GameContext(definedAgents, mockFactory.Object, RandomGenerator.Default);
+                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
 
                 // Assert.
 
                 using (new AssertionScope())
                 {
                     gameContext
-                        .ActiveAgent
-                        .Should().NotBeNull("game context should have active agent");
+                        .ActivePlayer
+                        .Should().NotBeNull("game context should have active player");
 
                     gameContext
-                        .PassiveAgent
-                        .Should().NotBeNull("game context should have passive agent");
+                        .NonactivePlayer
+                        .Should().NotBeNull("game context should have nonactive player");
                 }
 
                 using (new AssertionScope())
                 {
                     gameContext
-                        .ActiveAgent.Library
-                        .Must().NotBeNull("active agent should have library")
+                        .ActivePlayer.Library
+                        .Must().NotBeNull("active player should have library")
                         .And.BeLibraryKind()
-                        .And.MatchDefinedDeck(definedAgents
-                            .Single(agent => agent.Name == gameContext.ActiveAgent.Name)
+                        .And.MatchDefinedDeck(definedPlayers
+                            .Single(agent => agent.Name == gameContext.ActivePlayer.Name)
                             .Deck);
 
                     gameContext
-                        .PassiveAgent.Library
-                        .Must().NotBeNull("passive agent should have library")
+                        .NonactivePlayer.Library
+                        .Must().NotBeNull("nonactive player should have library")
                         .And.BeLibraryKind()
-                        .And.MatchDefinedDeck(definedAgents
-                            .Single(agent => agent.Name == gameContext.PassiveAgent.Name)
+                        .And.MatchDefinedDeck(definedPlayers
+                            .Single(agent => agent.Name == gameContext.NonactivePlayer.Name)
                             .Deck);
                 }
             }

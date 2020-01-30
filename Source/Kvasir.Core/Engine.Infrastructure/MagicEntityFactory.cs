@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Core
 
     public class MagicEntityFactory : IMagicEntityFactory
     {
-        public Agent CreateAgent(DefinedBlob.Agent definedAgent)
+        public Player CreatePlayer(DefinedBlob.Player definedPlayer)
         {
             throw new NotImplementedException();
         }

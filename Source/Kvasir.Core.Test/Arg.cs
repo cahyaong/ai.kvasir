@@ -48,13 +48,13 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class DefinedAgent
         {
-            public static DefinedBlob.Agent Is(string name)
+            public static DefinedBlob.Player Is(string name)
             {
                 Guard
                     .Require(name, nameof(name))
                     .Is.Not.Empty();
 
-                return Match.Create<DefinedBlob.Agent>(agent => agent.Name == name);
+                return Match.Create<DefinedBlob.Player>(agent => agent.Name == name);
             }
         }
     }

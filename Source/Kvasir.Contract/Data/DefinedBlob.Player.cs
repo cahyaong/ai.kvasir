@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Agent.cs" company="nGratis">
+// <copyright file="DefinedBlob.Player.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,23 +23,20 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, December 27, 2019 7:42:46 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Contract
 {
-    using nGratis.AI.Kvasir.Contract;
-
-    public class Agent
+    public static partial class DefinedBlob
     {
-        public AgentKind Kind { get; set; }
+        public class Player
+        {
+            public PlayerKind Kind { get; set; }
 
-        public string Name { get; set; }
+            public string Name { get; set; }
 
-        public int Life { get; set; }
-
-        public Deck Deck { get; set; }
-
-        public Zone Library { get; set; }
+            public Deck Deck { get; set; }
+        }
     }
 }
