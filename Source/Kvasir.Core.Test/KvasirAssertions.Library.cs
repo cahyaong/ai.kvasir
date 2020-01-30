@@ -55,15 +55,20 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         protected override string Identifier { get; } = "zone";
 
+        public AndConstraint<ZoneAssertions> BeLibraryKind()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Library, "zone should be library kind");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
         public AndConstraint<ZoneAssertions> MatchDefinedDeck(DefinedBlob.Deck definedDeck)
         {
             Guard
                 .Require(definedDeck, nameof(definedDeck))
                 .Is.Not.Null();
-
-            this
-                .Subject.Kind
-                .Should().Be(ZoneKind.Library, "zone should be library");
 
             this
                 .Subject
@@ -75,7 +80,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             actualCardNames
                 .Distinct()
-                .Should().BeEquivalentTo(definedDeck.CardNames, "library should have card names defined by deck");
+                .Should().BeEquivalentTo(definedDeck.CardNames, "zone should have card names defined by deck");
 
             using (new AssertionScope())
             {

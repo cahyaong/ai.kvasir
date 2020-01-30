@@ -177,15 +177,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().NotBeNull("game context should have passive agent");
                 }
 
-                var definedAgent = definedAgents.ToDictionary(
-                    agent => agent.Name,
-                    agent => agent.Deck);
-
                 using (new AssertionScope())
                 {
                     gameContext
                         .ActiveAgent.Library
                         .Must().NotBeNull("active agent should have library")
+                        .And.BeLibraryKind()
                         .And.MatchDefinedDeck(definedAgents
                             .Single(agent => agent.Name == gameContext.ActiveAgent.Name)
                             .Deck);
@@ -193,6 +190,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     gameContext
                         .PassiveAgent.Library
                         .Must().NotBeNull("passive agent should have library")
+                        .And.BeLibraryKind()
                         .And.MatchDefinedDeck(definedAgents
                             .Single(agent => agent.Name == gameContext.PassiveAgent.Name)
                             .Deck);
