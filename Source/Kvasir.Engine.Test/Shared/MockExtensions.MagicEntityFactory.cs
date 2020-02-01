@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="MockExtensions.MagicEntityFactory.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,38 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Monday, 28 January 2019 5:37:12 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+// ReSharper disable CheckNamespace
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+namespace Moq.AI.Kvasir
+{
+    using Moq;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
+    using nGratis.AI.Kvasir.Engine.Test;
+    using nGratis.Cop.Core.Contract;
+
+    internal static partial class MockExtensions
+    {
+        public static Mock<IMagicEntityFactory> WithDefaultPlayer(this Mock<IMagicEntityFactory> mockFactory)
+        {
+            Guard
+                .Require(mockFactory, nameof(mockFactory))
+                .Is.Not.Null();
+
+            mockFactory
+                .Setup(mock => mock.CreatePlayer(Arg.IsAny<DefinedBlob.Player>()))
+                .Returns<DefinedBlob.Player>(definedPlayer => new Player
+                {
+                    Kind = PlayerKind.Testing,
+                    Name = definedPlayer.Name,
+                    Deck = new StubDeck(definedPlayer.Deck)
+                })
+                .Verifiable();
+
+            return mockFactory;
+        }
+    }
+}

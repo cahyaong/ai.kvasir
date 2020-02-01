@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="Arg.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,41 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 23 November 2018 9:26:00 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+// ReSharper disable CheckNamespace
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+namespace Moq.AI.Kvasir
+{
+    using Moq;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
+
+    public partial class Arg : Moq.Arg
+    {
+        public class UnparsedCardSet
+        {
+            public static UnparsedBlob.CardSet Is(string code)
+            {
+                Guard
+                    .Require(code, nameof(code))
+                    .Is.Not.Empty();
+
+                return Match.Create<UnparsedBlob.CardSet>(cardSet => cardSet.Code == code);
+            }
+        }
+
+        public class DefinedPlayer
+        {
+            public static DefinedBlob.Player Is(string name)
+            {
+                Guard
+                    .Require(name, nameof(name))
+                    .Is.Not.Empty();
+
+                return Match.Create<DefinedBlob.Player>(agent => agent.Name == name);
+            }
+        }
+    }
+}

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="Zone.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 9:55:01 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine
+{
+    using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+    public class Zone
+    {
+        private readonly HashSet<Card> _cards;
+
+        public Zone(ZoneKind kind)
+        {
+            Guard
+                .Require(kind, nameof(kind))
+                .Is.Not.Default();
+
+            this._cards = new HashSet<Card>();
+
+            this.Kind = kind;
+        }
+
+        public ZoneKind Kind { get; }
+
+        public IEnumerable<Card> Cards => this._cards;
+
+        public void AddCard(Card card)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            if (this._cards.Contains(card))
+            {
+                throw new KvasirException(
+                    $"Card instance [{card.GetHashCode()}] with name [{card.Name}] is in found " +
+                    $"in zone [{this.Kind}].");
+            }
+
+            this._cards.Add(card);
+        }
+    }
+}

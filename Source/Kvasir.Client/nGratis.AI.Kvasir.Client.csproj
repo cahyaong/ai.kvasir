@@ -168,6 +168,10 @@
       <Project>{ff62d347-3230-4454-a43e-fdcc534816b7}</Project>
       <Name>nGratis.AI.Kvasir.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj">
+      <Project>{a471742a-ad16-433e-8fb6-d44076a0b8bd}</Project>
+      <Name>nGratis.AI.Kvasir.Engine</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="app.ico" />

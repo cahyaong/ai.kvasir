@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="RandomGenerator.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 23 January 2019 11:25:35 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using nGratis.AI.Kvasir.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+    internal class RandomGenerator : IRandomGenerator
+    {
+        private readonly Random _random;
+
+        internal RandomGenerator(int seed)
+        {
+            this._random = new Random(seed);
+        }
+
+        public static RandomGenerator Default { get; } = new RandomGenerator(Environment.TickCount);
+
+        public ushort RollDice(ushort sideCount)
+        {
+            return (ushort)(this._random.Next(sideCount) + 1);
+        }
+
+        public IEnumerable<ushort> GenerateShufflingIndexes(ushort entityCount)
+        {
+            var indexes = Enumerable
+                .Range(0, entityCount)
+                .ToArray();
+
+            // NOTE: This implementation is based on Fisher-Yates algorithm.
+
+            for (var count = indexes.Length - 1; count >= 0; count--)
+            {
+                var index = this._random.Next(count);
+
+                yield return (ushort)indexes[index];
+
+                indexes[index] = indexes[count];
+            }
+        }
+    }
+}

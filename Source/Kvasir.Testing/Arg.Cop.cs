@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="Arg.Cop.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,30 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, 23 November 2018 9:31:18 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+// ReSharper disable CheckNamespace
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+namespace Moq.AI.Kvasir
+{
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
+
+    public partial class Arg
+    {
+        public new class DataSpec : Moq.Arg.DataSpec
+        {
+            public static nGratis.Cop.Core.Contract.DataSpec IsKvasirCaching(string name)
+            {
+                Guard
+                    .Require(name, nameof(name))
+                    .Is.Not.Empty();
+
+                return Match.Create<nGratis.Cop.Core.Contract.DataSpec>(spec =>
+                    spec.Name == name &&
+                    spec.Mime == KvasirMime.Caching);
+            }
+        }
+    }
+}

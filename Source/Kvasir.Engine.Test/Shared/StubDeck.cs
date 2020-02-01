@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="StubDeck.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,36 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, 3 February 2019 11:13:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine.Test
+{
+    using System.Linq;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
+    using nGratis.Cop.Core.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+    internal class StubDeck : Deck
+    {
+        public StubDeck(DefinedBlob.Deck definedDeck)
+        {
+            Guard
+                .Require(definedDeck, nameof(definedDeck))
+                .Is.Not.Null();
+
+            this.Name = !string.IsNullOrEmpty(definedDeck.Name)
+                ? definedDeck.Name
+                : Text.Empty;
+
+            this.Cards = definedDeck
+                .CardNames
+                .SelectMany(cardName => Enumerable
+                    .Range(0, definedDeck[cardName])
+                    .Select(_ => new Card(cardName)))
+                .ToArray();
+        }
+
+        public string Name { get; }
+    }
+}

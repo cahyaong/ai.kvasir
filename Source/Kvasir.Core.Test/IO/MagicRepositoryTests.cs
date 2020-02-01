@@ -34,8 +34,11 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Threading.Tasks;
     using FluentAssertions;
     using Moq;
+    using Moq.AI.Kvasir;
     using nGratis.AI.Kvasir.Contract;
     using Xunit;
+    using Arg = Moq.AI.Kvasir.Arg;
+    using MockBuilder = Moq.AI.Kvasir.MockBuilder;
 
     public class MagicRepositoryTests
     {

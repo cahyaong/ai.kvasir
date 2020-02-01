@@ -1,0 +1,7 @@
+﻿JetBrains.Annotations
+Stateless
+
+group _Test
+    FluentAssertions
+    Moq
+    xunit

@@ -23,13 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, January 31, 2020 8:02:51 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
+[assembly: AssemblyTitle("nGratis.AI.Kvasir.Engine")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+[assembly: Guid("a471742a-ad16-433e-8fb6-d44076a0b8bd")]
+[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Engine.Test")]

@@ -1,0 +1,5 @@
+﻿JetBrains.Annotations
+
+group _Test
+    FluentAssertions
+    Moq

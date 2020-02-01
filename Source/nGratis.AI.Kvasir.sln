@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2C7AE126
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{FB759C90-3124-49AD-AC55-904FA4DF2F85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Contract", "..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj", "{E727CA53-5288-4E7E-828C-011803B0BEDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Core.Contract", "..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj", "{E727CA53-5288-4E7E-828C-011803B0BEDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Wpf", "..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj", "{199487EB-64E4-4D48-9E9A-3AFDDDADF041}"
 EndProject
@@ -34,6 +34,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Framework", "..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj", "{B90C4C38-A600-44BB-840E-2A7D4B46618A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Contract", "Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj", "{C8B0C94C-E057-4583-A582-F6F917215A5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Engine", "Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj", "{A471742A-AD16-433E-8FB6-D44076A0B8BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.AI.Kvasir.Engine.Test", "Kvasir.Engine.Test\nGratis.AI.Kvasir.Engine.Test.csproj", "{1ADF5731-EAF8-472E-9C13-3EFDBD71E3B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.AI.Kvasir.Testing", "Kvasir.Testing\nGratis.AI.Kvasir.Testing.csproj", "{F5F3E028-B88A-497D-B84D-C9571DEDEA5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +87,18 @@ Global
 		{C8B0C94C-E057-4583-A582-F6F917215A5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8B0C94C-E057-4583-A582-F6F917215A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8B0C94C-E057-4583-A582-F6F917215A5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ADF5731-EAF8-472E-9C13-3EFDBD71E3B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ADF5731-EAF8-472E-9C13-3EFDBD71E3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ADF5731-EAF8-472E-9C13-3EFDBD71E3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ADF5731-EAF8-472E-9C13-3EFDBD71E3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5F3E028-B88A-497D-B84D-C9571DEDEA5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5F3E028-B88A-497D-B84D-C9571DEDEA5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5F3E028-B88A-497D-B84D-C9571DEDEA5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5F3E028-B88A-497D-B84D-C9571DEDEA5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -93,6 +111,8 @@ Global
 		{B199217E-4103-44A9-AFB9-65287A52D06F} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
 		{5D4FFBFB-372E-4FBB-B7DC-FE3BB5A7E00F} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
 		{B90C4C38-A600-44BB-840E-2A7D4B46618A} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
+		{1ADF5731-EAF8-472E-9C13-3EFDBD71E3B9} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
+		{F5F3E028-B88A-497D-B84D-C9571DEDEA5B} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4748ACEB-1A00-4CF8-AE5D-AD8F3B64852A}

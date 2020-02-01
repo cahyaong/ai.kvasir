@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="Card.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,49 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:45:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine
+{
+    using System;
+    using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Core.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Contract")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("c8b0c94c-e057-4583-a582-f6f917215a5c")]
+    public class Card
+    {
+        protected Card(DefinedBlob.Card definedCard)
+        {
+            Guard
+                .Require(definedCard, nameof(definedCard))
+                .Is.Not.Null();
+
+            this.Name = !string.IsNullOrEmpty(definedCard.Name)
+                ? definedCard.Name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+
+            this.Kind = definedCard.Kind;
+
+            this.Costs = definedCard.Cost == DefinedBlob.Cost.Free
+                ? new[] { ManaCost.Free }
+                : throw new NotSupportedException();
+        }
+
+        protected internal Card(string name)
+        {
+            this.Name = !string.IsNullOrEmpty(name)
+                ? name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+
+            this.Kind = CardKind.Stub;
+            this.Costs = new[] { ManaCost.Free };
+        }
+
+        public CardKind Kind { get; }
+
+        public string Name { get; }
+
+        public IEnumerable<Cost> Costs { get; }
+    }
+}

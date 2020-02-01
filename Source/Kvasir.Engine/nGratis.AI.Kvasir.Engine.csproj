@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Authors>Cahya Ong</Authors>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.Engine.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj" />
+    <ProjectReference Include="..\..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj" />
+    <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="ManaCost.Empty.cs">
+      <DependentUpon>ManaCost.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ManaCost.Free.cs">
+      <DependentUpon>ManaCost.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>

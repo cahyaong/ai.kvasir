@@ -19,6 +19,13 @@ group _Contract
 
     nuget JetBrains.Annotations
 
+group _Engine
+    
+    framework: netstandard2.0
+    source https://api.nuget.org/v3/index.json
+
+    nuget Stateless
+
 group _IO
 
     framework: net472
