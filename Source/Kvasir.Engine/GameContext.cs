@@ -162,6 +162,9 @@ namespace nGratis.AI.Kvasir.Engine
             this.ActivePlayer.Life = 20;
             this.NonactivePlayer.Life = 20;
 
+            this.ActivePlayer.Opponent = this.NonactivePlayer;
+            this.NonactivePlayer.Opponent = this.ActivePlayer;
+
             return this;
         }
 

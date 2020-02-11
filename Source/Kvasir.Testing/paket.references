@@ -3,3 +3,4 @@
 group _Test
     FluentAssertions
     Moq
+    xunit

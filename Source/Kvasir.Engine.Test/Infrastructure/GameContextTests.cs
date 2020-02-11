@@ -75,7 +75,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupAgent()
+            public void WhenGettingValidParameter_ShouldSetupPlayer()
             {
                 // Arrange.
 
@@ -136,6 +136,17 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     gameContext
                         .NonactivePlayer.Life
                         .Should().Be(20, "nonactive player should begin with full life");
+                }
+
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .ActivePlayer.Opponent
+                        .Should().Be(gameContext.NonactivePlayer, "active player's opponent should be nonactive player");
+
+                    gameContext
+                        .NonactivePlayer.Opponent
+                        .Should().Be(gameContext.ActivePlayer, "nonactive player's opponent should be active player");
                 }
             }
 

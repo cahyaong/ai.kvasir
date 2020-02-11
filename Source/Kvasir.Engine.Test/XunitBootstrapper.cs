@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Player.cs" company="nGratis">
+// <copyright file="XunitBootstrapper.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,27 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, February 11, 2020 7:39:38 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+[assembly: Xunit.TestFramework(
+    "nGratis.AI.Kvasir.Engine.Test.XunitBootstrapper",
+    "nGratis.AI.Kvasir.Engine.Test")]
+
+namespace nGratis.AI.Kvasir.Engine.Test
 {
-    using nGratis.AI.Kvasir.Contract;
+    using FluentAssertions.Formatting;
+    using nGratis.AI.Kvasir.Testing;
+    using Xunit.Abstractions;
+    using Xunit.Sdk;
 
-    // TODO: Use builder pattern to make most properties immutable after creation!
-
-    public class Player
+    public class XunitBootstrapper : XunitTestFramework
     {
-        public PlayerKind Kind { get; set; }
-
-        public string Name { get; set; }
-
-        public int Life { get; set; }
-
-        public Deck Deck { get; set; }
-
-        public Zone Library { get; set; }
-
-        public Player Opponent { get; set; }
+        public XunitBootstrapper(IMessageSink messageSink) : base(messageSink)
+        {
+            Formatter.AddFormatter(new PlayerValueFormatter());
+        }
     }
 }

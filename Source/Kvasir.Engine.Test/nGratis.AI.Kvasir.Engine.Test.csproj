@@ -48,6 +48,7 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="XunitBootstrapper.cs" />
     <Compile Include="Infrastructure\GameContextTests.cs" />
     <Compile Include="Shared\KvasirAssertions.cs" />
     <Compile Include="Shared\KvasirAssertions.Library.cs">
@@ -167,7 +168,6 @@
       <Paket>True</Paket>
     </Analyzer>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>

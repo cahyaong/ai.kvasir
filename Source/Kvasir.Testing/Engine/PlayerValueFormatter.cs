@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Player.cs" company="nGratis">
+// <copyright file="PlayerValueFormatter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -22,28 +22,33 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 // </copyright>
+
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, February 11, 2020 7:10:43 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Testing
 {
-    using nGratis.AI.Kvasir.Contract;
+    using System;
+    using System.Text;
+    using FluentAssertions.Formatting;
+    using nGratis.AI.Kvasir.Engine;
 
-    // TODO: Use builder pattern to make most properties immutable after creation!
-
-    public class Player
+    public class PlayerValueFormatter : IValueFormatter
     {
-        public PlayerKind Kind { get; set; }
+        public bool CanHandle(object value) => value is Player;
 
-        public string Name { get; set; }
+        public string Format(object value, FormattingContext context, FormatChild formatChild)
+        {
+            var separator = context.UseLineBreaks ? Environment.NewLine : string.Empty;
+            var padding = context.UseLineBreaks ? new string('\t', context.Depth) : " ";
 
-        public int Life { get; set; }
+            var player = (Player)value;
 
-        public Deck Deck { get; set; }
-
-        public Zone Library { get; set; }
-
-        public Player Opponent { get; set; }
+            return new StringBuilder()
+                .Append($"{separator}{padding}<{player.GetType().FullName}> ")
+                .Append($"with <{nameof(Player.Name)}> = [{player.Name}]")
+                .ToString();
+        }
     }
 }
