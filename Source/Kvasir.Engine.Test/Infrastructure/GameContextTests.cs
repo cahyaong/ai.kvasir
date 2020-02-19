@@ -70,8 +70,8 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 // Assert.
 
                 gameContext
-                    .CurrentPhase
-                    .Should().Be(GameContext.Phase.Beginning, "game context should start with <Beginning> phase");
+                    .CurrentStatus
+                    .Should().Be(GameContext.Status.Starting, "game context should start with <Starting> phase");
             }
 
             [Fact]

@@ -29,9 +29,11 @@
 namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Core.Contract;
 
+    [DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
     public class Zone
     {
         private readonly HashSet<Card> _cards;

@@ -28,10 +28,12 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
+    using System.Diagnostics;
     using nGratis.AI.Kvasir.Contract;
 
     // TODO: Use builder pattern to make most properties immutable after creation!
 
+    [DebuggerDisplay("<Player> {this.Name}")]
     public class Player
     {
         public PlayerKind Kind { get; set; }

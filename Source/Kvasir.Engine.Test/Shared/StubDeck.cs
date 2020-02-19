@@ -52,7 +52,5 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .Select(_ => new Card(cardName)))
                 .ToArray();
         }
-
-        public string Name { get; }
     }
 }

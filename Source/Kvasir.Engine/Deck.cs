@@ -29,9 +29,13 @@
 namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
 
+    [DebuggerDisplay("<Deck> {this.Name}")]
     public class Deck
     {
+        public string Name { get; set; }
+
         public IEnumerable<Card> Cards { get; set; }
     }
 }

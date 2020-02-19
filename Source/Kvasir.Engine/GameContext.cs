@@ -37,11 +37,11 @@ namespace nGratis.AI.Kvasir.Engine
 
     public class GameContext
     {
-        public enum Phase
+        public enum Status
         {
             Unknown = 0,
 
-            Beginning,
+            Starting,
             Playing,
             Ending
         }
@@ -51,7 +51,7 @@ namespace nGratis.AI.Kvasir.Engine
             [SuppressMessage("ReSharper", "UnusedMember.Local")]
             Unknown = 0,
 
-            Begin,
+            Start,
             PlayTurn,
             End
         }
@@ -62,7 +62,7 @@ namespace nGratis.AI.Kvasir.Engine
 
         private readonly IRandomGenerator _randomGenerator;
 
-        private readonly StateMachine<Phase, Action> _stateMachine;
+        private readonly StateMachine<Status, Action> _stateMachine;
 
         public GameContext(
             IReadOnlyCollection<DefinedBlob.Player> definedPlayers,
@@ -84,36 +84,36 @@ namespace nGratis.AI.Kvasir.Engine
             this._definedPlayers = definedPlayers.ToArray();
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
-            this._stateMachine = new StateMachine<Phase, Action>(Phase.Unknown);
+            this._stateMachine = new StateMachine<Status, Action>(Status.Unknown);
 
             this._stateMachine
-                .Configure(Phase.Unknown)
-                .Permit(Action.Begin, Phase.Beginning);
+                .Configure(Status.Unknown)
+                .Permit(Action.Start, Status.Starting);
 
             this._stateMachine
-                .Configure(Phase.Beginning)
-                .OnActivate(this.OnBeginningActivated)
-                .Permit(Action.PlayTurn, Phase.Playing);
+                .Configure(Status.Starting)
+                .OnActivate(this.OnStartingActivated)
+                .Permit(Action.PlayTurn, Status.Playing);
 
             this._stateMachine
-                .Configure(Phase.Playing)
+                .Configure(Status.Playing)
                 .OnActivate(this.OnPlayingActivated)
-                .Permit(Action.End, Phase.Ending);
+                .Permit(Action.End, Status.Ending);
 
             this._stateMachine
-                .Configure(Phase.Ending)
+                .Configure(Status.Ending)
                 .OnActivate(this.OnEndingActivated);
 
-            this._stateMachine.Fire(Action.Begin);
+            this._stateMachine.Fire(Action.Start);
         }
 
-        public Phase CurrentPhase => this._stateMachine.State;
+        public Status CurrentStatus => this._stateMachine.State;
 
         public Player ActivePlayer { get; private set; }
 
         public Player NonactivePlayer { get; private set; }
 
-        private void OnBeginningActivated()
+        private void OnStartingActivated()
         {
             this
                 .SetupPlayers()
