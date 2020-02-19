@@ -45,7 +45,7 @@ namespace Moq.AI.Kvasir
 
                 return Match.Create<nGratis.Cop.Core.Contract.DataSpec>(spec =>
                     spec.Name == name &&
-                    spec.Mime == KvasirMime.Caching);
+                    spec.Mime == KvasirMime.Cache);
             }
         }
     }

@@ -194,7 +194,7 @@ namespace nGratis.AI.Kvasir.Core
                     .Require(storageManager, nameof(storageManager))
                     .Is.Not.Null();
 
-                this._archiveSpec = new DataSpec(name, KvasirMime.Caching);
+                this._archiveSpec = new DataSpec(name, KvasirMime.Cache);
                 this._archiveLock = new ReaderWriterLockSlim();
                 this._storageManager = storageManager;
 

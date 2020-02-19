@@ -63,7 +63,7 @@ namespace Moq.AI.Kvasir
                 .Verifiable();
 
             return mockManager
-                .WithData(name, KvasirMime.Caching);
+                .WithData(name, KvasirMime.Cache);
         }
 
         public static Mock<IStorageManager> WithCaching(
@@ -109,7 +109,7 @@ namespace Moq.AI.Kvasir
                 .Verifiable();
 
             return mockManager
-                .WithData(name, KvasirMime.Caching);
+                .WithData(name, KvasirMime.Cache);
         }
 
         public static Mock<IStorageManager> WithSelfCaching(this Mock<IStorageManager> mockManager)
