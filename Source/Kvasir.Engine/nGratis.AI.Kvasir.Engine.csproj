@@ -8,9 +8,13 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="nGratis.AI.Kvasir.Engine.csproj.DotSettings" />
+    <None Remove="SupportedRules.ngkblob" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SupportedRules.ngkblob" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj" />
