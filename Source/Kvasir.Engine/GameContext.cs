@@ -187,6 +187,15 @@ namespace nGratis.AI.Kvasir.Engine
                 .Select(index => cards[index])
                 .ForEach(card => player.Library.AddCard(card));
 
+            player.Hand = new Zone(ZoneKind.Hand);
+
+            Enumerable
+                .Range(0, GameConstant.Hand.MaximumCardCount)
+                .Select(_ => player.Library.RemoveCard())
+                .ForEach(card => player.Hand.AddCard(card));
+
+            // TODO: Implement proper `mulligan` for Rx-103.4 sub-rule.
+
             return this;
         }
     }

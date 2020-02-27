@@ -1,5 +1,5 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirAssertions.cs" company="nGratis">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="GameConstant.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,21 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, February 23, 2020 7:59:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.Test
+namespace nGratis.AI.Kvasir.Engine
 {
-    internal static class KvasirAssertions
+    public static class GameConstant
     {
-        public static ZoneAssertions Must(this Zone zone)
+        public static class Hand
         {
-            return new ZoneAssertions(zone);
-        }
-
-        public static GameContextAssertions Must(this GameContext gameContext)
-        {
-            return new GameContextAssertions(gameContext);
+            public const ushort MaximumCardCount = 7;
         }
     }
 }

@@ -36,7 +36,7 @@ namespace nGratis.AI.Kvasir.Engine
     [DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
     public class Zone
     {
-        private readonly HashSet<Card> _cards;
+        private readonly Stack<Card> _cards;
 
         public Zone(ZoneKind kind)
         {
@@ -44,7 +44,7 @@ namespace nGratis.AI.Kvasir.Engine
                 .Require(kind, nameof(kind))
                 .Is.Not.Default();
 
-            this._cards = new HashSet<Card>();
+            this._cards = new Stack<Card>();
 
             this.Kind = kind;
         }
@@ -62,11 +62,21 @@ namespace nGratis.AI.Kvasir.Engine
             if (this._cards.Contains(card))
             {
                 throw new KvasirException(
-                    $"Card instance [{card.GetHashCode()}] with name [{card.Name}] is in found " +
+                    $"Card instance [{card.GetHashCode()}] with name [{card.Name}] is found " +
                     $"in zone [{this.Kind}].");
             }
 
-            this._cards.Add(card);
+            this._cards.Push(card);
+        }
+
+        public Card RemoveCard()
+        {
+            if (this._cards.Count <= 0)
+            {
+                throw new KvasirException($"Zone [{this.Kind}] has no more card to remove.");
+            }
+
+            return this._cards.Pop();
         }
     }
 }

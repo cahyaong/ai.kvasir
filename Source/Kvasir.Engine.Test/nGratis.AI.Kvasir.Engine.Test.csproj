@@ -48,6 +48,9 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Shared\KvasirAssertions.GameContext.cs">
+      <DependentUpon>KvasirAssertions.cs</DependentUpon>
+    </Compile>
     <Compile Include="XunitBootstrapper.cs" />
     <Compile Include="Infrastructure\GameContextTests.cs" />
     <Compile Include="Shared\KvasirAssertions.cs" />

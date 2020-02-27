@@ -103,16 +103,8 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
                 // Assert.
 
-                using (new AssertionScope())
-                {
-                    gameContext
-                        .ActivePlayer
-                        .Should().NotBeNull("game context should have active player");
-
-                    gameContext
-                        .NonactivePlayer
-                        .Should().NotBeNull("game context should have nonactive player");
-                }
+                gameContext
+                    .Must().HavePlayers();
 
                 if (gameContext.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
                 {
@@ -151,7 +143,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupLibrary()
+            public void WhenGettingValidParameter_ShouldSetupPlayerLibrary()
             {
                 // Arrange.
 
@@ -179,33 +171,89 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
                 // Assert.
 
-                using (new AssertionScope())
-                {
-                    gameContext
-                        .ActivePlayer
-                        .Should().NotBeNull("game context should have active player");
-
-                    gameContext
-                        .NonactivePlayer
-                        .Should().NotBeNull("game context should have nonactive player");
-                }
+                gameContext
+                    .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
+                    var activeDeck = definedPlayers
+                        .Single(player => player.Name == gameContext.ActivePlayer.Name)
+                        .Deck;
+
                     gameContext
                         .ActivePlayer.Library
                         .Must().NotBeNull("active player should have library")
-                        .And.BeLibraryKind()
-                        .And.MatchDefinedDeck(definedPlayers
-                            .Single(agent => agent.Name == gameContext.ActivePlayer.Name)
-                            .Deck);
+                        .And.BeLibrary()
+                        .And.HaveCardQuantity((ushort)(activeDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
+                        .And.HaveUniqueCardInstance()
+                        .And.BeSubsetOfDefinedDeck(activeDeck);
+
+                    var nonactiveDeck = definedPlayers
+                        .Single(player => player.Name == gameContext.NonactivePlayer.Name)
+                        .Deck;
 
                     gameContext
                         .NonactivePlayer.Library
                         .Must().NotBeNull("nonactive player should have library")
-                        .And.BeLibraryKind()
-                        .And.MatchDefinedDeck(definedPlayers
-                            .Single(agent => agent.Name == gameContext.NonactivePlayer.Name)
+                        .And.BeLibrary()
+                        .And.HaveCardQuantity((ushort)(nonactiveDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
+                        .And.HaveUniqueCardInstance()
+                        .And.BeSubsetOfDefinedDeck(nonactiveDeck);
+                }
+            }
+
+            [Fact]
+            public void WhenGettingValidParameter_ShouldSetupPlayerHand()
+            {
+                // Arrange.
+
+                var definedPlayers = new[]
+                {
+                    new DefinedBlob.Player
+                    {
+                        Name = "[_MOCK_PLAYER_01_]",
+                        Deck = MockBuilder.CreateDefinedElfDeck()
+                    },
+                    new DefinedBlob.Player
+                    {
+                        Name = "[_MOCK_PLAYER_02_]",
+                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                    }
+                };
+
+                var mockFactory = MockBuilder
+                    .CreateMock<IMagicEntityFactory>()
+                    .WithDefaultPlayer();
+
+                // Act.
+
+                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+
+                // Assert.
+
+                gameContext
+                    .Must().HavePlayers();
+
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .ActivePlayer.Hand
+                        .Must().NotBeNull("active player should have hand")
+                        .And.BeHand()
+                        .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
+                        .And.HaveUniqueCardInstance()
+                        .And.BeSubsetOfDefinedDeck(definedPlayers
+                            .Single(player => player.Name == gameContext.ActivePlayer.Name)
+                            .Deck);
+
+                    gameContext
+                        .NonactivePlayer.Hand
+                        .Must().NotBeNull("nonactive player should have hand")
+                        .And.BeHand()
+                        .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
+                        .And.HaveUniqueCardInstance()
+                        .And.BeSubsetOfDefinedDeck(definedPlayers
+                            .Single(player => player.Name == gameContext.NonactivePlayer.Name)
                             .Deck);
                 }
             }

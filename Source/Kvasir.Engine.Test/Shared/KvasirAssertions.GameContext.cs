@@ -1,5 +1,5 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirAssertions.cs" company="nGratis">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="KvasirAssertions.GameContext.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,21 +23,43 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, February 20, 2020 7:18:36 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine.Test
 {
-    internal static class KvasirAssertions
+    using FluentAssertions;
+    using FluentAssertions.Execution;
+    using FluentAssertions.Primitives;
+    using nGratis.Cop.Core.Contract;
+
+    internal class GameContextAssertions : ReferenceTypeAssertions<GameContext, GameContextAssertions>
     {
-        public static ZoneAssertions Must(this Zone zone)
+        public GameContextAssertions(GameContext gameContext)
         {
-            return new ZoneAssertions(zone);
+            Guard
+                .Require(gameContext, nameof(gameContext))
+                .Is.Not.Null();
+
+            this.Subject = gameContext;
         }
 
-        public static GameContextAssertions Must(this GameContext gameContext)
+        protected override string Identifier { get; } = "game context";
+
+        public AndConstraint<GameContextAssertions> HavePlayers()
         {
-            return new GameContextAssertions(gameContext);
+            using (new AssertionScope())
+            {
+                this
+                    .Subject.ActivePlayer
+                    .Should().NotBeNull($"{this.Identifier} should have active player");
+
+                this
+                    .Subject.NonactivePlayer
+                    .Should().NotBeNull($"{this.Identifier} should have nonactive player");
+            }
+
+            return new AndConstraint<GameContextAssertions>(this);
         }
     }
 }
