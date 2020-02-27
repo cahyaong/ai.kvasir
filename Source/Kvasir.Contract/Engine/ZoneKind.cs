@@ -36,6 +36,9 @@ namespace nGratis.AI.Kvasir.Contract
         Hand,
         Battlefield,
         Graveyard,
-        Stack
+        Stack,
+        Exile,
+        Command,
+        Ante
     }
 }

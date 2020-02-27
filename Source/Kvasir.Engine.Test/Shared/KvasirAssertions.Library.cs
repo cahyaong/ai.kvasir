@@ -73,6 +73,60 @@ namespace nGratis.AI.Kvasir.Engine.Test
             return new AndConstraint<ZoneAssertions>(this);
         }
 
+        public AndConstraint<ZoneAssertions> BeGraveyard()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Graveyard, $"{this.Identifier} should be graveyard");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
+        public AndConstraint<ZoneAssertions> BeBattlefield()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Battlefield, $"{this.Identifier} should be battlefield");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
+        public AndConstraint<ZoneAssertions> BeStack()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Stack, $"{this.Identifier} should be stack");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
+        public AndConstraint<ZoneAssertions> BeExile()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Exile, $"{this.Identifier} should be exile");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
+        public AndConstraint<ZoneAssertions> BeCommand()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Command, $"{this.Identifier} should be command");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
+        public AndConstraint<ZoneAssertions> BeAnte()
+        {
+            this
+                .Subject.Kind
+                .Should().Be(ZoneKind.Ante, $"{this.Identifier} should be ante");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
         public AndConstraint<ZoneAssertions> MatchDefinedDeck(DefinedBlob.Deck definedDeck)
         {
             Guard

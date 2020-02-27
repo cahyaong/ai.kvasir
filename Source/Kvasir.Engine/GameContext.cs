@@ -113,12 +113,21 @@ namespace nGratis.AI.Kvasir.Engine
 
         public Player NonactivePlayer { get; private set; }
 
+        public Zone Battlefield { get; private set; }
+
+        public Zone Stack { get; private set; }
+
+        public Zone Exile { get; private set; }
+
+        public Zone Command { get; private set; }
+
+        public Zone Ante { get; private set; }
+
         private void OnStartingActivated()
         {
             this
                 .SetupPlayers()
-                .SetupZones(this.ActivePlayer)
-                .SetupZones(this.NonactivePlayer);
+                .SetupSharedZones();
         }
 
         private void OnPlayingActivated()
@@ -165,10 +174,12 @@ namespace nGratis.AI.Kvasir.Engine
             this.ActivePlayer.Opponent = this.NonactivePlayer;
             this.NonactivePlayer.Opponent = this.ActivePlayer;
 
-            return this;
+            return this
+                .SetupPlayerZones(this.ActivePlayer)
+                .SetupPlayerZones(this.NonactivePlayer);
         }
 
-        private GameContext SetupZones(Player player)
+        private GameContext SetupPlayerZones(Player player)
         {
             if (player.Deck == null)
             {
@@ -180,6 +191,8 @@ namespace nGratis.AI.Kvasir.Engine
                 .ToArray();
 
             player.Library = new Zone(ZoneKind.Library);
+            player.Hand = new Zone(ZoneKind.Hand);
+            player.Graveyard = new Zone(ZoneKind.Graveyard);
 
             this
                 ._randomGenerator
@@ -187,14 +200,23 @@ namespace nGratis.AI.Kvasir.Engine
                 .Select(index => cards[index])
                 .ForEach(card => player.Library.AddCard(card));
 
-            player.Hand = new Zone(ZoneKind.Hand);
-
             Enumerable
                 .Range(0, GameConstant.Hand.MaximumCardCount)
                 .Select(_ => player.Library.RemoveCard())
                 .ForEach(card => player.Hand.AddCard(card));
 
             // TODO: Implement proper `mulligan` for Rx-103.4 sub-rule.
+
+            return this;
+        }
+
+        private GameContext SetupSharedZones()
+        {
+            this.Battlefield = new Zone(ZoneKind.Battlefield);
+            this.Stack = new Zone(ZoneKind.Stack);
+            this.Exile = new Zone(ZoneKind.Exile);
+            this.Command = new Zone(ZoneKind.Command);
+            this.Ante = new Zone(ZoneKind.Ante);
 
             return this;
         }

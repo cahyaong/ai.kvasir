@@ -48,6 +48,8 @@ namespace nGratis.AI.Kvasir.Engine
 
         public Zone Hand { get; set; }
 
+        public Zone Graveyard { get; set; }
+
         public Player Opponent { get; set; }
     }
 }

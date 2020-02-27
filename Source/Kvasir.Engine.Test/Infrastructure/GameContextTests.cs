@@ -257,6 +257,115 @@ namespace nGratis.AI.Kvasir.Engine.Test
                             .Deck);
                 }
             }
+
+            [Fact]
+            public void WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
+            {
+                // Arrange.
+
+                var definedPlayers = new[]
+                {
+                    new DefinedBlob.Player
+                    {
+                        Name = "[_MOCK_PLAYER_01_]",
+                        Deck = MockBuilder.CreateDefinedElfDeck()
+                    },
+                    new DefinedBlob.Player
+                    {
+                        Name = "[_MOCK_PLAYER_02_]",
+                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                    }
+                };
+
+                var mockFactory = MockBuilder
+                    .CreateMock<IMagicEntityFactory>()
+                    .WithDefaultPlayer();
+
+                // Act.
+
+                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+
+                // Assert.
+
+                gameContext
+                    .Must().HavePlayers();
+
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .ActivePlayer.Graveyard
+                        .Must().NotBeNull("active player should have hand")
+                        .And.BeGraveyard()
+                        .And.HaveCardQuantity(0);
+
+                    gameContext
+                        .NonactivePlayer.Graveyard
+                        .Must().NotBeNull("nonactive player should have hand")
+                        .And.BeGraveyard()
+                        .And.HaveCardQuantity(0);
+                }
+            }
+
+            [Fact]
+            public void WhenGettingValidParameter_ShouldSetupSharedZones()
+            {
+                // Arrange.
+
+                var definedPlayers = new[]
+                {
+                    new DefinedBlob.Player
+                    {
+                        Name = "[_MOCK_PLAYER_01_]",
+                        Deck = MockBuilder.CreateDefinedElfDeck()
+                    },
+                    new DefinedBlob.Player
+                    {
+                        Name = "[_MOCK_PLAYER_02_]",
+                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                    }
+                };
+
+                var mockFactory = MockBuilder
+                    .CreateMock<IMagicEntityFactory>()
+                    .WithDefaultPlayer();
+
+                // Act.
+
+                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+
+                // Assert.
+
+                gameContext
+                    .Must().HavePlayers();
+
+                using (new AssertionScope())
+                {
+                    gameContext
+                        .Battlefield
+                        .Must().BeBattlefield()
+                        .And.HaveCardQuantity(0);
+
+                    gameContext
+                        .Stack
+                        .Must().BeStack()
+                        .And.HaveCardQuantity(0);
+
+                    gameContext
+                        .Exile
+                        .Must().BeExile()
+                        .And.HaveCardQuantity(0);
+
+                    gameContext
+                        .Command
+                        .Must().BeCommand()
+                        .And.HaveCardQuantity(0);
+
+                    gameContext
+                        .Ante
+                        .Must().BeAnte()
+                        .And.HaveCardQuantity(0);
+                }
+            }
         }
     }
 }
