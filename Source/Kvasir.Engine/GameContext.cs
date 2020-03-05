@@ -190,9 +190,9 @@ namespace nGratis.AI.Kvasir.Engine
                 .Deck.Cards
                 .ToArray();
 
-            player.Library = new Zone(ZoneKind.Library);
-            player.Hand = new Zone(ZoneKind.Hand);
-            player.Graveyard = new Zone(ZoneKind.Graveyard);
+            player.Library = new Zone(ZoneKind.Library, Visibility.Hidden);
+            player.Hand = new Zone(ZoneKind.Hand, Visibility.Hidden);
+            player.Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public);
 
             this
                 ._randomGenerator
@@ -212,11 +212,11 @@ namespace nGratis.AI.Kvasir.Engine
 
         private GameContext SetupSharedZones()
         {
-            this.Battlefield = new Zone(ZoneKind.Battlefield);
-            this.Stack = new Zone(ZoneKind.Stack);
-            this.Exile = new Zone(ZoneKind.Exile);
-            this.Command = new Zone(ZoneKind.Command);
-            this.Ante = new Zone(ZoneKind.Ante);
+            this.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
+            this.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
+            this.Exile = new Zone(ZoneKind.Exile, Visibility.Public);
+            this.Command = new Zone(ZoneKind.Command, Visibility.Public);
+            this.Ante = new Zone(ZoneKind.Ante, Visibility.Public);
 
             return this;
         }

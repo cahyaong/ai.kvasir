@@ -127,6 +127,24 @@ namespace nGratis.AI.Kvasir.Engine.Test
             return new AndConstraint<ZoneAssertions>(this);
         }
 
+        public AndConstraint<ZoneAssertions> BePublic()
+        {
+            this
+                .Subject.Visibility
+                .Should().Be(Visibility.Public, $"{this.Identifier} should be public");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
+        public AndConstraint<ZoneAssertions> BeHidden()
+        {
+            this
+                .Subject.Visibility
+                .Should().Be(Visibility.Hidden, $"{this.Identifier} should be hidden");
+
+            return new AndConstraint<ZoneAssertions>(this);
+        }
+
         public AndConstraint<ZoneAssertions> MatchDefinedDeck(DefinedBlob.Deck definedDeck)
         {
             Guard

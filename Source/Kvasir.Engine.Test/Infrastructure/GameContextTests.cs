@@ -184,6 +184,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .ActivePlayer.Library
                         .Must().NotBeNull("active player should have library")
                         .And.BeLibrary()
+                        .And.BeHidden()
                         .And.HaveCardQuantity((ushort)(activeDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfDefinedDeck(activeDeck);
@@ -196,6 +197,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .NonactivePlayer.Library
                         .Must().NotBeNull("nonactive player should have library")
                         .And.BeLibrary()
+                        .And.BeHidden()
                         .And.HaveCardQuantity((ushort)(nonactiveDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfDefinedDeck(nonactiveDeck);
@@ -240,6 +242,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .ActivePlayer.Hand
                         .Must().NotBeNull("active player should have hand")
                         .And.BeHand()
+                        .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfDefinedDeck(definedPlayers
@@ -250,6 +253,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .NonactivePlayer.Hand
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeHand()
+                        .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfDefinedDeck(definedPlayers
@@ -296,12 +300,14 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .ActivePlayer.Graveyard
                         .Must().NotBeNull("active player should have hand")
                         .And.BeGraveyard()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
 
                     gameContext
                         .NonactivePlayer.Graveyard
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeGraveyard()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
                 }
             }
@@ -343,26 +349,31 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     gameContext
                         .Battlefield
                         .Must().BeBattlefield()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
 
                     gameContext
                         .Stack
                         .Must().BeStack()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
 
                     gameContext
                         .Exile
                         .Must().BeExile()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
 
                     gameContext
                         .Command
                         .Must().BeCommand()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
 
                     gameContext
                         .Ante
                         .Must().BeAnte()
+                        .And.BePublic()
                         .And.HaveCardQuantity(0);
                 }
             }

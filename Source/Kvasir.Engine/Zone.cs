@@ -38,18 +38,25 @@ namespace nGratis.AI.Kvasir.Engine
     {
         private readonly Stack<Card> _cards;
 
-        public Zone(ZoneKind kind)
+        public Zone(ZoneKind kind, Visibility visibility)
         {
             Guard
                 .Require(kind, nameof(kind))
                 .Is.Not.Default();
 
+            Guard
+                .Require(visibility, nameof(visibility))
+                .Is.Not.Default();
+
             this._cards = new Stack<Card>();
 
             this.Kind = kind;
+            this.Visibility = visibility;
         }
 
         public ZoneKind Kind { get; }
+
+        public Visibility Visibility { get; }
 
         public IEnumerable<Card> Cards => this._cards;
 
