@@ -28,6 +28,25 @@ NUGET
       System.Configuration.ConfigurationManager (>= 4.4.1)
       System.Reflection.Emit (>= 4.3)
 
+GROUP _Console
+RESTRICTION: == netcoreapp3.1
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    Antlr4 (4.6.6)
+      Antlr4.CodeGenerator (>= 4.6.6)
+      Antlr4.Runtime (>= 4.6.6)
+    Antlr4.CodeGenerator (4.6.6)
+    Antlr4.Runtime (4.6.6)
+      NETStandard.Library (>= 1.6)
+    CommandLineParser (2.7.82)
+    JetBrains.Annotations (2019.1.3)
+    Microsoft.NETCore.Platforms (3.1)
+    NETStandard.Library (2.0.3)
+      Microsoft.NETCore.Platforms (>= 1.1)
+    System.Runtime.CompilerServices.Unsafe (4.7.1)
+    Unity (5.11.4)
+      System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
+
 GROUP _Contract
 RESTRICTION: == netstandard2.0
 NUGET
@@ -53,6 +72,20 @@ NUGET
     Lucene.Net (4.8.0-beta00005)
     Lucene.Net.Analysis.Common (4.8.0-beta00005)
       Lucene.Net (>= 4.8.0-beta00005)
+
+GROUP _Support
+RESTRICTION: == netstandard2.0
+NUGET
+  remote: https://api.nuget.org/v3/index.json
+    Antlr4 (4.6.6)
+      Antlr4.CodeGenerator (>= 4.6.6)
+      Antlr4.Runtime (>= 4.6.6)
+    Antlr4.CodeGenerator (4.6.6)
+    Antlr4.Runtime (4.6.6)
+      NETStandard.Library (>= 1.6)
+    Microsoft.NETCore.Platforms (3.1)
+    NETStandard.Library (2.0.3)
+      Microsoft.NETCore.Platforms (>= 1.1)
 
 GROUP _Test
 RESTRICTION: == net472

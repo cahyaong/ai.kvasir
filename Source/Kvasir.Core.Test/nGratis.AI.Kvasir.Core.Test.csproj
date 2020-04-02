@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\_test\xunit.core\build\xunit.core.props" Condition="Exists('..\packages\_test\xunit.core\build\xunit.core.props')" Label="Paket" />
   <Import Project="..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props" Condition="Exists('..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props')" Label="Paket" />
@@ -88,6 +88,10 @@
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
       <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>
       <Name>nGratis.AI.Kvasir.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kvasir.Core.Support\nGratis.AI.Kvasir.Core.Support.csproj">
+      <Project>{7ba00265-7016-4497-8e88-bba45d3c2583}</Project>
+      <Name>nGratis.AI.Kvasir.Core.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj">
       <Project>{ff62d347-3230-4454-a43e-fdcc534816b7}</Project>

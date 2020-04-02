@@ -26,7 +26,7 @@
 // <creation_timestamp>Tuesday, 25 December 2018 11:50:07 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core.Parser
 {
     using System;
     using System.Collections.Generic;

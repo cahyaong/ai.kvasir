@@ -44,7 +44,6 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ExpressionExtensions.cs" />
     <Compile Include="IO\BaseMagicHttpFetcher.cs" />
     <Compile Include="IO\CachingMessageHandler.cs" />
     <Compile Include="IO\ExternalResources.cs" />
@@ -65,15 +64,6 @@
     <Compile Include="IO\ThrottlingMessageHandler.cs" />
     <Compile Include="IO\WizardFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />
-    <Compile Include="Parser\IMagicCardParser.cs" />
-    <Compile Include="Parser\MagicCardAbility.g4.lexer.cs">
-      <DependentUpon>MagicCardAbility.g4</DependentUpon>
-    </Compile>
-    <Compile Include="Parser\MagicCardAbility.g4.parser.cs">
-      <DependentUpon>MagicCardAbility.g4</DependentUpon>
-    </Compile>
-    <Compile Include="Parser\MagicCardParser.cs" />
-    <Compile Include="Parser\ParsingResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -95,31 +85,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Parser\MagicCardAbility_Common.g4">
-      <CustomToolNamespace>nGratis.AI.Kvasir.Core</CustomToolNamespace>
-      <DependentUpon>MagicCardAbility.g4</DependentUpon>
-      <Listener>False</Listener>
-      <Visitor>False</Visitor>
-    </None>
-    <None Include="Parser\MagicCardAbility_Keyword.g4">
-      <CustomToolNamespace>nGratis.AI.Kvasir.Core</CustomToolNamespace>
-      <DependentUpon>MagicCardAbility.g4</DependentUpon>
-      <Listener>False</Listener>
-      <Visitor>False</Visitor>
-    </None>
-    <None Include="Parser\MagicCardAbility_Symbol.g4">
-      <CustomToolNamespace>nGratis.AI.Kvasir.Core</CustomToolNamespace>
-      <DependentUpon>MagicCardAbility.g4</DependentUpon>
-      <Listener>False</Listener>
-      <Visitor>False</Visitor>
-      <Generator>MSBuild:Compile</Generator>
-    </None>
     <None Include="app.config" />
     <None Include="paket.references" />
-    <Antlr4 Include="Parser\MagicCardAbility.g4">
-      <Generator>MSBuild:Compile</Generator>
-      <CustomToolNamespace>nGratis.AI.Kvasir.Core</CustomToolNamespace>
-    </Antlr4>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Choose>

@@ -26,7 +26,7 @@
 // <creation_timestamp>Saturday, 12 January 2019 10:06:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core.Parser
 {
     using System.IO;
     using Antlr4.Runtime;

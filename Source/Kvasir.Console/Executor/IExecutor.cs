@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicCardParser.cs" company="nGratis">
+// <copyright file="IExecutor.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,15 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, 25 December 2018 11:13:40 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, April 2, 2020 5:48:24 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Console
 {
-    using nGratis.AI.Kvasir.Contract;
+    using System.Threading.Tasks;
 
-    public interface IMagicCardParser
+    internal interface IExecutor
     {
-        ParsingResult Parse(UnparsedBlob.Card unparsedCard);
+        public Task ExecuteAsync();
     }
 }

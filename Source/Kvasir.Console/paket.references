@@ -1,0 +1,5 @@
+﻿group _Console
+	Antlr4
+	CommandLineParser
+	JetBrains.Annotations
+	Unity

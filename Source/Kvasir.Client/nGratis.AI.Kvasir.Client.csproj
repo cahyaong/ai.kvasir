@@ -164,6 +164,10 @@
       <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>
       <Name>nGratis.AI.Kvasir.Contract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Kvasir.Core.Support\nGratis.AI.Kvasir.Core.Support.csproj">
+      <Project>{7ba00265-7016-4497-8e88-bba45d3c2583}</Project>
+      <Name>nGratis.AI.Kvasir.Core.Support</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj">
       <Project>{ff62d347-3230-4454-a43e-fdcc534816b7}</Project>
       <Name>nGratis.AI.Kvasir.Core</Name>

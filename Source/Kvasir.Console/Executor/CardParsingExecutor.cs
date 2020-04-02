@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicCardAbility.g4.lexer.cs" company="nGratis">
+// <copyright file="CardParsingExecutor.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,12 +23,19 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, 12 January 2019 10:06:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, April 2, 2020 5:49:47 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Console
 {
-    public partial class MagicCardAbilityLexer
+    using System;
+    using System.Threading.Tasks;
+
+    internal class CardParsingExecutor : IExecutor
     {
+        public async Task ExecuteAsync()
+        {
+            await Task.FromException(new NotImplementedException());
+        }
     }
 }

@@ -47,6 +47,23 @@ group _UI
     nuget OxyPlot.Wpf
     nuget ReactiveUI.WPF
 
+group _Console
+
+    framework: netcoreapp3.1
+    source https://api.nuget.org/v3/index.json
+
+    nuget Antlr4
+    nuget CommandLineParser
+    nuget JetBrains.Annotations
+    nuget Unity
+
+group _Support
+
+    framework: netstandard2.0
+    source https://api.nuget.org/v3/index.json
+
+    nuget Antlr4
+
 group _Test
 
     framework: net472
