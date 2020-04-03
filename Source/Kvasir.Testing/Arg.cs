@@ -32,7 +32,7 @@ namespace Moq.AI.Kvasir
 {
     using Moq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public partial class Arg : Moq.Arg
     {

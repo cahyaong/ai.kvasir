@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Client
     using System.Threading.Tasks;
     using System.Windows.Input;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using ReactiveUI;
 
     public class EngineManagementViewModel : ReactiveObject

@@ -33,7 +33,7 @@ namespace Lucene.Net
     using System;
     using Lucene.Net.Store;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal static partial class LuceneExtensions
     {

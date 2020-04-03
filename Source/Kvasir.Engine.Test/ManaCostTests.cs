@@ -36,7 +36,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
-    using nGratis.Cop.Core.Testing;
+    using nGratis.Cop.Olympus.Testing;
     using Xunit;
 
     public class ManaCostTests

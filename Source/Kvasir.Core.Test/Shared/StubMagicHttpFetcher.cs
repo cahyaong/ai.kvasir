@@ -33,8 +33,8 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Net.Http;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Vision.Imaging;
 
     public class StubMagicHttpFetcher : BaseMagicHttpFetcher
     {

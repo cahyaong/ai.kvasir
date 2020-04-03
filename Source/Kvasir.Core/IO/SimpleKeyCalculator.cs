@@ -31,7 +31,7 @@ namespace nGratis.AI.Kvasir.Core
     using System;
     using System.IO;
     using System.Linq;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal class SimpleKeyCalculator : IKeyCalculator
     {

@@ -28,7 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public static class KvasirMime
     {

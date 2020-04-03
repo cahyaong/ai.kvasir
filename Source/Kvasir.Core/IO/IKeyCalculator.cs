@@ -29,7 +29,7 @@
 namespace nGratis.AI.Kvasir.Core
 {
     using System;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public interface IKeyCalculator
     {

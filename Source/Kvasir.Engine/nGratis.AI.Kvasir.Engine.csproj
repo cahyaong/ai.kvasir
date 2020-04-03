@@ -17,8 +17,8 @@
     <EmbeddedResource Include="SupportedRules.ngkblob" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj" />
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj" />
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj" />
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
   </ItemGroup>
   <ItemGroup>

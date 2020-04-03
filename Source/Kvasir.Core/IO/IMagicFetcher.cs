@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using nGratis.Cop.Olympus.Vision.Imaging;
 
     public interface IMagicFetcher : IDisposable
     {

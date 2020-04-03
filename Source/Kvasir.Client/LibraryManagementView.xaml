@@ -3,7 +3,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client"
-  xmlns:core="http://schemas.ngratis.com/2014/core"
+  xmlns:olympus="http://schemas.ngratis.com/2014/olympus"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,18 +14,18 @@
       <i:InvokeCommandAction Command="{Binding PopulateCardSetsCommand, Mode=OneWay}" />
     </i:EventTrigger>
   </i:Interaction.Triggers>
-  <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
-    <core:AweTileGroup Header="INFO">
+  <StackPanel olympus:ChildrenMargin.Value="20,0" Orientation="Horizontal">
+    <olympus:AweTileGroup Header="INFO">
       <StackPanel
         HorizontalAlignment="Right"
-        core:ChildrenMargin.Value="0,10"
+        olympus:ChildrenMargin.Value="0,10"
         Orientation="Vertical">
-        <core:AweTile Header="Indexed Card Sets" Value="{Binding CardSetCount, Mode=OneWay}" />
-        <core:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
+        <olympus:AweTile Header="Indexed Card Sets" Value="{Binding CardSetCount, Mode=OneWay}" />
+        <olympus:AweTile Header="Indexed Cards" Value="{Binding CardCount, Mode=OneWay}" />
       </StackPanel>
-    </core:AweTileGroup>
-    <core:AweTileGroup Width="800" Header="CARD SET">
-      <StackPanel core:ChildrenMargin.Value="20,0" Orientation="Horizontal">
+    </olympus:AweTileGroup>
+    <olympus:AweTileGroup Width="800" Header="CARD SET">
+      <StackPanel olympus:ChildrenMargin.Value="20,0" Orientation="Horizontal">
         <DataGrid
           AutoGenerateColumns="False"
           ItemsSource="{Binding CardSetViewModels, Mode=OneWay}"
@@ -49,7 +49,7 @@
           </DataGrid.Columns>
         </DataGrid>
         <DataGrid
-          core:AutoResetScroll.IsEnabled="True"
+          olympus:AutoResetScroll.IsEnabled="True"
           AutoGenerateColumns="False"
           DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}"
           ItemsSource="{Binding CardViewModels, Mode=OneWay}"
@@ -69,14 +69,14 @@
           </DataGrid.Columns>
         </DataGrid>
       </StackPanel>
-    </core:AweTileGroup>
-    <core:AweTileGroup DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}" Header="CARD">
+    </olympus:AweTileGroup>
+    <olympus:AweTileGroup DataContext="{Binding SelectedCardSetViewModel, Mode=OneWay}" Header="CARD">
       <Image
         Width="240"
         Height="340"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
         Source="{Binding SelectedCardViewModel.OriginalImage, Mode=OneWay}" />
-    </core:AweTileGroup>
+    </olympus:AweTileGroup>
   </StackPanel>
 </UserControl>

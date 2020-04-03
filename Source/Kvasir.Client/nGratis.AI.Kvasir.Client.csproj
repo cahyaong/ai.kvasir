@@ -140,25 +140,25 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj">
       <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
-      <Name>nGratis.Cop.Core.Contract</Name>
+      <Name>nGratis.Cop.Olympus.Contract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj">
       <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
-      <Name>nGratis.Cop.Core.Framework</Name>
+      <Name>nGratis.Cop.Olympus.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Theme\nGratis.Cop.Core.Theme.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Theme\nGratis.Cop.Olympus.Theme.csproj">
       <Project>{2b8de19c-be3d-4516-aecb-01fc709f8ed8}</Project>
-      <Name>nGratis.Cop.Core.Theme</Name>
+      <Name>nGratis.Cop.Olympus.Theme</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Vision\nGratis.Cop.Core.Vision.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Vision\nGratis.Cop.Olympus.Vision.csproj">
       <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>
-      <Name>nGratis.Cop.Core.Vision</Name>
+      <Name>nGratis.Cop.Olympus.Vision</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Wpf\nGratis.Cop.Olympus.Wpf.csproj">
       <Project>{199487eb-64e4-4d48-9e9a-3afdddadf041}</Project>
-      <Name>nGratis.Cop.Core.Wpf</Name>
+      <Name>nGratis.Cop.Olympus.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
       <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>

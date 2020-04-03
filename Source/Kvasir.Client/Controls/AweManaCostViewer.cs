@@ -36,8 +36,8 @@ namespace nGratis.AI.Kvasir.Client
     using System.Windows.Shapes;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
-    using nGratis.Cop.Core.Contract;
-    using nGratis.Cop.Core.Wpf;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Wpf;
 
     [TemplatePart(Name = "PART_ContentPanel", Type = typeof(Panel))]
     internal class AweManaCostViewer : Control

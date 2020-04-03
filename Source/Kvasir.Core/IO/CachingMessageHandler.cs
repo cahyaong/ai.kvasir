@@ -40,7 +40,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Threading;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal sealed class CachingMessageHandler : DelegatingHandler
     {

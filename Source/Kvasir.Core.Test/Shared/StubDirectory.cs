@@ -36,7 +36,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using Lucene.Net.Store;
     using Lucene.Net.Util;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using Polly;
 
     internal class StubDirectory : RAMDirectory

@@ -29,7 +29,7 @@
 namespace nGratis.AI.Kvasir.Client
 {
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using ReactiveUI;
 
     public class RuleViewModel : ReactiveObject

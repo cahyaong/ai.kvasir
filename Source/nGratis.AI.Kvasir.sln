@@ -17,11 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2C7AE126
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{FB759C90-3124-49AD-AC55-904FA4DF2F85}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Core.Contract", "..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj", "{E727CA53-5288-4E7E-828C-011803B0BEDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Contract", "..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj", "{E727CA53-5288-4E7E-828C-011803B0BEDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Wpf", "..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj", "{199487EB-64E4-4D48-9E9A-3AFDDDADF041}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Olympus.Wpf", "..\External\cop.olympus\Source\Olympus.Wpf\nGratis.Cop.Olympus.Wpf.csproj", "{199487EB-64E4-4D48-9E9A-3AFDDDADF041}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Theme", "..\External\cop.core\Source\Core.Theme\nGratis.Cop.Core.Theme.csproj", "{2B8DE19C-BE3D-4516-AECB-01FC709F8ED8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Olympus.Theme", "..\External\cop.olympus\Source\Olympus.Theme\nGratis.Cop.Olympus.Theme.csproj", "{2B8DE19C-BE3D-4516-AECB-01FC709F8ED8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.AI.Kvasir.Core", "Kvasir.Core\nGratis.AI.Kvasir.Core.csproj", "{FF62D347-3230-4454-A43E-FDCC534816B7}"
 EndProject
@@ -29,11 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{AE1E95AC-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.AI.Kvasir.Core.Test", "Kvasir.Core.Test\nGratis.AI.Kvasir.Core.Test.csproj", "{1C4C675E-CA50-42FA-9EF3-8768FCE45FA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Testing", "..\External\cop.core\Source\Core.Testing\nGratis.Cop.Core.Testing.csproj", "{B199217E-4103-44A9-AFB9-65287A52D06F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Olympus.Testing", "..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj", "{B199217E-4103-44A9-AFB9-65287A52D06F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Vision", "..\External\cop.core\Source\Core.Vision\nGratis.Cop.Core.Vision.csproj", "{5D4FFBFB-372E-4FBB-B7DC-FE3BB5A7E00F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Olympus.Vision", "..\External\cop.olympus\Source\Olympus.Vision\nGratis.Cop.Olympus.Vision.csproj", "{5D4FFBFB-372E-4FBB-B7DC-FE3BB5A7E00F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Core.Framework", "..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj", "{B90C4C38-A600-44BB-840E-2A7D4B46618A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nGratis.Cop.Olympus.Framework", "..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj", "{B90C4C38-A600-44BB-840E-2A7D4B46618A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Contract", "Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj", "{C8B0C94C-E057-4583-A582-F6F917215A5C}"
 EndProject

@@ -30,7 +30,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using FirstFloor.ModernUI.Presentation;
-using nGratis.Cop.Core.Wpf;
+using nGratis.Cop.Olympus.Wpf;
 
 namespace nGratis.AI.Kvasir.Client
 {

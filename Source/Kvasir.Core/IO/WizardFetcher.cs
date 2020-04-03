@@ -37,8 +37,8 @@ namespace nGratis.AI.Kvasir.Core
     using System.Threading.Tasks;
     using HtmlAgilityPack;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
-    using nGratis.Cop.Core.Vision.Imaging;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Vision.Imaging;
 
     public class WizardFetcher : BaseMagicHttpFetcher
     {

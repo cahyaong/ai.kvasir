@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Engine
     using System.Collections.Generic;
     using System.Diagnostics;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     [DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
     public class Card

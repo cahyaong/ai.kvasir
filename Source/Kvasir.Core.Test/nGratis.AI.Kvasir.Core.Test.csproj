@@ -69,21 +69,21 @@
     <Compile Include="Shared\StubMagicHttpFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Contract\nGratis.Cop.Core.Contract.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj">
       <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
-      <Name>nGratis.Cop.Core.Contract</Name>
+      <Name>nGratis.Cop.Olympus.Contract</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Framework\nGratis.Cop.Core.Framework.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj">
       <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
-      <Name>nGratis.Cop.Core.Framework</Name>
+      <Name>nGratis.Cop.Olympus.Framework</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Testing\nGratis.Cop.Core.Testing.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj">
       <Project>{b199217e-4103-44a9-afb9-65287a52d06f}</Project>
-      <Name>nGratis.Cop.Core.Testing</Name>
+      <Name>nGratis.Cop.Olympus.Testing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.core\Source\Core.Vision\nGratis.Cop.Core.Vision.csproj">
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Vision\nGratis.Cop.Olympus.Vision.csproj">
       <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>
-      <Name>nGratis.Cop.Core.Vision</Name>
+      <Name>nGratis.Cop.Olympus.Vision</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
       <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>

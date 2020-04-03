@@ -39,7 +39,7 @@ namespace Lucene.Net
     using Lucene.Net.Documents;
     using Lucene.Net.Index;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal static partial class LuceneExtensions
     {

@@ -31,7 +31,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using FluentAssertions;
     using FluentAssertions.Execution;
     using FluentAssertions.Primitives;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal class GameContextAssertions : ReferenceTypeAssertions<GameContext, GameContextAssertions>
     {

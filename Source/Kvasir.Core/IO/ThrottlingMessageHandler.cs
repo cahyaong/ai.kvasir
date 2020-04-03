@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public class ThrottlingMessageHandler : DelegatingHandler
     {

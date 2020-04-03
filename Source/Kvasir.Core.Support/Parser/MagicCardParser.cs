@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
     using System.Linq.Expressions;
     using System.Text.RegularExpressions;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public class MagicCardParser : IMagicCardParser
     {

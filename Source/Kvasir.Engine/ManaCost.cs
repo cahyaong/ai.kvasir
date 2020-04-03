@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Engine
     using System.Linq;
     using System.Text.RegularExpressions;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public class ManaCost : Cost
     {

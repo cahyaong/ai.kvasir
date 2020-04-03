@@ -34,8 +34,8 @@ namespace nGratis.AI.Kvasir.Client
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core.Contract;
-    using nGratis.Cop.Core.Wpf;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Wpf;
     using ReactiveUI;
 
     public sealed class RuleManagementViewModel : BasePageViewModel, IDisposable

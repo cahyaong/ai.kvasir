@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Engine
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using Stateless;
 
     public class GameContext

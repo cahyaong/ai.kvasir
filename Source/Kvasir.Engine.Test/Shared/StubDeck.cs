@@ -31,7 +31,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal class StubDeck : Deck
     {

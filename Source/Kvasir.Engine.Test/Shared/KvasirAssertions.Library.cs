@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using FluentAssertions.Execution;
     using FluentAssertions.Primitives;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal class ZoneAssertions : ReferenceTypeAssertions<Zone, ZoneAssertions>
     {

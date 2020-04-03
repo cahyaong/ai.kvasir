@@ -31,7 +31,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
     using System.IO;
     using Antlr4.Runtime;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public partial class MagicCardAbilityParser
     {

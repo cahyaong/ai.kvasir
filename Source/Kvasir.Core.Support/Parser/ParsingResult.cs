@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
     using System.Linq;
     using System.Reflection;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public sealed class ValidParsingResult : ParsingResult
     {

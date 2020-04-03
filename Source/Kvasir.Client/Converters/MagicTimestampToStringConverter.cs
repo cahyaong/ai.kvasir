@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Client
     using System.Globalization;
     using System.Windows.Data;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     [ValueConversion(typeof(DateTime), typeof(string))]
     internal class MagicTimestampToStringConverter : IValueConverter

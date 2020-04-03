@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using FluentAssertions;
     using Moq;
     using Moq.AI.Kvasir;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using Xunit;
     using Arg = Moq.AI.Kvasir.Arg;
     using MockBuilder = Moq.AI.Kvasir.MockBuilder;

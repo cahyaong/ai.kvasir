@@ -30,7 +30,7 @@ namespace nGratis.AI.Kvasir.Contract
 {
     using System.Collections.Generic;
     using System.Linq;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public static partial class DefinedBlob
     {

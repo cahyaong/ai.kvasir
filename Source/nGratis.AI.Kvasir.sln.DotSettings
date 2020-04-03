@@ -6,11 +6,11 @@
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=AA5071016FEFEF45B938A55042E35CB1/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=AA5071016FEFEF45B938A55042E35CB1/RelativePath/@EntryValue">..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=B0B53BADFD956D42B7F4BF3BFE88FD54/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=B0B53BADFD956D42B7F4BF3BFE88FD54/RelativePath/@EntryValue">..\..\External\cop.core\Source\Core.Testing\nGratis.Cop.Core.Testing.csproj.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=B0B53BADFD956D42B7F4BF3BFE88FD54/RelativePath/@EntryValue">..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=BA61D33316FE8642BF429C04F03106FC/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=BA61D33316FE8642BF429C04F03106FC/RelativePath/@EntryValue">..\..\External\cop.core\Source\Core.Wpf\nGratis.Cop.Core.Wpf.csproj.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=BA61D33316FE8642BF429C04F03106FC/RelativePath/@EntryValue">..\..\External\cop.olympus\Source\Olympus.Wpf\nGratis.Cop.Olympus.Wpf.csproj.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=E1756A0B953BA14CA69C781A6FFEE8D9/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=E1756A0B953BA14CA69C781A6FFEE8D9/RelativePath/@EntryValue">..\..\External\cop.core\Source\nGratis.Shared.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=E1756A0B953BA14CA69C781A6FFEE8D9/RelativePath/@EntryValue">..\..\External\cop.olympus\Source\nGratis.Shared.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/RelativePath/@EntryValue">..\Kvasir.Core.Test\nGratis.AI.Kvasir.Core.Test.csproj.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File25D52ABFB7CDD248AC92DBB23E81DF89/@KeyIndexDefined">True</s:Boolean>

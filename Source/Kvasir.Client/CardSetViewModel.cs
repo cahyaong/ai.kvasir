@@ -36,7 +36,7 @@ namespace nGratis.AI.Kvasir.Client
     using System.Windows.Input;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using ReactiveUI;
 
     public class CardSetViewModel : ReactiveObject

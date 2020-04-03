@@ -39,7 +39,7 @@ namespace nGratis.AI.Kvasir.Core
     using HtmlAgilityPack;
     using Newtonsoft.Json.Linq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public class MagicJsonFetcher : BaseMagicHttpFetcher
     {

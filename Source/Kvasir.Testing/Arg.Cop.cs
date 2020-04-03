@@ -31,19 +31,19 @@
 namespace Moq.AI.Kvasir
 {
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public partial class Arg
     {
         public new class DataSpec : Moq.Arg.DataSpec
         {
-            public static nGratis.Cop.Core.Contract.DataSpec IsKvasirCaching(string name)
+            public static nGratis.Cop.Olympus.Contract.DataSpec IsKvasirCaching(string name)
             {
                 Guard
                     .Require(name, nameof(name))
                     .Is.Not.Empty();
 
-                return Match.Create<nGratis.Cop.Core.Contract.DataSpec>(spec =>
+                return Match.Create<nGratis.Cop.Olympus.Contract.DataSpec>(spec =>
                     spec.Name == name &&
                     spec.Mime == KvasirMime.Cache);
             }

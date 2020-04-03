@@ -36,7 +36,7 @@ namespace Moq.AI.Kvasir
     using System.Text;
     using Moq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal static partial class MockExtensions
     {

@@ -43,7 +43,7 @@ namespace Moq.AI.Kvasir
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.AI.Kvasir.Core.Test;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     internal static partial class MockExtensions
     {

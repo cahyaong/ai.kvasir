@@ -5,5 +5,5 @@ git submodule -q update --init --recursive
 cd .\Source
 dotnet restore
 
-cd ..\External\cop.core
+cd ..\External\cop.olympus
 .\appveyor_prebuild.cmd

@@ -31,7 +31,7 @@
 namespace System.Reactive.Linq
 {
     using System.ComponentModel;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
     using ReactiveUI;
 
     internal static class ObservableExtensions

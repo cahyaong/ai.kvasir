@@ -33,7 +33,7 @@ namespace Moq.AI.Kvasir
     using System;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Core.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public class MockBuilder : Moq.MockBuilder
     {

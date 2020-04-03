@@ -39,8 +39,8 @@ namespace nGratis.AI.Kvasir.Client
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Core.Contract;
-    using nGratis.Cop.Core.Wpf;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Wpf;
     using ReactiveUI;
 
     [UsedImplicitly]
