@@ -139,6 +139,17 @@
         <Reference Include="Microsoft.CSharp">
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="J2N">
+          <HintPath>..\packages\_io\J2N\lib\net45\J2N.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
         <Reference Include="Lucene.Net">
           <HintPath>..\packages\_io\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
           <Private>True</Private>

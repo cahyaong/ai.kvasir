@@ -32,6 +32,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Collections.Generic;
     using Lucene.Net.Analysis.Standard;
     using Lucene.Net.Documents;
+    using Lucene.Net.Documents.Extensions;
     using Lucene.Net.Index;
     using Lucene.Net.Store;
     using Lucene.Net.Util;

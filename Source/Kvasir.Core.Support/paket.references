@@ -1,2 +1,3 @@
 ﻿group _Support
-	Antlr4
+    Antlr4
+    Lucene.Net

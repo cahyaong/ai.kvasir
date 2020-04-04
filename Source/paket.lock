@@ -69,9 +69,11 @@ NUGET
     Antlr4.CodeGenerator (4.6.6)
     Antlr4.Runtime (4.6.6)
     HtmlAgilityPack (1.8.11)
-    Lucene.Net (4.8.0-beta00005)
-    Lucene.Net.Analysis.Common (4.8.0-beta00005)
-      Lucene.Net (>= 4.8.0-beta00005)
+    J2N (1.0.0-beta-0002)
+    Lucene.Net (4.8.0-beta00007)
+      J2N (>= 1.0.0-beta-0001)
+    Lucene.Net.Analysis.Common (4.8.0-beta00007)
+      Lucene.Net (>= 4.8.0-beta00007)
 
 GROUP _Support
 RESTRICTION: == netstandard2.0
@@ -83,9 +85,19 @@ NUGET
     Antlr4.CodeGenerator (4.6.6)
     Antlr4.Runtime (4.6.6)
       NETStandard.Library (>= 1.6)
+    J2N (2.0.0-beta-0007)
+      Microsoft.CSharp (>= 4.4)
+      System.Text.Encoding.CodePages (>= 4.3)
+    Lucene.Net (4.8.0-beta00007)
+      J2N (>= 1.0.0-beta-0001)
+      Microsoft.CSharp (>= 4.4)
+    Microsoft.CSharp (4.7)
     Microsoft.NETCore.Platforms (3.1)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
+    System.Runtime.CompilerServices.Unsafe (4.7.1)
+    System.Text.Encoding.CodePages (4.7)
+      System.Runtime.CompilerServices.Unsafe (>= 4.7)
 
 GROUP _Test
 RESTRICTION: == net472

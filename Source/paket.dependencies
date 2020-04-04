@@ -33,6 +33,7 @@ group _IO
 
     nuget Antlr4
     nuget HtmlAgilityPack
+    nuget J2N ~> 1.0.0-beta-0002
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
 
@@ -63,6 +64,7 @@ group _Support
     source https://api.nuget.org/v3/index.json
 
     nuget Antlr4
+    nuget Lucene.Net >= 4.8.0-beta00001
 
 group _Test
 

@@ -6,5 +6,6 @@ System.Reactive.Linq
 group _IO
     Antlr4
     HtmlAgilityPack
+    J2N
     Lucene.Net
     Lucene.Net.Analysis.Common
