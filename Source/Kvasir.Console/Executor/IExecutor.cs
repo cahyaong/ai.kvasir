@@ -32,6 +32,6 @@ namespace nGratis.AI.Kvasir.Console
 
     internal interface IExecutor
     {
-        public Task ExecuteAsync();
+        public Task ExecuteAsync(ExecutionParameter parameter);
     }
 }

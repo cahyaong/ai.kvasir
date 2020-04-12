@@ -1,8 +1,12 @@
 framework: net472
 source https://api.nuget.org/v3/index.json
 
-nuget JetBrains.Annotations
+nuget Antlr4
 nuget Humanizer.Core
+nuget JetBrains.Annotations
+nuget J2N ~> 1.0.0-beta-0002
+nuget Lucene.Net >= 4.8.0-beta00001
+nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
@@ -11,6 +15,7 @@ nuget System.Reactive
 nuget System.Reactive.Linq
 nuget System.Threading.Tasks.Extensions
 nuget Unity
+nuget Unity.RegistrationByConvention
 
 group _Contract
     
@@ -31,11 +36,7 @@ group _IO
     framework: net472
     source https://api.nuget.org/v3/index.json
 
-    nuget Antlr4
     nuget HtmlAgilityPack
-    nuget J2N ~> 1.0.0-beta-0002
-    nuget Lucene.Net >= 4.8.0-beta00001
-    nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
 
 group _UI
 
@@ -64,7 +65,10 @@ group _Support
     source https://api.nuget.org/v3/index.json
 
     nuget Antlr4
+    nuget Humanizer.Core
+    nuget J2N ~> 1.0.0-beta-0002
     nuget Lucene.Net >= 4.8.0-beta00001
+    nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
 
 group _Test
 

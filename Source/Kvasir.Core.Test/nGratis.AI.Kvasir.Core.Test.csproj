@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props" Condition="Exists('..\packages\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props')" Label="Paket" />
   <Import Project="..\packages\_test\xunit.core\build\xunit.core.props" Condition="Exists('..\packages\_test\xunit.core\build\xunit.core.props')" Label="Paket" />
-  <Import Project="..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props" Condition="Exists('..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -50,6 +50,7 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IO\MagicRepositoryExtensions.cs" />
     <Compile Include="IO\ScryfallFetcherTests.cs" />
     <Compile Include="IO\BaseMagicHttpFetcherTests.cs" />
     <Compile Include="IO\CachingMessageHandlerTests.cs" />
@@ -58,6 +59,9 @@
     <Compile Include="IO\ThrottlingMessageHandlerTests.cs" />
     <Compile Include="IO\WizardFetcherTests.cs" />
     <Compile Include="Shared\MockExtensions.cs" />
+    <Compile Include="Shared\MockExtensions.MagicRepository.cs">
+      <DependentUpon>MockExtensions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Shared\MockExtensions.StorageManager.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
     </Compile>
@@ -77,6 +81,10 @@
       <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
       <Name>nGratis.Cop.Olympus.Framework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj">
+      <Project>{b360201a-1710-4276-b745-673e757d671e}</Project>
+      <Name>nGratis.Cop.Olympus.Framework.Support</Name>
+    </ProjectReference>    
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj">
       <Project>{b199217e-4103-44a9-afb9-65287a52d06f}</Project>
       <Name>nGratis.Cop.Olympus.Testing</Name>
@@ -114,55 +122,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
-        <Reference Include="Antlr4.Runtime">
-          <HintPath>..\packages\_io\Antlr4.Runtime\lib\net45\Antlr4.Runtime.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
         <Reference Include="HtmlAgilityPack">
           <HintPath>..\packages\_io\HtmlAgilityPack\lib\Net45\HtmlAgilityPack.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
-        <Reference Include="Microsoft.CSharp">
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="J2N">
-          <HintPath>..\packages\_io\J2N\lib\net45\J2N.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
-        <Reference Include="Lucene.Net">
-          <HintPath>..\packages\_io\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
-      <ItemGroup>
-        <Reference Include="Lucene.Net.Analysis.Common">
-          <HintPath>..\packages\_io\Lucene.Net.Analysis.Common\lib\net45\Lucene.Net.Analysis.Common.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -208,8 +169,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.Runtime.CompilerServices.Unsafe">
-          <HintPath>..\packages\_test\System.Runtime.CompilerServices.Unsafe\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+          <HintPath>..\packages\_test\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -220,7 +184,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.Threading.Tasks.Extensions">
-          <HintPath>..\packages\_test\System.Threading.Tasks.Extensions\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+          <HintPath>..\packages\_test\System.Threading.Tasks.Extensions\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -238,7 +202,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.targets" Condition="Exists('..\packages\_io\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.targets')" Label="Paket" />
   <ItemGroup>
     <Analyzer Include="..\packages\_test\xunit.analyzers\analyzers\dotnet\cs\xunit.analyzers.dll">
       <Paket>True</Paket>
@@ -280,8 +243,66 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
+        <Reference Include="Antlr4.Runtime">
+          <HintPath>..\packages\Antlr4.Runtime\lib\net45\Antlr4.Runtime.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="Humanizer">
+          <HintPath>..\packages\Humanizer.Core\lib\netstandard2.0\Humanizer.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="Microsoft.CSharp">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="J2N">
+          <HintPath>..\packages\J2N\lib\net45\J2N.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
         <Reference Include="JetBrains.Annotations">
           <HintPath>..\packages\JetBrains.Annotations\lib\net20\JetBrains.Annotations.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="Lucene.Net">
+          <HintPath>..\packages\Lucene.Net\lib\net45\Lucene.Net.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="Lucene.Net.Analysis.Common">
+          <HintPath>..\packages\Lucene.Net.Analysis.Common\lib\net45\Lucene.Net.Analysis.Common.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -300,4 +321,5 @@
     </When>
   </Choose>
   <Import Project="..\packages\_test\xunit.core\build\xunit.core.targets" Condition="Exists('..\packages\_test\xunit.core\build\xunit.core.targets')" Label="Paket" />
+  <Import Project="..\packages\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.targets" Condition="Exists('..\packages\Antlr4.CodeGenerator\build\Antlr4.CodeGenerator.targets')" Label="Paket" />
 </Project>

@@ -28,6 +28,7 @@
 
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("nGratis.AI.Kvasir.Core.Support")]
@@ -35,3 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
 [assembly: Guid("7ba00265-7016-4497-8e88-bba45d3c2583")]
+[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core")]

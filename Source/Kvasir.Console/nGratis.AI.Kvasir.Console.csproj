@@ -8,9 +8,13 @@
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.Console.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
     <ProjectReference Include="..\Kvasir.Core.Support\nGratis.AI.Kvasir.Core.Support.csproj" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />

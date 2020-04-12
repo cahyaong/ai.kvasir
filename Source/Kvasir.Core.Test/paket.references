@@ -1,11 +1,12 @@
-﻿JetBrains.Annotations
+﻿Antlr4
+Humanizer.Core
+JetBrains.Annotations
+Lucene.Net
+Lucene.Net.Analysis.Common
 Polly
 
 group _IO
-    Antlr4
     HtmlAgilityPack
-    Lucene.Net
-    Lucene.Net.Analysis.Common
 
 group _Test
     FluentAssertions

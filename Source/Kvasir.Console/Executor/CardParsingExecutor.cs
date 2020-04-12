@@ -28,14 +28,55 @@
 
 namespace nGratis.AI.Kvasir.Console
 {
-    using System;
+    using System.Linq;
     using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Core;
+    using nGratis.AI.Kvasir.Core.Parser;
+    using nGratis.Cop.Olympus.Contract;
 
     internal class CardParsingExecutor : IExecutor
     {
-        public async Task ExecuteAsync()
+        private readonly IMagicRepository _repository;
+
+        private readonly IMagicCardParser _cardParser;
+
+        private readonly ILogger _logger;
+
+        public CardParsingExecutor(IMagicRepository repository, IMagicCardParser cardParser, ILogger logger)
         {
-            await Task.FromException(new NotImplementedException());
+            Guard
+                .Require(repository, nameof(repository))
+                .Is.Not.Null();
+
+            Guard
+                .Require(cardParser, nameof(cardParser))
+                .Is.Not.Null();
+
+            Guard
+                .Require(logger, nameof(logger))
+                .Is.Not.Null();
+
+            this._repository = repository;
+            this._cardParser = cardParser;
+            this._logger = logger;
+        }
+
+        public async Task ExecuteAsync(ExecutionParameter parameter)
+        {
+            Guard
+                .Require(parameter, nameof(parameter))
+                .Is.Not.Null();
+
+            var unparsedCardSet = await this._repository.GetCardSetAsync(parameter.GetValue("CardSet.Name"));
+            var unparsedCards = await this._repository.GetCardsAsync(unparsedCardSet);
+
+            var parsingResults = unparsedCards
+                .Select(unparsedCard => this._cardParser.Parse(unparsedCard))
+                .ToArray();
+
+            this._logger.LogInfo($"Card set: [{unparsedCardSet.Name}]");
+            this._logger.LogInfo($"Parsed cards: [{parsingResults.Length}]");
+            this._logger.LogInfo($"Invalid cards: [{parsingResults.Count(result => !result.IsValid)}]");
         }
     }
 }

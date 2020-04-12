@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\_test\xunit.core\build\xunit.core.props" Condition="Exists('..\packages\_test\xunit.core\build\xunit.core.props')" Label="Paket" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -80,6 +80,10 @@
       <Project>{b90c4c38-a600-44bb-840e-2a7d4b46618a}</Project>
       <Name>nGratis.Cop.Olympus.Framework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj">
+      <Project>{b360201a-1710-4276-b745-673e757d671e}</Project>
+      <Name>nGratis.Cop.Olympus.Framework.Support</Name>
+    </ProjectReference>    
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj">
       <Project>{b199217e-4103-44a9-afb9-65287a52d06f}</Project>
       <Name>nGratis.Cop.Olympus.Testing</Name>
@@ -136,8 +140,11 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
+        <Reference Include="mscorlib">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="System.Runtime.CompilerServices.Unsafe">
-          <HintPath>..\packages\_test\System.Runtime.CompilerServices.Unsafe\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+          <HintPath>..\packages\_test\System.Runtime.CompilerServices.Unsafe\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -148,7 +155,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="System.Threading.Tasks.Extensions">
-          <HintPath>..\packages\_test\System.Threading.Tasks.Extensions\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+          <HintPath>..\packages\_test\System.Threading.Tasks.Extensions\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -219,7 +226,7 @@
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
       <ItemGroup>
         <Reference Include="Stateless">
-          <HintPath>..\packages\Stateless\lib\net45\Stateless.dll</HintPath>
+          <HintPath>..\packages\Stateless\lib\net472\Stateless.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

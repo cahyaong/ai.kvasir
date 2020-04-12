@@ -56,8 +56,8 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .Should().NotBeNull()
                     .And.HaveCount(60)
                     .And.BeEquivalentTo(Enumerable.Range(0, 60), "indexes should contain unique value")
-                    .And.NotBeAscendingInOrder("indexes should be shuffled")
-                    .And.NotBeDescendingInOrder("indexes should be shuffled");
+                    .And.NotBeInAscendingOrder("indexes should be shuffled")
+                    .And.NotBeInDescendingOrder("indexes should be shuffled");
             }
         }
     }

@@ -124,7 +124,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
         protected virtual bool IsValidCore => true;
 
-        public ParsingResult WithMessage(string message)
+        internal ParsingResult WithMessage(string message)
         {
             Guard
                 .Require(message, nameof(message))
@@ -135,7 +135,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             return this;
         }
 
-        public ParsingResult WithChildResult(ParsingResult childResult)
+        internal ParsingResult WithChildResult(ParsingResult childResult)
         {
             Guard
                 .Require(childResult, nameof(childResult))
@@ -154,7 +154,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             return this.WithChildResultCore(childResult);
         }
 
-        public ParsingResult BindTo(PropertyInfo propertyInfo)
+        internal ParsingResult BindTo(PropertyInfo propertyInfo)
         {
             Guard
                 .Require(propertyInfo, nameof(propertyInfo))

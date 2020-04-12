@@ -1,9 +1,12 @@
-﻿JetBrains.Annotations
+﻿Antlr4
+Humanizer.Core
+JetBrains.Annotations
+J2N
+Lucene.Net
+Lucene.Net.Analysis.Common
 System.Reactive
 Unity
-
-group _IO
-    Antlr4
+Unity.RegistrationByConvention
 
 group _UI
     Caliburn.Micro

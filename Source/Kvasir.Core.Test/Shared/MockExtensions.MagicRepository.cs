@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Program.cs" company="nGratis">
+// <copyright file="MockExtensions.MagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,44 +23,51 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, March 28, 2020 6:00:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, April 7, 2020 5:49:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+// ReSharper disable CheckNamespace
+
+namespace Moq.AI.Kvasir
 {
     using System;
-    using System.IO;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
+    using Moq;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
-    using nGratis.AI.Kvasir.Core.Parser;
-    using nGratis.Cop.Olympus.Framework;
+    using nGratis.Cop.Olympus.Contract;
 
-    public class Program
+    internal static partial class MockExtensions
     {
-        private static void Main()
+        public static Mock<IMagicRepository> WithCardSets(
+            this Mock<IMagicRepository> mockRepository,
+            params string[] names)
         {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
+            Guard
+                .Require(mockRepository, nameof(mockRepository))
+                .Is.Not.Null();
 
-            // TODO: Use <Unity> to wire dependency injection!
+            Guard
+                .Require(names, nameof(names))
+                .Is.Not.Null()
+                .Is.Not.Empty();
 
-            var indexManager = new IndexManager(new Uri(dataFolderPath));
-            var magicFetcher = new NopFetcher();
-            var magicRepository = new MagicRepository(indexManager, magicFetcher);
+            var cardSets = names
+                .Select((name, index) => new UnparsedBlob.CardSet
+                {
+                    Code = $"[_MOCK_CODE_{(index + 1):D2}_]",
+                    Name = name,
+                    ReleasedTimestamp = DateTime.Parse("2020-01-01")
+                })
+                .ToArray();
 
-            var logger = new ConsoleLogger("AI.KVASIR", "CardParsing");
-            var parsingExecutor = new CardParsingExecutor(magicRepository, MagicCardParser.Instance, logger);
+            mockRepository
+                .Setup(mock => mock.GetCardSetsAsync())
+                .Returns(Task.FromResult((IReadOnlyCollection<UnparsedBlob.CardSet>)cardSets));
 
-            Task.WaitAll(parsingExecutor.ExecuteAsync(ExecutionParameter.Builder
-                .Create()
-                .WithEntry("CardSet.Name", "Portal")
-                .Build()));
-
-            Console.WriteLine();
-            Console.WriteLine("Press <ANY> key to continue...");
-            Console.ReadLine();
+            return mockRepository;
         }
     }
 }

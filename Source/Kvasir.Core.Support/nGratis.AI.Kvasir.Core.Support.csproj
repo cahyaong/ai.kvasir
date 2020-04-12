@@ -8,9 +8,13 @@
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.Core.Support.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj" />
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Vision\nGratis.Cop.Olympus.Vision.csproj" />
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
   </ItemGroup>
@@ -18,6 +22,11 @@
     <Antlr4 Update="Parser\MagicCardAbility.g4">
       <CustomToolNamespace>nGratis.AI.Kvasir.Core.Parser</CustomToolNamespace>
     </Antlr4>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="IO\LuceneExtensions.Serialization.cs">
+      <DependentUpon>LuceneExtensions.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Program.cs" company="nGratis">
+// <copyright file="MagicRepositoryExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,44 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, March 28, 2020 6:00:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, April 4, 2020 6:26:37 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Core
 {
-    using System;
-    using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.AI.Kvasir.Core.Parser;
-    using nGratis.Cop.Olympus.Framework;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
-    public class Program
+    public static class MagicRepositoryExtensions
     {
-        private static void Main()
+        public static async Task<UnparsedBlob.CardSet> GetCardSetAsync(this IMagicRepository repository, string name)
         {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
+            Guard
+                .Require(repository, nameof(repository))
+                .Is.Not.Null();
 
-            // TODO: Use <Unity> to wire dependency injection!
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-            var indexManager = new IndexManager(new Uri(dataFolderPath));
-            var magicFetcher = new NopFetcher();
-            var magicRepository = new MagicRepository(indexManager, magicFetcher);
+            var cardSets = (await repository
+                .GetCardSetsAsync())
+                .Where(cardSet => cardSet.Name == name)
+                .ToArray();
 
-            var logger = new ConsoleLogger("AI.KVASIR", "CardParsing");
-            var parsingExecutor = new CardParsingExecutor(magicRepository, MagicCardParser.Instance, logger);
+            if (cardSets.Length <= 0)
+            {
+                throw new KvasirException(
+                    @"Failed to find card set! " +
+                    $"Name: [{name}].");
+            }
 
-            Task.WaitAll(parsingExecutor.ExecuteAsync(ExecutionParameter.Builder
-                .Create()
-                .WithEntry("CardSet.Name", "Portal")
-                .Build()));
+            if (cardSets.Length > 1)
+            {
+                throw new KvasirException(
+                    @"Found more than 1 card set! " +
+                    $"Name: [{name}].");
+            }
 
-            Console.WriteLine();
-            Console.WriteLine("Press <ANY> key to continue...");
-            Console.ReadLine();
+            return cardSets.Single();
         }
     }
 }

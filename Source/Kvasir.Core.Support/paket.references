@@ -1,3 +1,6 @@
 ﻿group _Support
     Antlr4
+    Humanizer.Core
+    J2N
     Lucene.Net
+    Lucene.Net.Analysis.Common

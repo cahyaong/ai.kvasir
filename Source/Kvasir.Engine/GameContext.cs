@@ -92,17 +92,17 @@ namespace nGratis.AI.Kvasir.Engine
 
             this._stateMachine
                 .Configure(Status.Starting)
-                .OnActivate(this.OnStartingActivated)
+                .OnEntry(this.OnStartingEntered)
                 .Permit(Action.PlayTurn, Status.Playing);
 
             this._stateMachine
                 .Configure(Status.Playing)
-                .OnActivate(this.OnPlayingActivated)
+                .OnEntry(this.OnPlayingEntered)
                 .Permit(Action.End, Status.Ending);
 
             this._stateMachine
                 .Configure(Status.Ending)
-                .OnActivate(this.OnEndingActivated);
+                .OnEntry(this.OnEndingEntered);
 
             this._stateMachine.Fire(Action.Start);
         }
@@ -123,18 +123,18 @@ namespace nGratis.AI.Kvasir.Engine
 
         public Zone Ante { get; private set; }
 
-        private void OnStartingActivated()
+        private void OnStartingEntered()
         {
             this
                 .SetupPlayers()
                 .SetupSharedZones();
         }
 
-        private void OnPlayingActivated()
+        private void OnPlayingEntered()
         {
         }
 
-        private void OnEndingActivated()
+        private void OnEndingEntered()
         {
         }
 
