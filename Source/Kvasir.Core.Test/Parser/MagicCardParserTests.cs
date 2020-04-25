@@ -639,8 +639,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     parsingResult
                         .Messages
                         .Should().NotBeNull()
-                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_01_]].")
-                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_02_]].");
+                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_01_].].")
+                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_02_].].");
 
                     parsingResult
                         .GetValue<DefinedBlob.Card>().Abilities
