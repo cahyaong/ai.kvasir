@@ -101,6 +101,8 @@ namespace nGratis.AI.Kvasir.Core.Parser
         }
     }
 
+    // TODO: Instead of valid and invalid parsing results, we need to support card and field parsing results!
+
     public abstract class ParsingResult
     {
         private readonly List<string> _messages;

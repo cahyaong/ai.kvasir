@@ -51,6 +51,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var unparsedCard = new UnparsedBlob.Card
                 {
+                    Number = "42",
                     Name = "Llanowar Elves",
                     Type = "Creature - Elf Druid",
                     ManaCost = "{G}",
@@ -118,6 +119,68 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .GetValue<DefinedBlob.Card>()
                     .Cost
                     .Should().Be(DefinedBlob.Cost.Unknown);
+            }
+
+            [Fact]
+            public void WhenGettingValidNumber_ShouldSetAsIs()
+            {
+                // Arrange.
+
+                var unparsedCard = new UnparsedBlob.Card
+                {
+                    Number = "42"
+                };
+
+                // Act.
+
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<DefinedBlob.Card>()
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<DefinedBlob.Card>()
+                    .Number
+                    .Should().Be(42);
+            }
+
+            [Fact]
+            public void WhenGettingInvalidNumber_ShouldAddMessage()
+            {
+                // Arrange.
+
+                var unparsedCard = new UnparsedBlob.Card
+                {
+                    Number = "-42"
+                };
+
+                // Act.
+
+                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .Messages
+                    .Should().Contain("<Number> Value must be positive.");
+
+                parsingResult
+                    .GetValue<DefinedBlob.Card>()
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .GetValue<DefinedBlob.Card>()
+                    .MultiverseId
+                    .Should().Be(0);
             }
 
             [Fact]
@@ -538,17 +601,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                 parsingResult
                     .Should().NotBeNull();
 
-                parsingResult
-                    .Messages
-                    .Should().Contain(theory.Message);
+                using (new AssertionScope())
+                {
+                    parsingResult
+                        .Messages
+                        .Should().Contain(theory.Message);
 
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Toughness.Should().Be(0);
+                    parsingResult
+                        .GetValue<DefinedBlob.Card>()
+                        .Toughness.Should().Be(0);
+                }
             }
 
             [Fact]
-            public void WhenGettingInvalidText_ShouldSetNotSupportedAbility()
+            public void WhenGettingInvalidText_ShouldAddMessage()
             {
                 // Arrange.
 
@@ -568,10 +634,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                 parsingResult
                     .Should().NotBeNull();
 
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Abilities
-                    .Should().AllBeEquivalentTo(DefinedBlob.Ability.NotSupported);
+                using (new AssertionScope())
+                {
+                    parsingResult
+                        .Messages
+                        .Should().NotBeNull()
+                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_01_]].")
+                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_02_]].");
+
+                    parsingResult
+                        .GetValue<DefinedBlob.Card>().Abilities
+                        .Should().NotBeNull()
+                        .And.HaveCount(2)
+                        .And.AllBeEquivalentTo(DefinedBlob.Ability.NotSupported);
+                }
             }
 
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]

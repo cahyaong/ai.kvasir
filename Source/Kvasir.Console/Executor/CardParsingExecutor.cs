@@ -28,8 +28,13 @@
 
 namespace nGratis.AI.Kvasir.Console
 {
+    using System;
+    using System.CodeDom.Compiler;
+    using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.AI.Kvasir.Core.Parser;
     using nGratis.Cop.Olympus.Contract;
@@ -74,9 +79,161 @@ namespace nGratis.AI.Kvasir.Console
                 .Select(unparsedCard => this._cardParser.Parse(unparsedCard))
                 .ToArray();
 
-            this._logger.LogInfo($"Card set: [{unparsedCardSet.Name}]");
-            this._logger.LogInfo($"Parsed cards: [{parsingResults.Length}]");
-            this._logger.LogInfo($"Invalid cards: [{parsingResults.Count(result => !result.IsValid)}]");
+            using (var summaryPrinter = SummaryPrinter.Create(2))
+            {
+                summaryPrinter
+                    .Indent()
+                    .WithCardSet(
+                        unparsedCardSet.Name,
+                        ("Parsed Cards", parsingResults.Length),
+                        ("Invalid Cards", parsingResults.Count(result => !result.IsValid)));
+
+                parsingResults
+                    .Where(result => !result.IsValid)
+                    .OrderBy(result => result.GetValue<DefinedBlob.Card>().Number)
+                    .ForEach(result => summaryPrinter.WithInvalidCard(
+                        result.GetValue<DefinedBlob.Card>(),
+                        result.Messages.ToArray()));
+
+                var summaryContent = summaryPrinter
+                    .Dedent()
+                    .Print();
+
+                this._logger.LogWarning($"Found invalid cards!{Environment.NewLine}{summaryContent}");
+            }
+        }
+
+        internal sealed class SummaryPrinter : IDisposable
+        {
+            private readonly StringWriter _rawWriter;
+
+            private readonly IndentedTextWriter _contentWriter;
+
+            private bool _isDisposed;
+
+            private SummaryPrinter(int indentSize)
+            {
+                Guard
+                    .Require(indentSize, nameof(indentSize))
+                    .Is.GreaterThanOrEqualTo(0);
+
+                this._rawWriter = new StringWriter();
+                this._contentWriter = new IndentedTextWriter(this._rawWriter, new string(' ', indentSize));
+            }
+
+            ~SummaryPrinter()
+            {
+                this.Dispose(false);
+            }
+
+            public static SummaryPrinter Create(int indentSize)
+            {
+                return new SummaryPrinter(indentSize);
+            }
+
+            public SummaryPrinter Indent()
+            {
+                this._contentWriter.Indent++;
+
+                return this;
+            }
+
+            public SummaryPrinter Dedent()
+            {
+                this._contentWriter.Indent = Math.Max(0, this._contentWriter.Indent - 1);
+
+                return this;
+            }
+
+            public SummaryPrinter WithCardSet<TValue>(string name, params (string Key, TValue Value)[] statistics)
+            {
+                Guard
+                    .Require(name, nameof(name))
+                    .Is.Not.Empty();
+
+                Guard
+                    .Require(statistics, nameof(statistics))
+                    .Is.Not.Null();
+
+                this._contentWriter.WriteLine();
+                this._contentWriter.WriteLine($"Card Set: [{name}]");
+
+                foreach (var (key, value) in statistics)
+                {
+                    this._contentWriter.Write(!string.IsNullOrEmpty(key) ? key : Text.Empty);
+                    this._contentWriter.WriteLine($": {value}");
+                }
+
+                this._contentWriter.WriteLine();
+
+                return this;
+            }
+
+            public SummaryPrinter WithInvalidCard(DefinedBlob.Card card, params string[] parsingMessages)
+            {
+                Guard
+                    .Require(card, nameof(card))
+                    .Is.Not.Null();
+
+                Guard
+                    .Require(parsingMessages, nameof(parsingMessages))
+                    .Is.Not.Null();
+
+                this._contentWriter.WriteLine($"#{card.Number}");
+                this._contentWriter.WriteLine($"Card: [{card.Name}]");
+
+                if (parsingMessages.Any())
+                {
+                    this._contentWriter.WriteLine(@"Messages:");
+                    this.Indent();
+
+                    parsingMessages
+                        .ForEach(message => this._contentWriter.WriteLine($"* {message}"));
+
+                    this.Dedent();
+                }
+                else
+                {
+                    this._contentWriter.WriteLine($"Messages: {Text.Empty}");
+                }
+
+                this._contentWriter.WriteLine();
+
+                return this;
+            }
+
+            public string Print()
+            {
+                this._contentWriter.Flush();
+
+                return this
+                    ._rawWriter
+                    .GetStringBuilder()
+                    .ToString()
+                    .TrimEnd();
+            }
+
+            public void Dispose()
+            {
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private void Dispose(bool isDisposing)
+            {
+                if (this._isDisposed)
+                {
+                    return;
+                }
+
+                if (isDisposing)
+                {
+                    this._contentWriter.Dispose();
+                    this._rawWriter.Dispose();
+                }
+
+                this._isDisposed = true;
+            }
         }
     }
 }

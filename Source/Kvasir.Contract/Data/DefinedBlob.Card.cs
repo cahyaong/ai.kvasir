@@ -39,6 +39,8 @@ namespace nGratis.AI.Kvasir.Contract
                 this.Abilities = Default.Abilities;
             }
 
+            public ushort Number { get; set; }
+
             public uint MultiverseId { get; set; }
 
             public string Name { get; set; }

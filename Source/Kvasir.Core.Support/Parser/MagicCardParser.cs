@@ -59,6 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             return ValidParsingResult
                 .Create(definedCard)
+                .ThenParseNumber(unparsedCard.Number)
                 .ThenParseMultiverseId(unparsedCard.MultiverseId)
                 .ThenParseType(unparsedCard.Type)
                 .ThenParseManaCost(definedCard.Kind, unparsedCard.ManaCost)
@@ -70,6 +71,29 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
     internal static class MagicParserExtensions
     {
+        public static ParsingResult ThenParseNumber(this ParsingResult parsingResult, string unparsedNumber)
+        {
+            Guard
+                .Require(parsingResult, nameof(parsingResult))
+                .Is.Not.Null();
+
+            var definedNumber = (ushort)0;
+
+            var isValid =
+                !string.IsNullOrEmpty(unparsedNumber) &&
+                ushort.TryParse(unparsedNumber, out definedNumber) &&
+                definedNumber > 0;
+
+            if (!isValid)
+            {
+                return parsingResult.WithMessage("<Number> Value must be positive.");
+            }
+
+            return parsingResult
+                .WithChildResult(ValidParsingResult.Create(definedNumber))
+                .BindToDefinedCard(card => card.Number);
+        }
+
         public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int unparsedMultiverseId)
         {
             Guard
@@ -224,10 +248,22 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             if (!string.IsNullOrEmpty(unparsedText))
             {
-                definedAbilities = unparsedText
-                    .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                var unparsedTokens = unparsedText
+                    .Replace("(", string.Empty)
+                    .Replace(")", string.Empty)
+                    .Split(new[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                    .SelectMany(outerToken => outerToken
+                        .Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(innerToken => $"{innerToken.Trim()}."))
+                    .ToArray();
+
+                definedAbilities = unparsedTokens
                     .Select(_ => DefinedBlob.Ability.NotSupported)
                     .ToArray();
+
+                unparsedTokens
+                    .Select(token => $"<Ability> No support for value [{token}].")
+                    .ForEach(message => parsingResult.WithMessage(message));
             }
 
             return parsingResult
