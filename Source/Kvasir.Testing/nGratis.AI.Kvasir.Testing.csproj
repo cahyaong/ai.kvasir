@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,22 +53,39 @@
     <Compile Include="MockBuilder.cs" />
     <Compile Include="Engine\PlayerValueFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StubHttpMessageHandler.cs" />
+    <Compile Include="StubMagicHttpFetcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
+    <EmbeddedResource Include="Session\Raw_MTGJSON4.ngts" />
+    <EmbeddedResource Include="Session\Raw_SCRYFALL.ngts" />
+    <EmbeddedResource Include="Session\Raw_WOTC.ngts" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj">
       <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
       <Name>nGratis.Cop.Olympus.Contract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj">
+      <Project>{b360201a-1710-4276-b745-673e757d671e}</Project>
+      <Name>nGratis.Cop.Olympus.Framework.Support</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj">
       <Project>{b199217e-4103-44a9-afb9-65287a52d06f}</Project>
       <Name>nGratis.Cop.Olympus.Testing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Vision\nGratis.Cop.Olympus.Vision.csproj">
+      <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>
+      <Name>nGratis.Cop.Olympus.Vision</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj">
       <Project>{c8b0c94c-e057-4583-a582-f6f917215a5c}</Project>
       <Name>nGratis.AI.Kvasir.Contract</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kvasir.Core.Support\nGratis.AI.Kvasir.Core.Support.csproj">
+      <Project>{7ba00265-7016-4497-8e88-bba45d3c2583}</Project>
+      <Name>nGratis.AI.Kvasir.Core.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj">
       <Project>{a471742a-ad16-433e-8fb6-d44076a0b8bd}</Project>

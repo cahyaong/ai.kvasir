@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AssemblyInfo.cs" company="nGratis">
 //  The MIT License (MIT)
 //
@@ -23,18 +23,13 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, May 3, 2020 2:38:31 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core.Support")]
+[assembly: AssemblyTitle("nGratis.AI.Kvasir.Test")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("7ba00265-7016-4497-8e88-bba45d3c2583")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.Test")]
+[assembly: Guid("7e94a019-8eb7-434e-9040-350716e3e61e")]

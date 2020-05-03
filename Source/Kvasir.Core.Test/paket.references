@@ -4,6 +4,7 @@ JetBrains.Annotations
 Lucene.Net
 Lucene.Net.Analysis.Common
 Polly
+System.Reactive
 
 group _IO
     HtmlAgilityPack

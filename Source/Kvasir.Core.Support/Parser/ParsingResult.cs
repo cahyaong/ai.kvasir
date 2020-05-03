@@ -105,6 +105,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
     public abstract class ParsingResult
     {
+        // TODO: Add category to messages, e.g. ability, kind, etc.!
         private readonly List<string> _messages;
 
         protected ParsingResult(IEnumerable<string> messages)

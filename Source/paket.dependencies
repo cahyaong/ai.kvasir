@@ -69,6 +69,10 @@ group _Support
     nuget J2N ~> 1.0.0-beta-0002
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
+    nuget Newtonsoft.Json
+    nuget NLog
+    nuget System.Reactive
+    nuget System.Reactive.Linq
 
 group _Test
 
@@ -76,6 +80,17 @@ group _Test
     source https://api.nuget.org/v3/index.json
 
     nuget FluentAssertions
+    nuget Moq
+    nuget xunit
+    nuget xunit.runner.visualstudio
+
+group _Test_vNext
+
+    framework: netcoreapp3.1
+    source https://api.nuget.org/v3/index.json
+
+    nuget FluentAssertions
+    nuget Microsoft.NET.Test.Sdk
     nuget Moq
     nuget xunit
     nuget xunit.runner.visualstudio

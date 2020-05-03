@@ -32,6 +32,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Threading.Tasks;
     using FluentAssertions;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Testing;
     using Xunit;
 
     public class BaseMagicHttpFetcherTests

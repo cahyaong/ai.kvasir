@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Authors>Cahya Ong</Authors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj" />
+    <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
+    <ProjectReference Include="..\Kvasir.Core.Support\nGratis.AI.Kvasir.Core.Support.csproj" />
+    <ProjectReference Include="..\Kvasir.Testing\nGratis.AI.Kvasir.Testing.csproj" />
+  </ItemGroup>
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>

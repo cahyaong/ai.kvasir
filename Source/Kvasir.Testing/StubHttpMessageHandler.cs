@@ -26,7 +26,7 @@
 // <creation_timestamp>Thursday, 8 November 2018 10:39:54 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Test
+namespace nGratis.AI.Kvasir.Testing
 {
     using System;
     using System.Collections.Generic;
@@ -43,7 +43,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class StubHttpMessageHandler : HttpMessageHandler
+    public class StubHttpMessageHandler : HttpMessageHandler
     {
         private readonly IDictionary<Uri, StubInfo> _infoLookup;
 
@@ -114,7 +114,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             var archiveStream = Assembly
                 .GetExecutingAssembly()
-                .GetManifestResourceStream($"nGratis.AI.Kvasir.Core.Test.Session.{name}.ngts");
+                .GetManifestResourceStream($"nGratis.AI.Kvasir.Testing.Session.{name}.ngts");
 
             if (archiveStream == null)
             {

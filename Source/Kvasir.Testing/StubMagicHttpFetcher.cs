@@ -26,13 +26,14 @@
 // <creation_timestamp>Monday, 17 December 2018 1:28:17 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Test
+namespace nGratis.AI.Kvasir.Testing
 {
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Vision.Imaging;
 

@@ -33,3 +33,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("f5f3e028-b88a-497d-b84d-c9571dedea5b")]
+
+// TODO: Rename this project to <...Kvasir.Framework.Testing>!
