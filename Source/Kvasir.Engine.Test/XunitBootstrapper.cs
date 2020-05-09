@@ -33,7 +33,7 @@
 namespace nGratis.AI.Kvasir.Engine.Test
 {
     using FluentAssertions.Formatting;
-    using nGratis.AI.Kvasir.Testing;
+    using nGratis.AI.Kvasir.Framework;
     using Xunit.Abstractions;
     using Xunit.Sdk;
 

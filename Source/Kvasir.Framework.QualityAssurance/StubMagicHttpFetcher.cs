@@ -26,7 +26,7 @@
 // <creation_timestamp>Monday, 17 December 2018 1:28:17 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Testing
+namespace nGratis.AI.Kvasir.Framework
 {
     using System.Collections.Generic;
     using System.Linq;

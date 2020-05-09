@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="PlayerValueFormatter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -22,16 +22,33 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 // </copyright>
+
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, January 31, 2020 8:24:17 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, February 11, 2020 7:10:43 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Framework
+{
+    using System;
+    using System.Text;
+    using FluentAssertions.Formatting;
+    using nGratis.AI.Kvasir.Engine;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Testing")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("f5f3e028-b88a-497d-b84d-c9571dedea5b")]
+    public class PlayerValueFormatter : IValueFormatter
+    {
+        public bool CanHandle(object value) => value is Player;
 
-// TODO: Rename this project to <...Kvasir.Framework.Testing>!
+        public string Format(object value, FormattingContext context, FormatChild formatChild)
+        {
+            var separator = context.UseLineBreaks ? Environment.NewLine : string.Empty;
+            var padding = context.UseLineBreaks ? new string('\t', context.Depth) : " ";
+
+            var player = (Player)value;
+
+            return new StringBuilder()
+                .Append($"{separator}{padding}<{player.GetType().FullName}> ")
+                .Append($"with <{nameof(Player.Name)}> = [{player.Name}]")
+                .ToString();
+        }
+    }
+}

@@ -8,8 +8,8 @@
     <ProjectGuid>{F5F3E028-B88A-497D-B84D-C9571DEDEA5B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>nGratis.AI.Kvasir.Testing</RootNamespace>
-    <AssemblyName>nGratis.AI.Kvasir.Testing</AssemblyName>
+    <RootNamespace>nGratis.AI.Kvasir.Framework</RootNamespace>
+    <AssemblyName>nGratis.AI.Kvasir.Framework.QualityAssurance</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -67,13 +67,13 @@
       <Project>{e727ca53-5288-4e7e-828c-011803b0bedd}</Project>
       <Name>nGratis.Cop.Olympus.Contract</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.QualityAssurance\nGratis.Cop.Olympus.Framework.QualityAssurance.csproj">
+      <Project>{ecc17f00-d6f9-4fad-afce-e6967d48f0ac}</Project>
+      <Name>nGratis.Cop.Olympus.Framework.QualityAssurance</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj">
       <Project>{b360201a-1710-4276-b745-673e757d671e}</Project>
       <Name>nGratis.Cop.Olympus.Framework.Support</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Testing\nGratis.Cop.Olympus.Testing.csproj">
-      <Project>{b199217e-4103-44a9-afb9-65287a52d06f}</Project>
-      <Name>nGratis.Cop.Olympus.Testing</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Vision\nGratis.Cop.Olympus.Vision.csproj">
       <Project>{5d4ffbfb-372e-4fbb-b7dc-fe3bb5a7e00f}</Project>

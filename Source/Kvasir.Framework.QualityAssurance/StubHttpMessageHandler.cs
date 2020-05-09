@@ -26,7 +26,7 @@
 // <creation_timestamp>Thursday, 8 November 2018 10:39:54 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Testing
+namespace nGratis.AI.Kvasir.Framework
 {
     using System;
     using System.Collections.Generic;
@@ -114,7 +114,7 @@ namespace nGratis.AI.Kvasir.Testing
 
             var archiveStream = Assembly
                 .GetExecutingAssembly()
-                .GetManifestResourceStream($"nGratis.AI.Kvasir.Testing.Session.{name}.ngts");
+                .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Session.{name}.ngts");
 
             if (archiveStream == null)
             {

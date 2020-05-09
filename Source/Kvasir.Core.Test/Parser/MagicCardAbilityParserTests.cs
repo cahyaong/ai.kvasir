@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core.Parser;
-    using nGratis.Cop.Olympus.Testing;
+    using nGratis.Cop.Olympus.Framework;
     using Xunit;
 
     public class MagicCardAbilityParserTests

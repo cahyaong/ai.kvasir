@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using System.Threading.Tasks;
     using FluentAssertions;
     using FluentAssertions.Extensions;
-    using nGratis.AI.Kvasir.Testing;
+    using nGratis.AI.Kvasir.Framework;
     using Xunit;
 
     public class ThrottlingMessageHandlerTests
