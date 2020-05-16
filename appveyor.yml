@@ -1,9 +1,0 @@
-version: 0.1.{build}
-image: Visual Studio 2019
-configuration: Release
-before_build:
-  - cmd: 'appveyor_prebuild.cmd'
-build:
-  project: Source
-  parallel: true
-  verbosity: minimal
