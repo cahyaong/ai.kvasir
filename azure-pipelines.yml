@@ -10,10 +10,14 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: CmdLine@2
-  displayName: 'Execute AppVeyor pre-build steps'
+- checkout: self
+  clean: true
+  submodules: true
+  
+- task: DotNetCoreCLI@2
   inputs:
-    script: 'appveyor_prebuild.cmd'
+    command: 'restore'
+    workingDirectory: 'External/cop.olympus/Source'
 
 - task: VSBuild@1
   inputs:
