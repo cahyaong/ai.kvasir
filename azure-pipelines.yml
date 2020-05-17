@@ -17,7 +17,6 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-    workingDirectory: 'External/cop.olympus/Source'
     projects: |
       External/cop.olympus/Source/nGratis.Cop.Olympus.sln
       Source/nGratis.AI.Kvasir.sln
