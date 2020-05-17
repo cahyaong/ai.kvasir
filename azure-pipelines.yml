@@ -18,7 +18,9 @@ steps:
   inputs:
     command: 'restore'
     workingDirectory: 'External/cop.olympus/Source'
-    projects: 'External/cop.olympus/Source/nGratis.Cop.Olympus.sln'
+    projects: |
+      External/cop.olympus/Source/nGratis.Cop.Olympus.sln
+      Source/nGratis.AI.Kvasir.sln
 
 - task: VSBuild@1
   inputs:
