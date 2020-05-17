@@ -3,7 +3,7 @@
 _ai.kvasir_ provides a training ground for experimenting and benchmarking various AI and Machine Learning techniques applicable to artificial agents playing [_Magic: The Gathering_](https://magic.wizards.com) card game.
 
 [![GitHub License](https://img.shields.io/github/license/cahyaong/ai.kvasir.svg)](LICENSE)
-[![Build Status](https://dev.azure.com/ngratis/ai.kvasir/_apis/build/status/ai.kvasir.github?branchName=master)
+[![Build Status](https://dev.azure.com/ngratis/ai.kvasir/_apis/build/status/ai.kvasir.github?branchName=master)](https://dev.azure.com/ngratis/ai.kvasir/_build/latest?definitionId=1&branchName=master)
 
 ## Key Features
 
