@@ -38,6 +38,7 @@ namespace nGratis.AI.Kvasir.Framework
     using System.Net.Http;
     using System.Reflection;
     using System.Text;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
@@ -88,6 +89,46 @@ namespace nGratis.AI.Kvasir.Framework
             return this;
         }
 
+        public StubHttpMessageHandler WithSuccessfulScryfallResponse(string name)
+        {
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
+
+            var sessionStream = Assembly
+                .GetExecutingAssembly()
+                .FindSessionStream(name);
+
+            using (sessionStream)
+            using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
+            {
+                sessionArchive
+                    .Entries
+                    .Select(entry => new
+                    {
+                        Entry = entry,
+                        Match = Pattern.CardEntry.Match(entry.Name)
+                    })
+                    .Where(anon => anon.Match.Success)
+                    .Select(anon => new
+                    {
+                        TargetUri = new Uri(string.Format(
+                            "https://api.scryfall.com/cards/search?q=e%3a{0}&unique=prints&order=name&page={1}",
+                            anon.Match.Groups["code"].Value,
+                            int.Parse(anon.Match.Groups["page"].Value))),
+                        ResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                        {
+                            Content = StubHttpMessageHandler.CreateHttpContent(anon.Entry)
+                        }
+                    })
+                    .Select(anon => new StubInfo(anon.TargetUri, anon.ResponseMessage))
+                    .ForEach(info => this._infoLookup[info.TargetUri] = info);
+            }
+
+            return this
+                .WithSuccessfulResponseInSession("https://api.scryfall.com/sets", name, "sets.json");
+        }
+
         public StubHttpMessageHandler WithSuccessfulResponseInSession(
             string targetUrl,
             string name,
@@ -112,24 +153,19 @@ namespace nGratis.AI.Kvasir.Framework
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
 
-            var archiveStream = Assembly
+            var sessionStream = Assembly
                 .GetExecutingAssembly()
-                .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Session.{name}.ngts");
+                .FindSessionStream(name);
 
-            if (archiveStream == null)
-            {
-                throw new KvasirTestingException($"Session [{name}] must be embedded!");
-            }
-
-            using (archiveStream)
-            using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Read))
+            using (sessionStream)
+            using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
             {
                 if (string.IsNullOrEmpty(entryKey))
                 {
                     entryKey = targetUri.Segments.Last();
                 }
 
-                var matchedEntry = archive
+                var matchedEntry = sessionArchive
                     .Entries
                     .SingleOrDefault(entry => entry.Name == entryKey);
 
@@ -142,7 +178,7 @@ namespace nGratis.AI.Kvasir.Framework
                         .Select(parameter => parameter.Split('=')[1])
                         .ToArray();
 
-                    matchedEntry = archive
+                    matchedEntry = sessionArchive
                         .Entries
                         .SingleOrDefault(entry => entryKeys.Contains(entry.Name));
                 }
@@ -277,6 +313,13 @@ namespace nGratis.AI.Kvasir.Framework
             public HttpResponseMessage ResponseMessage { get; }
 
             public int InvocationCount { get; set; }
+        }
+
+        private static class Pattern
+        {
+            public static readonly Regex CardEntry = new Regex(
+                @"(?<code>[A-Z0-9]{3})_(?<page>\d{2})\.json",
+                RegexOptions.Compiled);
         }
     }
 }

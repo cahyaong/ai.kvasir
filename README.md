@@ -17,4 +17,4 @@ _ai.kvasir_ provides a training ground for experimenting and benchmarking variou
 
 _ai.kvasir_ is an unofficial Fan Content permitted under the [Fan Content Policy](https://company.wizards.com/fancontentpolicy).
 Not approved or endorsed by Wizards. 
-Portions of the materials used are property of Wizards of the Coast. � Wizards of the Coast LLC, a subsidiary of Harsbo, Inc.
+Portions of the materials used are property of Wizards of the Coast. (c) Wizards of the Coast LLC, a subsidiary of Harsbo, Inc.

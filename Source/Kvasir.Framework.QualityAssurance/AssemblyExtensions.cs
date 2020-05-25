@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="AssemblyExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,19 +23,32 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, May 5, 2020 6:00:27 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+// ReSharper disable once CheckNamespace
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core.Support")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("7ba00265-7016-4497-8e88-bba45d3c2583")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Test")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.Test")]
+namespace System.Reflection
+{
+    using System.IO;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Olympus.Contract;
+
+    public static class AssemblyExtensions
+    {
+        public static Stream FindSessionStream(this Assembly assembly, string name)
+        {
+            Guard
+                .Require(assembly, nameof(assembly))
+                .Is.Not.Null();
+
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
+
+            return
+                assembly.GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Session.{name}.ngts") ??
+                throw new KvasirTestingException($"Session [{name}] must be embedded!");
+        }
+    }
+}

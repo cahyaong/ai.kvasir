@@ -79,28 +79,27 @@ namespace nGratis.AI.Kvasir.Console
                 .Select(unparsedCard => this._cardParser.Parse(unparsedCard))
                 .ToArray();
 
-            using (var summaryPrinter = SummaryPrinter.Create(2))
-            {
-                summaryPrinter
-                    .Indent()
-                    .WithCardSet(
-                        unparsedCardSet.Name,
-                        ("Parsed Cards", parsingResults.Length),
-                        ("Invalid Cards", parsingResults.Count(result => !result.IsValid)));
+            using var summaryPrinter = SummaryPrinter.Create(2);
 
-                parsingResults
-                    .Where(result => !result.IsValid)
-                    .OrderBy(result => result.GetValue<DefinedBlob.Card>().Number)
-                    .ForEach(result => summaryPrinter.WithInvalidCard(
-                        result.GetValue<DefinedBlob.Card>(),
-                        result.Messages.ToArray()));
+            summaryPrinter
+                .Indent()
+                .WithCardSet(
+                    unparsedCardSet.Name,
+                    ("Parsed Cards", parsingResults.Length),
+                    ("Invalid Cards", parsingResults.Count(result => !result.IsValid)));
 
-                var summaryContent = summaryPrinter
-                    .Dedent()
-                    .Print();
+            parsingResults
+                .Where(result => !result.IsValid)
+                .OrderBy(result => result.GetValue<DefinedBlob.Card>().Number)
+                .ForEach(result => summaryPrinter.WithInvalidCard(
+                    result.GetValue<DefinedBlob.Card>(),
+                    result.Messages.ToArray()));
 
-                this._logger.LogWarning($"Found invalid cards!{Environment.NewLine}{summaryContent}");
-            }
+            var summaryContent = summaryPrinter
+                .Dedent()
+                .Print();
+
+            this._logger.LogWarning($"Found invalid cards!{Environment.NewLine}{summaryContent}");
         }
 
         internal sealed class SummaryPrinter : IDisposable

@@ -50,6 +50,8 @@
       <DependentUpon>Arg.cs</DependentUpon>
     </Compile>
     <Compile Include="Arg.cs" />
+    <Compile Include="AssemblyExtensions.cs" />
+    <Compile Include="MagicFetcherExtensions.cs" />
     <Compile Include="MockBuilder.cs" />
     <Compile Include="Engine\PlayerValueFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -44,7 +44,6 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="IO\MagicJsonFetcher.cs" />
-    <Compile Include="IO\ScryfallFetcher.cs" />
     <Compile Include="IO\WizardFetcher.cs" />
     <Compile Include="KvasirExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
