@@ -28,8 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
@@ -49,9 +47,7 @@ namespace nGratis.AI.Kvasir.Engine
 
             this.Kind = definedCard.Kind;
 
-            this.Costs = definedCard.Cost == DefinedBlob.Cost.Free
-                ? new[] { ManaCost.Free }
-                : throw new NotSupportedException();
+            // TODO: Introduce concept of design- and run-time card with sharing basic properties!
         }
 
         protected internal Card(string name)
@@ -61,13 +57,10 @@ namespace nGratis.AI.Kvasir.Engine
                 : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
 
             this.Kind = CardKind.Stub;
-            this.Costs = new[] { ManaCost.Free };
         }
 
         public CardKind Kind { get; }
 
         public string Name { get; }
-
-        public IEnumerable<Cost> Costs { get; }
     }
 }

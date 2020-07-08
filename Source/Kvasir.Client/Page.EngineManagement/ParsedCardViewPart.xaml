@@ -61,6 +61,6 @@
       Header="Messages"
       Kind="List"
       Mode="Output"
-      Values="{Binding ParsingMessages, Mode=OneWay}" />
+      Values="{Binding ProcessingMessages, Mode=OneWay}" />
   </StackPanel>
 </UserControl>

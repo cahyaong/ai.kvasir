@@ -46,7 +46,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private readonly IMagicRepository _repository;
 
-        private readonly IMagicCardParser _cardParser;
+        private readonly IMagicCardProcessor _cardProcessor;
 
         private ImageSource _originalImage;
 
@@ -54,14 +54,14 @@ namespace nGratis.AI.Kvasir.Client
 
         private IEnumerable _combinedCardKinds;
 
-        private IEnumerable<string> _parsingMessages;
+        private IEnumerable<string> _processingMessages;
 
         public CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository)
-            : this(unparsedCard, repository, MagicCardParser.Instance)
+            : this(unparsedCard, repository, MagicCardProcessor.Instance)
         {
         }
 
-        internal CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository, IMagicCardParser cardParser)
+        internal CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository, IMagicCardProcessor cardProcessor)
         {
             Guard
                 .Require(unparsedCard, nameof(unparsedCard))
@@ -72,11 +72,11 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Not.Null();
 
             Guard
-                .Require(cardParser, nameof(cardParser))
+                .Require(cardProcessor, nameof(cardProcessor))
                 .Is.Not.Null();
 
             this._repository = repository;
-            this._cardParser = cardParser;
+            this._cardProcessor = cardProcessor;
 
             this.UnparsedCard = unparsedCard;
 
@@ -104,10 +104,10 @@ namespace nGratis.AI.Kvasir.Client
             private set => this.RaiseAndSetIfChanged(ref this._combinedCardKinds, value);
         }
 
-        public IEnumerable<string> ParsingMessages
+        public IEnumerable<string> ProcessingMessages
         {
-            get => this._parsingMessages;
-            private set => this.RaiseAndSetIfChanged(ref this._parsingMessages, value);
+            get => this._processingMessages;
+            private set => this.RaiseAndSetIfChanged(ref this._processingMessages, value);
         }
 
         public ICommand PopulateDetailsCommand { get; }
@@ -131,11 +131,11 @@ namespace nGratis.AI.Kvasir.Client
             }
             else
             {
-                var parsingResult = await Task.Run(() => this._cardParser.Parse(this.UnparsedCard));
+                var processingResult = await Task.Run(() => this._cardProcessor.Process(this.UnparsedCard));
 
-                if (parsingResult.IsValid)
+                if (processingResult.IsValid)
                 {
-                    this.DefinedCard = parsingResult.GetValue<DefinedBlob.Card>();
+                    this.DefinedCard = processingResult.GetValue<DefinedBlob.Card>();
 
                     var combinedKinds = new List<object>();
 
@@ -153,13 +153,13 @@ namespace nGratis.AI.Kvasir.Client
                     combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
 
                     this.CombinedCardKinds = combinedKinds;
-                    this.ParsingMessages = Enumerable.Empty<string>();
+                    this.ProcessingMessages = Enumerable.Empty<string>();
                 }
                 else
                 {
                     this.DefinedCard = new DefinedBlob.Card();
                     this.CombinedCardKinds = Enumerable.Empty<object>();
-                    this.ParsingMessages = parsingResult.Messages;
+                    this.ProcessingMessages = processingResult.Messages;
                 }
             }
         }

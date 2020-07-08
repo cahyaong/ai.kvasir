@@ -130,7 +130,7 @@ namespace nGratis.AI.Kvasir.Client
                 .Merge()
                 .Where(pattern =>
                     pattern.EventArgs.PropertyName == nameof(CardViewModel.DefinedCard) ||
-                    pattern.EventArgs.PropertyName == nameof(CardViewModel.ParsingMessages))
+                    pattern.EventArgs.PropertyName == nameof(CardViewModel.ProcessingMessages))
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(_ => this.UpdateParsingStatistics());
         }
@@ -166,7 +166,7 @@ namespace nGratis.AI.Kvasir.Client
                 .ToArray();
 
             this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;
-            this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ParsingMessages.Any());
+            this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ProcessingMessages.Any());
             this.InvalidCardCount = parsedCardViewModels.Length - this.ValidCardCount;
         }
     }

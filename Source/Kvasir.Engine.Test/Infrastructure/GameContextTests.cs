@@ -187,7 +187,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeHidden()
                         .And.HaveCardQuantity((ushort)(activeDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfDefinedDeck(activeDeck);
+                        .And.BeSubsetOfConstructedDeck(activeDeck);
 
                     var nonactiveDeck = definedPlayers
                         .Single(player => player.Name == gameContext.NonactivePlayer.Name)
@@ -200,7 +200,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeHidden()
                         .And.HaveCardQuantity((ushort)(nonactiveDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfDefinedDeck(nonactiveDeck);
+                        .And.BeSubsetOfConstructedDeck(nonactiveDeck);
                 }
             }
 
@@ -245,7 +245,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfDefinedDeck(definedPlayers
+                        .And.BeSubsetOfConstructedDeck(definedPlayers
                             .Single(player => player.Name == gameContext.ActivePlayer.Name)
                             .Deck);
 
@@ -256,7 +256,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfDefinedDeck(definedPlayers
+                        .And.BeSubsetOfConstructedDeck(definedPlayers
                             .Single(player => player.Name == gameContext.NonactivePlayer.Name)
                             .Deck);
                 }

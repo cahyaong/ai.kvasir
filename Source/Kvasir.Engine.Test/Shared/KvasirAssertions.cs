@@ -28,16 +28,18 @@
 
 namespace nGratis.AI.Kvasir.Engine.Test
 {
+    using nGratis.AI.Kvasir.Engine;
+
     internal static class KvasirAssertions
     {
-        public static ZoneAssertions Must(this Zone zone)
+        public static ZoneAssertion Must(this Zone zone)
         {
-            return new ZoneAssertions(zone);
+            return new ZoneAssertion(zone);
         }
 
-        public static GameContextAssertions Must(this GameContext gameContext)
+        public static GameContextAssertion Must(this GameContext gameContext)
         {
-            return new GameContextAssertions(gameContext);
+            return new GameContextAssertion(gameContext);
         }
     }
 }

@@ -23,16 +23,13 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 26 December 2018 8:53:54 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 17 January 2019 7:49:51 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core.Test
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using FluentAssertions;
-    using FluentAssertions.Execution;
     using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core.Parser;
@@ -42,987 +39,268 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     public class MagicCardParserTests
     {
-        public class ParseMethod
+        public class ParseAbilityMethod
         {
-            [Fact]
-            public void WhenGettingValidCard_ShouldReturnValidParsingResult()
+            [Theory]
+            [MemberData(nameof(TestData.ProducingManaTheories), MemberType = typeof(TestData))]
+            public void WhenGettingAbilityToProduceMana_ShouldParseValue(AbilityTheory theory)
             {
                 // Arrange.
 
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Number = "42",
-                    Name = "Llanowar Elves",
-                    Type = "Creature - Elf Druid",
-                    ManaCost = "{G}",
-                    Power = "1",
-                    Toughness = "1"
-                };
-
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
+                var parsingResult = MagicCardParser.ParseAbility(theory.UnparsedAbility);
 
                 // Assert.
 
                 parsingResult
                     .Should().NotBeNull();
-
-                parsingResult
-                    .Messages
-                    .Should().NotBeNull()
-                    .And.BeEmpty();
 
                 parsingResult
                     .IsValid
                     .Should().BeTrue();
 
                 parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost
-                    .Should().NotBe(DefinedBlob.Cost.Unknown);
+                    .Value
+                    .Must().BeStrictEquivalentTo(theory.DefinedAbility);
             }
 
             [Fact]
-            public void WhenGettingInvalidCard_ShouldInvalidParsingResult()
+            public void WhenGettingInvalidAbility_ShouldIncludeMessage()
             {
                 // Arrange.
 
-                var unparsedCard = new UnparsedBlob.Card();
+                var unparsedAbility = "[_MOCK_UNPARSED_ABILITY_]";
 
                 // Act.
 
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
+                var parsingResult = MagicCardParser.ParseAbility(unparsedAbility);
 
                 // Assert.
 
                 parsingResult
                     .Should().NotBeNull();
-
-                parsingResult
-                    .Messages
-                    .Should().NotBeEmpty();
 
                 parsingResult
                     .IsValid
                     .Should().BeFalse();
 
                 parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost
-                    .Should().Be(DefinedBlob.Cost.Unknown);
-            }
-
-            [Fact]
-            public void WhenGettingValidNumber_ShouldSetAsIs()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Number = "42"
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Number
-                    .Should().Be(42);
-            }
-
-            [Fact]
-            public void WhenGettingInvalidNumber_ShouldAddMessage()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Number = "-42"
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
                     .Messages
-                    .Should().Contain("<Number> Value must be positive.");
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .MultiverseId
-                    .Should().Be(0);
+                    .Should().HaveCount(1)
+                    .And.Contain("<Root> Ability [[_MOCK_UNPARSED_ABILITY_]] parsing could not continue after processing '[' at [0:0]!");
             }
 
-            [Fact]
-            public void WhenGettingValidMultiverseId_ShouldSetAsIs()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    MultiverseId = 42
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .MultiverseId
-                    .Should().Be(42);
-            }
-
-            [Fact]
-            public void WhenGettingInvalidMultiverseId_ShouldAddMessage()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    MultiverseId = -42
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .Messages
-                    .Should().Contain("<MultiverseId> Value must be zero or positive.");
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .MultiverseId
-                    .Should().Be(0);
-            }
-
-            [Fact]
-            public void WhenGettingValidName_ShouldSetAsIs()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Name = "Llanowar Elves"
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Name
-                    .Should().Be("Llanowar Elves");
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.ValidTypeTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidType_ShouldParseValue(TypeTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                using (new AssertionScope())
-                {
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .Kind
-                        .Should().Be(theory.ParsedCardKind);
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .SuperKind
-                        .Should().Be(theory.ParsedCardSuperKind);
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .SubKinds
-                        .Should().BeEquivalentTo(theory.ParsedCardSubKinds);
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .IsTribal
-                        .Should().BeFalse();
-                }
-            }
-
-            [Fact]
-            public void WhenGettingValidTribalType_ShouldSetIsTribal()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = "Tribal Creature - Merfolk Wizard"
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                using (new AssertionScope())
-                {
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .IsTribal
-                        .Should().BeTrue();
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .SuperKind
-                        .Should().Be(CardSuperKind.None);
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .Kind
-                        .Should().Be(CardKind.Creature);
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .SubKinds
-                        .Should().BeEquivalentTo(CardSubKind.Merfolk, CardSubKind.Wizard);
-                }
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.InvalidTypeTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidType_ShouldAddMessage(TypeTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .Messages
-                    .Should().Contain(theory.Message);
-            }
-
-            [Fact]
-            public void WhenGettingValidLandType_ShouldSetNoManaCost()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = "Land",
-                    ManaCost = string.Empty
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost
-                    .Should().Be(DefinedBlob.Cost.Free);
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.ValidManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidManaCost_ShouldParseValue(ManaCostTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType,
-                    ManaCost = theory.UnparsedManaCost
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost.Kind
-                    .Should().Be(theory.ParsedCostKind);
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost.Amount
-                    .Should().Be(theory.ParsedAmount);
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.InvalidManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidManaCost_ShouldAddMessage(ManaCostTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType,
-                    ManaCost = theory.UnparsedManaCost
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .Messages
-                    .Should().Contain(theory.Message);
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost
-                    .Should().Be(DefinedBlob.Cost.Unknown);
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.ValidPowerTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidPower_ShouldParseValue(PowerTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType,
-                    Power = theory.UnparsedPower
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Power
-                    .Should().Be(theory.ParsedPower);
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.InvalidPowerTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidPower_ShouldAddMessage(PowerTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType,
-                    Power = theory.UnparsedPower
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .Messages
-                    .Should().Contain(theory.Message);
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Power.Should().Be(0);
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.ValidToughnessTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidToughness_ShouldParseValue(ToughnessTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType,
-                    Toughness = theory.UnparsedToughness
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                parsingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Toughness
-                    .Should().Be(theory.ParsedToughness);
-            }
-
-            [Theory]
-            [MemberData(nameof(TestData.InvalidToughnessTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidToughness_ShouldAddMessage(ToughnessTheory theory)
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Type = theory.UnparsedType,
-                    Toughness = theory.UnparsedToughness
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                using (new AssertionScope())
-                {
-                    parsingResult
-                        .Messages
-                        .Should().Contain(theory.Message);
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>()
-                        .Toughness.Should().Be(0);
-                }
-            }
-
-            [Fact]
-            public void WhenGettingInvalidText_ShouldAddMessage()
-            {
-                // Arrange.
-
-                var unparsedCard = new UnparsedBlob.Card
-                {
-                    Text =
-                        "[_MOCK_UNPARSED_ABILITY_01_]" + Environment.NewLine +
-                        "[_MOCK_UNPARSED_ABILITY_02_]"
-                };
-
-                // Act.
-
-                var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
-
-                // Assert.
-
-                parsingResult
-                    .Should().NotBeNull();
-
-                using (new AssertionScope())
-                {
-                    parsingResult
-                        .Messages
-                        .Should().NotBeNull()
-                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_01_].].")
-                        .And.Contain("<Ability> No support for value [[_MOCK_UNPARSED_ABILITY_02_].].");
-
-                    parsingResult
-                        .GetValue<DefinedBlob.Card>().Abilities
-                        .Should().NotBeNull()
-                        .And.HaveCount(2)
-                        .And.AllBeEquivalentTo(DefinedBlob.Ability.NotSupported);
-                }
-            }
-
-            [UsedImplicitly(ImplicitUseTargetFlags.Members)]
+            [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
             private static class TestData
             {
-                public static IEnumerable<object[]> ValidTypeTheories
+                public static IEnumerable<object[]> ProducingManaTheories
                 {
                     get
                     {
-                        yield return TypeTheory
-                            .Create("Artifact")
-                            .ExpectValid(
-                                CardKind.Artifact,
-                                CardSuperKind.None)
-                            .WithLabel(1, "Card type without sub-type.")
+                        yield return AbilityTheory
+                            .Create("({T}: Add {W}.)")
+                            .ExpectProducingMana(Mana.White)
+                            .WithLabel(1, "Producing mana from Plains")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
-                            .Create("Creature - Elf Warrior")
-                            .ExpectValid(
-                                CardKind.Creature,
-                                CardSuperKind.None,
-                                CardSubKind.Elf,
-                                CardSubKind.Warrior)
-                            .WithLabel(2, "Card type with multiple sub-types.")
+                        yield return AbilityTheory
+                            .Create("({T}: Add {U}.)")
+                            .ExpectProducingMana(Mana.Blue)
+                            .WithLabel(2, "Producing mana from Island")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
-                            .Create("Legendary Creature - Goblin Shaman")
-                            .ExpectValid(
-                                CardKind.Creature,
-                                CardSuperKind.Legendary,
-                                CardSubKind.Goblin,
-                                CardSubKind.Shaman)
-                            .WithLabel(3, "Card type with super-type and multiple sub-types.")
+                        yield return AbilityTheory
+                            .Create("({T}: Add {B}.)")
+                            .ExpectProducingMana(Mana.Black)
+                            .WithLabel(3, "Producing mana from Swamp")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
-                            .Create("Creature — Kithkin Soldier")
-                            .ExpectValid(
-                                CardKind.Creature,
-                                CardSuperKind.None,
-                                CardSubKind.Kithkin,
-                                CardSubKind.Soldier)
-                            .WithLabel(4, "Card type with separator from MTGJSON.")
+                        yield return AbilityTheory
+                            .Create("({T}: Add {R}.)")
+                            .ExpectProducingMana(Mana.Red)
+                            .WithLabel(4, "Producing mana from Mountain")
+                            .ToXunitTheory();
+
+                        yield return AbilityTheory
+                            .Create("({T}: Add {G}.)")
+                            .ExpectProducingMana(Mana.Green)
+                            .WithLabel(5, "Producing mana from Forest")
                             .ToXunitTheory();
                     }
                 }
+            }
 
-                public static IEnumerable<object[]> InvalidTypeTheories
+            public sealed class AbilityTheory : CopTheory
+            {
+                public string UnparsedAbility { get; private set; }
+
+                public DefinedBlob.Ability DefinedAbility { get; private set; }
+
+                public static AbilityTheory Create(string unparsedAbility)
                 {
-                    get
+                    Guard
+                        .Require(unparsedAbility, nameof(unparsedAbility))
+                        .Is.Not.Empty();
+
+                    return new AbilityTheory
                     {
-                        yield return TypeTheory
-                            .Create(string.Empty)
-                            .ExpectInvalid("<Kind> Value must not be <null> or empty.")
-                            .WithLabel(1, "Empty type.")
-                            .ToXunitTheory();
-
-                        yield return TypeTheory
-                            .Create("Food")
-                            .ExpectInvalid("<Kind> No mapping for value [Food].")
-                            .WithLabel(2, "Invalid card type.")
-                            .ToXunitTheory();
-
-                        yield return TypeTheory
-                            .Create("Extraordinary Creature")
-                            .ExpectInvalid("<SuperKind> No mapping for value [Extraordinary].")
-                            .WithLabel(3, "Invalid card super-type.")
-                            .ToXunitTheory();
-
-                        yield return TypeTheory
-                            .Create("Creature - Quokka Ranger")
-                            .ExpectInvalid("<SubKind> No mapping for value [Quokka], [Ranger].")
-                            .WithLabel(4, "Invalid card sub - types.")
-                            .ToXunitTheory();
-                    }
+                        UnparsedAbility = unparsedAbility,
+                        DefinedAbility = DefinedBlob.Ability.NotSupported
+                    };
                 }
 
-                public static IEnumerable<object[]> ValidManaCostTheories
+                public AbilityTheory ExpectProducingMana(Mana mana)
                 {
-                    get
+                    this.DefinedAbility = new DefinedBlob.Ability
                     {
-                        yield return ManaCostTheory
-                            .Create("Creature", "{0}")
-                            .ExpectValid(CostKind.Mana, "{0}")
-                            .WithLabel(1, "Non-land with zero amount.")
-                            .ToXunitTheory();
+                        Kind = AbilityKind.Activated,
+                        Costs = new[]
+                        {
+                            DefinedBlob.Cost.Tapping
+                        },
+                        Effects = new DefinedBlob.Effect[]
+                        {
+                            DefinedBlob.ProducingManaEffect.Builder
+                                .Create()
+                                .WithAmount(mana, 1)
+                                .Build()
+                        }
+                    };
 
-                        yield return ManaCostTheory
-                            .Create("Creature", "{42}")
-                            .ExpectValid(CostKind.Mana, "{42}")
-                            .WithLabel(2, "Non-land with colorless amount.")
-                            .ToXunitTheory();
-
-                        yield return ManaCostTheory
-                            .Create("Creature", "{G}")
-                            .ExpectValid(CostKind.Mana, "{G}")
-                            .WithLabel(3, "Non-land with mono-color amount.")
-                            .ToXunitTheory();
-
-                        yield return ManaCostTheory
-                            .Create("Creature", "{1}{W}{U}{B}{R}{G}")
-                            .ExpectValid(CostKind.Mana, "{1}{W}{U}{B}{R}{G}")
-                            .WithLabel(4, "Non-land with colorless and all colors amount.")
-                            .ToXunitTheory();
-
-                        yield return ManaCostTheory
-                            .Create("Land", string.Empty)
-                            .ExpectValid(CostKind.Free, string.Empty)
-                            .WithLabel(5, "Land with empty amount.")
-                            .ToXunitTheory();
-                    }
-                }
-
-                public static IEnumerable<object[]> InvalidManaCostTheories
-                {
-                    get
-                    {
-                        yield return ManaCostTheory
-                            .Create("Creature", string.Empty)
-                            .ExpectInvalid("<ManaCost> Value must not be <null> or empty.")
-                            .WithLabel(1, "Non-land with empty mana cost.")
-                            .ToXunitTheory();
-
-                        yield return ManaCostTheory
-                            .Create("Creature", "{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}")
-                            .ExpectInvalid("<ManaCost> Symbol(s) has no mapping for value [{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}].")
-                            .WithLabel(2, "Non-land with invalid mana symbol.")
-                            .ToXunitTheory();
-
-                        yield return ManaCostTheory
-                            .Create("Land", "{42}")
-                            .ExpectInvalid("<ManaCost> Non-empty value for type [Land].")
-                            .WithLabel(3, "Land with non-empty mana cost.")
-                            .ToXunitTheory();
-                    }
-                }
-
-                public static IEnumerable<object[]> ValidPowerTheories
-                {
-                    get
-                    {
-                        yield return PowerTheory
-                            .Create("Creature", "42")
-                            .ExpectValid(42)
-                            .WithLabel(1, "Creature with non-zero power.")
-                            .ToXunitTheory();
-
-                        yield return PowerTheory
-                            .Create("Legendary Creature - Elf Warrior", "42")
-                            .ExpectValid(42)
-                            .WithLabel(2, "Creature with super-, sub-types and non-zero power.")
-                            .ToXunitTheory();
-
-                        yield return PowerTheory
-                            .Create("Artifact", string.Empty)
-                            .ExpectValid(0)
-                            .WithLabel(3, "Non-creature with empty power.")
-                            .ToXunitTheory();
-                    }
-                }
-
-                public static IEnumerable<object[]> InvalidPowerTheories
-                {
-                    get
-                    {
-                        yield return PowerTheory
-                            .Create("Creature", "X")
-                            .ExpectInvalid("<Power> Invalid value [X].")
-                            .WithLabel(1, "Creature with invalid power.")
-                            .ToXunitTheory();
-
-                        yield return PowerTheory
-                            .Create("Basic Land - Forest", "42")
-                            .ExpectInvalid("<Power> Non-empty value for non-creature type [Land].")
-                            .WithLabel(2, "Non-creature with non-empty power.")
-                            .ToXunitTheory();
-                    }
-                }
-
-                public static IEnumerable<object[]> ValidToughnessTheories
-                {
-                    get
-                    {
-                        yield return ToughnessTheory
-                            .Create("Creature", "42")
-                            .ExpectValid(42)
-                            .WithLabel(1, "Creature with non-zero toughness.")
-                            .ToXunitTheory();
-
-                        yield return ToughnessTheory
-                            .Create("Legendary Creature - Elf Warrior", "42")
-                            .ExpectValid(42)
-                            .WithLabel(2, "Creature with super-, sub-types and non-zero toughness.")
-                            .ToXunitTheory();
-
-                        yield return ToughnessTheory
-                            .Create("Artifact", string.Empty)
-                            .ExpectValid(0)
-                            .WithLabel(3, "Non-creature with empty toughness.")
-                            .ToXunitTheory();
-                    }
-                }
-
-                public static IEnumerable<object[]> InvalidToughnessTheories
-                {
-                    get
-                    {
-                        yield return ToughnessTheory
-                            .Create("Creature", "X")
-                            .ExpectInvalid("<Toughness> Invalid value [X].")
-                            .WithLabel(1, "Creature with invalid toughness.")
-                            .ToXunitTheory();
-
-                        yield return ToughnessTheory
-                            .Create("Basic Land - Forest", "42")
-                            .ExpectInvalid("<Toughness> Non-empty value for non-creature type [Land].")
-                            .WithLabel(2, "Non-creature with non-empty toughness.")
-                            .ToXunitTheory();
-                    }
+                    return this;
                 }
             }
         }
 
-        public class TypeTheory : ParsingTheory
+        public class ParseCostMethod
         {
-            public string UnparsedType { get; private set; }
-
-            public CardKind ParsedCardKind { get; private set; }
-
-            public CardSuperKind ParsedCardSuperKind { get; private set; }
-
-            public IEnumerable<CardSubKind> ParsedCardSubKinds { get; private set; }
-
-            public static TypeTheory Create(string unparsedType)
+            [Theory]
+            [MemberData(nameof(TestData.PayingManaCostTheories), MemberType = typeof(TestData))]
+            public void WhenGettingCostToPayMana_ShouldParseValue(CostTheory theory)
             {
-                return new TypeTheory
+                // Arrange.
+
+                // Act.
+
+                var parsingResult = MagicCardParser.ParseCost(theory.UnparsedCost);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .IsValid
+                    .Should().BeTrue();
+
+                parsingResult
+                    .Value
+                    .Must().BeStrictEquivalentTo(theory.DefinedCost);
+            }
+
+            [Fact]
+            public void WhenGettingInvalidCost_ShouldIncludeMessage()
+            {
+                // Arrange.
+
+                var unparsedCost = "[_MOCK_COST_]";
+
+                // Act.
+
+                var parsingResult = MagicCardParser.ParseCost(unparsedCost);
+
+                // Assert.
+
+                parsingResult
+                    .Should().NotBeNull();
+
+                parsingResult
+                    .IsValid
+                    .Should().BeFalse();
+
+                parsingResult
+                    .Messages
+                    .Should().Contain("<Root> Cost [[_MOCK_COST_]] parsing could not continue after processing '[' at [0:0]!");
+            }
+
+            [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+            private static class TestData
+            {
+                public static IEnumerable<object[]> PayingManaCostTheories
                 {
-                    UnparsedType = unparsedType,
-                    ParsedCardKind = CardKind.Unknown,
-                    ParsedCardSuperKind = CardSuperKind.Unknown,
-                    ParsedCardSubKinds = Enumerable.Empty<CardSubKind>(),
-                    Message = string.Empty
-                };
+                    get
+                    {
+                        yield return CostTheory
+                            .Create("{0}")
+                            .Expect(DefinedBlob.PayingManaCost.Free)
+                            .WithLabel(1, "Paying zero mana cost")
+                            .ToXunitTheory();
+
+                        yield return CostTheory
+                            .Create("{42}")
+                            .Expect(DefinedBlob.PayingManaCost.Builder
+                                .Create()
+                                .WithAmount(Mana.Colorless, 42)
+                                .Build())
+                            .WithLabel(2, "Paying colorless mana cost")
+                            .ToXunitTheory();
+
+                        yield return CostTheory
+                            .Create("{G}")
+                            .Expect(DefinedBlob.PayingManaCost.Builder
+                                .Create()
+                                .WithAmount(Mana.Green, 1)
+                                .Build())
+                            .WithLabel(3, "Paying mono-color mana cost")
+                            .ToXunitTheory();
+
+                        yield return CostTheory
+                            .Create("{1}{W}{W}{U}{U}{U}{B}{B}{B}{B}{R}{R}{R}{R}{R}{G}{G}{G}{G}{G}{G}")
+                            .Expect(DefinedBlob.PayingManaCost.Builder
+                                .Create()
+                                .WithAmount(Mana.Colorless, 1)
+                                .WithAmount(Mana.White, 2)
+                                .WithAmount(Mana.Blue, 3)
+                                .WithAmount(Mana.Black, 4)
+                                .WithAmount(Mana.Red, 5)
+                                .WithAmount(Mana.Green, 6)
+                                .Build())
+                            .WithLabel(4, "Paying colorless and all colors mana cost")
+                            .ToXunitTheory();
+                    }
+                }
             }
 
-            public TypeTheory ExpectValid(
-                CardKind parsedCardKind,
-                CardSuperKind parsedCardSuperKind,
-                params CardSubKind[] parsedCardSubKinds)
+            public sealed class CostTheory : CopTheory
             {
-                Guard
-                    .Require(parsedCardKind, nameof(parsedCardKind))
-                    .Is.Not.EqualTo(CardKind.Unknown);
+                public string UnparsedCost { get; private set; }
 
-                Guard
-                    .Require(parsedCardSuperKind, nameof(parsedCardSuperKind))
-                    .Is.Not.EqualTo(CardSuperKind.Unknown);
+                public DefinedBlob.Cost DefinedCost { get; private set; }
 
-                // TODO: Extend <Guard> class to support collection check against specific value(s).
-
-                var hasInvalidSubKind = parsedCardSubKinds
-                    .Any(subKind => subKind == CardSubKind.Unknown);
-
-                Guard
-                    .Require(hasInvalidSubKind, nameof(hasInvalidSubKind))
-                    .Is.False();
-
-                this.ParsedCardKind = parsedCardKind;
-                this.ParsedCardSuperKind = parsedCardSuperKind;
-                this.ParsedCardSubKinds = parsedCardSubKinds;
-
-                return this;
-            }
-        }
-
-        public class ManaCostTheory : ParsingTheory
-        {
-            public string UnparsedType { get; private set; }
-
-            public string UnparsedManaCost { get; private set; }
-
-            public CostKind ParsedCostKind { get; private set; }
-
-            public string ParsedAmount { get; private set; }
-
-            public static ManaCostTheory Create(string unparsedType, string unparsedManaCost)
-            {
-                return new ManaCostTheory
+                public static CostTheory Create(string unparsedCost)
                 {
-                    UnparsedType = unparsedType,
-                    UnparsedManaCost = unparsedManaCost,
-                    ParsedCostKind = CostKind.Unknown,
-                    ParsedAmount = string.Empty,
-                    Message = string.Empty
-                };
-            }
+                    Guard
+                        .Require(unparsedCost, nameof(unparsedCost))
+                        .Is.Not.Empty();
 
-            public ManaCostTheory ExpectValid(CostKind parsedCostKind, string parsedAmount)
-            {
-                this.ParsedCostKind = parsedCostKind;
-                this.ParsedAmount = parsedAmount;
+                    return new CostTheory
+                    {
+                        UnparsedCost = unparsedCost,
+                        DefinedCost = DefinedBlob.Cost.Unknown
+                    };
+                }
 
-                return this;
-            }
-        }
-
-        public class PowerTheory : ParsingTheory
-        {
-            public string UnparsedType { get; private set; }
-
-            public string UnparsedPower { get; private set; }
-
-            public ushort ParsedPower { get; private set; }
-
-            public static PowerTheory Create(string unparsedType, string unparsedPower)
-            {
-                return new PowerTheory
+                public CostTheory Expect(DefinedBlob.Cost definedCost)
                 {
-                    UnparsedType = unparsedType,
-                    UnparsedPower = unparsedPower,
-                    ParsedPower = 0,
-                    Message = string.Empty
-                };
-            }
+                    Guard
+                        .Require(definedCost, nameof(definedCost))
+                        .Is.Not.Null();
 
-            public PowerTheory ExpectValid(ushort parsedPower)
-            {
-                this.ParsedPower = parsedPower;
+                    this.DefinedCost = definedCost;
 
-                return this;
-            }
-        }
-
-        public class ToughnessTheory : ParsingTheory
-        {
-            public string UnparsedType { get; private set; }
-
-            public string UnparsedToughness { get; private set; }
-
-            public ushort ParsedToughness { get; private set; }
-
-            public static ToughnessTheory Create(string unparsedType, string unparsedToughness)
-            {
-                return new ToughnessTheory
-                {
-                    UnparsedType = unparsedType,
-                    UnparsedToughness = unparsedToughness,
-                    ParsedToughness = 0,
-                    Message = string.Empty
-                };
-            }
-
-            public ToughnessTheory ExpectValid(ushort parsedToughness)
-            {
-                this.ParsedToughness = parsedToughness;
-
-                return this;
-            }
-        }
-
-        public abstract class ParsingTheory : CopTheory
-        {
-            public string Message { get; protected set; }
-
-            public ParsingTheory ExpectInvalid(string message)
-            {
-                Guard
-                    .Require(message, nameof(message))
-                    .Is.Not.Empty();
-
-                this.Message = message;
-
-                return this;
+                    return this;
+                }
             }
         }
     }

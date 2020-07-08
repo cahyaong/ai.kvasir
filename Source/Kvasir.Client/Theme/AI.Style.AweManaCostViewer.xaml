@@ -2,10 +2,10 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client">
-  <Style x:Key="{x:Type client:AweManaCostViewer}" TargetType="client:AweManaCostViewer">
+  <Style x:Key="{x:Type client:AwePayingManaCostViewer}" TargetType="client:AwePayingManaCostViewer">
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="client:AweManaCostViewer">
+        <ControlTemplate TargetType="client:AwePayingManaCostViewer">
           <Border BorderBrush="{DynamicResource Cop.Brush.Shade2}" BorderThickness="0,0,0,1">
             <StackPanel
               x:Name="PART_ContentPanel"

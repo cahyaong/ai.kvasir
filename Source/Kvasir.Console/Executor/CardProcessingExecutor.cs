@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardParsingExecutor.cs" company="nGratis">
+// <copyright file="CardProcessingExecutor.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -39,22 +39,22 @@ namespace nGratis.AI.Kvasir.Console
     using nGratis.AI.Kvasir.Core.Parser;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class CardParsingExecutor : IExecutor
+    internal class CardProcessingExecutor : IExecutor
     {
         private readonly IMagicRepository _repository;
 
-        private readonly IMagicCardParser _cardParser;
+        private readonly IMagicCardProcessor _cardProcessor;
 
         private readonly ILogger _logger;
 
-        public CardParsingExecutor(IMagicRepository repository, IMagicCardParser cardParser, ILogger logger)
+        public CardProcessingExecutor(IMagicRepository repository, IMagicCardProcessor cardProcessor, ILogger logger)
         {
             Guard
                 .Require(repository, nameof(repository))
                 .Is.Not.Null();
 
             Guard
-                .Require(cardParser, nameof(cardParser))
+                .Require(cardProcessor, nameof(cardProcessor))
                 .Is.Not.Null();
 
             Guard
@@ -62,7 +62,7 @@ namespace nGratis.AI.Kvasir.Console
                 .Is.Not.Null();
 
             this._repository = repository;
-            this._cardParser = cardParser;
+            this._cardProcessor = cardProcessor;
             this._logger = logger;
         }
 
@@ -75,8 +75,8 @@ namespace nGratis.AI.Kvasir.Console
             var unparsedCardSet = await this._repository.GetCardSetAsync(parameter.GetValue("CardSet.Name"));
             var unparsedCards = await this._repository.GetCardsAsync(unparsedCardSet);
 
-            var parsingResults = unparsedCards
-                .Select(unparsedCard => this._cardParser.Parse(unparsedCard))
+            var processingResults = unparsedCards
+                .Select(unparsedCard => this._cardProcessor.Process(unparsedCard))
                 .ToArray();
 
             using var summaryPrinter = SummaryPrinter.Create(2);
@@ -85,10 +85,10 @@ namespace nGratis.AI.Kvasir.Console
                 .Indent()
                 .WithCardSet(
                     unparsedCardSet.Name,
-                    ("Parsed Cards", parsingResults.Length),
-                    ("Invalid Cards", parsingResults.Count(result => !result.IsValid)));
+                    ("Parsed Cards", processingResults.Length),
+                    ("Invalid Cards", processingResults.Count(result => !result.IsValid)));
 
-            parsingResults
+            processingResults
                 .Where(result => !result.IsValid)
                 .OrderBy(result => result.GetValue<DefinedBlob.Card>().Number)
                 .ForEach(result => summaryPrinter.WithInvalidCard(

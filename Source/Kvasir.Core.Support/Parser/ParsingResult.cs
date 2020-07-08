@@ -23,159 +23,107 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, December 8, 2019 6:22:17 PM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, June 30, 2020 6:20:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core.Parser
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
+    using Antlr4.Runtime;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public sealed class ValidParsingResult : ParsingResult
+    public class ParsingResult
     {
-        private readonly object _value;
-
-        private object _childValue;
-
-        private ValidParsingResult(object value)
-            : base(Enumerable.Empty<string>())
+        protected ParsingResult(params string[] messages)
         {
-            Guard
-                .Require(value, nameof(value))
-                .Is.Not.Default();
-
-            this._value = value;
+            this.Messages = messages;
         }
 
-        public static ParsingResult Create(object value)
-        {
-            return new ValidParsingResult(value);
-        }
+        public bool IsValid => !this.Messages.Any();
 
-        public override TValue GetValue<TValue>()
-        {
-            return (TValue)this._value;
-        }
-
-        protected override ParsingResult WithChildResultCore(ParsingResult childResult)
-        {
-            if (childResult.IsValid && childResult is ValidParsingResult validChildResult)
-            {
-                this._childValue = validChildResult._value;
-            }
-            else
-            {
-                this._childValue = default;
-            }
-
-            return this;
-        }
-
-        protected override ParsingResult BindToCore(PropertyInfo propertyInfo)
-        {
-            propertyInfo.SetValue(this._value, this._childValue);
-            this._childValue = default;
-
-            return this;
-        }
+        public IEnumerable<string> Messages { get; }
     }
 
-    public sealed class InvalidParsingResult : ParsingResult
+    public sealed class ParsingResult<TValue> : ParsingResult
+        where TValue : class
     {
-        private InvalidParsingResult(IEnumerable<string> messages)
+        private ParsingResult(params string[] messages)
             : base(messages)
         {
         }
 
-        public static ParsingResult Create(params string[] messages)
-        {
-            return new InvalidParsingResult(messages);
-        }
+        public TValue Value { get; private set; }
 
-        public override TValue GetValue<TValue>()
-        {
-            throw new KvasirException("No valid value for this parsing result!");
-        }
-    }
-
-    // TODO: Instead of valid and invalid parsing results, we need to support card and field parsing results!
-
-    public abstract class ParsingResult
-    {
-        // TODO: Add category to messages, e.g. ability, kind, etc.!
-        private readonly List<string> _messages;
-
-        protected ParsingResult(IEnumerable<string> messages)
+        internal static ParsingResult<TValue> CreateValid(TValue value)
         {
             Guard
-                .Require(messages, nameof(messages))
+                .Require(value, nameof(value))
                 .Is.Not.Null();
 
-            this._messages = messages
-                .Where(message => !string.IsNullOrEmpty(message))
-                .ToList();
+            return new ParsingResult<TValue>
+            {
+                Value = value
+            };
         }
 
-        public bool IsValid =>
-            this.IsValidCore &&
-            !this.Messages.Any();
-
-        public IEnumerable<string> Messages => this._messages;
-
-        protected virtual bool IsValidCore => true;
-
-        internal ParsingResult WithMessage(string message)
+        internal static ParsingResult<TValue> CreateInvalid(string message)
         {
             Guard
                 .Require(message, nameof(message))
                 .Is.Not.Empty();
 
-            this._messages.Add(message);
-
-            return this;
+            return new ParsingResult<TValue>($"<Root> {message}")
+            {
+                Value = default
+            };
         }
 
-        internal ParsingResult WithChildResult(ParsingResult childResult)
+        internal static ParsingResult<TValue> CreateInvalid<TContext>(params string[] messages)
+            where TContext : ParserRuleContext
         {
             Guard
-                .Require(childResult, nameof(childResult))
-                .Is.Not.Null();
+                .Require(messages, nameof(messages))
+                .Is.Not.Empty();
 
-            if (!childResult.IsValid)
+            var contextName = typeof(TContext)
+                .Name
+                .Replace("Context", string.Empty);
+
+            messages = messages
+                .Where(message => !string.IsNullOrEmpty(message))
+                .Select(message => $"<{contextName}> {message}")
+                .ToArray();
+
+            if (!messages.Any())
             {
-                var filteredMessages = childResult
-                    .Messages
-                    .Where(message => !string.IsNullOrEmpty(message))
-                    .ToArray();
-
-                this._messages.AddRange(filteredMessages);
+                throw new KvasirException("Invalid parsing result must contain at least 1 message!");
             }
 
-            return this.WithChildResultCore(childResult);
+            return new ParsingResult<TValue>(messages)
+            {
+                Value = default
+            };
         }
 
-        internal ParsingResult BindTo(PropertyInfo propertyInfo)
+        internal static ParsingResult<TValue> CreateInvalid(params ParsingResult[] parsingResults)
         {
-            Guard
-                .Require(propertyInfo, nameof(propertyInfo))
-                .Is.Not.Null();
+            var messages = parsingResults
+                .Where(result => result != null)
+                .SelectMany(result => result.Messages)
+                .Distinct()
+                .ToArray();
 
-            return this.BindToCore(propertyInfo);
-        }
+            if (!messages.Any())
+            {
+                throw new KvasirException("Invalid parsing result must contain at least 1 message!");
+            }
 
-        public abstract TValue GetValue<TValue>();
-
-        protected virtual ParsingResult WithChildResultCore(ParsingResult childResult)
-        {
-            return this;
-        }
-
-        protected virtual ParsingResult BindToCore(PropertyInfo propertyInfo)
-        {
-            return this;
+            return new ParsingResult<TValue>(messages)
+            {
+                Value = default
+            };
         }
     }
 }

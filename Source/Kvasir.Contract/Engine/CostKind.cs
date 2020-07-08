@@ -32,8 +32,7 @@ namespace nGratis.AI.Kvasir.Contract
     {
         Unknown = 0,
 
-        Free,
-        Mana,
-        Tapping
+        Tapping,
+        PayingMana
     }
 }

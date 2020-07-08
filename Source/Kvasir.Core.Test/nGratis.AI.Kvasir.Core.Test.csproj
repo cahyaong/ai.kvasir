@@ -58,6 +58,14 @@
     <Compile Include="IO\MagicRepositoryTests.cs" />
     <Compile Include="IO\ThrottlingMessageHandlerTests.cs" />
     <Compile Include="IO\WizardFetcherTests.cs" />
+    <Compile Include="Parser\MagicCardParserTests.cs" />
+    <Compile Include="Shared\KvasirAssertions.Ability.cs">
+      <DependentUpon>KvasirAssertions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shared\KvasirAssertions.Cost.cs">
+      <DependentUpon>KvasirAssertions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shared\KvasirAssertions.cs" />
     <Compile Include="Shared\MockExtensions.cs" />
     <Compile Include="Shared\MockExtensions.MagicRepository.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
@@ -65,8 +73,7 @@
     <Compile Include="Shared\MockExtensions.StorageManager.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Parser\MagicCardAbilityParserTests.cs" />
-    <Compile Include="Parser\MagicCardParserTests.cs" />
+    <Compile Include="Parser\MagicCardProcessorTests.cs" />
     <Compile Include="Shared\StubDirectory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

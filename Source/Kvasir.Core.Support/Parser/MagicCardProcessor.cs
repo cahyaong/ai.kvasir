@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicCardParser.cs" company="nGratis">
+// <copyright file="MagicCardProcessor.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -36,15 +36,15 @@ namespace nGratis.AI.Kvasir.Core.Parser
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class MagicCardParser : IMagicCardParser
+    public class MagicCardProcessor : IMagicCardProcessor
     {
-        private MagicCardParser()
+        private MagicCardProcessor()
         {
         }
 
-        public static MagicCardParser Instance { get; } = new MagicCardParser();
+        public static MagicCardProcessor Instance { get; } = new MagicCardProcessor();
 
-        public ParsingResult Parse(UnparsedBlob.Card unparsedCard)
+        public ProcessingResult Process(UnparsedBlob.Card unparsedCard)
         {
             Guard
                 .Require(unparsedCard, nameof(unparsedCard))
@@ -57,7 +57,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
                     : Text.Undefined
             };
 
-            return ValidParsingResult
+            return ValidProcessingResult
                 .Create(definedCard)
                 .ThenParseNumber(unparsedCard.Number)
                 .ThenParseMultiverseId(unparsedCard.MultiverseId)
@@ -71,10 +71,10 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
     internal static class MagicParserExtensions
     {
-        public static ParsingResult ThenParseNumber(this ParsingResult parsingResult, string unparsedNumber)
+        public static ProcessingResult ThenParseNumber(this ProcessingResult processingResult, string unparsedNumber)
         {
             Guard
-                .Require(parsingResult, nameof(parsingResult))
+                .Require(processingResult, nameof(processingResult))
                 .Is.Not.Null();
 
             var definedNumber = (ushort)0;
@@ -86,46 +86,46 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             if (!isValid)
             {
-                return parsingResult.WithMessage("<Number> Value must be positive.");
+                return processingResult.WithMessage("<Number> Value must be positive.");
             }
 
-            return parsingResult
-                .WithChildResult(ValidParsingResult.Create(definedNumber))
+            return processingResult
+                .WithChildResult(ValidProcessingResult.Create(definedNumber))
                 .BindToDefinedCard(card => card.Number);
         }
 
-        public static ParsingResult ThenParseMultiverseId(this ParsingResult parsingResult, int unparsedMultiverseId)
+        public static ProcessingResult ThenParseMultiverseId(this ProcessingResult processingResult, int unparsedMultiverseId)
         {
             Guard
-                .Require(parsingResult, nameof(parsingResult))
+                .Require(processingResult, nameof(processingResult))
                 .Is.Not.Null();
 
             if (unparsedMultiverseId < 0)
             {
-                return parsingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
+                return processingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
             }
 
-            return parsingResult
-                .WithChildResult(ValidParsingResult.Create((uint)unparsedMultiverseId))
+            return processingResult
+                .WithChildResult(ValidProcessingResult.Create((uint)unparsedMultiverseId))
                 .BindToDefinedCard(card => card.MultiverseId);
         }
 
-        public static ParsingResult ThenParseType(this ParsingResult parsingResult, string unparsedType)
+        public static ProcessingResult ThenParseType(this ProcessingResult processingResult, string unparsedType)
         {
             Guard
-                .Require(parsingResult, nameof(parsingResult))
+                .Require(processingResult, nameof(processingResult))
                 .Is.Not.Null();
 
             if (string.IsNullOrEmpty(unparsedType))
             {
-                return parsingResult.WithMessage("<Kind> Value must not be <null> or empty.");
+                return processingResult.WithMessage("<Kind> Value must not be <null> or empty.");
             }
 
             var typeMatch = Pattern.Card.Type.Match(unparsedType);
 
             if (!typeMatch.Success)
             {
-                return parsingResult.WithMessage($"<Kind> No matching pattern for value [{unparsedType}].");
+                return processingResult.WithMessage($"<Kind> No matching pattern for value [{unparsedType}].");
             }
 
             var kindValue = typeMatch
@@ -140,56 +140,52 @@ namespace nGratis.AI.Kvasir.Core.Parser
                 .FindCaptureValues("sub")
                 .ToArray();
 
-            return parsingResult
+            return processingResult
                 .ThenParseKind(kindValue)
                 .ThenParseSuperKind(superKindValue)
                 .ThenParseSubKinds(subKindValues);
         }
 
-        public static ParsingResult ThenParseManaCost(
-            this ParsingResult parsingResult,
+        public static ProcessingResult ThenParseManaCost(
+            this ProcessingResult processingResult,
             CardKind definedKind,
             string unparsedManaCost)
         {
             Guard
-                .Require(parsingResult, nameof(parsingResult))
+                .Require(processingResult, nameof(processingResult))
                 .Is.Not.Null();
 
             if (definedKind == CardKind.Land)
             {
                 if (string.IsNullOrEmpty(unparsedManaCost))
                 {
-                    return parsingResult
-                        .WithChildResult(ValidParsingResult.Create(DefinedBlob.Cost.Free))
+                    return processingResult
+                        .WithChildResult(ValidProcessingResult.Create(DefinedBlob.PayingManaCost.Free))
                         .BindToDefinedCard(card => card.Cost);
                 }
 
-                return parsingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
+                return processingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
             }
 
             if (string.IsNullOrEmpty(unparsedManaCost))
             {
-                return parsingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
+                return processingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
             }
 
-            if (!Pattern.Card.ManaCost.IsMatch(unparsedManaCost))
+            var parsingResult = MagicCardParser.ParseCost(unparsedManaCost);
+
+            if (!parsingResult.IsValid)
             {
-                return parsingResult.WithMessage($"<ManaCost> Symbol(s) has no mapping for value [{unparsedManaCost}].");
+                return processingResult.WithMessage($"<ManaCost> Value [{unparsedManaCost}] has invalid symbol.");
             }
 
-            var definedCost = new DefinedBlob.Cost
-            {
-                Kind = CostKind.Mana,
-                Amount = unparsedManaCost
-            };
-
-            return parsingResult
-                .WithChildResult(ValidParsingResult.Create(definedCost))
+            return processingResult
+                .WithChildResult(ValidProcessingResult.Create(parsingResult.Value))
                 .BindToDefinedCard(card => card.Cost);
         }
 
-        public static ParsingResult ThenParsePower(
-            this ParsingResult parsingResult,
+        public static ProcessingResult ThenParsePower(
+            this ProcessingResult processingResult,
             CardKind definedKind,
             string unparsedPower)
         {
@@ -202,21 +198,21 @@ namespace nGratis.AI.Kvasir.Core.Parser
             if (definedKind != CardKind.Creature)
             {
                 return isValid
-                    ? parsingResult.WithMessage($"<Power> Non-empty value for non-creature type [{definedKind}].")
-                    : parsingResult;
+                    ? processingResult.WithMessage($"<Power> Non-empty value for non-creature type [{definedKind}].")
+                    : processingResult;
             }
 
             var powerResult = isValid
-                ? ValidParsingResult.Create(definedPower)
-                : InvalidParsingResult.Create($"<Power> Invalid value [{unparsedPower}].");
+                ? ValidProcessingResult.Create(definedPower)
+                : InvalidProcessingResult.Create($"<Power> Invalid value [{unparsedPower}].");
 
-            return parsingResult
+            return processingResult
                 .WithChildResult(powerResult)
                 .BindToDefinedCard(card => card.Power);
         }
 
-        public static ParsingResult ThenParseToughness(
-            this ParsingResult parsingResult,
+        public static ProcessingResult ThenParseToughness(
+            this ProcessingResult processingResult,
             CardKind definedKind,
             string unparsedToughness)
         {
@@ -229,89 +225,91 @@ namespace nGratis.AI.Kvasir.Core.Parser
             if (definedKind != CardKind.Creature)
             {
                 return isValid
-                    ? parsingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{definedKind}].")
-                    : parsingResult;
+                    ? processingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{definedKind}].")
+                    : processingResult;
             }
 
             var toughnessResult = isValid
-                ? ValidParsingResult.Create(definedToughness)
-                : InvalidParsingResult.Create($"<Toughness> Invalid value [{unparsedToughness}].");
+                ? ValidProcessingResult.Create(definedToughness)
+                : InvalidProcessingResult.Create($"<Toughness> Invalid value [{unparsedToughness}].");
 
-            return parsingResult
+            return processingResult
                 .WithChildResult(toughnessResult)
                 .BindToDefinedCard(card => card.Toughness);
         }
 
-        public static ParsingResult ThenParseText(this ParsingResult parsingResult, string unparsedText)
+        public static ProcessingResult ThenParseText(this ProcessingResult processingResult, string unparsedText)
         {
             var definedAbilities = DefinedBlob.Card.Default.Abilities;
 
             if (!string.IsNullOrEmpty(unparsedText))
             {
-                var unparsedTokens = unparsedText
-                    .Replace("(", string.Empty)
-                    .Replace(")", string.Empty)
-                    .Split(new[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-                    .SelectMany(outerToken => outerToken
-                        .Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(innerToken => $"{innerToken.Trim()}."))
-                    .ToArray();
+                var parsingResult = MagicCardParser.ParseAbility(unparsedText);
 
-                definedAbilities = unparsedTokens
-                    .Select(_ => DefinedBlob.Ability.NotSupported)
-                    .ToArray();
+                if (parsingResult.IsValid)
+                {
+                    definedAbilities = new[]
+                    {
+                        parsingResult.Value
+                    };
+                }
+                else
+                {
+                    definedAbilities = new[]
+                    {
+                        DefinedBlob.Ability.NotSupported
+                    };
 
-                unparsedTokens
-                    .Select(token => $"<Ability> No support for value [{token}].")
-                    .ForEach(message => parsingResult.WithMessage(message));
+                    processingResult.WithMessage($"<Ability> No support for value [{unparsedText.Replace(Environment.NewLine, " ")}].");
+                }
             }
 
-            return parsingResult
-                .WithChildResult(ValidParsingResult.Create(definedAbilities))
+            return processingResult
+                .WithChildResult(ValidProcessingResult.Create(definedAbilities))
                 .BindToDefinedCard(card => card.Abilities);
         }
 
-        private static ParsingResult ThenParseKind(this ParsingResult parsingResult, string unparsedKind)
+        private static ProcessingResult ThenParseKind(this ProcessingResult processingResult, string unparsedKind)
         {
             var kindResult = Enum.TryParse(unparsedKind, out CardKind definedKind)
-                ? ValidParsingResult.Create(definedKind)
-                : InvalidParsingResult.Create($"<Kind> No mapping for value [{unparsedKind}].");
+                ? ValidProcessingResult.Create(definedKind)
+                : InvalidProcessingResult.Create($"<Kind> No mapping for value [{unparsedKind}].");
 
-            return parsingResult
+            return processingResult
                 .WithChildResult(kindResult)
                 .BindToDefinedCard(card => card.Kind);
         }
 
-        private static ParsingResult ThenParseSuperKind(this ParsingResult parsingResult, string unparsedSuperKind)
+        private static ProcessingResult ThenParseSuperKind(this ProcessingResult processingResult, string unparsedSuperKind)
         {
-            var superKindResult = default(ParsingResult);
+            var superKindResult = default(ProcessingResult);
 
             if (string.Equals(unparsedSuperKind, "Tribal", StringComparison.OrdinalIgnoreCase))
             {
-                return parsingResult
-                    .WithChildResult(ValidParsingResult.Create(true))
+                return processingResult
+                    .WithChildResult(ValidProcessingResult.Create(true))
                     .BindToDefinedCard(card => card.IsTribal)
-                    .WithChildResult(ValidParsingResult.Create(CardSuperKind.None))
+                    .WithChildResult(ValidProcessingResult.Create(CardSuperKind.None))
                     .BindToDefinedCard(card => card.SuperKind);
             }
 
             if (string.IsNullOrEmpty(unparsedSuperKind))
             {
-                superKindResult = ValidParsingResult.Create(CardSuperKind.None);
+                superKindResult = ValidProcessingResult.Create(CardSuperKind.None);
             }
             else
             {
                 superKindResult = Enum.TryParse(unparsedSuperKind, out CardSuperKind definedSuperKind)
-                    ? ValidParsingResult.Create(definedSuperKind)
-                    : InvalidParsingResult.Create($"<SuperKind> No mapping for value [{unparsedSuperKind}].");
+                    ? ValidProcessingResult.Create(definedSuperKind)
+                    : InvalidProcessingResult.Create($"<SuperKind> No mapping for value [{unparsedSuperKind}].");
             }
 
-            return parsingResult
+            return processingResult
                 .WithChildResult(superKindResult)
                 .BindToDefinedCard(card => card.SuperKind);
         }
 
-        private static ParsingResult ThenParseSubKinds(this ParsingResult parsingResult, params string[] unparsedSubKinds)
+        private static ProcessingResult ThenParseSubKinds(this ProcessingResult processingResult, params string[] unparsedSubKinds)
         {
             var definedSubKinds = new List<CardSubKind>();
             var invalidValues = new List<string>();
@@ -328,38 +326,38 @@ namespace nGratis.AI.Kvasir.Core.Parser
                 }
             }
 
-            var subKindsResult = default(ParsingResult);
+            var subKindsResult = default(ProcessingResult);
 
             if (invalidValues.Any())
             {
                 var formattedValues = invalidValues.Select(value => $"[{value}]");
                 var message = $"<SubKind> No mapping for value {string.Join(", ", formattedValues)}.";
 
-                subKindsResult = InvalidParsingResult.Create(message);
+                subKindsResult = InvalidProcessingResult.Create(message);
             }
             else
             {
-                subKindsResult = ValidParsingResult.Create(definedSubKinds.ToArray());
+                subKindsResult = ValidProcessingResult.Create(definedSubKinds.ToArray());
             }
 
-            return parsingResult
+            return processingResult
                 .WithChildResult(subKindsResult)
                 .BindToDefinedCard(card => card.SubKinds);
         }
 
-        private static ParsingResult BindToDefinedCard(
-            this ParsingResult parsingResult,
+        private static ProcessingResult BindToDefinedCard(
+            this ProcessingResult processingResult,
             Expression<Func<DefinedBlob.Card, object>> bindingExpression)
         {
             Guard
-                .Require(parsingResult, nameof(parsingResult))
+                .Require(processingResult, nameof(processingResult))
                 .Is.Not.Null();
 
             Guard
                 .Require(bindingExpression, nameof(bindingExpression))
                 .Is.Not.Null();
 
-            return parsingResult.BindTo(bindingExpression.GetPropertyInfo());
+            return processingResult.BindTo(bindingExpression.GetPropertyInfo());
         }
 
         private static class Pattern

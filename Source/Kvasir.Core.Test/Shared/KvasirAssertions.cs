@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ManaCost.Empty.cs" company="nGratis">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="KvasirAssertions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,17 +23,23 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, 11 January 2019 8:01:50 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Core.Test
 {
-    internal sealed class EmptyManaCost : ManaCost
+    using nGratis.AI.Kvasir.Contract;
+
+    internal static class KvasirAssertions
     {
-        private EmptyManaCost()
+        public static CostAssertion Must(this DefinedBlob.Cost cost)
         {
+            return new CostAssertion(cost);
         }
 
-        internal static EmptyManaCost Instance { get; } = new EmptyManaCost();
+        public static AbilityAssertion Must(this DefinedBlob.Ability ability)
+        {
+            return new AbilityAssertion(ability);
+        }
     }
 }

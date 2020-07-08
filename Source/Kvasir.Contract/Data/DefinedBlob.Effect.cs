@@ -28,13 +28,95 @@
 
 namespace nGratis.AI.Kvasir.Contract
 {
+    using System.Collections.Generic;
+    using nGratis.Cop.Olympus.Contract;
+
     public static partial class DefinedBlob
     {
-        public class Effect
+        public abstract class Effect
         {
-            public EffectKind Kind { get; set; }
+            public static Effect Unknown => UnknownEffect.Instance;
 
-            public string Amount { get; set; }
+            public abstract EffectKind Kind { get; }
+        }
+
+        internal sealed class UnknownEffect : Effect
+        {
+            private UnknownEffect()
+            {
+            }
+
+            public static UnknownEffect Instance { get; } = new UnknownEffect();
+
+            public override EffectKind Kind => EffectKind.Unknown;
+        }
+
+        public sealed class ProducingManaEffect : Effect
+        {
+            private readonly IDictionary<Mana, ushort> _amountLookup;
+
+            private ProducingManaEffect()
+            {
+                this._amountLookup = new Dictionary<Mana, ushort>();
+            }
+
+            public override EffectKind Kind => EffectKind.ProducingMana;
+
+            public ushort this[Mana mana]
+            {
+                get
+                {
+                    Guard
+                        .Require(mana, nameof(mana))
+                        .Is.Not.Default();
+
+                    return this._amountLookup.TryGetValue(mana, out var amount)
+                        ? amount
+                        : (ushort)0;
+                }
+            }
+
+            public class Builder
+            {
+                private readonly ProducingManaEffect _producingManaEffect;
+
+                private Builder()
+                {
+                    this._producingManaEffect = new ProducingManaEffect();
+                }
+
+                public static Builder Create()
+                {
+                    return new Builder();
+                }
+
+                public Builder WithAmount(Mana mana, ushort amount)
+                {
+                    // TODO: Consolidate logic with <PayingManaCost> implementation!
+
+                    Guard
+                        .Require(mana, nameof(mana))
+                        .Is.Not.Default();
+
+                    Guard
+                        .Require(amount, nameof(amount))
+                        .Is.Positive();
+
+                    if (!this._producingManaEffect._amountLookup.ContainsKey(mana))
+                    {
+                        this._producingManaEffect._amountLookup[mana] = 0;
+                    }
+
+                    this._producingManaEffect._amountLookup[mana] += amount;
+
+                    return this;
+                }
+
+                public ProducingManaEffect Build()
+                {
+                    return this._producingManaEffect;
+                }
+            }
         }
     }
 }

@@ -50,10 +50,10 @@ namespace nGratis.AI.Kvasir.Console
             var magicFetcher = new NopFetcher();
             var magicRepository = new MagicRepository(indexManager, magicFetcher);
 
-            var logger = new ConsoleLogger("AI.KVASIR", "CardParsing");
-            var parsingExecutor = new CardParsingExecutor(magicRepository, MagicCardParser.Instance, logger);
+            var logger = new ConsoleLogger("AI.KVASIR", "CardProcessing");
+            var processingExecutor = new CardProcessingExecutor(magicRepository, MagicCardProcessor.Instance, logger);
 
-            Task.WaitAll(parsingExecutor.ExecuteAsync(ExecutionParameter.Builder
+            Task.WaitAll(processingExecutor.ExecuteAsync(ExecutionParameter.Builder
                 .Create()
                 .WithEntry("CardSet.Name", "Portal")
                 .Build()));

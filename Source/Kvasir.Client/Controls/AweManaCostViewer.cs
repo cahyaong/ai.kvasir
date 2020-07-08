@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AweManaCostViewer.cs" company="nGratis">
+// <copyright file="AwePayingManaCostViewer.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -35,18 +35,17 @@ namespace nGratis.AI.Kvasir.Client
     using System.Windows.Controls;
     using System.Windows.Shapes;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Wpf;
 
     [TemplatePart(Name = "PART_ContentPanel", Type = typeof(Panel))]
-    internal class AweManaCostViewer : Control
+    internal class AwePayingManaCostViewer : Control
     {
-        public static readonly DependencyProperty ManaCostProperty = DependencyProperty.Register(
-            nameof(AweManaCostViewer.ManaCost),
-            typeof(ManaCost),
-            typeof(AweManaCostViewer),
-            new PropertyMetadata(null, AweManaCostViewer.OnManaCostChanged));
+        public static readonly DependencyProperty PayingManaCostProperty = DependencyProperty.Register(
+            nameof(AwePayingManaCostViewer.PayingManaCost),
+            typeof(DefinedBlob.PayingManaCost),
+            typeof(AwePayingManaCostViewer),
+            new PropertyMetadata(null, AwePayingManaCostViewer.OnPayingManaCostChanged));
 
         private static readonly IEnumerable<Mana> ColorManas = Enum
             .GetValues(typeof(Mana))
@@ -59,12 +58,12 @@ namespace nGratis.AI.Kvasir.Client
 
         private Panel _contentPanel;
 
-        public AweManaCostViewer()
+        public AwePayingManaCostViewer()
             : this(ThemeManager.Instance)
         {
         }
 
-        internal AweManaCostViewer(IThemeManager themeManager)
+        internal AwePayingManaCostViewer(IThemeManager themeManager)
         {
             Guard
                 .Require(themeManager, nameof(themeManager))
@@ -73,10 +72,10 @@ namespace nGratis.AI.Kvasir.Client
             this._themeManager = themeManager;
         }
 
-        public ManaCost ManaCost
+        public DefinedBlob.PayingManaCost PayingManaCost
         {
-            get => (ManaCost)this.GetValue(AweManaCostViewer.ManaCostProperty);
-            set => this.SetValue(AweManaCostViewer.ManaCostProperty, value);
+            get => (DefinedBlob.PayingManaCost)this.GetValue(AwePayingManaCostViewer.PayingManaCostProperty);
+            set => this.SetValue(AwePayingManaCostViewer.PayingManaCostProperty, value);
         }
 
         public override void OnApplyTemplate()
@@ -88,30 +87,30 @@ namespace nGratis.AI.Kvasir.Client
             this.AddColorlessShape("?");
         }
 
-        private static void OnManaCostChanged(DependencyObject container, DependencyPropertyChangedEventArgs args)
+        private static void OnPayingManaCostChanged(DependencyObject container, DependencyPropertyChangedEventArgs args)
         {
-            if (!(container is AweManaCostViewer viewer))
+            if (!(container is AwePayingManaCostViewer viewer))
             {
                 return;
             }
 
             viewer._contentPanel.Children.Clear();
 
-            if (!(args.NewValue is ManaCost manaCost))
+            if (!(args.NewValue is DefinedBlob.PayingManaCost payingManaCost))
             {
                 viewer.AddColorlessShape("?");
 
                 return;
             }
 
-            viewer.AddColorlessShape(manaCost[Mana.Colorless].ToString());
+            viewer.AddColorlessShape(payingManaCost[Mana.Colorless].ToString());
 
-            AweManaCostViewer
+            AwePayingManaCostViewer
                 .ColorManas
                 .Select(mana => new
                 {
                     Mana = mana,
-                    Amount = manaCost[mana]
+                    Amount = payingManaCost[mana]
                 })
                 .Where(anon => anon.Amount > 0)
                 .ForEach(anon => viewer.AddColorShapes(anon.Mana, anon.Amount));

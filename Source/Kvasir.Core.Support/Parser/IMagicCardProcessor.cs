@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Cost.cs" company="nGratis">
+// <copyright file="IMagicCardProcessor.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,12 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 24 January 2019 10:23:14 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 25 December 2018 11:13:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Core.Parser
 {
-    public abstract class Cost
+    using nGratis.AI.Kvasir.Contract;
+
+    public interface IMagicCardProcessor
     {
+        ProcessingResult Process(UnparsedBlob.Card unparsedCard);
     }
 }

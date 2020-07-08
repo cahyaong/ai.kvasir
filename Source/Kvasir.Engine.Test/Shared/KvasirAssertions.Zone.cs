@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirAssertions.Library.cs" company="nGratis">
+// <copyright file="KvasirAssertions.Zone.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -34,131 +34,129 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using FluentAssertions.Execution;
     using FluentAssertions.Primitives;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class ZoneAssertions : ReferenceTypeAssertions<Zone, ZoneAssertions>
+    internal class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
     {
-        public ZoneAssertions(Zone zone)
+        public ZoneAssertion(Zone zone)
         {
-            Guard
-                .Require(zone, nameof(zone))
-                .Is.Not.Null();
+            zone
+                .Should().NotBeNull();
 
-            // TODO: Extend <Guard> implementation to support property checking fluently!
-
-            Guard
-                .Require(zone.Kind, $"{nameof(zone)}.{nameof(zone.Kind)}")
-                .Is.Not.Default();
+            zone
+                .Kind
+                .Should().NotBe(AbilityKind.Unknown);
 
             this.Subject = zone;
         }
 
         protected override string Identifier { get; } = "zone";
 
-        public AndConstraint<ZoneAssertions> BeLibrary()
+        public AndConstraint<ZoneAssertion> BeLibrary()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Library, $"{this.Identifier} should be library");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeHand()
+        public AndConstraint<ZoneAssertion> BeHand()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Hand, $"{this.Identifier} should be hand");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeGraveyard()
+        public AndConstraint<ZoneAssertion> BeGraveyard()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Graveyard, $"{this.Identifier} should be graveyard");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeBattlefield()
+        public AndConstraint<ZoneAssertion> BeBattlefield()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Battlefield, $"{this.Identifier} should be battlefield");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeStack()
+        public AndConstraint<ZoneAssertion> BeStack()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Stack, $"{this.Identifier} should be stack");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeExile()
+        public AndConstraint<ZoneAssertion> BeExile()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Exile, $"{this.Identifier} should be exile");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeCommand()
+        public AndConstraint<ZoneAssertion> BeCommand()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Command, $"{this.Identifier} should be command");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeAnte()
+        public AndConstraint<ZoneAssertion> BeAnte()
         {
             this
                 .Subject.Kind
                 .Should().Be(ZoneKind.Ante, $"{this.Identifier} should be ante");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BePublic()
+        public AndConstraint<ZoneAssertion> BePublic()
         {
             this
                 .Subject.Visibility
                 .Should().Be(Visibility.Public, $"{this.Identifier} should be public");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeHidden()
+        public AndConstraint<ZoneAssertion> BeHidden()
         {
             this
                 .Subject.Visibility
                 .Should().Be(Visibility.Hidden, $"{this.Identifier} should be hidden");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> MatchDefinedDeck(DefinedBlob.Deck definedDeck)
+        public AndConstraint<ZoneAssertion> MatchConstructedDeck(DefinedBlob.Deck deck)
         {
             Guard
-                .Require(definedDeck, nameof(definedDeck))
+                .Require(deck, nameof(deck))
                 .Is.Not.Null();
 
             Guard
-                .Require(definedDeck.CardNames, $"{nameof(definedDeck)}.{nameof(definedDeck.CardNames)}")
+                .Require(deck.CardNames, $"{nameof(deck)}.{nameof(deck.CardNames)}")
                 .Is.Not.Null()
                 .Is.Not.Empty();
 
             this
                 .Subject
-                .Must().HaveCardQuantity(definedDeck.CardQuantity);
+                .Must().HaveCardQuantity(deck.CardQuantity);
 
             var actualCardNames = this
                 .Subject.Cards?
@@ -166,28 +164,28 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
             actualCardNames
                 .Distinct()
-                .Should().BeEquivalentTo(definedDeck.CardNames, $"{this.Identifier} should have card names defined by deck");
+                .Should().BeEquivalentTo(deck.CardNames, $"{this.Identifier} should have card names defined by deck");
 
             using (new AssertionScope())
             {
-                definedDeck
+                deck
                     .CardNames
                     .ForEach(cardName => this
                         .Subject
-                        .Must().HaveCardQuantity(cardName, definedDeck[cardName]));
+                        .Must().HaveCardQuantity(cardName, deck[cardName]));
             }
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> BeSubsetOfDefinedDeck(DefinedBlob.Deck definedDeck)
+        public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(DefinedBlob.Deck deck)
         {
             Guard
-                .Require(definedDeck, nameof(definedDeck))
+                .Require(deck, nameof(deck))
                 .Is.Not.Null();
 
             Guard
-                .Require(definedDeck.CardNames, $"{nameof(definedDeck)}.{nameof(definedDeck.CardNames)}")
+                .Require(deck.CardNames, $"{nameof(deck)}.{nameof(deck.CardNames)}")
                 .Is.Not.Null()
                 .Is.Not.Empty();
 
@@ -197,16 +195,16 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .Subject.Cards?
                     .Select(card => card.Name)
                     .Distinct()
-                    .Where(cardName => !definedDeck.CardNames.Contains(cardName))
+                    .Where(cardName => !deck.CardNames.Contains(cardName))
                     .ForEach(cardName => Execute
                         .Assertion
                         .FailWith($"Expected {{context:zone}} to not have card [{cardName}], not defined by deck."));
             }
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> HaveUniqueCardInstance()
+        public AndConstraint<ZoneAssertion> HaveUniqueCardInstance()
         {
             using (new AssertionScope())
             {
@@ -222,10 +220,10 @@ namespace nGratis.AI.Kvasir.Engine.Test
                             $"with ID [{grouping.First().GetHashCode()}]."));
             }
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> HaveCardQuantity(ushort expectedQuantity)
+        public AndConstraint<ZoneAssertion> HaveCardQuantity(ushort quantity)
         {
             var actualQuantity = this
                 .Subject?.Cards?
@@ -233,15 +231,15 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
             Execute
                 .Assertion
-                .ForCondition(actualQuantity == expectedQuantity)
+                .ForCondition(actualQuantity == quantity)
                 .FailWith(
-                    $"Expected {{context:zone}} to have {expectedQuantity} cards, " +
+                    $"Expected {{context:zone}} to have {quantity} cards, " +
                     $"but found {actualQuantity}.");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertions> HaveCardQuantity(string cardName, ushort expectedQuantity)
+        public AndConstraint<ZoneAssertion> HaveCardQuantity(string cardName, ushort quantity)
         {
             Guard
                 .Require(cardName, nameof(cardName))
@@ -253,12 +251,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
             Execute
                 .Assertion
-                .ForCondition(actualQuantity == expectedQuantity)
+                .ForCondition(actualQuantity == quantity)
                 .FailWith(
-                    $"Expected {{context:zone}} to have {expectedQuantity} [{cardName}] cards, " +
+                    $"Expected {{context:zone}} to have {quantity} [{cardName}] cards, " +
                     $"but found {actualQuantity}.");
 
-            return new AndConstraint<ZoneAssertions>(this);
+            return new AndConstraint<ZoneAssertion>(this);
         }
     }
 }

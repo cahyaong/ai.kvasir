@@ -31,22 +31,21 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using FluentAssertions;
     using FluentAssertions.Execution;
     using FluentAssertions.Primitives;
-    using nGratis.Cop.Olympus.Contract;
+    using nGratis.AI.Kvasir.Engine;
 
-    internal class GameContextAssertions : ReferenceTypeAssertions<GameContext, GameContextAssertions>
+    internal class GameContextAssertion : ReferenceTypeAssertions<GameContext, GameContextAssertion>
     {
-        public GameContextAssertions(GameContext gameContext)
+        public GameContextAssertion(GameContext gameContext)
         {
-            Guard
-                .Require(gameContext, nameof(gameContext))
-                .Is.Not.Null();
+            gameContext
+                .Should().NotBeNull();
 
             this.Subject = gameContext;
         }
 
         protected override string Identifier { get; } = "game context";
 
-        public AndConstraint<GameContextAssertions> HavePlayers()
+        public AndConstraint<GameContextAssertion> HavePlayers()
         {
             using (new AssertionScope())
             {
@@ -59,7 +58,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .Should().NotBeNull($"{this.Identifier} should have nonactive player");
             }
 
-            return new AndConstraint<GameContextAssertions>(this);
+            return new AndConstraint<GameContextAssertion>(this);
         }
     }
 }

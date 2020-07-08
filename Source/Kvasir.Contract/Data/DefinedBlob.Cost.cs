@@ -28,61 +28,110 @@
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
+    using System.Collections.Generic;
     using nGratis.Cop.Olympus.Contract;
 
     public static partial class DefinedBlob
     {
-        public class Cost
+        public abstract class Cost
         {
-            public static Cost Unknown { get; } = UnknownCostDefinition.Instance;
+            public static Cost Unknown => UnknownCost.Instance;
 
-            public static Cost Free { get; } = FreeCostDefinition.Instance;
+            public static Cost Tapping => TappingCost.Instance;
 
-            public virtual CostKind Kind { get; set; }
-
-            public virtual string Amount { get; set; }
+            public abstract CostKind Kind { get; }
         }
 
-        internal sealed class UnknownCostDefinition : Cost
+        internal sealed class UnknownCost : Cost
         {
-            private UnknownCostDefinition()
+            private UnknownCost()
             {
             }
 
-            internal static UnknownCostDefinition Instance { get; } = new UnknownCostDefinition();
+            internal static UnknownCost Instance { get; } = new UnknownCost();
 
-            public override CostKind Kind
-            {
-                get => CostKind.Unknown;
-                set => throw new NotSupportedException("Setting kind is not allowed!");
-            }
-
-            public override string Amount
-            {
-                get => Text.Unknown;
-                set => throw new NotSupportedException("Setting amount is not allowed!");
-            }
+            public override CostKind Kind => CostKind.Unknown;
         }
 
-        internal sealed class FreeCostDefinition : Cost
+        internal sealed class TappingCost : Cost
         {
-            private FreeCostDefinition()
+            private TappingCost()
             {
             }
 
-            internal static FreeCostDefinition Instance { get; } = new FreeCostDefinition();
+            internal static TappingCost Instance { get; } = new TappingCost();
 
-            public override CostKind Kind
+            public override CostKind Kind => CostKind.Tapping;
+        }
+
+        public sealed class PayingManaCost : Cost
+        {
+            private readonly IDictionary<Mana, ushort> _amountLookup;
+
+            private PayingManaCost()
             {
-                get => CostKind.Free;
-                set => throw new NotSupportedException("Setting kind is not allowed!");
+                this._amountLookup = new Dictionary<Mana, ushort>();
             }
 
-            public override string Amount
+            public static PayingManaCost Free { get; } = PayingManaCost.Builder
+                .Create()
+                .Build();
+
+            public override CostKind Kind => CostKind.PayingMana;
+
+            public ushort this[Mana mana]
             {
-                get => string.Empty;
-                set => throw new NotSupportedException("Setting amount is not allowed!");
+                get
+                {
+                    Guard
+                        .Require(mana, nameof(mana))
+                        .Is.Not.Default();
+
+                    return this._amountLookup.TryGetValue(mana, out var amount)
+                        ? amount
+                        : (ushort)0;
+                }
+            }
+
+            public class Builder
+            {
+                private readonly PayingManaCost _payingManaCost;
+
+                private Builder()
+                {
+                    this._payingManaCost = new PayingManaCost();
+                }
+
+                public static Builder Create()
+                {
+                    return new Builder();
+                }
+
+                public Builder WithAmount(Mana mana, ushort amount)
+                {
+                    Guard
+                        .Require(mana, nameof(mana))
+                        .Is.Not.Default();
+
+                    if (amount <= 0)
+                    {
+                        return this;
+                    }
+
+                    if (!this._payingManaCost._amountLookup.ContainsKey(mana))
+                    {
+                        this._payingManaCost._amountLookup[mana] = 0;
+                    }
+
+                    this._payingManaCost._amountLookup[mana] += amount;
+
+                    return this;
+                }
+
+                public PayingManaCost Build()
+                {
+                    return this._payingManaCost;
+                }
             }
         }
     }

@@ -48,16 +48,15 @@
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Shared\KvasirAssertions.cs" />
     <Compile Include="Shared\KvasirAssertions.GameContext.cs">
+      <DependentUpon>KvasirAssertions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shared\KvasirAssertions.Zone.cs">
       <DependentUpon>KvasirAssertions.cs</DependentUpon>
     </Compile>
     <Compile Include="XunitBootstrapper.cs" />
     <Compile Include="Infrastructure\GameContextTests.cs" />
-    <Compile Include="Shared\KvasirAssertions.cs" />
-    <Compile Include="Shared\KvasirAssertions.Library.cs">
-      <DependentUpon>KvasirAssertions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ManaCostTests.cs" />
     <Compile Include="Shared\MockExtensions.cs" />
     <Compile Include="Shared\MockExtensions.MagicEntityFactory.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>

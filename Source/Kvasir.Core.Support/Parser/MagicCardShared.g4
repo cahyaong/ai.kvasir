@@ -1,4 +1,16 @@
-lexer grammar MagicCardAbility_Common;
+lexer grammar MagicCardShared;
+
+SYMBOL_TAPPING
+    : '{T}'
+    ;
+
+SYMBOL_MANA_COLORLESS
+    : '{' DIGIT+ '}'
+    ;
+
+SYMBOL_MANA_COLOR
+    : '{' [WUBRG] '}'
+    ;
 
 fragment DIGIT : [0-9];
 
@@ -30,5 +42,5 @@ fragment Y : [Yy];
 fragment Z : [Zz];
 
 WHITESPACE
-	: ' '+ -> skip
-	;
+    : ' '+ -> skip
+    ;

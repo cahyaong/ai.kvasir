@@ -58,11 +58,11 @@ namespace nGratis.AI.Kvasir.Test
 
             // Act.
 
-            var parsingResult = MagicCardParser.Instance.Parse(unparsedCard);
+            var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
 
             // Assert.
 
-            var parsedCard = parsingResult.GetValue<DefinedBlob.Card>();
+            var parsedCard = processingResult.GetValue<DefinedBlob.Card>();
 
             parsedCard
                 .Should().NotBeNull("because we parse card");

@@ -69,13 +69,13 @@ namespace nGratis.AI.Kvasir.Contract
             public override Cost[] Costs
             {
                 get => Default.Costs;
-                set => throw new NotSupportedException("Setting cost definitions is not allowed!");
+                set => throw new NotSupportedException("Setting costs is not allowed!");
             }
 
             public override Effect[] Effects
             {
                 get => Default.Effects;
-                set => throw new NotSupportedException("Setting effect definitions is not allowed!");
+                set => throw new NotSupportedException("Setting effects is not allowed!");
             }
         }
     }

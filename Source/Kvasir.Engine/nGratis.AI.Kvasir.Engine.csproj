@@ -22,13 +22,5 @@
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj" />
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Update="ManaCost.Empty.cs">
-      <DependentUpon>ManaCost.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ManaCost.Free.cs">
-      <DependentUpon>ManaCost.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
