@@ -55,6 +55,7 @@
     <Compile Include="Shared\KvasirAssertions.Zone.cs">
       <DependentUpon>KvasirAssertions.cs</DependentUpon>
     </Compile>
+    <Compile Include="TurnTests.cs" />
     <Compile Include="XunitBootstrapper.cs" />
     <Compile Include="Infrastructure\GameContextTests.cs" />
     <Compile Include="Shared\MockExtensions.cs" />
