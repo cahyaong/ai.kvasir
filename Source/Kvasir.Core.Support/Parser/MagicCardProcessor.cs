@@ -260,7 +260,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
                         DefinedBlob.Ability.NotSupported
                     };
 
-                    var prettifiedText = unparsedText.Replace(Environment.NewLine, " ");
+                    var prettifiedText = Pattern.NewLine.Replace(unparsedText, " ");
                     processingResult.WithMessage($"<Ability> No support for value [{prettifiedText}].");
                 }
             }
@@ -373,6 +373,10 @@ namespace nGratis.AI.Kvasir.Core.Parser
                     @"^(?:{(?:(?<colorless>\d+)|(?<color>[WUBRG]))})+$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
+
+            public static readonly Regex NewLine = new Regex(
+                @"[\r\n]+",
+                RegexOptions.Compiled);
         }
     }
 }
