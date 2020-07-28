@@ -44,7 +44,7 @@ group _UI
     source https://api.nuget.org/v3/index.json
 
     nuget Caliburn.Micro
-    nuget MahApps.Metro
+    nuget MahApps.Metro ~> 1.6
     nuget ModernUI.WPF
     nuget OxyPlot.Wpf
     nuget ReactiveUI.WPF
@@ -69,6 +69,7 @@ group _Support
     nuget J2N ~> 1.0.0-beta-0002
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
+    nuget Moq
     nuget Newtonsoft.Json
     nuget NLog
     nuget System.Reactive

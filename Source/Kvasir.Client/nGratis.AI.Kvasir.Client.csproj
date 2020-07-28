@@ -151,7 +151,7 @@
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework.Support\nGratis.Cop.Olympus.Framework.Support.csproj">
       <Project>{b360201a-1710-4276-b745-673e757d671e}</Project>
       <Name>nGratis.Cop.Olympus.Framework.Support</Name>
-    </ProjectReference>    
+    </ProjectReference>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Theme\nGratis.Cop.Olympus.Theme.csproj">
       <Project>{2b8de19c-be3d-4516-aecb-01fc709f8ed8}</Project>
       <Name>nGratis.Cop.Olympus.Theme</Name>
