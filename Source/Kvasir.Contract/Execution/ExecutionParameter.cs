@@ -26,14 +26,13 @@
 // <creation_timestamp>Tuesday, April 7, 2020 6:39:59 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Contract
 {
     using System;
     using System.Collections.Generic;
-    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class ExecutionParameter
+    public class ExecutionParameter
     {
         private readonly Dictionary<string, object> _entries;
 
@@ -41,6 +40,8 @@ namespace nGratis.AI.Kvasir.Console
         {
             this._entries = new Dictionary<string, object>();
         }
+
+        public static ExecutionParameter None { get; } = new ExecutionParameter();
 
         public string GetValue(string name)
         {

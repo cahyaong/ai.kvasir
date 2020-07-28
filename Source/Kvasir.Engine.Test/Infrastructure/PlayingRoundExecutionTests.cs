@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GameContextTests.cs" company="nGratis">
+// <copyright file="PlayingRoundExecutionTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -29,6 +29,7 @@
 namespace nGratis.AI.Kvasir.Engine.Test
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using FluentAssertions.Execution;
     using Moq.AI.Kvasir;
@@ -36,46 +37,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using nGratis.AI.Kvasir.Engine;
     using Xunit;
 
-    public class GameContextTests
+    public class PlayingRoundExecutionTests
     {
-        public class Constructor
+        public class ExecuteAsyncMethod
         {
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetCurrentPhaseToBeginning()
-            {
-                // Arrange.
-
-                var definedAgents = new[]
-                {
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_01_]",
-                        Deck = MockBuilder.CreateDefinedElfDeck()
-                    },
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_02_]",
-                        Deck = MockBuilder.CreateDefinedGoblinDeck()
-                    }
-                };
-
-                var mockFactory = MockBuilder
-                    .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultPlayer();
-
-                // Act.
-
-                var gameContext = new GameContext(definedAgents, mockFactory.Object, RandomGenerator.Default);
-
-                // Assert.
-
-                gameContext
-                    .CurrentStatus
-                    .Should().Be(GameContext.Status.Starting, "game context should start with <Starting> phase");
-            }
-
-            [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayer()
+            public async Task WhenGettingValidParameter_ShouldSetupPlayer()
             {
                 // Arrange.
 
@@ -97,53 +64,64 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
+                var execution = new PlayingRoundExecution(
+                    definedPlayers,
+                    mockFactory.Object,
+                    RandomGenerator.Default);
+
                 // Act.
 
-                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
 
                 // Assert.
 
-                gameContext
+                executionResult
+                    .Should().NotBeNull()
+                    .And.BeOfType<PlayingRoundExecution.Result>();
+
+                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
+
+                tabletop
                     .Must().HavePlayers();
 
-                if (gameContext.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
+                if (tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
                 {
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Name
                         .Should().Be("[_MOCK_PLAYER_02_]", "nonactive player should be different from active player");
                 }
                 else
                 {
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Name
                         .Should().Be("[_MOCK_PLAYER_01_]", "nonactive player should be different from active player");
                 }
 
                 using (new AssertionScope())
                 {
-                    gameContext
+                    tabletop
                         .ActivePlayer.Life
                         .Should().Be(20, "active player should begin with full life");
 
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Life
                         .Should().Be(20, "nonactive player should begin with full life");
                 }
 
                 using (new AssertionScope())
                 {
-                    gameContext
+                    tabletop
                         .ActivePlayer.Opponent
-                        .Should().Be(gameContext.NonactivePlayer, "active player's opponent should be nonactive player");
+                        .Should().Be(tabletop.NonactivePlayer, "active player's opponent should be nonactive player");
 
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Opponent
-                        .Should().Be(gameContext.ActivePlayer, "nonactive player's opponent should be active player");
+                        .Should().Be(tabletop.ActivePlayer, "nonactive player's opponent should be active player");
                 }
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayerLibrary()
+            public async Task WhenGettingValidParameter_ShouldSetupPlayerLibrary()
             {
                 // Arrange.
 
@@ -165,22 +143,33 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
+                var execution = new PlayingRoundExecution(
+                    definedPlayers,
+                    mockFactory.Object,
+                    RandomGenerator.Default);
+
                 // Act.
 
-                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
 
                 // Assert.
 
-                gameContext
+                executionResult
+                    .Should().NotBeNull()
+                    .And.BeOfType<PlayingRoundExecution.Result>();
+
+                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
+
+                tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
                     var activeDeck = definedPlayers
-                        .Single(player => player.Name == gameContext.ActivePlayer.Name)
+                        .Single(player => player.Name == tabletop.ActivePlayer.Name)
                         .Deck;
 
-                    gameContext
+                    tabletop
                         .ActivePlayer.Library
                         .Must().NotBeNull("active player should have library")
                         .And.BeLibrary()
@@ -190,10 +179,10 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeSubsetOfConstructedDeck(activeDeck);
 
                     var nonactiveDeck = definedPlayers
-                        .Single(player => player.Name == gameContext.NonactivePlayer.Name)
+                        .Single(player => player.Name == tabletop.NonactivePlayer.Name)
                         .Deck;
 
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Library
                         .Must().NotBeNull("nonactive player should have library")
                         .And.BeLibrary()
@@ -205,7 +194,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayerHand()
+            public async Task WhenGettingValidParameter_ShouldSetupPlayerHand()
             {
                 // Arrange.
 
@@ -227,18 +216,29 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
+                var execution = new PlayingRoundExecution(
+                    definedPlayers,
+                    mockFactory.Object,
+                    RandomGenerator.Default);
+
                 // Act.
 
-                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
 
                 // Assert.
 
-                gameContext
+                executionResult
+                    .Should().NotBeNull()
+                    .And.BeOfType<PlayingRoundExecution.Result>();
+
+                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
+
+                tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    gameContext
+                    tabletop
                         .ActivePlayer.Hand
                         .Must().NotBeNull("active player should have hand")
                         .And.BeHand()
@@ -246,10 +246,10 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(definedPlayers
-                            .Single(player => player.Name == gameContext.ActivePlayer.Name)
+                            .Single(player => player.Name == tabletop.ActivePlayer.Name)
                             .Deck);
 
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Hand
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeHand()
@@ -257,13 +257,13 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(definedPlayers
-                            .Single(player => player.Name == gameContext.NonactivePlayer.Name)
+                            .Single(player => player.Name == tabletop.NonactivePlayer.Name)
                             .Deck);
                 }
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
+            public async Task WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
             {
                 // Arrange.
 
@@ -285,25 +285,36 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
+                var execution = new PlayingRoundExecution(
+                    definedPlayers,
+                    mockFactory.Object,
+                    RandomGenerator.Default);
+
                 // Act.
 
-                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
 
                 // Assert.
 
-                gameContext
+                executionResult
+                    .Should().NotBeNull()
+                    .And.BeOfType<PlayingRoundExecution.Result>();
+
+                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
+
+                tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    gameContext
+                    tabletop
                         .ActivePlayer.Graveyard
                         .Must().NotBeNull("active player should have hand")
                         .And.BeGraveyard()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    gameContext
+                    tabletop
                         .NonactivePlayer.Graveyard
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeGraveyard()
@@ -313,7 +324,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             }
 
             [Fact]
-            public void WhenGettingValidParameter_ShouldSetupSharedZones()
+            public async Task WhenGettingValidParameter_ShouldSetupSharedZones()
             {
                 // Arrange.
 
@@ -335,42 +346,53 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
+                var execution = new PlayingRoundExecution(
+                    definedPlayers,
+                    mockFactory.Object,
+                    RandomGenerator.Default);
+
                 // Act.
 
-                var gameContext = new GameContext(definedPlayers, mockFactory.Object, RandomGenerator.Default);
+                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
 
                 // Assert.
 
-                gameContext
+                executionResult
+                    .Should().NotBeNull()
+                    .And.BeOfType<PlayingRoundExecution.Result>();
+
+                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
+
+                tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    gameContext
+                    tabletop
                         .Battlefield
                         .Must().BeBattlefield()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    gameContext
+                    tabletop
                         .Stack
                         .Must().BeStack()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    gameContext
+                    tabletop
                         .Exile
                         .Must().BeExile()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    gameContext
+                    tabletop
                         .Command
                         .Must().BeCommand()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    gameContext
+                    tabletop
                         .Ante
                         .Must().BeAnte()
                         .And.BePublic()

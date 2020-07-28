@@ -49,7 +49,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Shared\KvasirAssertions.cs" />
-    <Compile Include="Shared\KvasirAssertions.GameContext.cs">
+    <Compile Include="Shared\KvasirAssertions.Tabletop.cs">
       <DependentUpon>KvasirAssertions.cs</DependentUpon>
     </Compile>
     <Compile Include="Shared\KvasirAssertions.Zone.cs">
@@ -57,7 +57,7 @@
     </Compile>
     <Compile Include="TurnTests.cs" />
     <Compile Include="XunitBootstrapper.cs" />
-    <Compile Include="Infrastructure\GameContextTests.cs" />
+    <Compile Include="Infrastructure\PlayingRoundExecutionTests.cs" />
     <Compile Include="Shared\MockExtensions.cs" />
     <Compile Include="Shared\MockExtensions.MagicEntityFactory.cs">
       <DependentUpon>MockExtensions.cs</DependentUpon>

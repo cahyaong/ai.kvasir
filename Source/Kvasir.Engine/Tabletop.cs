@@ -1,5 +1,5 @@
-// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirAssertions.cs" company="nGratis">
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Tabletop.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,23 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 23 January 2019 10:45:26 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.Test
+namespace nGratis.AI.Kvasir.Engine
 {
-    using nGratis.AI.Kvasir.Engine;
-
-    internal static class KvasirAssertions
+    public class Tabletop
     {
-        public static ZoneAssertion Must(this Zone zone)
-        {
-            return new ZoneAssertion(zone);
-        }
+        public Player ActivePlayer { get; internal set; }
 
-        public static TabletopAssertion Must(this Tabletop tabletop)
-        {
-            return new TabletopAssertion(tabletop);
-        }
+        public Player NonactivePlayer { get; internal set; }
+
+        public Zone Battlefield { get; internal set; }
+
+        public Zone Stack { get; internal set; }
+
+        public Zone Exile { get; internal set; }
+
+        public Zone Command { get; internal set; }
+
+        public Zone Ante { get; internal set; }
     }
 }

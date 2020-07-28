@@ -106,6 +106,8 @@ namespace nGratis.AI.Kvasir.Core.Parser
     public abstract class ProcessingResult
     {
         // TODO: Add category to messages, e.g. ability, kind, etc.!
+        // TODO: Refactor this class to extend from <ExecutionResult>!
+
         private readonly List<string> _messages;
 
         protected ProcessingResult(IEnumerable<string> messages)

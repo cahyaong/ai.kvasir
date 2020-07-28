@@ -28,22 +28,17 @@
 
 namespace nGratis.AI.Kvasir.Core.Parser
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Antlr4.Runtime;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class ParsingResult
+    public class ParsingResult : ExecutionResult
     {
         protected ParsingResult(params string[] messages)
+            : base(messages)
         {
-            this.Messages = messages;
         }
-
-        public bool IsValid => !this.Messages.Any();
-
-        public IEnumerable<string> Messages { get; }
     }
 
     public sealed class ParsingResult<TValue> : ParsingResult
@@ -56,7 +51,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
         public TValue Value { get; private set; }
 
-        internal static ParsingResult<TValue> CreateValid(TValue value)
+        internal static ParsingResult<TValue> CreateSuccessful(TValue value)
         {
             Guard
                 .Require(value, nameof(value))
@@ -68,7 +63,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             };
         }
 
-        internal static ParsingResult<TValue> CreateInvalid(string message)
+        internal static ParsingResult<TValue> CreateFailure(string message)
         {
             Guard
                 .Require(message, nameof(message))
@@ -80,7 +75,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             };
         }
 
-        internal static ParsingResult<TValue> CreateInvalid<TContext>(params string[] messages)
+        internal static ParsingResult<TValue> CreateFailure<TContext>(params string[] messages)
             where TContext : ParserRuleContext
         {
             Guard
@@ -107,7 +102,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             };
         }
 
-        internal static ParsingResult<TValue> CreateInvalid(params ParsingResult[] parsingResults)
+        internal static ParsingResult<TValue> CreateFailure(params ParsingResult[] parsingResults)
         {
             var messages = parsingResults
                 .Where(result => result != null)

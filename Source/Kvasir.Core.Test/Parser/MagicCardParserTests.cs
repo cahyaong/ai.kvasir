@@ -57,12 +57,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .IsValid
-                    .Should().BeTrue();
+                    .HasError
+                    .Should().BeFalse();
 
                 parsingResult
                     .Value
-                    .Must().BeStrictEquivalentTo(theory.DefinedAbility);
+                    .Must().BeStrictEquivalentTo(theory.ParsedAbility);
             }
 
             [Fact]
@@ -82,8 +82,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .IsValid
-                    .Should().BeFalse();
+                    .HasError
+                    .Should().BeTrue();
 
                 parsingResult
                     .Messages
@@ -135,7 +135,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 public string UnparsedAbility { get; private set; }
 
-                public DefinedBlob.Ability DefinedAbility { get; private set; }
+                public DefinedBlob.Ability ParsedAbility { get; private set; }
 
                 public static AbilityTheory Create(string unparsedAbility)
                 {
@@ -146,13 +146,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     return new AbilityTheory
                     {
                         UnparsedAbility = unparsedAbility,
-                        DefinedAbility = DefinedBlob.Ability.NotSupported
+                        ParsedAbility = DefinedBlob.Ability.NotSupported
                     };
                 }
 
                 public AbilityTheory ExpectProducingMana(Mana mana)
                 {
-                    this.DefinedAbility = new DefinedBlob.Ability
+                    this.ParsedAbility = new DefinedBlob.Ability
                     {
                         Kind = AbilityKind.Activated,
                         Costs = new[]
@@ -191,12 +191,12 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .IsValid
-                    .Should().BeTrue();
+                    .HasError
+                    .Should().BeFalse();
 
                 parsingResult
                     .Value
-                    .Must().BeStrictEquivalentTo(theory.DefinedCost);
+                    .Must().BeStrictEquivalentTo(theory.ParsedCost);
             }
 
             [Fact]
@@ -216,8 +216,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull();
 
                 parsingResult
-                    .IsValid
-                    .Should().BeFalse();
+                    .HasError
+                    .Should().BeTrue();
 
                 parsingResult
                     .Messages
@@ -276,7 +276,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 public string UnparsedCost { get; private set; }
 
-                public DefinedBlob.Cost DefinedCost { get; private set; }
+                public DefinedBlob.Cost ParsedCost { get; private set; }
 
                 public static CostTheory Create(string unparsedCost)
                 {
@@ -287,17 +287,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     return new CostTheory
                     {
                         UnparsedCost = unparsedCost,
-                        DefinedCost = DefinedBlob.Cost.Unknown
+                        ParsedCost = DefinedBlob.Cost.Unknown
                     };
                 }
 
-                public CostTheory Expect(DefinedBlob.Cost definedCost)
+                public CostTheory Expect(DefinedBlob.Cost parsedCost)
                 {
                     Guard
-                        .Require(definedCost, nameof(definedCost))
+                        .Require(parsedCost, nameof(parsedCost))
                         .Is.Not.Null();
 
-                    this.DefinedCost = definedCost;
+                    this.ParsedCost = parsedCost;
 
                     return this;
                 }

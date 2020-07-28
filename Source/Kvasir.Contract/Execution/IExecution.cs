@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IExecutor.cs" company="nGratis">
+// <copyright file="IExecution.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -26,12 +26,12 @@
 // <creation_timestamp>Thursday, April 2, 2020 5:48:24 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Contract
 {
     using System.Threading.Tasks;
 
-    internal interface IExecutor
+    public interface IExecution
     {
-        public Task ExecuteAsync(ExecutionParameter parameter);
+        Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter);
     }
 }

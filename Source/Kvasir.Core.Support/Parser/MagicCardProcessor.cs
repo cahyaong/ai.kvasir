@@ -60,7 +60,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             return ValidProcessingResult
                 .Create(definedCard)
                 .ThenParseNumber(unparsedCard.Number)
-                .ThenParseMultiverseId(unparsedCard.MultiverseId)
+                .ThenProcessMultiverseId(unparsedCard.MultiverseId)
                 .ThenParseType(unparsedCard.Type)
                 .ThenParseManaCost(definedCard.Kind, unparsedCard.ManaCost)
                 .ThenParsePower(definedCard.Kind, unparsedCard.Power)
@@ -94,19 +94,19 @@ namespace nGratis.AI.Kvasir.Core.Parser
                 .BindToDefinedCard(card => card.Number);
         }
 
-        public static ProcessingResult ThenParseMultiverseId(this ProcessingResult processingResult, int unparsedMultiverseId)
+        public static ProcessingResult ThenProcessMultiverseId(this ProcessingResult processingResult, int multiverseId)
         {
             Guard
                 .Require(processingResult, nameof(processingResult))
                 .Is.Not.Null();
 
-            if (unparsedMultiverseId < 0)
+            if (multiverseId < 0)
             {
                 return processingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
             }
 
             return processingResult
-                .WithChildResult(ValidProcessingResult.Create((uint)unparsedMultiverseId))
+                .WithChildResult(ValidProcessingResult.Create((uint)multiverseId))
                 .BindToDefinedCard(card => card.MultiverseId);
         }
 
@@ -174,7 +174,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             var parsingResult = MagicCardParser.ParseCost(unparsedManaCost);
 
-            if (!parsingResult.IsValid)
+            if (parsingResult.HasError)
             {
                 return processingResult.WithMessage($"<ManaCost> Value [{unparsedManaCost}] has invalid symbol.");
             }
@@ -246,7 +246,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
                 var parsingResult = MagicCardParser.ParseAbility(unparsedText);
 
-                if (parsingResult.IsValid)
+                if (!parsingResult.HasError)
                 {
                     definedAbilities = new[]
                     {
@@ -260,7 +260,8 @@ namespace nGratis.AI.Kvasir.Core.Parser
                         DefinedBlob.Ability.NotSupported
                     };
 
-                    processingResult.WithMessage($"<Ability> No support for value [{unparsedText.Replace(Environment.NewLine, " ")}].");
+                    var prettifiedText = unparsedText.Replace(Environment.NewLine, " ");
+                    processingResult.WithMessage($"<Ability> No support for value [{prettifiedText}].");
                 }
             }
 

@@ -63,7 +63,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             }
             catch (KvasirGrammarException exception)
             {
-                return AbilityParsingResult.CreateInvalid(
+                return AbilityParsingResult.CreateFailure(
                     $"Ability [{unparsedAbility}] parsing could not continue " +
                     $"after processing '{unparsedAbility[exception.LetterIndex]}' " +
                     $"at [{exception.LineIndex}:{exception.LetterIndex}]!");
@@ -84,7 +84,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             }
             catch (KvasirGrammarException exception)
             {
-                return CostParsingResult.CreateInvalid(
+                return CostParsingResult.CreateFailure(
                     $"Cost [{unparsedCost}] parsing could not continue " +
                     $"after processing '{unparsedCost[exception.LetterIndex]}' " +
                     $"at [{exception.LineIndex}:{exception.LetterIndex}]!");
@@ -137,12 +137,12 @@ namespace nGratis.AI.Kvasir.Core.Parser
                 var effectParsingResult = EffectVisitor.Instance.VisitEffect(context.effect());
 
                 var hasInvalidParsingResult =
-                    !costParsingResult.IsValid ||
-                    !effectParsingResult.IsValid;
+                    costParsingResult.HasError ||
+                    effectParsingResult.HasError;
 
                 if (hasInvalidParsingResult)
                 {
-                    return AbilityParsingResult.CreateInvalid(costParsingResult, effectParsingResult);
+                    return AbilityParsingResult.CreateFailure(costParsingResult, effectParsingResult);
                 }
 
                 var ability = new DefinedBlob.Ability
@@ -158,7 +158,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
                     }
                 };
 
-                return AbilityParsingResult.CreateValid(ability);
+                return AbilityParsingResult.CreateSuccessful(ability);
             }
         }
 
@@ -172,7 +172,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             public override CostParsingResult VisitCost_Tapping(Cost_TappingContext context)
             {
-                return CostParsingResult.CreateValid(DefinedBlob.Cost.Tapping);
+                return CostParsingResult.CreateSuccessful(DefinedBlob.Cost.Tapping);
             }
 
             public override CostParsingResult VisitCost_PayingMana(Cost_PayingManaContext context)
@@ -205,7 +205,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
                     if (invalidSymbols.Any())
                     {
-                        return CostParsingResult.CreateInvalid<Cost_PayingManaContext>(
+                        return CostParsingResult.CreateFailure<Cost_PayingManaContext>(
                             $"No mapping for value {invalidSymbols.ToPrettifiedText()}.");
                     }
 
@@ -216,7 +216,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
                         .ForEach(grouping => costBuilder.WithAmount(grouping.Key, (ushort)grouping.Count()));
                 }
 
-                return CostParsingResult.CreateValid(costBuilder.Build());
+                return CostParsingResult.CreateSuccessful(costBuilder.Build());
             }
         }
 
@@ -236,7 +236,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
                 if (!MagicCardParser.ManaLookup.TryGetValue(context.SYMBOL_MANA_COLOR().GetText(), out var mana))
                 {
-                    return EffectParsingResult.CreateInvalid<Effect_ProducingManaContext>(
+                    return EffectParsingResult.CreateFailure<Effect_ProducingManaContext>(
                         $"No mapping for value [{context.SYMBOL_MANA_COLOR().GetText()}].");
                 }
 
@@ -245,7 +245,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
                     .WithAmount(mana, 1)
                     .Build();
 
-                return EffectParsingResult.CreateValid(effect);
+                return EffectParsingResult.CreateSuccessful(effect);
             }
         }
 

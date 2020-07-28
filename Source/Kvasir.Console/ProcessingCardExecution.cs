@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardProcessingExecutor.cs" company="nGratis">
+// <copyright file="ProcessingCardExecution.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -39,7 +39,7 @@ namespace nGratis.AI.Kvasir.Console
     using nGratis.AI.Kvasir.Core.Parser;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class CardProcessingExecutor : IExecutor
+    internal class ProcessingCardExecution : IExecution
     {
         private readonly IMagicRepository _repository;
 
@@ -47,7 +47,7 @@ namespace nGratis.AI.Kvasir.Console
 
         private readonly ILogger _logger;
 
-        public CardProcessingExecutor(IMagicRepository repository, IMagicCardProcessor cardProcessor, ILogger logger)
+        public ProcessingCardExecution(IMagicRepository repository, IMagicCardProcessor cardProcessor, ILogger logger)
         {
             Guard
                 .Require(repository, nameof(repository))
@@ -66,7 +66,7 @@ namespace nGratis.AI.Kvasir.Console
             this._logger = logger;
         }
 
-        public async Task ExecuteAsync(ExecutionParameter parameter)
+        public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
         {
             Guard
                 .Require(parameter, nameof(parameter))
@@ -100,6 +100,8 @@ namespace nGratis.AI.Kvasir.Console
                 .Print();
 
             this._logger.LogWarning($"Found invalid cards!{Environment.NewLine}{summaryContent}");
+
+            return ExecutionResult.Successful;
         }
 
         internal sealed class SummaryPrinter : IDisposable

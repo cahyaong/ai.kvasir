@@ -414,10 +414,10 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .Should().NotBeNull();
 
-                //processingResult
-                //    .GetValue<DefinedBlob.Card>()
-                //    .Cost
-                //    .Should().Be(DefinedBlob.Cost.Free);
+                processingResult
+                    .GetValue<DefinedBlob.Card>()
+                    .Cost
+                    .Should().Be(DefinedBlob.PayingManaCost.Free);
             }
 
             [Theory]
@@ -448,17 +448,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Cost
-                    .Should().NotBeNull();
-
-                processingResult
-                    .GetValue<DefinedBlob.Card>()
-                    .Cost.Kind
-                    .Should().Be(theory.ParsedCostKind);
-
-                //processingResult
-                //    .GetValue<DefinedBlob.Card>()
-                //    .Cost.Amount
-                //    .Should().Be(theory.ParsedAmount);
+                    .Must().BeStrictEquivalentTo(theory.ParsedManaCost);
             }
 
             [Theory]
@@ -732,31 +722,45 @@ namespace nGratis.AI.Kvasir.Core.Test
                     {
                         yield return ManaCostTheory
                             .Create("Creature", "{0}")
-                            .ExpectValid(CostKind.PayingMana, "{0}")
+                            .ExpectValid(DefinedBlob.PayingManaCost.Free)
                             .WithLabel(1, "Non-land with zero amount")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{42}")
-                            .ExpectValid(CostKind.PayingMana, "{42}")
+                            .ExpectValid(DefinedBlob.PayingManaCost.Builder
+                                .Create()
+                                .WithAmount(Mana.Colorless, 42)
+                                .Build())
                             .WithLabel(2, "Non-land with colorless amount")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{G}")
-                            .ExpectValid(CostKind.PayingMana, "{G}")
+                            .ExpectValid(DefinedBlob.PayingManaCost.Builder
+                                .Create()
+                                .WithAmount(Mana.Green, 1)
+                                .Build())
                             .WithLabel(3, "Non-land with mono-color amount")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Creature", "{1}{W}{U}{B}{R}{G}")
-                            .ExpectValid(CostKind.PayingMana, "{1}{W}{U}{B}{R}{G}")
+                            .ExpectValid(DefinedBlob.PayingManaCost.Builder
+                                .Create()
+                                .WithAmount(Mana.Colorless, 1)
+                                .WithAmount(Mana.White, 1)
+                                .WithAmount(Mana.Blue, 1)
+                                .WithAmount(Mana.Black, 1)
+                                .WithAmount(Mana.Red, 1)
+                                .WithAmount(Mana.Green, 1)
+                                .Build())
                             .WithLabel(4, "Non-land with colorless and all colors amount")
                             .ToXunitTheory();
 
                         yield return ManaCostTheory
                             .Create("Land", string.Empty)
-                            .ExpectValid(CostKind.PayingMana, string.Empty)
+                            .ExpectValid(DefinedBlob.PayingManaCost.Free)
                             .WithLabel(5, "Land with empty amount")
                             .ToXunitTheory();
                     }
@@ -930,9 +934,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public string UnparsedManaCost { get; private set; }
 
-            public CostKind ParsedCostKind { get; private set; }
-
-            public string ParsedAmount { get; private set; }
+            public DefinedBlob.Cost ParsedManaCost { get; private set; }
 
             public static ManaCostTheory Create(string unparsedType, string unparsedManaCost)
             {
@@ -940,16 +942,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     UnparsedType = unparsedType,
                     UnparsedManaCost = unparsedManaCost,
-                    ParsedCostKind = CostKind.Unknown,
-                    ParsedAmount = string.Empty,
+                    ParsedManaCost = DefinedBlob.Cost.Unknown,
                     Message = string.Empty
                 };
             }
 
-            public ManaCostTheory ExpectValid(CostKind parsedCostKind, string parsedAmount)
+            public ManaCostTheory ExpectValid(DefinedBlob.PayingManaCost parsedManaCost)
             {
-                this.ParsedCostKind = parsedCostKind;
-                this.ParsedAmount = parsedAmount;
+                this.ParsedManaCost = parsedManaCost;
 
                 return this;
             }

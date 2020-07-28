@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GameContext.cs" company="nGratis">
+// <copyright file="PlayingRoundExecution.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,48 +23,28 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 10:45:26 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, July 23, 2020 5:36:22 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
-    using Stateless;
 
-    public class GameContext
+    public class PlayingRoundExecution : IExecution
     {
-        public enum Status
-        {
-            Unknown = 0,
-
-            Starting,
-            Playing,
-            Ending
-        }
-
-        private enum Action
-        {
-            [SuppressMessage("ReSharper", "UnusedMember.Local")]
-            Unknown = 0,
-
-            Start,
-            PlayTurn,
-            End
-        }
-
         private readonly DefinedBlob.Player[] _definedPlayers;
 
         private readonly IMagicEntityFactory _entityFactory;
 
         private readonly IRandomGenerator _randomGenerator;
 
-        private readonly StateMachine<Status, Action> _stateMachine;
+        private readonly Tabletop _tabletop;
 
-        public GameContext(
+        public PlayingRoundExecution(
             IReadOnlyCollection<DefinedBlob.Player> definedPlayers,
             IMagicEntityFactory entityFactory,
             IRandomGenerator randomGenerator)
@@ -84,61 +64,30 @@ namespace nGratis.AI.Kvasir.Engine
             this._definedPlayers = definedPlayers.ToArray();
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
-            this._stateMachine = new StateMachine<Status, Action>(Status.Unknown);
-
-            this._stateMachine
-                .Configure(Status.Unknown)
-                .Permit(Action.Start, Status.Starting);
-
-            this._stateMachine
-                .Configure(Status.Starting)
-                .OnEntry(this.OnStartingEntered)
-                .Permit(Action.PlayTurn, Status.Playing);
-
-            this._stateMachine
-                .Configure(Status.Playing)
-                .OnEntry(this.OnPlayingEntered)
-                .Permit(Action.End, Status.Ending);
-
-            this._stateMachine
-                .Configure(Status.Ending)
-                .OnEntry(this.OnEndingEntered);
-
-            this._stateMachine.Fire(Action.Start);
+            this._tabletop = new Tabletop();
         }
 
-        public Status CurrentStatus => this._stateMachine.State;
-
-        public Player ActivePlayer { get; private set; }
-
-        public Player NonactivePlayer { get; private set; }
-
-        public Zone Battlefield { get; private set; }
-
-        public Zone Stack { get; private set; }
-
-        public Zone Exile { get; private set; }
-
-        public Zone Command { get; private set; }
-
-        public Zone Ante { get; private set; }
-
-        private void OnStartingEntered()
+        public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
         {
+            return await Task.Run(() => this.Execute(parameter));
+        }
+
+        private ExecutionResult Execute(ExecutionParameter parameter)
+        {
+            Guard
+                .Require(parameter, nameof(parameter))
+                .Is.Not.Null();
+
             this
                 .SetupPlayers()
+                .SetupPlayerZones(this._tabletop.ActivePlayer)
+                .SetupPlayerZones(this._tabletop.NonactivePlayer)
                 .SetupSharedZones();
+
+            return Result.CreateSuccessful(this._tabletop);
         }
 
-        private void OnPlayingEntered()
-        {
-        }
-
-        private void OnEndingEntered()
-        {
-        }
-
-        private GameContext SetupPlayers()
+        private PlayingRoundExecution SetupPlayers()
         {
             if (this._definedPlayers.Length != 2)
             {
@@ -159,27 +108,25 @@ namespace nGratis.AI.Kvasir.Engine
 
             if (firstValue > secondValue)
             {
-                this.ActivePlayer = firstPlayer;
-                this.NonactivePlayer = secondPlayer;
+                this._tabletop.ActivePlayer = firstPlayer;
+                this._tabletop.NonactivePlayer = secondPlayer;
             }
             else
             {
-                this.ActivePlayer = secondPlayer;
-                this.NonactivePlayer = firstPlayer;
+                this._tabletop.ActivePlayer = secondPlayer;
+                this._tabletop.NonactivePlayer = firstPlayer;
             }
 
-            this.ActivePlayer.Life = 20;
-            this.NonactivePlayer.Life = 20;
+            this._tabletop.ActivePlayer.Life = 20;
+            this._tabletop.NonactivePlayer.Life = 20;
 
-            this.ActivePlayer.Opponent = this.NonactivePlayer;
-            this.NonactivePlayer.Opponent = this.ActivePlayer;
+            this._tabletop.ActivePlayer.Opponent = this._tabletop.NonactivePlayer;
+            this._tabletop.NonactivePlayer.Opponent = this._tabletop.ActivePlayer;
 
-            return this
-                .SetupPlayerZones(this.ActivePlayer)
-                .SetupPlayerZones(this.NonactivePlayer);
+            return this;
         }
 
-        private GameContext SetupPlayerZones(Player player)
+        private PlayingRoundExecution SetupPlayerZones(Player player)
         {
             if (player.Deck == null)
             {
@@ -210,15 +157,53 @@ namespace nGratis.AI.Kvasir.Engine
             return this;
         }
 
-        private GameContext SetupSharedZones()
+        private PlayingRoundExecution SetupSharedZones()
         {
-            this.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
-            this.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
-            this.Exile = new Zone(ZoneKind.Exile, Visibility.Public);
-            this.Command = new Zone(ZoneKind.Command, Visibility.Public);
-            this.Ante = new Zone(ZoneKind.Ante, Visibility.Public);
+            this._tabletop.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
+            this._tabletop.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
+            this._tabletop.Exile = new Zone(ZoneKind.Exile, Visibility.Public);
+            this._tabletop.Command = new Zone(ZoneKind.Command, Visibility.Public);
+            this._tabletop.Ante = new Zone(ZoneKind.Ante, Visibility.Public);
 
             return this;
+        }
+
+        public class Result : ExecutionResult
+        {
+            private Result(Tabletop tabletop, params string[] messages)
+                : base(messages)
+            {
+                Guard
+                    .Require(tabletop, nameof(tabletop))
+                    .Is.Not.Null();
+
+                this.Tabletop = tabletop;
+            }
+
+            public Tabletop Tabletop { get; }
+
+            public static Result CreateSuccessful(Tabletop tabletop)
+            {
+                return new Result(tabletop);
+            }
+
+            public static Result CreateFailure(Tabletop tabletop, string[] messages)
+            {
+                Guard
+                    .Require(messages, nameof(messages))
+                    .Is.Not.Null();
+
+                messages = messages
+                    .Where(message => !string.IsNullOrEmpty(message))
+                    .ToArray();
+
+                if (!messages.Any())
+                {
+                    throw new KvasirException("Failure result must contain at least 1 message!");
+                }
+
+                return new Result(tabletop, messages);
+            }
         }
     }
 }

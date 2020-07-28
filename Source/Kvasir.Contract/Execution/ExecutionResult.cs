@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirAssertions.GameContext.cs" company="nGratis">
+// <copyright file="ExecutionResult.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,42 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, February 20, 2020 7:18:36 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, July 23, 2020 5:44:12 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.Test
+namespace nGratis.AI.Kvasir.Contract
 {
-    using FluentAssertions;
-    using FluentAssertions.Execution;
-    using FluentAssertions.Primitives;
-    using nGratis.AI.Kvasir.Engine;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    internal class GameContextAssertion : ReferenceTypeAssertions<GameContext, GameContextAssertion>
+    public class ExecutionResult
     {
-        public GameContextAssertion(GameContext gameContext)
+        protected ExecutionResult(params string[] messages)
         {
-            gameContext
-                .Should().NotBeNull();
-
-            this.Subject = gameContext;
+            this.Messages = messages;
         }
 
-        protected override string Identifier { get; } = "game context";
+        public bool HasError => this.Messages.Any();
 
-        public AndConstraint<GameContextAssertion> HavePlayers()
-        {
-            using (new AssertionScope())
-            {
-                this
-                    .Subject.ActivePlayer
-                    .Should().NotBeNull($"{this.Identifier} should have active player");
+        public IEnumerable<string> Messages { get; }
 
-                this
-                    .Subject.NonactivePlayer
-                    .Should().NotBeNull($"{this.Identifier} should have nonactive player");
-            }
-
-            return new AndConstraint<GameContextAssertion>(this);
-        }
+        public static ExecutionResult Successful { get; } = new ExecutionResult();
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Program.cs" company="nGratis">
+// <copyright file="KvasirAssertions.Tabletop.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,47 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, March 28, 2020 6:00:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, February 20, 2020 7:18:36 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Engine.Test
 {
-    using System;
-    using System.IO;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.AI.Kvasir.Core.Parser;
-    using nGratis.Cop.Olympus.Framework;
+    using FluentAssertions;
+    using FluentAssertions.Execution;
+    using FluentAssertions.Primitives;
+    using nGratis.AI.Kvasir.Engine;
 
-    public class Program
+    internal class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAssertion>
     {
-        private static void Main()
+        public TabletopAssertion(Tabletop tabletop)
         {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
+            tabletop
+                .Should().NotBeNull();
 
-            // TODO: Use <Unity> to wire dependency injection!
+            this.Subject = tabletop;
+        }
 
-            var indexManager = new IndexManager(new Uri(dataFolderPath));
-            var magicFetcher = new NopFetcher();
-            var magicRepository = new MagicRepository(indexManager, magicFetcher);
+        protected override string Identifier { get; } = "tabletop";
 
-            var logger = new ConsoleLogger("AI.KVASIR", "CardProcessing");
-            var processingExecutor = new ProcessingCardExecution(magicRepository, MagicCardProcessor.Instance, logger);
+        public AndConstraint<TabletopAssertion> HavePlayers()
+        {
+            using (new AssertionScope())
+            {
+                this
+                    .Subject.ActivePlayer
+                    .Should().NotBeNull($"{this.Identifier} should have active player");
 
-            var processingParameter = ExecutionParameter.Builder
-                .Create()
-                .WithEntry("CardSet.Name", "Portal")
-                .Build();
+                this
+                    .Subject.NonactivePlayer
+                    .Should().NotBeNull($"{this.Identifier} should have nonactive player");
+            }
 
-            Task.WaitAll(processingExecutor.ExecuteAsync(processingParameter));
-
-            Console.WriteLine();
-            Console.WriteLine("Press <ANY> key to continue...");
-            Console.ReadLine();
+            return new AndConstraint<TabletopAssertion>(this);
         }
     }
 }
