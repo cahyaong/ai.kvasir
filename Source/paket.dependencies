@@ -1,3 +1,5 @@
+// TODO: Migrate all testing projects to .NET Core before updating xunit.runner.visualstudio to 2.4.2!
+
 framework: net472
 source https://api.nuget.org/v3/index.json
 
@@ -83,7 +85,7 @@ group _Test
     nuget FluentAssertions
     nuget Moq
     nuget xunit
-    nuget xunit.runner.visualstudio
+    nuget xunit.runner.visualstudio ~> 2.4.1.0
 
 group _Test_vNext
 
@@ -94,4 +96,4 @@ group _Test_vNext
     nuget Microsoft.NET.Test.Sdk
     nuget Moq
     nuget xunit
-    nuget xunit.runner.visualstudio
+    nuget xunit.runner.visualstudio ~> 2.4.1.0

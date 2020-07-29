@@ -380,7 +380,7 @@ NUGET
       xunit.abstractions (>= 2.0.3)
     xunit.extensibility.execution (2.4.1)
       xunit.extensibility.core (2.4.1)
-    xunit.runner.visualstudio (2.4.2)
+    xunit.runner.visualstudio (2.4.1)
 
 GROUP _Test_vNext
 RESTRICTION: == netcoreapp3.1
@@ -672,7 +672,8 @@ NUGET
     xunit.extensibility.execution (2.4.1)
       NETStandard.Library (>= 1.6.1)
       xunit.extensibility.core (2.4.1)
-    xunit.runner.visualstudio (2.4.2)
+    xunit.runner.visualstudio (2.4.1)
+      Microsoft.NET.Test.Sdk (>= 15.0)
 
 GROUP _UI
 RESTRICTION: == net472
