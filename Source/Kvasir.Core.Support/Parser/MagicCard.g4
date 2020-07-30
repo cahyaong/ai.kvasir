@@ -1,13 +1,21 @@
 grammar MagicCard;
 
-import MagicCardShared, MagicCardKeyword;
+import MagicCardKeyword;
+
+ability_Bootstrapper
+    : ability EOF
+    ;
+
+cost_Bootstrapper
+    : cost EOF
+    ;
 
 ability
     : ability_Activated
     ;
 
 ability_Activated
-    : '(' cost ':' effect '.)'
+    : OPEN_PAREN cost COLON effect DOT CLOSE_PAREN
     ;
 
 cost

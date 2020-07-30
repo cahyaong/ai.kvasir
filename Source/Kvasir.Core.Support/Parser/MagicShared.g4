@@ -1,18 +1,4 @@
-lexer grammar MagicCardShared;
-
-SYMBOL_TAPPING
-    : '{T}'
-    ;
-
-SYMBOL_MANA_COLORLESS
-    : '{' DIGIT+ '}'
-    ;
-
-SYMBOL_MANA_COLOR
-    : '{' [WUBRG] '}'
-    ;
-
-fragment DIGIT : [0-9];
+lexer grammar MagicShared;
 
 fragment A : [Aa];
 fragment B : [Bb];
@@ -40,6 +26,39 @@ fragment W : [Ww];
 fragment X : [Xx];
 fragment Y : [Yy];
 fragment Z : [Zz];
+
+fragment LETTER
+    : [A-Z]
+    | [a-z]
+    ;
+
+fragment DIGIT
+    : [0-9]
+    ;
+
+DOT
+    : '.'
+    ;
+
+COLON
+    : ':'
+    ;
+
+OPEN_PAREN
+    : '('
+    ;
+
+CLOSE_PAREN
+    : ')'
+    ;
+
+OPEN_BRACE
+    : '{'
+    ;
+
+CLOSE_BRACE
+    : '}'
+    ;
 
 WHITESPACE
     : ' '+ -> skip

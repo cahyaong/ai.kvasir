@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
                 var parser = MagicCardParser.Create(unparsedAbility);
 
-                return AbilityVisitor.Instance.VisitAbility(parser.ability());
+                return AbilityVisitor.Instance.VisitAbility_Bootstrapper(parser.ability_Bootstrapper());
             }
             catch (KvasirGrammarException exception)
             {
@@ -80,7 +80,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
                 var parser = MagicCardParser.Create(unparsedCost);
 
-                return CostVisitor.Instance.VisitCost(parser.cost());
+                return CostVisitor.Instance.VisitCost_Bootstrapper(parser.cost_Bootstrapper());
             }
             catch (KvasirGrammarException exception)
             {
@@ -120,7 +120,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             public static AbilityVisitor Instance { get; } = new AbilityVisitor();
 
-            public override AbilityParsingResult VisitAbility(AbilityContext context)
+            public override AbilityParsingResult VisitAbility_Bootstrapper(Ability_BootstrapperContext context)
             {
                 Guard
                     .Require(context, nameof(context))
@@ -169,6 +169,11 @@ namespace nGratis.AI.Kvasir.Core.Parser
             }
 
             public static CostVisitor Instance { get; } = new CostVisitor();
+
+            public override CostParsingResult VisitCost_Bootstrapper(Cost_BootstrapperContext context)
+            {
+                return this.Visit(context.GetChild(0));
+            }
 
             public override CostParsingResult VisitCost_Tapping(Cost_TappingContext context)
             {

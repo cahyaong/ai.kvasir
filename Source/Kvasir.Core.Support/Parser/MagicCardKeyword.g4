@@ -1,6 +1,6 @@
 lexer grammar MagicCardKeyword;
 
-import MagicCardShared;
+import MagicShared;
 
 ADD
     : A D D
@@ -24,4 +24,16 @@ MOUNTAIN
 
 FOREST
     : F O R E S T
+    ;
+
+SYMBOL_TAPPING
+    : OPEN_BRACE T CLOSE_BRACE
+    ;
+
+SYMBOL_MANA_COLORLESS
+    : OPEN_BRACE DIGIT+ CLOSE_BRACE
+    ;
+
+SYMBOL_MANA_COLOR
+    : OPEN_BRACE [WUBRG] CLOSE_BRACE
     ;

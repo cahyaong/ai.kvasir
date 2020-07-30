@@ -21,6 +21,15 @@
   <ItemGroup>
     <Antlr4 Update="Parser\MagicCard.g4">
       <CustomToolNamespace>nGratis.AI.Kvasir.Core.Parser</CustomToolNamespace>
+      <Listener>false</Listener>
+    </Antlr4>
+    <Antlr4 Update="Parser\MagicCardKeyword.g4">
+      <Listener>false</Listener>
+      <Visitor>false</Visitor>
+    </Antlr4>
+    <Antlr4 Update="Parser\MagicShared.g4">
+      <Listener>false</Listener>
+      <Visitor>false</Visitor>
     </Antlr4>
   </ItemGroup>
   <ItemGroup>
