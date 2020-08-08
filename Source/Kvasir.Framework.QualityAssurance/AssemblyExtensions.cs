@@ -36,7 +36,7 @@ namespace System.Reflection
 
     public static class AssemblyExtensions
     {
-        public static Stream FindSessionStream(this Assembly assembly, string name)
+        public static Stream FindSessionDataStream(this Assembly assembly, string name)
         {
             Guard
                 .Require(assembly, nameof(assembly))
@@ -47,7 +47,22 @@ namespace System.Reflection
                 .Is.Not.Empty();
 
             return
-                assembly.GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Session.{name}.ngts") ??
+                assembly.GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession") ??
+                throw new KvasirTestingException($"Session [{name}] must be embedded!");
+        }
+
+        public static Stream FindDeckDataStream(this Assembly assembly, string name)
+        {
+            Guard
+                .Require(assembly, nameof(assembly))
+                .Is.Not.Null();
+
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
+
+            return
+                assembly.GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkdeck") ??
                 throw new KvasirTestingException($"Session [{name}] must be embedded!");
         }
     }

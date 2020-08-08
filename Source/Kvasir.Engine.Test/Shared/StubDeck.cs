@@ -46,10 +46,10 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 : Text.Empty;
 
             this.Cards = definedDeck
-                .CardNames
-                .SelectMany(cardName => Enumerable
-                    .Range(0, definedDeck[cardName])
-                    .Select(_ => new Card(cardName)))
+                .Cards
+                .SelectMany(card => Enumerable
+                    .Range(0, definedDeck[card])
+                    .Select(_ => new Card(card.Name)))
                 .ToArray();
         }
     }

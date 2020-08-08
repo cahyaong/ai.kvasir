@@ -60,6 +60,7 @@
     <Compile Include="IO\ThrottlingMessageHandlerTests.cs" />
     <Compile Include="IO\WizardFetcherTests.cs" />
     <Compile Include="Parser\MagicCardParserTests.cs" />
+    <Compile Include="Serialization\SerializationExtensionsTests.cs" />
     <Compile Include="Shared\KvasirAssertions.Ability.cs">
       <DependentUpon>KvasirAssertions.cs</DependentUpon>
     </Compile>
@@ -348,6 +349,17 @@
       <ItemGroup>
         <Reference Include="System.ValueTuple">
           <HintPath>..\packages\System.ValueTuple\lib\net47\System.ValueTuple.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.7.2'">
+      <ItemGroup>
+        <Reference Include="YamlDotNet">
+          <HintPath>..\packages\YamlDotNet\lib\net45\YamlDotNet.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

@@ -2,3 +2,4 @@
 	CommandLineParser
 	JetBrains.Annotations
 	Unity
+	YamlDotNet

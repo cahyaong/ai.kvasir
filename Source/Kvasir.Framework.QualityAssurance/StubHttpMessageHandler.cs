@@ -97,7 +97,7 @@ namespace nGratis.AI.Kvasir.Framework
 
             var sessionStream = Assembly
                 .GetExecutingAssembly()
-                .FindSessionStream(name);
+                .FindSessionDataStream(name);
 
             using (sessionStream)
             using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
@@ -155,7 +155,7 @@ namespace nGratis.AI.Kvasir.Framework
 
             var sessionStream = Assembly
                 .GetExecutingAssembly()
-                .FindSessionStream(name);
+                .FindSessionDataStream(name);
 
             using (sessionStream)
             using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))

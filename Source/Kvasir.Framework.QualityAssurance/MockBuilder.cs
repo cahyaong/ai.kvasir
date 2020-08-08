@@ -80,24 +80,28 @@ namespace Moq.AI.Kvasir
 
         public static DefinedBlob.Deck CreateDefinedElfDeck()
         {
-            return new DefinedBlob.Deck("[_MOCK_DECK_ELF_]")
-            {
-                ["Elvish Eulogist"] = 4,
-                ["Elvish Warrior"] = 4,
-                ["Llanowar Elves"] = 4,
-                ["Forest"] = 6
-            };
+            return DefinedBlob.Deck.Builder
+                .Create()
+                .WithCode("[_MOCK_CODE_ELF_]")
+                .WithName("[_MOCK_NAME_ELF_]")
+                .WithCardAndQuantity("Elvish Eulogist", "LRW", 3, 4)
+                .WithCardAndQuantity("Elvish Warrior", "9ED", 240, 4)
+                .WithCardAndQuantity("Llanowar Elves", "LEA", 210, 4)
+                .WithCardAndQuantity("Forest", "LEA", 294, 6)
+                .Build();
         }
 
         public static DefinedBlob.Deck CreateDefinedGoblinDeck()
         {
-            return new DefinedBlob.Deck("[_MOCK_DECK_GOBLIN_]")
-            {
-                ["Goblin Cohort"] = 4,
-                ["Goblin Sledder"] = 4,
-                ["Goblin Warchief"] = 4,
-                ["Mountain"] = 6
-            };
+            return DefinedBlob.Deck.Builder
+                .Create()
+                .WithCode("[_MOCK_CODE_GOBLIN_]")
+                .WithName("[_MOCK_NAME_GOBLIN_]")
+                .WithCardAndQuantity("Goblin Cohort", "BOK", 106, 4)
+                .WithCardAndQuantity("Goblin Sledder", "BOK", 209, 4)
+                .WithCardAndQuantity("Goblin Warchief", "SCG", 97, 4)
+                .WithCardAndQuantity("Mountain", "LEA", 292, 6)
+                .Build();
         }
     }
 }

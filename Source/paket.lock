@@ -36,6 +36,7 @@ NUGET
       Unity.Abstractions (>= 5.11.6)
     Unity.RegistrationByConvention (5.11.1)
       Unity.Container (>= 5.11.1)
+    YamlDotNet (8.1.2)
 
 GROUP _Console
 RESTRICTION: == netcoreapp3.1
@@ -55,6 +56,7 @@ NUGET
     System.Runtime.CompilerServices.Unsafe (4.7.1)
     Unity (5.11.7)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.2)
+    YamlDotNet (8.1.2)
 
 GROUP _Contract
 RESTRICTION: == netstandard2.0
@@ -353,6 +355,7 @@ NUGET
       System.Text.Encoding (>= 4.3)
       System.Threading (>= 4.3)
       System.Xml.ReaderWriter (>= 4.3)
+    YamlDotNet (8.1.2)
 
 GROUP _Test
 RESTRICTION: == net472

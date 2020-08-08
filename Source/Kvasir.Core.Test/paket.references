@@ -5,6 +5,7 @@ Lucene.Net
 Lucene.Net.Analysis.Common
 Polly
 System.Reactive
+YamlDotNet
 
 group _IO
     HtmlAgilityPack

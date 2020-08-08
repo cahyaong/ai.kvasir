@@ -36,49 +36,175 @@ namespace nGratis.AI.Kvasir.Contract
     {
         public class Deck
         {
-            private readonly IDictionary<string, ushort> _quantityByNameLookup;
+            private readonly IDictionary<Card, ushort> _quantityByCardLookup;
 
-            public Deck(string name)
+            private Deck()
             {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
-
-                this._quantityByNameLookup = new Dictionary<string, ushort>();
-
-                this.Name = name;
+                this._quantityByCardLookup = new Dictionary<Card, ushort>();
             }
 
-            public ushort this[string cardName]
+            public ushort this[Card card]
             {
                 get
                 {
                     Guard
-                        .Require(cardName, nameof(cardName))
-                        .Is.Not.Empty();
+                        .Require(card, nameof(card))
+                        .Is.Not.Null();
 
-                    return this._quantityByNameLookup.TryGetValue(cardName, out var quantity)
+                    return this._quantityByCardLookup.TryGetValue(card, out var quantity)
                         ? quantity
                         : (ushort)0;
                 }
 
-                set
+                private set => this._quantityByCardLookup[card] = value;
+            }
+
+            public ushort this[string name, string cardSetCode, ushort number]
+            {
+                get => this[new Card(name, cardSetCode, number)];
+
+                private set => this[new Card(name, cardSetCode, number)] = value;
+            }
+
+            public string Code { get; private set; }
+
+            public string Name { get; private set; }
+
+            public IEnumerable<Card> Cards => this._quantityByCardLookup.Keys;
+
+            public ushort CardQuantity { get; private set; }
+
+            public class Builder
+            {
+                private readonly Deck _deck;
+
+                private Builder()
+                {
+                    this._deck = new Deck();
+                }
+
+                public static Builder Create() => new Builder();
+
+                public Builder WithCode(string code)
                 {
                     Guard
-                        .Require(cardName, nameof(cardName))
+                        .Require(code, nameof(code))
                         .Is.Not.Empty();
 
-                    this._quantityByNameLookup[cardName] = value;
+                    this._deck.Code = code;
+
+                    return this;
+                }
+
+                public Builder WithName(string name)
+                {
+                    Guard
+                        .Require(name, nameof(name))
+                        .Is.Not.Empty();
+
+                    this._deck.Name = name;
+
+                    return this;
+                }
+
+                public Builder WithCardAndQuantity(Card card, ushort quantity)
+                {
+                    this._deck[card] = quantity;
+
+                    return this;
+                }
+
+                public Builder WithCardAndQuantity(string name, string cardSetCode, ushort number, ushort quantity)
+                {
+                    this._deck[name, cardSetCode, number] = quantity;
+
+                    return this;
+                }
+
+                public Deck Build()
+                {
+                    // TODO: Add mandatory properties validation!
+
+                    this._deck.CardQuantity = (ushort)this
+                        ._deck
+                        ._quantityByCardLookup
+                        .Values
+                        .Aggregate(0, (total, quantity) => total += quantity);
+
+                    return this._deck;
                 }
             }
 
-            public string Name { get; }
+            public class Card
+            {
+                public Card(string name, string cardSetCode, ushort number)
+                {
+                    Guard
+                        .Require(name, nameof(name))
+                        .Is.Not.Empty();
 
-            public IEnumerable<string> CardNames => this._quantityByNameLookup.Keys;
+                    Guard
+                        .Require(cardSetCode, nameof(cardSetCode))
+                        .Is.Not.Empty();
 
-            public ushort CardQuantity => (ushort)this
-                ._quantityByNameLookup
-                .Sum(pair => pair.Value);
+                    Guard
+                        .Require(number, nameof(number))
+                        .Is.GreaterThan(0);
+
+                    this.Name = name;
+                    this.CardSetCode = cardSetCode;
+                    this.Number = number;
+                }
+
+                public string Name { get; }
+
+                public string CardSetCode { get; }
+
+                public ushort Number { get; }
+
+                public override bool Equals(object otherValue)
+                {
+                    if (object.ReferenceEquals(otherValue, null))
+                    {
+                        return false;
+                    }
+
+                    if (object.ReferenceEquals(otherValue, this))
+                    {
+                        return true;
+                    }
+
+                    if (this.GetType() != otherValue.GetType())
+                    {
+                        return false;
+                    }
+
+                    return this.Equals(otherValue as Card);
+                }
+
+                private bool Equals(Card otherCard)
+                {
+                    return
+                        otherCard != null &&
+                        otherCard.Number == this.Number &&
+                        otherCard.Name == this.Name &&
+                        otherCard.CardSetCode == this.CardSetCode;
+                }
+
+                public override int GetHashCode()
+                {
+                    unchecked
+                    {
+                        var hashCode = 13;
+
+                        hashCode = (hashCode * 397) ^ this.Name.GetHashCode();
+                        hashCode = (hashCode * 397) ^ this.CardSetCode.GetHashCode();
+                        hashCode = (hashCode * 397) ^ this.Number;
+
+                        return hashCode;
+                    }
+                }
+            }
         }
     }
 }

@@ -150,7 +150,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Is.Not.Null();
 
             Guard
-                .Require(deck.CardNames, $"{nameof(deck)}.{nameof(deck.CardNames)}")
+                .Require(deck.Cards, $"{nameof(deck)}.{nameof(deck.Cards)}")
                 .Is.Not.Null()
                 .Is.Not.Empty();
 
@@ -162,17 +162,22 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Subject.Cards?
                 .Select(card => card.Name) ?? Enumerable.Empty<string>();
 
+            var expectedCardNames = deck
+                .Cards
+                .Select(card => card.Name);
+
             actualCardNames
                 .Distinct()
-                .Should().BeEquivalentTo(deck.CardNames, $"{this.Identifier} should have card names defined by deck");
+                .Should()
+                .BeEquivalentTo(expectedCardNames, $"{this.Identifier} should have card names defined by deck");
 
             using (new AssertionScope())
             {
                 deck
-                    .CardNames
-                    .ForEach(cardName => this
+                    .Cards
+                    .ForEach(card => this
                         .Subject
-                        .Must().HaveCardQuantity(cardName, deck[cardName]));
+                        .Must().HaveCardQuantity(card.Name, deck[card]));
             }
 
             return new AndConstraint<ZoneAssertion>(this);
@@ -185,9 +190,14 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Is.Not.Null();
 
             Guard
-                .Require(deck.CardNames, $"{nameof(deck)}.{nameof(deck.CardNames)}")
+                .Require(deck.Cards, $"{nameof(deck)}.{nameof(deck.Cards)}")
                 .Is.Not.Null()
                 .Is.Not.Empty();
+
+            var expectedCardNames = deck
+                .Cards
+                .Select(card => card.Name)
+                .ToArray();
 
             using (new AssertionScope())
             {
@@ -195,7 +205,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .Subject.Cards?
                     .Select(card => card.Name)
                     .Distinct()
-                    .Where(cardName => !deck.CardNames.Contains(cardName))
+                    .Where(cardName => !expectedCardNames.Contains(cardName))
                     .ForEach(cardName => Execute
                         .Assertion
                         .FailWith($"Expected {{context:zone}} to not have card [{cardName}], not defined by deck."));
@@ -215,7 +225,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .ForEach(grouping => Execute
                         .Assertion
                         .FailWith(
-                            $"Expected {{context:zone}} to have unique card instance, " +
+                            @"Expected {{context:zone}} to have unique card instance, " +
                             $"but found {grouping.Count()} [{grouping.First().Name}] cards " +
                             $"with ID [{grouping.First().GetHashCode()}]."));
             }

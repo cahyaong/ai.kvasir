@@ -18,6 +18,7 @@ nuget System.Reactive.Linq
 nuget System.Threading.Tasks.Extensions
 nuget Unity
 nuget Unity.RegistrationByConvention
+nuget YamlDotNet
 
 group _Contract
     
@@ -60,6 +61,7 @@ group _Console
     nuget CommandLineParser
     nuget JetBrains.Annotations
     nuget Unity
+    nuget YamlDotNet
 
 group _Support
 
@@ -76,6 +78,7 @@ group _Support
     nuget NLog
     nuget System.Reactive
     nuget System.Reactive.Linq
+    nuget YamlDotNet
 
 group _Test
 

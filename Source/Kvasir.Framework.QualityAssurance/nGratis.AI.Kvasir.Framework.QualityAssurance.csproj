@@ -61,9 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="paket.references" />
-    <EmbeddedResource Include="Session\Raw_MTGJSON4.ngts" />
-    <EmbeddedResource Include="Session\Raw_SCRYFALL.ngts" />
-    <EmbeddedResource Include="Session\Raw_WOTC.ngts" />
+    <EmbeddedResource Include="Data\Raw_MTGJSON4.ngksession" />
+    <EmbeddedResource Include="Data\Raw_SCRYFALL.ngksession" />
+    <EmbeddedResource Include="Data\Raw_WOTC.ngksession" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj">
