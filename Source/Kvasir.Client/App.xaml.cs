@@ -26,20 +26,9 @@
 // <creation_timestamp>Wednesday, 17 October 2018 8:15:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Windows;
-
 namespace nGratis.AI.Kvasir.Client
 {
-    using nGratis.Cop.Olympus.Wpf;
-
     public partial class App
     {
-        protected override void OnStartup(StartupEventArgs args)
-        {
-            base.OnStartup(args);
-
-            // TODO: Make theme adjustable dynamically!
-
-        }
     }
 }
