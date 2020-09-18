@@ -35,9 +35,8 @@ namespace nGratis.AI.Kvasir.Framework
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
 
-    public class StubMagicHttpFetcher : BaseMagicHttpFetcher
+    public class StubMagicHttpFetcher : MagicHttpFetcherBase
     {
         private ExternalResources _availableResources;
 
@@ -89,7 +88,7 @@ namespace nGratis.AI.Kvasir.Framework
 
         protected override async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card card)
         {
-            return await Task.FromResult(EmptyImage.Instance);
+            return await Task.FromResult(Image.Empty);
         }
 
         public void VerifyRequestHeaders(params string[] expectedHeaders)

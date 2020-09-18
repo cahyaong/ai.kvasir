@@ -1,5 +1,6 @@
-﻿group _Console
+﻿JetBrains.Annotations
+Unity
+YamlDotNet
+
+group _Console
 	CommandLineParser
-	JetBrains.Annotations
-	Unity
-	YamlDotNet

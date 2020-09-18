@@ -120,16 +120,16 @@ namespace nGratis.AI.Kvasir.Client
 
             // TODO: Need to handle larger image size, e.g. Planechase card!
 
-            this.OriginalImage = cardImage.ToBitmapSource();
+            this.OriginalImage = cardImage.ToImageSource();
         }
 
         private async Task ParseCardAsync()
         {
-            if (this.UnparsedCard == null)
-            {
-                this.DefinedCard = null;
-            }
-            else
+            this.DefinedCard = default;
+            this.CombinedCardKinds = Enumerable.Empty<object>();
+            this.ProcessingMessages = Enumerable.Empty<string>();
+
+            if (this.UnparsedCard != null)
             {
                 var processingResult = await Task.Run(() => this._cardProcessor.Process(this.UnparsedCard));
 
@@ -153,12 +153,9 @@ namespace nGratis.AI.Kvasir.Client
                     combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
 
                     this.CombinedCardKinds = combinedKinds;
-                    this.ProcessingMessages = Enumerable.Empty<string>();
                 }
                 else
                 {
-                    this.DefinedCard = new DefinedBlob.Card();
-                    this.CombinedCardKinds = Enumerable.Empty<object>();
                     this.ProcessingMessages = processingResult.Messages;
                 }
             }

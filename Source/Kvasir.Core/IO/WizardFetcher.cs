@@ -38,9 +38,8 @@ namespace nGratis.AI.Kvasir.Core
     using HtmlAgilityPack;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
 
-    public class WizardFetcher : BaseMagicHttpFetcher
+    public class WizardFetcher : MagicHttpFetcherBase
     {
         public override ExternalResources AvailableResources =>
             ExternalResources.Rule;

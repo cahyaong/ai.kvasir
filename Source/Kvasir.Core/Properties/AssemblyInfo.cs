@@ -23,7 +23,7 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:44:05 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
@@ -35,5 +35,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
-[assembly: Guid("ff62d347-3230-4454-a43e-fdcc534816b7")]
+[assembly: Guid("5e54785f-703f-45fe-94a8-74b888246056")]
+[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Test")]
 [assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.Test")]

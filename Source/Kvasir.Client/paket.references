@@ -11,6 +11,6 @@ Unity.RegistrationByConvention
 group _UI
     Caliburn.Micro
     MahApps.Metro
-    ModernUI.WPF
     OxyPlot.Wpf
+    ReactiveUI
     ReactiveUI.WPF

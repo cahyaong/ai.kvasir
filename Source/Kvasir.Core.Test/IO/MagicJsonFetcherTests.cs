@@ -97,7 +97,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act &  Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.FetchCardSetsAsync())
+                    .Awaiting(self => self.FetchCardSetsAsync())
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach MTGJSON4.com when trying to fetch card sets! " +
@@ -220,7 +220,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                     .Awaiting(async self => await self.FetchCardsAsync(cardSet))
+                     .Awaiting(self => self.FetchCardsAsync(cardSet))
                      .Should().Throw<KvasirException>()
                      .WithMessage("Response from MTGJSON4.com is missing cards!");
             }
@@ -246,7 +246,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                     .Awaiting(async self => await self.FetchCardsAsync(cardSet))
+                     .Awaiting(self => self.FetchCardsAsync(cardSet))
                      .Should().Throw<KvasirException>()
                      .WithMessage(
                         "Failed to reach MTGJSON4.com when trying to fetch cards! " +

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicRepository.cs" company="nGratis">
+// <copyright file="ImageExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,41 +23,31 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, September 17, 2020 1:35:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
+    using System.Windows.Media;
+    using System.Windows.Media.Imaging;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
+    using nGratis.Cop.Olympus.Contract;
 
-    // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
-
-    public interface IMagicRepository
+    public static class ImageExtensions
     {
-        event EventHandler CardSetIndexed;
+        public static ImageSource ToImageSource(this IImage image)
+        {
+            Guard
+                .Require(image, nameof(image))
+                .Is.Not.Null();
 
-        event EventHandler CardIndexed;
+            var bitmapImage = new BitmapImage();
 
-        Task<int> GetCardSetCountAsync();
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = image.SaveData();
+            bitmapImage.EndInit();
 
-        Task<int> GetCardCountAsync();
-
-        Task<int> GetRuleCountAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet);
-
-        Task<IImage> GetCardImageAsync(UnparsedBlob.Card card);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount);
+            return bitmapImage;
+        }
     }
 }

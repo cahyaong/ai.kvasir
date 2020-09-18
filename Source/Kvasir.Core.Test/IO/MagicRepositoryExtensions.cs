@@ -87,7 +87,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 mockRepository.Object
-                    .Awaiting(async self => await self.GetCardSetAsync("[_MOCK_ANOTHER_NAME_]"))
+                    .Awaiting(self => self.GetCardSetAsync("[_MOCK_ANOTHER_NAME_]"))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to find card set! " +
@@ -106,7 +106,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 mockRepository.Object
-                    .Awaiting(async self => await self.GetCardSetAsync("[_MOCK_NAME_]"))
+                    .Awaiting(self => self.GetCardSetAsync("[_MOCK_NAME_]"))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Found more than 1 card set! " +

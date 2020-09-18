@@ -33,18 +33,17 @@ namespace nGratis.AI.Kvasir.Client
     using System.Collections.Specialized;
     using System.Linq;
     using System.Reactive.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using System.Windows.Input;
-    using FirstFloor.ModernUI.Presentation;
-    using JetBrains.Annotations;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Wpf;
+    using nGratis.Cop.Olympus.Wpf.Glue;
     using ReactiveUI;
 
-    [UsedImplicitly]
-    public sealed class LibraryManagementViewModel : ReactiveObject, IDisposable
+    [PageDefinition("Library", Ordering = 1)]
+    public sealed class LibraryManagementViewModel : ReactiveScreen, IDisposable
     {
         private readonly IMagicRepository _repository;
 
@@ -65,8 +64,6 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Not.Null();
 
             this._repository = repository;
-
-            this.PopulateCardSetsCommand = new RelayCommand(_ => this.PopulateCardSets());
         }
 
         ~LibraryManagementViewModel()
@@ -103,12 +100,17 @@ namespace nGratis.AI.Kvasir.Client
             }
         }
 
-        public ICommand PopulateCardSetsCommand { get; }
-
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected override async Task ActivateCoreAsync(CancellationToken cancellationToken)
+        {
+            this.PopulateCardSets();
+
+            await Task.CompletedTask;
         }
 
         private void PopulateCardSets()

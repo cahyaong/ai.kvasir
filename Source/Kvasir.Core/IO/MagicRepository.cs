@@ -38,7 +38,6 @@ namespace nGratis.AI.Kvasir.Core
     using Lucene.Net.Search;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
 
     public class MagicRepository : IMagicRepository
     {

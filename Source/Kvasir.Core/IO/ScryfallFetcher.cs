@@ -38,9 +38,8 @@ namespace nGratis.AI.Kvasir.Core
     using Newtonsoft.Json.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
 
-    public class ScryfallFetcher : BaseMagicHttpFetcher
+    public class ScryfallFetcher : MagicHttpFetcherBase
     {
         public ScryfallFetcher(IStorageManager storageManager)
             : base("SCRYFALL", storageManager, KeyCalculator.Instance)
@@ -85,7 +84,7 @@ namespace nGratis.AI.Kvasir.Core
         protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
         {
             var cards = new List<UnparsedBlob.Card>();
-            var pageCount = 1;
+            var pageNumber = 1;
             var hasAnotherPage = true;
 
             while (hasAnotherPage)
@@ -95,7 +94,7 @@ namespace nGratis.AI.Kvasir.Core
                 parameters["q"] = $"e:{cardSet.Code}";
                 parameters["unique"] = "prints";
                 parameters["order"] = "name";
-                parameters["page"] = pageCount.ToString();
+                parameters["page"] = pageNumber.ToString();
 
                 var response = await this.HttpClient.GetAsync(new Uri(Link.ApiUri, $"cards/search?{parameters}"));
 
@@ -142,7 +141,7 @@ namespace nGratis.AI.Kvasir.Core
 
                 if (hasAnotherPage)
                 {
-                    pageCount++;
+                    pageNumber++;
                 }
             }
 
@@ -174,6 +173,8 @@ namespace nGratis.AI.Kvasir.Core
             Guard
                 .Require(token, nameof(token))
                 .Is.Not.Null();
+
+            // FIXME: Need to handle cards that use different JSON format, e.g. the ones from Zendikar Rising!
 
             var imageUri = new Uri(token
                 .SelectToken("image_uris")
@@ -244,7 +245,7 @@ namespace nGratis.AI.Kvasir.Core
                 RegexOptions.Compiled);
 
             public static readonly Regex CardImageUrl = new Regex(
-                @"/cards/border_crop/(?<url>[a-z0-9/]+/[a-z0-9\-%]+\.jpg\?(?<salt>\d+))",
+                @"/(scryfall\-)?cards/border_crop/(?<url>[a-z0-9/]+/[a-z0-9\-%]+\.jpg\?(?<salt>\d+))",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }
     }

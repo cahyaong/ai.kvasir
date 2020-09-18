@@ -1,16 +1,17 @@
 ﻿Antlr4
+HtmlAgilityPack
 Humanizer.Core
 JetBrains.Annotations
 Lucene.Net
 Lucene.Net.Analysis.Common
 Polly
+SixLabors.ImageSharp
 System.Reactive
 YamlDotNet
 
-group _IO
-    HtmlAgilityPack
-
 group _Test
     FluentAssertions
+    Microsoft.NET.Test.Sdk
     Moq
     xunit
+    xunit.runner.visualstudio

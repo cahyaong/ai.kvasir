@@ -41,7 +41,7 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class MagicJsonFetcher : BaseMagicHttpFetcher
+    public class MagicJsonFetcher : MagicHttpFetcherBase
     {
         public MagicJsonFetcher(IStorageManager storageManager)
             : base("MTGJSON4", storageManager)

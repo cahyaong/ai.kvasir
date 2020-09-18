@@ -1,4 +1,4 @@
-﻿group _Test_vNext
+﻿group _Test
     FluentAssertions
     Microsoft.NET.Test.Sdk
     Moq

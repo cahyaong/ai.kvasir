@@ -38,23 +38,22 @@ namespace nGratis.AI.Kvasir.Core
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
 
-    public abstract class BaseMagicHttpFetcher : IMagicFetcher
+    public abstract class MagicHttpFetcherBase : IMagicFetcher
     {
         private readonly HttpMessageHandler _messageHandler;
 
         private bool _isDisposed;
 
-        protected BaseMagicHttpFetcher(
+        protected MagicHttpFetcherBase(
             string id,
             IStorageManager storageManager,
             IKeyCalculator keyCalculator = null)
-            : this(BaseMagicHttpFetcher.CreateMessageHandler(id, storageManager, keyCalculator))
+            : this(MagicHttpFetcherBase.CreateMessageHandler(id, storageManager, keyCalculator))
         {
         }
 
-        protected internal BaseMagicHttpFetcher(HttpMessageHandler messageHandler)
+        protected internal MagicHttpFetcherBase(HttpMessageHandler messageHandler)
         {
             this._messageHandler = messageHandler;
 
@@ -170,7 +169,7 @@ namespace nGratis.AI.Kvasir.Core
                 .Is.Not.Null();
 
             var messageHandler = (HttpMessageHandler)new HttpClientHandler();
-            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(100), messageHandler);
+            messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(25), messageHandler);
 
             messageHandler = new CachingMessageHandler(
                 $"Raw_{id}",

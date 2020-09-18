@@ -1,9 +1,10 @@
 // TODO: Migrate all testing projects to .NET Core before updating xunit.runner.visualstudio to 2.4.2!
 
-framework: net472
+framework: netcoreapp3.1
 source https://api.nuget.org/v3/index.json
 
 nuget Antlr4
+nuget HtmlAgilityPack
 nuget Humanizer.Core
 nuget JetBrains.Annotations
 nuget J2N ~> 1.0.0-beta-0002
@@ -12,6 +13,7 @@ nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
+nuget SixLabors.ImageSharp
 nuget Stateless
 nuget System.Reactive
 nuget System.Reactive.Linq
@@ -20,36 +22,15 @@ nuget Unity
 nuget Unity.RegistrationByConvention
 nuget YamlDotNet
 
-group _Contract
-    
-    framework: netstandard2.0
-    source https://api.nuget.org/v3/index.json
-
-    nuget JetBrains.Annotations
-
-group _Engine
-    
-    framework: netstandard2.0
-    source https://api.nuget.org/v3/index.json
-
-    nuget Stateless
-
-group _IO
-
-    framework: net472
-    source https://api.nuget.org/v3/index.json
-
-    nuget HtmlAgilityPack
-
 group _UI
 
-    framework: net472
+    framework: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
 
-    nuget Caliburn.Micro
-    nuget MahApps.Metro ~> 1.6
-    nuget ModernUI.WPF
+    nuget Caliburn.Micro ~> 4.0.136-rc
+    nuget MahApps.Metro
     nuget OxyPlot.Wpf
+    nuget ReactiveUI
     nuget ReactiveUI.WPF
 
 group _Console
@@ -57,40 +38,29 @@ group _Console
     framework: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
 
-    nuget Antlr4
     nuget CommandLineParser
-    nuget JetBrains.Annotations
-    nuget Unity
-    nuget YamlDotNet
 
 group _Support
 
-    framework: netstandard2.0
+    framework: netstandard2.1
     source https://api.nuget.org/v3/index.json
 
     nuget Antlr4
+    nuget HtmlAgilityPack
     nuget Humanizer.Core
+    nuget JetBrains.Annotations
     nuget J2N ~> 1.0.0-beta-0002
     nuget Lucene.Net >= 4.8.0-beta00001
     nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
-    nuget Moq
     nuget Newtonsoft.Json
     nuget NLog
+    nuget SixLabors.ImageSharp
+    nuget Stateless
     nuget System.Reactive
     nuget System.Reactive.Linq
     nuget YamlDotNet
 
 group _Test
-
-    framework: net472
-    source https://api.nuget.org/v3/index.json
-
-    nuget FluentAssertions
-    nuget Moq
-    nuget xunit
-    nuget xunit.runner.visualstudio ~> 2.4.1.0
-
-group _Test_vNext
 
     framework: netcoreapp3.1
     source https://api.nuget.org/v3/index.json
@@ -99,4 +69,13 @@ group _Test_vNext
     nuget Microsoft.NET.Test.Sdk
     nuget Moq
     nuget xunit
-    nuget xunit.runner.visualstudio ~> 2.4.1.0
+    nuget xunit.runner.visualstudio
+
+group _Test_Support
+
+    framework: netstandard2.1
+    source https://api.nuget.org/v3/index.json
+
+    nuget FluentAssertions
+    nuget Moq
+    nuget xunit

@@ -1,7 +1,9 @@
-﻿Humanizer.Core
-JetBrains.Annotations
-Newtonsoft.Json
-System.Reactive.Linq
-
-group _IO
+﻿group _Support
+    Antlr4
     HtmlAgilityPack
+    Humanizer.Core
+    J2N
+    Lucene.Net
+    Lucene.Net.Analysis.Common
+    SixLabors.ImageSharp
+    YamlDotNet

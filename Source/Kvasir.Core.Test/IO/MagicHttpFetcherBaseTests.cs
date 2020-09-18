@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BaseMagicHttpFetcherTests.cs" company="nGratis">
+// <copyright file="MagicHttpFetcherBaseTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -35,7 +35,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using nGratis.AI.Kvasir.Framework;
     using Xunit;
 
-    public class BaseMagicHttpFetcherTests
+    public class MagicHttpFetcherBaseTests
     {
         public class Constructor
         {
@@ -99,7 +99,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.FetchCardSetsAsync())
+                    .Awaiting(self => self.FetchCardSetsAsync())
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -154,7 +154,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.FetchCardsAsync(cardSet))
+                    .Awaiting(self => self.FetchCardsAsync(cardSet))
                     .Should().Throw<NotSupportedException>();
             }
         }
@@ -207,7 +207,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 stubFetcher
-                    .Awaiting(async self => await self.FetchCardImageAsync(card))
+                    .Awaiting(self => self.FetchCardImageAsync(card))
                     .Should().Throw<NotSupportedException>();
             }
         }

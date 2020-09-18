@@ -99,7 +99,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Act & Assert.
 
                 fetcher
-                    .Awaiting(async self => await self.FetchCardImageAsync(card))
+                    .Awaiting(self => self.FetchCardImageAsync(card))
                     .Should().Throw<KvasirException>()
                     .WithMessage(
                         "Failed to reach WIZARD.com when trying to fetch card image! " +

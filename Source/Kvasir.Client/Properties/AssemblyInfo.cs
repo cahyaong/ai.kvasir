@@ -34,6 +34,6 @@ using System.Windows;
 [assembly: AssemblyTitle("nGratis.AI.Kvasir.Client")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: Guid("f1cb3c9e-b4c3-4c94-8cd7-6ba4859454d0")]
+[assembly: Guid("cb2de919-7e95-4a3e-908c-0efb5ac131cd")]
 [assembly: CLSCompliant(false)]
 [assembly: ThemeInfo(ResourceDictionaryLocation.ExternalAssembly, ResourceDictionaryLocation.ExternalAssembly)]

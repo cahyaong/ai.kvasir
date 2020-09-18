@@ -3,17 +3,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client"
-  xmlns:olympus="http://schemas.ngratis.com/2014/olympus"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:olympus="http://schemas.ngratis.com/2014/olympus"
   d:DataContext="{d:DesignInstance client:EngineManagementViewModel}"
   mc:Ignorable="d">
-  <i:Interaction.Triggers>
-    <i:EventTrigger EventName="Loaded">
-      <i:InvokeCommandAction Command="{Binding PopulateCardSetsCommand, Mode=OneWay}" />
-    </i:EventTrigger>
-  </i:Interaction.Triggers>
   <StackPanel olympus:ChildrenMargin.Value="20,0" Orientation="Horizontal">
     <olympus:AweTileGroup Width="500" Header="UNPARSED">
       <Grid olympus:ChildrenMargin.Value="10,10">

@@ -35,7 +35,6 @@ namespace nGratis.AI.Kvasir.Client
     using System.Reflection;
     using System.Windows;
     using Caliburn.Micro;
-    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Framework;
@@ -45,7 +44,7 @@ namespace nGratis.AI.Kvasir.Client
     using Unity.Lifetime;
     using Unity.RegistrationByConvention;
 
-    internal sealed class AppBootstrapper : CopBootstrapper, IDisposable
+    internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
     {
         private readonly IUnityContainer _unityContainer;
 
@@ -95,6 +94,12 @@ namespace nGratis.AI.Kvasir.Client
 
         protected override void OnStartup(object sender, StartupEventArgs args)
         {
+            if (sender is Application app)
+            {
+                var theme = ControlzEx.Theming.ThemeManager.Current.ChangeTheme(app, "Dark.Green");
+                app.AdjustAccentColor(theme.PrimaryAccentColor);
+            }
+
             this.DisplayRootViewFor<AppViewModel>();
         }
 
@@ -173,13 +178,16 @@ namespace nGratis.AI.Kvasir.Client
                 .Require(unityContainer, nameof(unityContainer))
                 .Is.Not.Null();
 
-            unityContainer.RegisterTypes(
-                AllClasses
-                    .FromAssemblies(false, Assembly.GetEntryAssembly())
-                    .Where(type => type.FullName?.EndsWith("ViewModel") == true),
-                WithMappings.None,
-                WithName.Default,
-                WithLifetime.ContainerControlled);
+            AllClasses
+                .FromAssemblies(false, Assembly.GetEntryAssembly())
+                .Where(type => typeof(IScreen).IsAssignableFrom(type))
+                .Where(type => type.FullName?.EndsWith("ViewModel") == true)
+                .Where(type => type.Name != nameof(AppViewModel))
+                .ForEach(type => unityContainer.RegisterType(
+                    typeof(IScreen),
+                    type,
+                    $"auto.{type.Name}",
+                    new ContainerControlledLifetimeManager()));
 
             return unityContainer;
         }

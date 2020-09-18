@@ -31,14 +31,17 @@ namespace nGratis.AI.Kvasir.Client
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Wpf;
+    using nGratis.Cop.Olympus.Wpf.Glue;
     using ReactiveUI;
 
-    public sealed class RuleManagementViewModel : BasePageViewModel, IDisposable
+    [PageDefinition("Rule", Ordering = 3)]
+    public sealed class RuleManagementViewModel : ReactiveScreen, IDisposable
     {
         private readonly IMagicRepository _repository;
 
@@ -66,18 +69,22 @@ namespace nGratis.AI.Kvasir.Client
             private set => this.RaiseAndSetIfChanged(ref this._ruleViewModels, value);
         }
 
-        protected override void OnActivated()
+        protected override async Task ActivateCoreAsync(CancellationToken cancellationToken)
         {
             var virtualizingProvider = new RuleViewModelProvider(this._repository);
 
             this.RuleViewModels?.Dispose();
             this.RuleViewModels = new AsyncVirtualizingCollection<RuleViewModel>(virtualizingProvider);
+
+            await Task.CompletedTask;
         }
 
-        protected override void OnDeactivated()
+        protected override async Task DeactivateCoreAysnc(bool isClosed, CancellationToken cancellationToken)
         {
             this.RuleViewModels?.Dispose();
             this.RuleViewModels = null;
+
+            await Task.CompletedTask;
         }
 
         private sealed class RuleViewModelProvider : IPagingDataProvider<RuleViewModel>

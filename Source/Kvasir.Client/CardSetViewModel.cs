@@ -133,6 +133,10 @@ namespace nGratis.AI.Kvasir.Client
                     pattern.EventArgs.PropertyName == nameof(CardViewModel.ProcessingMessages))
                 .Throttle(TimeSpan.FromMilliseconds(250))
                 .Subscribe(_ => this.UpdateParsingStatistics());
+
+            this.SelectedCardViewModel = this
+                .CardViewModels
+                .FirstOrDefault();
         }
 
         private async Task ParseCardsAysnc()
@@ -142,17 +146,13 @@ namespace nGratis.AI.Kvasir.Client
                 return;
             }
 
-            if (this.SelectedCardViewModel == null)
-            {
-                this.SelectedCardViewModel = this.CardViewModels.First();
-            }
+            this.SelectedCardViewModel ??= this.CardViewModels.First();
 
             await Task.Run(() =>
             {
-                this.SelectedCardViewModel.ParseCardCommand.Execute(null);
-
                 this.CardViewModels
                     .AsParallel()
+                    .WithDegreeOfParallelism(8)
                     .Where(vm => vm.ParseCardCommand.CanExecute(null))
                     .ForEach(vm => vm.ParseCardCommand.Execute(null));
             });

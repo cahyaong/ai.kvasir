@@ -235,10 +235,9 @@ namespace nGratis.AI.Kvasir.Core
                     return new byte[0];
                 }
 
-                using (var entryStream = foundEntry.Open())
-                {
-                    return entryStream.ReadBlob();
-                }
+                using var entryStream = foundEntry.Open();
+
+                return entryStream.ReadBlob();
             }
 
             public void SaveEntry(string key, byte[] blob)
@@ -275,11 +274,10 @@ namespace nGratis.AI.Kvasir.Core
                         ._deferredArchive.Value
                         .CreateEntry(key, CompressionLevel.Optimal);
 
-                    using (var entryStream = createdEntry.Open())
-                    {
-                        entryStream.Write(blob, 0, blob.Length);
-                        entryStream.Flush();
-                    }
+                    using var entryStream = createdEntry.Open();
+
+                    entryStream.Write(blob, 0, blob.Length);
+                    entryStream.Flush();
                 }
                 finally
                 {
@@ -314,7 +312,7 @@ namespace nGratis.AI.Kvasir.Core
 
                 var dataStream = this._storageManager.LoadEntry(this._archiveSpec);
 
-                return new ZipArchive(dataStream, ZipArchiveMode.Update, true);
+                return new ZipArchive(dataStream, ZipArchiveMode.Update, false);
             }
 
             private void Dispose(bool isDisposing)

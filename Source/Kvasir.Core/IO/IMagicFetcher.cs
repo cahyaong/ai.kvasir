@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NopFetcher.cs" company="nGratis">
+// <copyright file="IMagicFetcher.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,7 +23,7 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 9, 2020 6:36:02 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 25 October 2018 10:49:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
@@ -32,34 +32,17 @@ namespace nGratis.AI.Kvasir.Core
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Vision.Imaging;
 
-    public class NopFetcher : IMagicFetcher
+    public interface IMagicFetcher : IDisposable
     {
-        public ExternalResources AvailableResources => ExternalResources.All;
+        ExternalResources AvailableResources { get; }
 
-        public Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsAsync()
-        {
-            throw new NotSupportedException("Fetching card sets is not allowed!");
-        }
+        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsAsync();
 
-        public Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsAsync(UnparsedBlob.CardSet cardSet)
-        {
-            throw new NotSupportedException("Fetching cards is not allowed!");
-        }
+        Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsAsync(UnparsedBlob.CardSet cardSet);
 
-        public Task<IImage> FetchCardImageAsync(UnparsedBlob.Card card)
-        {
-            throw new NotSupportedException("Fetching card image is not allowed!");
-        }
+        Task<IImage> FetchCardImageAsync(UnparsedBlob.Card card);
 
-        public Task<IReadOnlyCollection<UnparsedBlob.Rule>> FetchRulesAsync()
-        {
-            throw new NotSupportedException("Fetching rules is not allowed!");
-        }
-
-        public void Dispose()
-        {
-        }
+        Task<IReadOnlyCollection<UnparsedBlob.Rule>> FetchRulesAsync();
     }
 }

@@ -28,11 +28,53 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
-    using JetBrains.Annotations;
-    using ReactiveUI;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using System.Reflection;
+    using Caliburn.Micro;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Wpf;
 
-    [UsedImplicitly]
-    public class AppViewModel : ReactiveObject
+    public class AppViewModel : Conductor<IScreen>.Collection.OneActive
     {
+        public AppViewModel(params IScreen[] screens)
+        {
+            Guard
+                .Require(screens, nameof(screens))
+                .Is.Not.Empty();
+
+            var orderedScreens = screens
+                .Where(screen => screen != null)
+                .Select(screen =>
+                {
+                    var definitionAttribute = screen
+                        .GetType()
+                        .GetCustomAttribute<PageDefinitionAttribute>();
+
+                    return new
+                    {
+                        Screen = screen,
+                        DisplayText = definitionAttribute?.DisplayText ?? Text.Undefined,
+                        Ordering = definitionAttribute?.Ordering ?? int.MaxValue,
+                        TypeName = screen.GetType().Name
+                    };
+                })
+                .Select(anon =>
+                {
+                    anon.Screen.DisplayName = anon
+                        .DisplayText
+                        .ToLowerInvariant()
+                        .Replace(" ", "-");
+
+                    return anon;
+                })
+                .OrderBy(anon => anon.Ordering)
+                .ThenBy(anon => anon.DisplayText)
+                .ThenBy(anon => anon.TypeName)
+                .Select(anon => anon.Screen)
+                .ToImmutableList();
+
+            this.Items.AddRange(orderedScreens);
+        }
     }
 }

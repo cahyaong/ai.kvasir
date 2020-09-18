@@ -30,13 +30,16 @@ namespace nGratis.AI.Kvasir.Client
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
-    using System.Windows.Input;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Wpf;
+    using nGratis.Cop.Olympus.Wpf.Glue;
     using ReactiveUI;
 
-    public class EngineManagementViewModel : ReactiveObject
+    [PageDefinition("Engine", Ordering = 2)]
+    public class EngineManagementViewModel : ReactiveScreen
     {
         // TODO: Consider adding searching filter on UI instead!
 
@@ -60,14 +63,7 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Not.Null();
 
             this._repository = repository;
-
-            this.PopulateCardSetsCommand = ReactiveCommand.CreateFromTask(async () =>
-            {
-                await this.PopulateCardSetsAsync();
-            });
         }
-
-        public ICommand PopulateCardSetsCommand { get; }
 
         public IEnumerable<CardSetViewModel> CardSetViewModels
         {
@@ -84,6 +80,13 @@ namespace nGratis.AI.Kvasir.Client
                 this.RaiseAndSetIfChanged(ref this._selectedCardSetViewModel, value);
                 this.SelectedCardSetViewModel?.PopulateCardsCommand.Execute(null);
             }
+        }
+
+        protected override async Task ActivateCoreAsync(CancellationToken cancellationToken)
+        {
+            await this.PopulateCardSetsAsync();
+
+            this.SelectedCardSetViewModel = this.CardSetViewModels.FirstOrDefault();
         }
 
         private async Task PopulateCardSetsAsync()

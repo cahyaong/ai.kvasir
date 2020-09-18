@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="IImage.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,13 +23,21 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, January 31, 2020 8:24:17 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, August 16, 2020 1:16:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Contract
+{
+    using System.IO;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Framework.QualityAssurance")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("ecc17f00-d6f9-4fad-afce-e6967d48f0ac")]
+    public interface IImage
+    {
+        int Width { get; }
+
+        int Height { get; }
+
+        void LoadData(Stream dataSteam);
+
+        Stream SaveData();
+    }
+}

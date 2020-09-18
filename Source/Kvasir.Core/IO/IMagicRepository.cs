@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="IMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,19 +23,40 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Core
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core.Support")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("7ba00265-7016-4497-8e88-bba45d3c2583")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Test")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.Test")]
+    // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
+
+    public interface IMagicRepository
+    {
+        event EventHandler CardSetIndexed;
+
+        event EventHandler CardIndexed;
+
+        Task<int> GetCardSetCountAsync();
+
+        Task<int> GetCardCountAsync();
+
+        Task<int> GetRuleCountAsync();
+
+        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync();
+
+        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount);
+
+        Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet);
+
+        Task<IImage> GetCardImageAsync(UnparsedBlob.Card card);
+
+        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync();
+
+        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount);
+    }
+}

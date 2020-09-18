@@ -51,7 +51,7 @@ namespace nGratis.AI.Kvasir.Console
             var magicFetcher = new NopFetcher();
             var magicRepository = new MagicRepository(indexManager, magicFetcher);
 
-            var logger = new ConsoleLogger("AI.KVASIR", "CardProcessing");
+            var logger = new ConsoleLogger("CardProcessing");
             var processingExecutor = new ProcessingCardExecution(magicRepository, MagicCardProcessor.Instance, logger);
 
             var processingParameter = ExecutionParameter.Builder
