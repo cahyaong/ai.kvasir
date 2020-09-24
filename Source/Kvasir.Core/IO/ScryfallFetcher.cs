@@ -174,20 +174,35 @@ namespace nGratis.AI.Kvasir.Core
                 .Require(token, nameof(token))
                 .Is.Not.Null();
 
-            // FIXME: Need to handle cards that use different JSON format, e.g. the ones from Zendikar Rising!
+            var imageUrl = token
+                .SelectToken("image_uris")?
+                .SelectToken("border_crop")?
+                .Value<string>();
 
-            var imageUri = new Uri(token
-                .SelectToken("image_uris")
-                .SelectToken("border_crop")
-                .Value<string>());
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                // TODO: Handle second card face!
 
-            var urlMatch = Pattern.CardImageUrl.Match(imageUri.PathAndQuery);
+                imageUrl = token
+                    .SelectToken("card_faces")?
+                    .First()
+                    .SelectToken("image_uris")?
+                    .SelectToken("border_crop")?
+                    .Value<string>();
+            }
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                throw new KvasirException("Failed to find SCRYFALL.com image URL!");
+            }
+
+            var urlMatch = Pattern.CardImageUrl.Match(imageUrl);
 
             if (!urlMatch.Success)
             {
                 throw new KvasirException(
-                    @"Failed to find SCRYFALL.com image URL! " +
-                    $"URL: [{imageUri.AbsoluteUri}].");
+                    @"Failed to process SCRYFALL.com image URL! " +
+                    $"URL: [{imageUrl}].");
             }
 
             return urlMatch.Groups["url"].Value;

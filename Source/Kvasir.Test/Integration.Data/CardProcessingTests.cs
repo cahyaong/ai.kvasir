@@ -175,15 +175,15 @@ namespace nGratis.AI.Kvasir.Test
 
         public class CardTheory : CopTheory
         {
+            private CardTheory()
+            {
+            }
+
             public string CardSetName { get; private set; }
 
             public string CardName { get; private set; }
 
             public DefinedBlob.Card ExpectedCard { get; private set; }
-
-            private CardTheory()
-            {
-            }
 
             public static CardTheory Create(string cardSetName, string cardName)
             {

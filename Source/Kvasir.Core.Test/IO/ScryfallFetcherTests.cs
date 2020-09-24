@@ -29,12 +29,16 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
     using FluentAssertions;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Framework;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Framework;
     using Xunit;
 
     public class ScryfallFetcherTests
@@ -104,28 +108,35 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class FetchCardsAsyncMethod
         {
-            [Fact]
-            [SuppressMessage("ReSharper", "StringLiteralTypo")]
-            public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
+            [Theory]
+            [MemberData(nameof(TestData.ValidCardSetTheories), MemberType = typeof(TestData))]
+            public async Task WhenGettingSuccessfulResponse_ShouldParseJson(CardSetTheory theory)
             {
                 // Arrange.
 
                 var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponseInSession(
-                        "https://api.scryfall.com/cards/search?q=e%3aWAR&unique=prints&order=name&page=1",
-                        "Raw_SCRYFALL",
-                        "WAR_01.json")
-                    .WithSuccessfulResponseInSession(
-                        "https://api.scryfall.com/cards/search?q=e%3aWAR&unique=prints&order=name&page=2",
-                        "Raw_SCRYFALL",
-                        "WAR_02.json");
+                    .Create();
+
+                Enumerable
+                    .Range(1, theory.PageCount)
+                    .Select(number => new
+                    {
+                        EntryKey = $"{theory.CardSetCode}_{number:D2}.json",
+                        TargetUrl = string.Format(
+                            "https://api.scryfall.com/cards/search?q=e%3a{0}&unique=prints&order=name&page={1}",
+                            theory.CardSetCode,
+                            number)
+                    })
+                    .ForEach(anon =>
+                    {
+                        stubHandler.WithSuccessfulResponseInSession(anon.TargetUrl, "Raw_SCRYFALL", anon.EntryKey);
+                    });
 
                 var fetcher = new ScryfallFetcher(stubHandler);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
-                    Code = "WAR",
+                    Code = theory.CardSetCode,
                     Name = "[_MOCK_NAME_]",
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
@@ -138,76 +149,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 cards
                     .Should().NotBeNull()
-                    .And.HaveCount(275)
+                    .And.HaveCount(theory.ExpectedCardCount)
                     .And.NotContainNulls();
 
-                foreach (var card in cards)
-                {
-                    card
-                        .MultiverseId
-                        .Should().BePositive();
-
-                    card
-                        .ScryfallId
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[0-9a-f]{8}\-([0-9a-f]{4}\-){3}[0-9a-f]{12}");
-
-                    card
-                        .ScryfallImageUrl
-                        .Should().NotBeNullOrEmpty();
-
-                    card
-                        .CardSetCode
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"\w{3,6}");
-
-                    card
-                        .Name
-                        .Should().NotBeNullOrWhiteSpace();
-
-                    card
-                        .ManaCost
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"(\{[\dWUBRGX/]+\})*");
-
-                    card
-                        .Type
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"[a-zA-Z\-\s]+");
-
-                    card
-                        .Rarity
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"[a-zA-Z]+");
-
-                    card
-                        .Text
-                        .Should().NotBeNull();
-
-                    card
-                        .FlavorText
-                        .Should().NotBeNull();
-
-                    card
-                        .Power
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[\d\*]*");
-
-                    card
-                        .Toughness
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[\d\*]*");
-
-                    card
-                        .Number
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[\da-z]+");
-
-                    card
-                        .Artist
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"[a-zA-Z\s]+");
-                }
+                cards
+                    .ForEach(card => card.Must().HaveValidContent());
             }
 
             [Fact]
@@ -243,6 +189,68 @@ namespace nGratis.AI.Kvasir.Core.Test
                         "Failed to reach SCRYFALL.com when trying to fetch cards! " +
                         "Card Set: [[_MOCK_NAME_]]. " +
                         "Status Code: [NotFound].");
+            }
+
+            public static class TestData
+            {
+                public static IEnumerable<object[]> ValidCardSetTheories
+                {
+                    get
+                    {
+                        yield return CardSetTheory
+                            .Create("WAR", 2)
+                            .ExpectCardCount(275)
+                            .WithLabel(1, "Card with standard single face")
+                            .ToXunitTheory();
+
+                        yield return CardSetTheory
+                            .Create("ISD", 2)
+                            .ExpectCardCount(239)
+                            .WithLabel(2, "Card with second face")
+                            .ToXunitTheory();
+                    }
+                }
+            }
+
+            public class CardSetTheory : CopTheory
+            {
+                private CardSetTheory()
+                {
+                }
+
+                public string CardSetCode { get; private set; }
+
+                public int PageCount { get; private set; }
+
+                public int ExpectedCardCount { get; private set; }
+
+                public static CardSetTheory Create(string code, int pageCount)
+                {
+                    Guard
+                        .Require(code, nameof(code))
+                        .Is.Not.Empty();
+
+                    Guard
+                        .Require(pageCount, nameof(pageCount))
+                        .Is.Positive();
+
+                    return new CardSetTheory
+                    {
+                        CardSetCode = code,
+                        PageCount = pageCount
+                    };
+                }
+
+                public CardSetTheory ExpectCardCount(int cardCount)
+                {
+                    Guard
+                        .Require(cardCount, nameof(cardCount))
+                        .Is.Positive();
+
+                    this.ExpectedCardCount = cardCount;
+
+                    return this;
+                }
             }
         }
 

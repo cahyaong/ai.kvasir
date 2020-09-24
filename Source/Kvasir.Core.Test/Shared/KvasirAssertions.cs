@@ -32,6 +32,11 @@ namespace nGratis.AI.Kvasir.Core.Test
 
     internal static class KvasirAssertions
     {
+        public static CardAssertion Must(this UnparsedBlob.Card card)
+        {
+            return new CardAssertion(card);
+        }
+
         public static CostAssertion Must(this DefinedBlob.Cost cost)
         {
             return new CostAssertion(cost);
