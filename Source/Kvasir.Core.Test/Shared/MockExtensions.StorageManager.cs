@@ -26,7 +26,7 @@
 // <creation_timestamp>Thursday, 22 November 2018 9:00:55 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable CheckNamespace
+// ReSharper disable once CheckNamespace
 
 namespace Moq.AI.Kvasir
 {

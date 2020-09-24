@@ -505,19 +505,18 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                using (var monitoredRepository = repository.Monitor())
-                {
-                    // Act.
+                using var monitoredRepository = repository.Monitor();
 
-                    var _ = await repository.GetCardSetsAsync();
+                // Act.
 
-                    // Assert.
+                var _ = await repository.GetCardSetsAsync();
 
-                    monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.CardSetIndexed))
-                        .WithSender(repository)
-                        .WithArgs<EventArgs>(args => args == EventArgs.Empty);
-                }
+                // Assert.
+
+                monitoredRepository
+                    .Should().Raise(nameof(IMagicRepository.CardSetIndexed))
+                    .WithSender(repository)
+                    .WithArgs<EventArgs>(args => args == EventArgs.Empty);
             }
 
             [Fact]
@@ -537,17 +536,16 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
 
-                using (var monitoredRepository = repository.Monitor())
-                {
-                    // Act.
+                using var monitoredRepository = repository.Monitor();
 
-                    var _ = await repository.GetCardSetsAsync();
+                // Act.
 
-                    // Assert.
+                var _ = await repository.GetCardSetsAsync();
 
-                    monitoredRepository
-                        .Should().NotRaise(nameof(IMagicRepository.CardSetIndexed));
-                }
+                // Assert.
+
+                monitoredRepository
+                    .Should().NotRaise(nameof(IMagicRepository.CardSetIndexed));
             }
         }
 
@@ -576,19 +574,18 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
 
-                using (var monitoredRepository = repository.Monitor())
-                {
-                    // Act.
+                using var monitoredRepository = repository.Monitor();
 
-                    var _ = await repository.GetCardsAsync(cardSet);
+                // Act.
 
-                    // Assert.
+                var _ = await repository.GetCardsAsync(cardSet);
 
-                    monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
-                        .WithSender(repository)
-                        .WithArgs<EventArgs>(args => args == EventArgs.Empty);
-                }
+                // Assert.
+
+                monitoredRepository
+                    .Should().Raise(nameof(IMagicRepository.CardIndexed))
+                    .WithSender(repository)
+                    .WithArgs<EventArgs>(args => args == EventArgs.Empty);
             }
 
             [Fact]
@@ -615,17 +612,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
 
-                using (var monitoredRepository = repository.Monitor())
-                {
-                    // Act.
+                using var monitoredRepository = repository.Monitor();
 
-                    var _ = await repository.GetCardsAsync(cardSet);
+                // Act.
 
-                    // Assert.
+                var _ = await repository.GetCardsAsync(cardSet);
 
-                    monitoredRepository
-                        .Should().NotRaise(nameof(IMagicRepository.CardIndexed));
-                }
+                // Assert.
+
+                monitoredRepository
+                    .Should().NotRaise(nameof(IMagicRepository.CardIndexed));
             }
 
             [Fact]
@@ -656,19 +652,18 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
 
-                using (var monitoredRepository = repository.Monitor())
-                {
-                    // Act.
+                using var monitoredRepository = repository.Monitor();
 
-                    var _ = await repository.GetCardsAsync(cardSet);
+                // Act.
 
-                    // Assert.
+                var _ = await repository.GetCardsAsync(cardSet);
 
-                    monitoredRepository
-                        .Should().Raise(nameof(IMagicRepository.CardIndexed))
-                        .WithSender(repository)
-                        .WithArgs<EventArgs>(args => args == EventArgs.Empty);
-                }
+                // Assert.
+
+                monitoredRepository
+                    .Should().Raise(nameof(IMagicRepository.CardIndexed))
+                    .WithSender(repository)
+                    .WithArgs<EventArgs>(args => args == EventArgs.Empty);
             }
         }
     }

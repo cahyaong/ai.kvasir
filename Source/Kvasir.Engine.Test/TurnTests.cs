@@ -44,40 +44,39 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
                 var turn = new Turn();
 
-                using (var monitor = turn.Monitor())
-                {
-                    // Act.
+                using var monitor = turn.Monitor();
 
-                    Enumerable
-                        .Range(0, 5)
-                        .ForEach(_ => turn.ProcessNextPhase());
+                // Act.
 
-                    // Assert.
+                Enumerable
+                    .Range(0, 5)
+                    .ForEach(_ => turn.ProcessNextPhase());
 
-                    monitor
-                        .OccurredEvents
-                        .Where(occurredEvent =>
-                            occurredEvent.EventName == nameof(Turn.StateChanged) &&
-                            occurredEvent.Parameters?.Length == 2)
-                        .Select(occurredEvent => occurredEvent.Parameters[1] as Turn.StateChangedEventArgs)
-                        .Where(eventArgs => eventArgs != null)
-                        .Select(eventArgs => $"{eventArgs.PhaseState}_{eventArgs.StepState}")
-                        .ToArray()
-                        .Should().HaveCount(12)
-                        .And.ContainInOrder(
-                            "Beginning_Untap",
-                            "Beginning_Upkeep",
-                            "Beginning_Draw",
-                            "PrecombatMain_None",
-                            "Combat_BeginningOfCombat",
-                            "Combat_DeclareAttackers",
-                            "Combat_DeclareBlockers",
-                            "Combat_CombatDamage",
-                            "Combat_EndOfCombat",
-                            "PostcombatMain_None",
-                            "Ending_End",
-                            "Ending_Cleanup");
-                }
+                // Assert.
+
+                monitor
+                    .OccurredEvents
+                    .Where(occurredEvent =>
+                        occurredEvent.EventName == nameof(Turn.StateChanged) &&
+                        occurredEvent.Parameters?.Length == 2)
+                    .Select(occurredEvent => occurredEvent.Parameters[1] as Turn.StateChangedEventArgs)
+                    .Where(eventArgs => eventArgs != null)
+                    .Select(eventArgs => $"{eventArgs.PhaseState}_{eventArgs.StepState}")
+                    .ToArray()
+                    .Should().HaveCount(12)
+                    .And.ContainInOrder(
+                        "Beginning_Untap",
+                        "Beginning_Upkeep",
+                        "Beginning_Draw",
+                        "PrecombatMain_None",
+                        "Combat_BeginningOfCombat",
+                        "Combat_DeclareAttackers",
+                        "Combat_DeclareBlockers",
+                        "Combat_CombatDamage",
+                        "Combat_EndOfCombat",
+                        "PostcombatMain_None",
+                        "Ending_End",
+                        "Ending_Cleanup");
             }
         }
     }

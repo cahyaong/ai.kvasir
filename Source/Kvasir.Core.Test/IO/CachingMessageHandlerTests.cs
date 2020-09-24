@@ -67,39 +67,38 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockKeyCalculator.Object,
                     stubHandler);
 
-                using (var client = new HttpClient(cachingHandler))
-                {
-                    // Act.
+                using var client = new HttpClient(cachingHandler);
 
-                    var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+                // Act.
 
-                    // Assert.
+                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                    responseMessage
-                        .Should().NotBeNull();
+                // Assert.
 
-                    responseMessage
-                        .StatusCode
-                        .Should().Be(HttpStatusCode.OK);
+                responseMessage
+                    .Should().NotBeNull();
 
-                    var content = await responseMessage.Content.ReadAsStringAsync();
+                responseMessage
+                    .StatusCode
+                    .Should().Be(HttpStatusCode.OK);
 
-                    content
-                        .Should().Be("[_MOCK_HTML_CONTENT_]");
+                var content = await responseMessage.Content.ReadAsStringAsync();
 
-                    stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
+                content
+                    .Should().Be("[_MOCK_HTML_CONTENT_]");
 
-                    mockStorageManager.Verify(
-                        mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                        Times.Once);
+                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
 
-                    mockStorageManager.Verify(
-                        mock => mock.SaveEntry(
-                            Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>(),
-                            Arg.IsAny<bool>()),
-                        Times.Once);
-                }
+                mockStorageManager.Verify(
+                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                    Times.Once);
+
+                mockStorageManager.Verify(
+                    mock => mock.SaveEntry(
+                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                        Arg.IsAny<System.IO.Stream>(),
+                        Arg.IsAny<bool>()),
+                    Times.Once);
             }
 
             [Fact]
@@ -125,39 +124,38 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockKeyCalculator.Object,
                     stubHandler);
 
-                using (var client = new HttpClient(cachingHandler))
-                {
-                    // Act.
+                using var client = new HttpClient(cachingHandler);
 
-                    var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+                // Act.
 
-                    // Assert.
+                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                    responseMessage
-                        .Should().NotBeNull();
+                // Assert.
 
-                    responseMessage
-                        .StatusCode
-                        .Should().Be(HttpStatusCode.OK);
+                responseMessage
+                    .Should().NotBeNull();
 
-                    var content = await responseMessage.Content.ReadAsStringAsync();
+                responseMessage
+                    .StatusCode
+                    .Should().Be(HttpStatusCode.OK);
 
-                    content
-                        .Should().Be("[_MOCK_HTML_CONTENT_]");
+                var content = await responseMessage.Content.ReadAsStringAsync();
 
-                    stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
+                content
+                    .Should().Be("[_MOCK_HTML_CONTENT_]");
 
-                    mockStorageManager.Verify(
-                        mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                        Times.Once);
+                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
 
-                    mockStorageManager.Verify(
-                        mock => mock.SaveEntry(
-                            Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>(),
-                            Arg.IsAny<bool>()),
-                        Times.Never);
-                }
+                mockStorageManager.Verify(
+                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                    Times.Once);
+
+                mockStorageManager.Verify(
+                    mock => mock.SaveEntry(
+                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                        Arg.IsAny<System.IO.Stream>(),
+                        Arg.IsAny<bool>()),
+                    Times.Never);
             }
 
             [Fact]
@@ -183,39 +181,38 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockKeyCalculator.Object,
                     stubHandler);
 
-                using (var client = new HttpClient(cachingHandler))
-                {
-                    // Act.
+                using var client = new HttpClient(cachingHandler);
 
-                    var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+                // Act.
 
-                    // Assert.
+                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                    responseMessage
-                        .Should().NotBeNull();
+                // Assert.
 
-                    responseMessage
-                        .StatusCode
-                        .Should().Be(HttpStatusCode.OK);
+                responseMessage
+                    .Should().NotBeNull();
 
-                    var content = await responseMessage.Content.ReadAsStringAsync();
+                responseMessage
+                    .StatusCode
+                    .Should().Be(HttpStatusCode.OK);
 
-                    content
-                        .Should().Be("[_MOCK_CACHED_HTML_CONTENT_]");
+                var content = await responseMessage.Content.ReadAsStringAsync();
 
-                    stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 0);
+                content
+                    .Should().Be("[_MOCK_CACHED_HTML_CONTENT_]");
 
-                    mockStorageManager.Verify(
-                        mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                        Times.Once);
+                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 0);
 
-                    mockStorageManager.Verify(
-                        mock => mock.SaveEntry(
-                            Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>(),
-                            Arg.IsAny<bool>()),
-                        Times.Never);
-                }
+                mockStorageManager.Verify(
+                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                    Times.Once);
+
+                mockStorageManager.Verify(
+                    mock => mock.SaveEntry(
+                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                        Arg.IsAny<System.IO.Stream>(),
+                        Arg.IsAny<bool>()),
+                    Times.Never);
             }
 
             [Fact]
@@ -239,39 +236,38 @@ namespace nGratis.AI.Kvasir.Core.Test
                     mockKeyCalculator.Object,
                     stubHandler);
 
-                using (var client = new HttpClient(cachingHandler))
-                {
-                    // Act.
+                using var client = new HttpClient(cachingHandler);
 
-                    var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+                // Act.
 
-                    // Assert.
+                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                    responseMessage
-                        .Should().NotBeNull();
+                // Assert.
 
-                    responseMessage
-                        .StatusCode
-                        .Should().Be(HttpStatusCode.NotFound);
+                responseMessage
+                    .Should().NotBeNull();
 
-                    var content = await responseMessage.Content.ReadAsStringAsync();
+                responseMessage
+                    .StatusCode
+                    .Should().Be(HttpStatusCode.NotFound);
 
-                    content
-                        .Should().Be("[_MOCK_ERROR_CONTENT_]");
+                var content = await responseMessage.Content.ReadAsStringAsync();
 
-                    stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
+                content
+                    .Should().Be("[_MOCK_ERROR_CONTENT_]");
 
-                    mockStorageManager.Verify(
-                        mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                        Times.Once);
+                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
 
-                    mockStorageManager.Verify(
-                        mock => mock.SaveEntry(
-                            Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                            Arg.IsAny<System.IO.Stream>(),
-                            Arg.IsAny<bool>()),
-                        Times.Never);
-                }
+                mockStorageManager.Verify(
+                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                    Times.Once);
+
+                mockStorageManager.Verify(
+                    mock => mock.SaveEntry(
+                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                        Arg.IsAny<System.IO.Stream>(),
+                        Arg.IsAny<bool>()),
+                    Times.Never);
             }
         }
     }

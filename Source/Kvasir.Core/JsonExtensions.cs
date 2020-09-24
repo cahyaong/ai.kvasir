@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="JsonExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,14 +23,47 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, January 31, 2020 8:45:47 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, September 24, 2020 6:18:00 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir
+namespace Newtonsoft.Json.Linq
 {
-    internal static partial class MockExtensions
+    using nGratis.Cop.Olympus.Contract;
+
+    public static class JsonExtensions
     {
+        public static string ReadValue(this JToken token, string key)
+        {
+            Guard
+                .Require(token, nameof(token))
+                .Is.Not.Null();
+
+            Guard
+                .Require(key, nameof(key))
+                .Is.Not.Empty();
+
+            return
+                token[key]?.Value<string>() ??
+                string.Empty;
+        }
+
+        public static T ReadValue<T>(this JToken token, string key)
+        {
+            Guard
+                .Require(token, nameof(token))
+                .Is.Not.Null();
+
+            Guard
+                .Require(key, nameof(key))
+                .Is.Not.Empty();
+
+            var fieldToken = token[key];
+
+            return fieldToken != null
+                ? fieldToken.Value<T>()
+                : default;
+        }
     }
 }

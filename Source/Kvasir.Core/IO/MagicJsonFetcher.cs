@@ -106,15 +106,19 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     var card = token.ToObject<UnparsedBlob.Card>();
 
-                    card.CardSetCode = cardSet.Code;
-                    card.ManaCost = card.ManaCost ?? string.Empty;
-                    card.Text = card.Text ?? string.Empty;
-                    card.FlavorText = card.FlavorText ?? string.Empty;
-                    card.Power = card.Power ?? string.Empty;
-                    card.Toughness = card.Toughness ?? string.Empty;
+                    if (card != null)
+                    {
+                        card.CardSetCode = cardSet.Code;
+                        card.ManaCost ??= string.Empty;
+                        card.Text ??= string.Empty;
+                        card.FlavorText ??= string.Empty;
+                        card.Power ??= string.Empty;
+                        card.Toughness ??= string.Empty;
+                    }
 
                     return card;
                 })
+                .Where(card => card != null)
                 .ToArray();
         }
 

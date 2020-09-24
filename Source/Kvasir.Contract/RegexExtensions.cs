@@ -55,7 +55,6 @@ namespace System.Text.RegularExpressions
 
             return matchedGroup
                 .Captures
-                .Cast<Capture>()
                 .Select(capture => capture.Value);
         }
     }

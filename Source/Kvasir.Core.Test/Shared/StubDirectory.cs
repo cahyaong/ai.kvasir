@@ -57,21 +57,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(cardSets, nameof(cardSets))
                 .Is.Not.Empty();
 
-            using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
+            using var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration());
+
+            foreach (var cardSet in cardSets)
             {
-                foreach (var cardSet in cardSets)
-                {
-                    var document = new Document();
+                var document = new Document();
 
-                    document.AddStringField("code", cardSet.Code, Field.Store.YES);
-                    document.AddStringField("name", cardSet.Name, Field.Store.YES);
-                    document.AddInt64Field("released-timestamp", cardSet.ReleasedTimestamp.Ticks, Field.Store.YES);
+                document.AddStringField("code", cardSet.Code, Field.Store.YES);
+                document.AddStringField("name", cardSet.Name, Field.Store.YES);
+                document.AddInt64Field("released-timestamp", cardSet.ReleasedTimestamp.Ticks, Field.Store.YES);
 
-                    luceneWriter.AddDocument(document);
-                }
-
-                luceneWriter.CommitWithRetrying();
+                luceneWriter.AddDocument(document);
             }
+
+            luceneWriter.CommitWithRetrying();
 
             return this;
         }
@@ -82,32 +81,31 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(cards, nameof(cards))
                 .Is.Not.Empty();
 
-            using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
+            using var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration());
+
+            foreach (var card in cards)
             {
-                foreach (var card in cards)
-                {
-                    var document = new Document();
+                var document = new Document();
 
-                    document.AddInt32Field("multiverse-id", card.MultiverseId, Field.Store.YES);
-                    document.AddStringField("scryfall-id", card.ScryfallId, Field.Store.YES);
-                    document.AddStringField("scryfall-image-url", card.ScryfallImageUrl, Field.Store.YES);
-                    document.AddStringField("card-set-code", card.CardSetCode, Field.Store.YES);
-                    document.AddStringField("name", card.Name, Field.Store.YES);
-                    document.AddStringField("mana-cost", card.ManaCost, Field.Store.YES);
-                    document.AddStringField("type", card.Type, Field.Store.YES);
-                    document.AddStringField("rarity", card.Rarity, Field.Store.YES);
-                    document.AddStringField("text", card.Text, Field.Store.YES);
-                    document.AddStringField("flavor-text", card.FlavorText, Field.Store.YES);
-                    document.AddStringField("power", card.Power, Field.Store.YES);
-                    document.AddStringField("toughness", card.Toughness, Field.Store.YES);
-                    document.AddStringField("number", card.Number, Field.Store.YES);
-                    document.AddStringField("artist", card.Artist, Field.Store.YES);
+                document.AddInt32Field("multiverse-id", card.MultiverseId, Field.Store.YES);
+                document.AddStringField("scryfall-id", card.ScryfallId, Field.Store.YES);
+                document.AddStringField("scryfall-image-url", card.ScryfallImageUrl, Field.Store.YES);
+                document.AddStringField("card-set-code", card.CardSetCode, Field.Store.YES);
+                document.AddStringField("name", card.Name, Field.Store.YES);
+                document.AddStringField("mana-cost", card.ManaCost, Field.Store.YES);
+                document.AddStringField("type", card.Type, Field.Store.YES);
+                document.AddStringField("rarity", card.Rarity, Field.Store.YES);
+                document.AddStringField("text", card.Text, Field.Store.YES);
+                document.AddStringField("flavor-text", card.FlavorText, Field.Store.YES);
+                document.AddStringField("power", card.Power, Field.Store.YES);
+                document.AddStringField("toughness", card.Toughness, Field.Store.YES);
+                document.AddStringField("number", card.Number, Field.Store.YES);
+                document.AddStringField("artist", card.Artist, Field.Store.YES);
 
-                    luceneWriter.AddDocument(document);
-                }
-
-                luceneWriter.CommitWithRetrying();
+                luceneWriter.AddDocument(document);
             }
+
+            luceneWriter.CommitWithRetrying();
 
             return this;
         }
@@ -118,11 +116,10 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Require(documents, nameof(documents))
                 .Is.Not.Empty();
 
-            using (var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration()))
-            {
-                luceneWriter.AddDocuments(documents);
-                luceneWriter.CommitWithRetrying();
-            }
+            using var luceneWriter = new IndexWriter(this, StubDirectory.CreateLuceneConfiguration());
+
+            luceneWriter.AddDocuments(documents);
+            luceneWriter.CommitWithRetrying();
 
             return this;
         }

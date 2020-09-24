@@ -69,14 +69,22 @@ namespace nGratis.AI.Kvasir.Core
 
             var contentToken = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            return contentToken
-                .SelectToken("$.data")
+            var cardSetTokens = contentToken
+                .SelectToken("$.data")?
                 .Children()
+                .ToArray();
+
+            if (cardSetTokens?.Any() != true)
+            {
+                throw new KvasirException("Failed to find card sets!");
+            }
+
+            return cardSetTokens
                 .Select(token => new UnparsedBlob.CardSet
                 {
-                    Code = token["code"].Value<string>().ToUpperInvariant(),
-                    Name = token["name"].Value<string>(),
-                    ReleasedTimestamp = token["released_at"].Value<DateTime>()
+                    Code = token.ReadValue("code").ToUpperInvariant(),
+                    Name = token.ReadValue("name"),
+                    ReleasedTimestamp = token.ReadValue<DateTime>("released_at")
                 })
                 .ToArray();
         }
@@ -108,10 +116,20 @@ namespace nGratis.AI.Kvasir.Core
 
                 var contentToken = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-                contentToken
-                    .SelectToken("$.data")
+                var cardTokens = contentToken
+                    .SelectToken("$.data")?
                     .Children()
                     .Where(token => token["lang"]?.Value<string>() == "en")
+                    .ToArray();
+
+                if (cardTokens?.Any() != true)
+                {
+                    throw new KvasirException(
+                        @"Failed to find en-us cards! " +
+                        $"Card Set: [{cardSet.Name}].");
+                }
+
+                cardTokens
                     .Select(token => new UnparsedBlob.Card
                     {
                         MultiverseId = token
@@ -119,25 +137,25 @@ namespace nGratis.AI.Kvasir.Core
                             .Children()
                             .FirstOrDefault()?
                             .Value<int>() ?? 0,
-                        ScryfallId = token["id"].Value<string>(),
+                        ScryfallId = token.ReadValue("id"),
                         ScryfallImageUrl = ScryfallFetcher.FindScryfallImageUrl(token),
                         CardSetCode = cardSet.Code,
-                        Name = token["name"]?.Value<string>() ?? string.Empty,
-                        ManaCost = token["mana_cost"]?.Value<string>() ?? string.Empty,
-                        Type = token["type_line"]?.Value<string>() ?? string.Empty,
-                        Rarity = token["rarity"]?.Value<string>(),
-                        Text = token["oracle_text"]?.Value<string>() ?? string.Empty,
-                        FlavorText = token["flavor_text"]?.Value<string>() ?? string.Empty,
-                        Power = token["power"]?.Value<string>() ?? string.Empty,
-                        Toughness = token["toughness"]?.Value<string>() ?? string.Empty,
-                        Number = token["collector_number"]?.Value<string>() ?? string.Empty,
-                        Artist = token["artist"]?.Value<string>() ?? string.Empty
+                        Name = token.ReadValue("name"),
+                        ManaCost = token.ReadValue("mana_cost"),
+                        Type = token.ReadValue("type_line"),
+                        Rarity = token.ReadValue("rarity"),
+                        Text = token.ReadValue("oracle_text"),
+                        FlavorText = token.ReadValue("flavor_text"),
+                        Power = token.ReadValue("power"),
+                        Toughness = token.ReadValue("toughness"),
+                        Number = token.ReadValue("collector_number"),
+                        Artist = token.ReadValue("artist")
                     })
                     .ForEach(cards.Add);
 
                 hasAnotherPage = contentToken
-                    .SelectToken("$.has_more")
-                    .Value<bool>();
+                    .SelectToken("$.has_more")?
+                    .Value<bool>() ?? false;
 
                 if (hasAnotherPage)
                 {
@@ -193,7 +211,7 @@ namespace nGratis.AI.Kvasir.Core
 
             if (string.IsNullOrEmpty(imageUrl))
             {
-                throw new KvasirException("Failed to find SCRYFALL.com image URL!");
+                throw new KvasirException("Failed to find image URL!");
             }
 
             var urlMatch = Pattern.CardImageUrl.Match(imageUrl);
@@ -201,7 +219,7 @@ namespace nGratis.AI.Kvasir.Core
             if (!urlMatch.Success)
             {
                 throw new KvasirException(
-                    @"Failed to process SCRYFALL.com image URL! " +
+                    @"Failed to process image URL! " +
                     $"URL: [{imageUrl}].");
             }
 

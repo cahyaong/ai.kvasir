@@ -277,15 +277,11 @@ namespace nGratis.AI.Kvasir.Framework
 
         private static HttpContent CreateHttpContent(ZipArchiveEntry archiveEntry)
         {
-            using (var entryStream = archiveEntry.Open())
-            {
-                if (Path.GetExtension(archiveEntry.Name) == Mime.Jpeg.FileExtension)
-                {
-                    return new ByteArrayContent(entryStream.ReadBlob());
-                }
+            using var entryStream = archiveEntry.Open();
 
-                return new StringContent(entryStream.ReadText(Encoding.UTF8));
-            }
+            return Path.GetExtension(archiveEntry.Name) == Mime.Jpeg.FileExtension
+                ? new ByteArrayContent(entryStream.ReadBlob())
+                : new StringContent(entryStream.ReadText(Encoding.UTF8));
         }
 
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
