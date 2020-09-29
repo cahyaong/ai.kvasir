@@ -156,6 +156,7 @@ namespace nGratis.AI.Kvasir.Client
                 }
                 else
                 {
+                    // FIXME: Need to distinguish between not-parsed and invalid cards!
                     this.ProcessingMessages = processingResult.Messages;
                 }
             }

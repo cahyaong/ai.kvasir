@@ -57,6 +57,29 @@
           SelectedItem="{Binding SelectedCardViewModel, Mode=TwoWay}"
           Style="{StaticResource Cop.DataGrid.Virtualizing}">
           <DataGrid.Columns>
+            <DataGridTemplateColumn Header="-">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate DataType="{x:Type client:CardViewModel}">
+                  <Grid>
+                    <Ellipse
+                      x:Name="PART_OuterRing"
+                      Width="10"
+                      Height="10"
+                      Fill="{StaticResource Cop.Brush.Shade7}" />
+                    <Ellipse
+                      x:Name="PART_InnerFill"
+                      Width="8"
+                      Height="8"
+                      Fill="{StaticResource Cop.Brush.TrafficLight.Go}" />
+                  </Grid>
+                  <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding DefinedCard, Mode=OneWay}" Value="{x:Null}">
+                      <Setter TargetName="PART_InnerFill" Property="Fill" Value="{StaticResource Cop.Brush.TrafficLight.Caution}" />
+                    </DataTrigger>
+                  </DataTemplate.Triggers>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
             <DataGridTextColumn
               MinWidth="200"
               Binding="{Binding UnparsedCard.Name, Mode=OneWay}"

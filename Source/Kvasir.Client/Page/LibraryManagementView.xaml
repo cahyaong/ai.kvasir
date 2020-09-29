@@ -26,7 +26,7 @@
           SelectedItem="{Binding SelectedCardSetViewModel, Mode=TwoWay}"
           SelectionMode="Single"
           SelectionUnit="FullRow"
-          Style="{StaticResource Cop.DataGrid.Virtualizing}">
+          Style="{StaticResource Cop.DataGrid.Azure.Virtualizing}">
           <DataGrid.Columns>
             <DataGridTextColumn
               Width="60"
@@ -50,7 +50,7 @@
           SelectedItem="{Binding SelectedCardViewModel, Mode=TwoWay}"
           SelectionMode="Single"
           SelectionUnit="FullRow"
-          Style="{StaticResource Cop.DataGrid.Virtualizing}">
+          Style="{StaticResource Cop.DataGrid.Azure.Virtualizing}">
           <DataGrid.Columns>
             <DataGridTextColumn
               Width="50"

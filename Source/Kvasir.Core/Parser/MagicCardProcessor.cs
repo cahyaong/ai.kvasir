@@ -54,6 +54,9 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
                 Name = !string.IsNullOrEmpty(unparsedCard.Name)
                     ? unparsedCard.Name
+                    : Text.Undefined,
+                CardSetCode = !string.IsNullOrEmpty(unparsedCard.CardSetCode)
+                    ? unparsedCard.CardSetCode
                     : Text.Undefined
             };
 

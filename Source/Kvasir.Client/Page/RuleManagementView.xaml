@@ -10,7 +10,7 @@
   <DataGrid
     AutoGenerateColumns="False"
     ItemsSource="{Binding RuleViewModels, Mode=OneWay}"
-    Style="{StaticResource Cop.DataGrid.Virtualizing}">
+    Style="{StaticResource Cop.DataGrid.Azure.Virtualizing}">
     <DataGrid.Columns>
       <DataGridTextColumn Binding="{Binding UnparsedRule.Id}" Header="ID" />
       <DataGridTextColumn Binding="{Binding UnparsedRule.Text}" Header="Text" />

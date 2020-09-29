@@ -28,11 +28,31 @@
         Mode="Output"
         Value="{Binding DefinedCard.MultiverseId, Mode=OneWay}" />
     </Grid>
-    <olympus:AweField
-      Header="Cost"
-      Kind="Text"
-      Mode="Output"
-      Value="{x:Static contract:Text.Unsupported}" />
+    <Grid olympus:ChildrenMargin.Value="10,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="2*" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <olympus:AweField
+        Grid.Column="0"
+        Header="Cost"
+        Kind="Text"
+        Mode="Output"
+        Value="{x:Static contract:Text.Unsupported}" />
+      <olympus:AweField
+        Grid.Column="1"
+        Header="Card Set"
+        Kind="Text"
+        Mode="Output"
+        Value="{Binding DefinedCard.CardSetCode, Mode=OneWay}" />
+      <olympus:AweField
+        Grid.Column="2"
+        Header="Number"
+        Kind="Text"
+        Mode="Output"
+        Value="{Binding DefinedCard.Number, Mode=OneWay}" />
+    </Grid>
     <olympus:AweField
       Header="Kinds (incl. Super- and Sub-)"
       Kind="Chips"

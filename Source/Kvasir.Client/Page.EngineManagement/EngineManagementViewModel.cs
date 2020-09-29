@@ -47,7 +47,8 @@ namespace nGratis.AI.Kvasir.Client
         {
             "Duel Decks: Elves vs. Goblins",
             "Lorwyn",
-            "Morningtide"
+            "Morningtide",
+            "Portal"
         };
 
         private readonly IMagicRepository _repository;

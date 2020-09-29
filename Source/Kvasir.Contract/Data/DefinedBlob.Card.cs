@@ -41,6 +41,8 @@ namespace nGratis.AI.Kvasir.Contract
 
             public ushort Number { get; set; }
 
+            public string CardSetCode { get; set; }
+
             public uint MultiverseId { get; set; }
 
             public string Name { get; set; }
