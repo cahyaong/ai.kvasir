@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull(
                         $"{this.Identifier} should have non-empty Scryfall ID")
                     .And.MatchRegex(
-                        @"[0-9a-f]{8}\-([0-9a-f]{4}\-){3}[0-9a-f]{12}",
+                        @"^([0-9a-f]{8}\-([0-9a-f]{4}\-){3}[0-9a-f]{12}|\<none\>)$",
                         $"{this.Identifier} should have Scryfall ID matching given pattern");
 
                 this.Subject.ScryfallImageUrl
@@ -69,7 +69,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNullOrEmpty(
                         $"{this.Identifier} should have non-empty card set code")
                     .And.MatchRegex(
-                        @"\w{3,6}",
+                        @"^\w{3,6}$",
                         $"{this.Identifier} should have card set code with 3-6 alphanumerical values");
 
                 this.Subject.Name
@@ -79,21 +79,21 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull(
                         $"{this.Identifier} should have non-null mana cost")
                     .And.MatchRegex(
-                        @"(\{[\dWUBRGX/]+\})*",
+                        @"^(\{[\dWUBRGX/]+\})*$",
                         $"{this.Identifier} should have mana cost matching given pattern");
 
                 this.Subject.Type
                     .Should().NotBeNullOrEmpty(
                         $"{this.Identifier} should have non-empty type")
                     .And.MatchRegex(
-                        @"[a-zA-Z\-\s]+",
+                        @"^[a-zA-Z—/\-\s]+$",
                         $"{this.Identifier} should have type with letter, hyphen or whitespace values");
 
                 this.Subject.Rarity
                     .Should().NotBeNullOrEmpty(
                         $"{this.Identifier} should have non-empty rarity")
                     .And.MatchRegex(
-                        @"[a-zA-Z]+",
+                        @"^[a-zA-Z]+$",
                         $"{this.Identifier} should have rarity with letter values");
 
                 this.Subject.Text
@@ -106,28 +106,28 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull(
                         $"{this.Identifier} should have non-null power")
                     .And.MatchRegex(
-                        @"[\d\*]*",
+                        @"^[\d\*]*$",
                         $"{this.Identifier} should have power with numerical or asterisk values");
 
                 this.Subject.Toughness
                     .Should().NotBeNull(
                         $"{this.Identifier} should have non-null toughness")
                     .And.MatchRegex(
-                        @"[\d\*]*",
+                        @"^[\d\*]*$",
                         $"{this.Identifier} should have toughness with numerical or asterisk values");
 
                 this.Subject.Number
                     .Should().NotBeNullOrEmpty(
                         $"{this.Identifier} should have non-empty number")
                     .And.MatchRegex(
-                        @"[\da-z]+",
+                        @"^[\da-z]+$",
                         $"{this.Identifier} should have number with numerical or letter values");
 
                 this.Subject.Artist
                     .Should().NotBeNullOrEmpty(
                         $"{this.Identifier} should have non-empty artist")
                     .And.MatchRegex(
-                        @"[a-zA-Z\s]+",
+                        @"^[\w&\-\.\s]+$",
                         $"{this.Identifier} should have artist with letter or whitespace values");
             }
 

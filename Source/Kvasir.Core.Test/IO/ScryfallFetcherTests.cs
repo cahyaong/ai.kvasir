@@ -76,7 +76,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     cardSet
                         .Code
                         .Should().NotBeNullOrWhiteSpace()
-                        .And.MatchRegex(@"\w{2,6}");
+                        .And.MatchRegex(@"^\w{2,6}$");
 
                     cardSet
                         .ReleasedTimestamp

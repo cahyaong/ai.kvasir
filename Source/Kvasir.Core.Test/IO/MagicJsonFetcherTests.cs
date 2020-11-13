@@ -29,6 +29,7 @@
 namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Threading.Tasks;
@@ -136,67 +137,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Should().NotBeNull()
                     .And.HaveCount(283);
 
-                foreach (var card in cards)
-                {
-                    card
-                        .Should().NotBeNull();
-
-                    card
-                        .MultiverseId
-                        .Should().BePositive();
-
-                    card
-                        .CardSetCode
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"\w{3,6}");
-
-                    card
-                        .Name
-                        .Should().NotBeNullOrWhiteSpace();
-
-                    card
-                        .ManaCost
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"(\{[\dWUBRGX/]+\})*");
-
-                    card
-                        .Type
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"[a-zA-Z\-\s]+");
-
-                    card
-                        .Rarity
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"[a-zA-Z]+");
-
-                    card
-                        .Text
-                        .Should().NotBeNull();
-
-                    card
-                        .FlavorText
-                        .Should().NotBeNull();
-
-                    card
-                        .Power
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[\d\*]*");
-
-                    card
-                        .Toughness
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[\d\*]*");
-
-                    card
-                        .Number
-                        .Should().NotBeNull()
-                        .And.MatchRegex(@"[\da-z]+");
-
-                    card
-                        .Artist
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"[a-zA-Z\s]+");
-                }
+                cards
+                    .ForEach(card => card.Must().HaveValidContent());
             }
 
             [Fact]
