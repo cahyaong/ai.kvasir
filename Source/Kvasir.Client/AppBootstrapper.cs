@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AppBootstrapper.cs" company="nGratis">
 //  The MIT License (MIT)
 //
@@ -150,7 +150,7 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Folder()
                 .Is.Exist();
 
-            unityContainer.RegisterType<IStorageManager, FileSystemStorageManager>(
+            unityContainer.RegisterType<IStorageManager, FileStorageManager>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(dataFolderUri));
 
