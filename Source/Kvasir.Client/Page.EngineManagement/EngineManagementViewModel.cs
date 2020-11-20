@@ -51,19 +51,19 @@ namespace nGratis.AI.Kvasir.Client
             "Portal"
         };
 
-        private readonly IMagicRepository _repository;
+        private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
         private IEnumerable<CardSetViewModel> _cardSetViewModels;
 
         private CardSetViewModel _selectedCardSetViewModel;
 
-        public EngineManagementViewModel(IMagicRepository repository)
+        public EngineManagementViewModel(IUnprocessedMagicRepository unprocessedRepository)
         {
             Guard
-                .Require(repository, nameof(repository))
+                .Require(unprocessedRepository, nameof(unprocessedRepository))
                 .Is.Not.Null();
 
-            this._repository = repository;
+            this._unprocessedRepository = unprocessedRepository;
         }
 
         public IEnumerable<CardSetViewModel> CardSetViewModels
@@ -92,12 +92,12 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardSetsAsync()
         {
-            var unparsedCardSets = await this._repository.GetCardSetsAsync();
+            var unparsedCardSets = await this._unprocessedRepository.GetCardSetsAsync();
 
             this.CardSetViewModels = unparsedCardSets
                 .Where(unparsedCardSet => EngineManagementViewModel.TargetCardSetNames.Contains(unparsedCardSet.Name))
                 .OrderBy(unparsedCardSet => unparsedCardSet.Name)
-                .Select(unparsedCardSet => new CardSetViewModel(unparsedCardSet, this._repository))
+                .Select(unparsedCardSet => new CardSetViewModel(unparsedCardSet, this._unprocessedRepository))
                 .ToArray();
         }
     }

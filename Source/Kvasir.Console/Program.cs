@@ -34,6 +34,7 @@ namespace nGratis.AI.Kvasir.Console
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.AI.Kvasir.Core.Parser;
+    using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Framework;
 
     public class Program
@@ -48,11 +49,24 @@ namespace nGratis.AI.Kvasir.Console
             // TODO: Use <Unity> to wire dependency injection!
 
             var indexManager = new IndexManager(new Uri(dataFolderPath));
-            var magicFetcher = new NopFetcher();
-            var magicRepository = new MagicRepository(indexManager, magicFetcher);
+            var fetcher = new NopFetcher();
+            var unprocessedRepository = new UnprocessedMagicRepository(indexManager, fetcher);
+
+            var dataStorageManager = new FileStorageManager(Program.FindDataFolderUri());
+
+            using var processedStorageManager = new CompressedStorageManager(
+                new DataSpec("Processed_Data", KvasirMime.Cache),
+                dataStorageManager);
+
+            var processedRepository = new ProcessedMagicRepository(processedStorageManager);
 
             var logger = new ConsoleLogger("CardProcessing");
-            var processingExecutor = new ProcessingCardExecution(magicRepository, MagicCardProcessor.Instance, logger);
+
+            var processingExecutor = new ProcessingCardExecution(
+                unprocessedRepository,
+                processedRepository,
+                MagicCardProcessor.Instance,
+                logger);
 
             var processingParameter = ExecutionParameter.Builder
                 .Create()
@@ -64,6 +78,21 @@ namespace nGratis.AI.Kvasir.Console
             Console.WriteLine();
             Console.WriteLine("Press <ANY> key to continue...");
             Console.ReadLine();
+        }
+
+        private static Uri FindDataFolderUri()
+        {
+            var dataFolderPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "NGRATIS",
+                "ai.kvasir");
+
+            if (!Directory.Exists(dataFolderPath))
+            {
+                Directory.CreateDirectory(dataFolderPath);
+            }
+
+            return new Uri(dataFolderPath);
         }
     }
 }

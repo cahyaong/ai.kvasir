@@ -47,7 +47,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Arrange.
 
                 var mockRepository = MockBuilder
-                    .CreateMock<IMagicRepository>()
+                    .CreateMock<IUnprocessedMagicRepository>()
                     .WithCardSets("[_MOCK_NAME_01_]", "[_MOCK_NAME_02_]", "[_MOCK_NAME_03_]");
 
                 // Act.
@@ -81,7 +81,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Arrange.
 
                 var mockRepository = MockBuilder
-                    .CreateMock<IMagicRepository>()
+                    .CreateMock<IUnprocessedMagicRepository>()
                     .WithCardSets("[_MOCK_NAME_]");
 
                 // Act & Assert.
@@ -100,7 +100,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Arrange.
 
                 var mockRepository = MockBuilder
-                    .CreateMock<IMagicRepository>()
+                    .CreateMock<IUnprocessedMagicRepository>()
                     .WithCardSets("[_MOCK_NAME_]", "[_MOCK_NAME_]");
 
                 // Act & Assert.

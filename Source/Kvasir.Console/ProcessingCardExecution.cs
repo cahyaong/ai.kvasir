@@ -41,16 +41,26 @@ namespace nGratis.AI.Kvasir.Console
 
     internal class ProcessingCardExecution : IExecution
     {
-        private readonly IMagicRepository _repository;
+        private readonly IUnprocessedMagicRepository _unprocessedRepository;
+
+        private readonly IProcessedMagicRepository _processedRepository;
 
         private readonly IMagicCardProcessor _cardProcessor;
 
         private readonly ILogger _logger;
 
-        public ProcessingCardExecution(IMagicRepository repository, IMagicCardProcessor cardProcessor, ILogger logger)
+        public ProcessingCardExecution(
+            IUnprocessedMagicRepository unprocessedRepository,
+            IProcessedMagicRepository processedRepository,
+            IMagicCardProcessor cardProcessor,
+            ILogger logger)
         {
             Guard
-                .Require(repository, nameof(repository))
+                .Require(unprocessedRepository, nameof(unprocessedRepository))
+                .Is.Not.Null();
+
+            Guard
+                .Require(processedRepository, nameof(processedRepository))
                 .Is.Not.Null();
 
             Guard
@@ -61,7 +71,8 @@ namespace nGratis.AI.Kvasir.Console
                 .Require(logger, nameof(logger))
                 .Is.Not.Null();
 
-            this._repository = repository;
+            this._unprocessedRepository = unprocessedRepository;
+            this._processedRepository = processedRepository;
             this._cardProcessor = cardProcessor;
             this._logger = logger;
         }
@@ -72,12 +83,19 @@ namespace nGratis.AI.Kvasir.Console
                 .Require(parameter, nameof(parameter))
                 .Is.Not.Null();
 
-            var unparsedCardSet = await this._repository.GetCardSetAsync(parameter.GetValue("CardSet.Name"));
-            var unparsedCards = await this._repository.GetCardsAsync(unparsedCardSet);
+            var unparsedCardSet = await this._unprocessedRepository.GetCardSetAsync(parameter.GetValue("CardSet.Name"));
+            var unparsedCards = await this._unprocessedRepository.GetCardsAsync(unparsedCardSet);
 
             var processingResults = unparsedCards
                 .Select(unparsedCard => this._cardProcessor.Process(unparsedCard))
                 .ToArray();
+
+            processingResults
+                .Where(result => result.IsValid)
+                .Select(result => result.GetValue<DefinedBlob.Card>())
+                .ForEach(async card => await this._processedRepository.SaveCardAsync(card));
+
+            this._logger.LogInfo("Saved valid cards...");
 
             using var summaryPrinter = SummaryPrinter.Create(2);
 

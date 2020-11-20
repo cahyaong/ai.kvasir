@@ -67,7 +67,7 @@ namespace nGratis.AI.Kvasir.Core.Test
         }
     }
 
-    internal static partial class AbilityAssertionExtensions
+    internal static class CostAssertionExtensions
     {
         internal static EquivalencyOption UsingStrictCostComparison(this EquivalencyOption equivalencyOption)
         {

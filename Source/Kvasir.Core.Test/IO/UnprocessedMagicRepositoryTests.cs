@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicRepositoryTests.cs" company="nGratis">
+// <copyright file="UnprocessedMagicRepositoryTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -40,7 +40,7 @@ namespace nGratis.AI.Kvasir.Core.Test
     using Arg = Moq.AI.Kvasir.Arg;
     using MockBuilder = Moq.AI.Kvasir.MockBuilder;
 
-    public class MagicRepositoryTests
+    public class UnprocessedMagicRepositoryTests
     {
         public class Constructor
         {
@@ -69,7 +69,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var action = new Action(() =>
                 {
-                    var _ = new MagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
+                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
                 });
 
                 // Assert.
@@ -94,7 +94,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var action = new Action(() =>
                 {
-                    var _ = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetcher.Object);
                 });
 
                 // Assert.
@@ -128,7 +128,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var action = new Action(() =>
                 {
-                    var _ = new MagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
+                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
                 });
 
                 // Assert.
@@ -162,7 +162,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var action = new Action(() =>
                 {
-                    var _ = new MagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
+                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
                 });
 
                 // Assert.
@@ -192,11 +192,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 // Act.
 
-                var cardSets = await repository.GetCardSetsAsync();
+                var cardSets = await unprocessedRepository.GetCardSetsAsync();
 
                 // Assert.
 
@@ -236,11 +238,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithoutCardSets();
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 // Act.
 
-                var cardSets = await repository.GetCardSetsAsync();
+                var cardSets = await unprocessedRepository.GetCardSetsAsync();
 
                 // Assert.
 
@@ -299,7 +303,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
@@ -310,7 +316,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await repository.GetCardsAsync(cardSet);
+                var cards = await unprocessedRepository.GetCardsAsync(cardSet);
 
                 // Assert.
 
@@ -371,7 +377,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithoutCards();
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
@@ -382,7 +390,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await repository.GetCardsAsync(cardSet);
+                var cards = await unprocessedRepository.GetCardsAsync(cardSet);
 
                 // Assert.
 
@@ -438,7 +446,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
@@ -449,7 +459,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 // Act.
 
-                var cards = await repository.GetCardsAsync(cardSet);
+                var cards = await unprocessedRepository.GetCardsAsync(cardSet);
 
                 // Assert.
 
@@ -503,19 +513,21 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
-                using var monitoredRepository = repository.Monitor();
+                using var monitoredRepository = unprocessedRepository.Monitor();
 
                 // Act.
 
-                var _ = await repository.GetCardSetsAsync();
+                var _ = await unprocessedRepository.GetCardSetsAsync();
 
                 // Assert.
 
                 monitoredRepository
-                    .Should().Raise(nameof(IMagicRepository.CardSetIndexed))
-                    .WithSender(repository)
+                    .Should().Raise(nameof(IUnprocessedMagicRepository.CardSetIndexed))
+                    .WithSender(unprocessedRepository)
                     .WithArgs<EventArgs>(args => args == EventArgs.Empty);
             }
 
@@ -534,18 +546,20 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithoutCardSets();
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
-                using var monitoredRepository = repository.Monitor();
+                using var monitoredRepository = unprocessedRepository.Monitor();
 
                 // Act.
 
-                var _ = await repository.GetCardSetsAsync();
+                var _ = await unprocessedRepository.GetCardSetsAsync();
 
                 // Assert.
 
                 monitoredRepository
-                    .Should().NotRaise(nameof(IMagicRepository.CardSetIndexed));
+                    .Should().NotRaise(nameof(IUnprocessedMagicRepository.CardSetIndexed));
             }
         }
 
@@ -565,7 +579,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithCards(MockBuilder.CreateUnparsedCards("X01", 1));
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
@@ -574,17 +590,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
 
-                using var monitoredRepository = repository.Monitor();
+                using var monitoredRepository = unprocessedRepository.Monitor();
 
                 // Act.
 
-                var _ = await repository.GetCardsAsync(cardSet);
+                var _ = await unprocessedRepository.GetCardsAsync(cardSet);
 
                 // Assert.
 
                 monitoredRepository
-                    .Should().Raise(nameof(IMagicRepository.CardIndexed))
-                    .WithSender(repository)
+                    .Should().Raise(nameof(IUnprocessedMagicRepository.CardIndexed))
+                    .WithSender(unprocessedRepository)
                     .WithArgs<EventArgs>(args => args == EventArgs.Empty);
             }
 
@@ -603,7 +619,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithoutCards();
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
@@ -612,16 +630,16 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
 
-                using var monitoredRepository = repository.Monitor();
+                using var monitoredRepository = unprocessedRepository.Monitor();
 
                 // Act.
 
-                var _ = await repository.GetCardsAsync(cardSet);
+                var _ = await unprocessedRepository.GetCardsAsync(cardSet);
 
                 // Assert.
 
                 monitoredRepository
-                    .Should().NotRaise(nameof(IMagicRepository.CardIndexed));
+                    .Should().NotRaise(nameof(IUnprocessedMagicRepository.CardIndexed));
             }
 
             [Fact]
@@ -643,7 +661,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
 
-                var repository = new MagicRepository(mockIndexManager.Object, mockFetcher.Object);
+                var unprocessedRepository = new UnprocessedMagicRepository(
+                    mockIndexManager.Object,
+                    mockFetcher.Object);
 
                 var cardSet = new UnparsedBlob.CardSet
                 {
@@ -652,17 +672,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ReleasedTimestamp = Constant.EpochTimestamp
                 };
 
-                using var monitoredRepository = repository.Monitor();
+                using var monitoredRepository = unprocessedRepository.Monitor();
 
                 // Act.
 
-                var _ = await repository.GetCardsAsync(cardSet);
+                var _ = await unprocessedRepository.GetCardsAsync(cardSet);
 
                 // Assert.
 
                 monitoredRepository
-                    .Should().Raise(nameof(IMagicRepository.CardIndexed))
-                    .WithSender(repository)
+                    .Should().Raise(nameof(IUnprocessedMagicRepository.CardIndexed))
+                    .WithSender(unprocessedRepository)
                     .WithArgs<EventArgs>(args => args == EventArgs.Empty);
             }
         }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicRepository.cs" company="nGratis">
+// <copyright file="UnprocessedMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -39,13 +39,13 @@ namespace nGratis.AI.Kvasir.Core
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class MagicRepository : IMagicRepository
+    public class UnprocessedMagicRepository : IUnprocessedMagicRepository
     {
         private readonly IIndexManager _indexManager;
 
         private readonly IReadOnlyDictionary<ExternalResources, IMagicFetcher> _fetcherLookup;
 
-        public MagicRepository(IIndexManager indexManager, params IMagicFetcher[] fetchers)
+        public UnprocessedMagicRepository(IIndexManager indexManager, params IMagicFetcher[] fetchers)
         {
             Guard
                 .Require(indexManager, nameof(indexManager))

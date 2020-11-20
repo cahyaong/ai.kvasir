@@ -84,7 +84,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Cost
-                    .Should().NotBe(DefinedBlob.Cost.Unknown);
+                    .Should().NotBe(DefinedBlob.UnknownCost.Instance);
             }
 
             [Fact]
@@ -118,7 +118,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Cost
-                    .Should().Be(DefinedBlob.Cost.Unknown);
+                    .Should().Be(DefinedBlob.UnknownCost.Instance);
             }
 
             [Fact]
@@ -483,7 +483,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Cost
-                    .Should().Be(DefinedBlob.Cost.Unknown);
+                    .Should().Be(DefinedBlob.UnknownCost.Instance);
             }
 
             [Theory]
@@ -942,7 +942,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     UnparsedType = unparsedType,
                     UnparsedManaCost = unparsedManaCost,
-                    ParsedManaCost = DefinedBlob.Cost.Unknown,
+                    ParsedManaCost = DefinedBlob.UnknownCost.Instance,
                     Message = string.Empty
                 };
             }

@@ -38,15 +38,24 @@ namespace YamlDotNet.Serialization
     using nGratis.Cop.Olympus.Contract;
     using YamlDotNet.Core;
     using YamlDotNet.Core.Events;
+    using YamlDotNet.Serialization.NamingConventions;
 
     public static class YamlSerializationExtensions
     {
+        public static readonly INamingConvention NamingConvention = HyphenatedNamingConvention.Instance;
+
         private static readonly ISerializer Serializer = new SerializerBuilder()
-            .WithTypeConverter(new DeckYamlTypeConverter())
+            .WithNamingConvention(YamlSerializationExtensions.NamingConvention)
+            .WithTypeConverter(CostYamlConverter.Instance)
+            .WithTypeConverter(EffectYamlConverter.Instance)
+            .WithTypeConverter(DeckYamlConverter.Instance)
             .Build();
 
         private static readonly IDeserializer Deserializer = new DeserializerBuilder()
-            .WithTypeConverter(new DeckYamlTypeConverter())
+            .WithNamingConvention(YamlSerializationExtensions.NamingConvention)
+            .WithTypeConverter(CostYamlConverter.Instance)
+            .WithTypeConverter(EffectYamlConverter.Instance)
+            .WithTypeConverter(DeckYamlConverter.Instance)
             .Build();
 
         public static string SerializeToYaml<T>(this T value)
@@ -73,7 +82,7 @@ namespace YamlDotNet.Serialization
                 .Deserialize<T>(value.Trim());
         }
 
-        internal static IEmitter EmitProperty(this IEmitter emitter, string name, string value)
+        internal static IEmitter EmitField(this IEmitter emitter, string name, string value)
         {
             Guard
                 .Require(emitter, nameof(emitter))
@@ -85,14 +94,14 @@ namespace YamlDotNet.Serialization
 
             if (isValid)
             {
-                emitter.Emit(new Scalar(name));
+                emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
                 emitter.Emit(new Scalar(value));
             }
 
             return emitter;
         }
 
-        internal static IEmitter EmitProperty(this IEmitter emitter, string name, params string[] values)
+        internal static IEmitter EmitField(this IEmitter emitter, string name, params string[] values)
         {
             Guard
                 .Require(emitter, nameof(emitter))
@@ -102,13 +111,11 @@ namespace YamlDotNet.Serialization
                 .Where(value => !string.IsNullOrEmpty(value))
                 .ToArray();
 
-            var isValid =
-                !string.IsNullOrEmpty(name) &&
-                values.Any();
+            var isValid = !string.IsNullOrEmpty(name);
 
             if (isValid)
             {
-                emitter.Emit(new Scalar(name));
+                emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
 
                 emitter.Emit(new SequenceStart(default, default, false, SequenceStyle.Block));
 
@@ -117,6 +124,36 @@ namespace YamlDotNet.Serialization
                     .ForEach(emitter.Emit);
 
                 emitter.Emit(new SequenceEnd());
+            }
+
+            return emitter;
+        }
+
+        internal static IEmitter EmitField(
+            this IEmitter emitter,
+            string name,
+            IReadOnlyDictionary<string, string> lookup)
+        {
+            Guard
+                .Require(emitter, nameof(emitter))
+                .Is.Not.Null();
+
+            var isValid =
+                !string.IsNullOrEmpty(name) &&
+                lookup != null;
+
+            if (isValid)
+            {
+                emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
+
+                emitter.Emit(new MappingStart());
+
+                foreach (var (key, value) in lookup)
+                {
+                    emitter.EmitField(key, value);
+                }
+
+                emitter.Emit(new MappingEnd());
             }
 
             return emitter;
@@ -156,6 +193,37 @@ namespace YamlDotNet.Serialization
             }
 
             parser.MoveNext();
+        }
+
+        internal static IReadOnlyDictionary<TKey, TValue> ParseLookup<TKey, TValue>(
+            this IParser parser,
+            Func<string, TKey> convertKey = null,
+            Func<string, TValue> convertValue = null)
+        {
+            Guard
+                .Require(parser, nameof(parser))
+                .Is.Not.Null();
+
+            if (parser.Current?.GetType() != typeof(MappingStart))
+            {
+                throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
+            }
+
+            var lookup = new Dictionary<TKey, TValue>();
+
+            parser.MoveNext();
+
+            while (parser.Current?.GetType() != typeof(MappingEnd))
+            {
+                var key = parser.ParseScalarValue(convertKey);
+                var value = parser.ParseScalarValue(convertValue);
+
+                lookup[key] = value;
+            }
+
+            parser.MoveNext();
+
+            return lookup;
         }
     }
 }

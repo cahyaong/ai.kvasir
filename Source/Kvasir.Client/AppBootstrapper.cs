@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AppBootstrapper.cs" company="nGratis">
 //  The MIT License (MIT)
 //
@@ -166,7 +166,7 @@ namespace nGratis.AI.Kvasir.Client
                 new ContainerControlledLifetimeManager(),
                 new InjectionConstructor(dataFolderUri));
 
-            unityContainer.RegisterType<IMagicRepository, MagicRepository>(
+            unityContainer.RegisterType<IUnprocessedMagicRepository, UnprocessedMagicRepository>(
                 new ContainerControlledLifetimeManager());
 
             return unityContainer;

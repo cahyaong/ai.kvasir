@@ -37,6 +37,7 @@ namespace Moq.AI.Kvasir
     using Moq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Framework;
 
     internal static partial class MockExtensions
     {
@@ -63,7 +64,7 @@ namespace Moq.AI.Kvasir
                 .Verifiable();
 
             return mockManager
-                .WithData(name, KvasirMime.Cache);
+                .WithAvailability(new DataSpec(name, KvasirMime.Cache));
         }
 
         public static Mock<IStorageManager> WithCaching(
@@ -109,7 +110,7 @@ namespace Moq.AI.Kvasir
                 .Verifiable();
 
             return mockManager
-                .WithData(name, KvasirMime.Cache);
+                .WithAvailability(new DataSpec(name, KvasirMime.Cache));
         }
 
         public static Mock<IStorageManager> WithSelfCaching(this Mock<IStorageManager> mockManager)
@@ -148,26 +149,6 @@ namespace Moq.AI.Kvasir
 
                     return stream;
                 })
-                .Verifiable();
-
-            return mockManager;
-        }
-
-        private static Mock<IStorageManager> WithData(this Mock<IStorageManager> mockManager, string name, Mime mime)
-        {
-            mockManager
-                .Setup(mock => mock.IsAvailable)
-                .Returns(true)
-                .Verifiable();
-
-            mockManager
-                .Setup(mock => mock.FindEntries(name, mime))
-                .Returns(new[] { new DataInfo(name, mime) })
-                .Verifiable();
-
-            mockManager
-                .Setup(mock => mock.HasEntry(Arg.DataSpec.Is(name, mime)))
-                .Returns(true)
                 .Verifiable();
 
             return mockManager;

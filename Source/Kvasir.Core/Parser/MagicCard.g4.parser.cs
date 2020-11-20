@@ -177,7 +177,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
             public override CostParsingResult VisitCost_Tapping(Cost_TappingContext context)
             {
-                return CostParsingResult.CreateSuccessful(DefinedBlob.Cost.Tapping);
+                return CostParsingResult.CreateSuccessful(DefinedBlob.TappingCost.Instance);
             }
 
             public override CostParsingResult VisitCost_PayingMana(Cost_PayingManaContext context)

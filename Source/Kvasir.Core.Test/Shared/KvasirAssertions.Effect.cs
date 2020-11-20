@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirAssertions.Ability.cs" company="nGratis">
+// <copyright file="KvasirAssertions.Effect.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,7 +23,7 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, June 26, 2020 6:40:16 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, November 19, 2020 6:11:15 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core.Test
@@ -36,70 +36,39 @@ namespace nGratis.AI.Kvasir.Core.Test
     using FluentAssertions.Primitives;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
-    using EquivalencyOption = FluentAssertions.Equivalency.EquivalencyAssertionOptions<Contract.DefinedBlob.Ability>;
+    using EquivalencyOption = FluentAssertions.Equivalency.EquivalencyAssertionOptions<Contract.DefinedBlob.Effect>;
 
-    // NOTE: FluentAssertions could not compare two instances correctly if their type has data exposed via indexer,
-    // so in this case we need to handle it manually, e.g. for <PayingManaCost> and <ProducingManaEffect>.
-
-    internal class AbilityAssertion : ReferenceTypeAssertions<DefinedBlob.Ability, AbilityAssertion>
+    internal class EffectAssertion : ReferenceTypeAssertions<DefinedBlob.Effect, EffectAssertion>
     {
-        public AbilityAssertion(DefinedBlob.Ability ability)
+        public EffectAssertion(DefinedBlob.Effect effect)
         {
-            ability
+            effect
                 .Should().NotBeNull();
 
-            this.Subject = ability;
+            this.Subject = effect;
         }
 
-        protected override string Identifier { get; } = "ability";
+        protected override string Identifier { get; } = "effect";
 
-        public AndConstraint<AbilityAssertion> BeStrictEquivalentTo(DefinedBlob.Ability ability)
+        public AndConstraint<EffectAssertion> BeStrictEquivalentTo(DefinedBlob.Effect effect)
         {
             Guard
-                .Require(ability, nameof(ability))
+                .Require(effect, nameof(effect))
                 .Is.Not.Null();
 
             this
                 .Subject
                 .Should().BeEquivalentTo(
-                    ability,
+                    effect,
                     option => option
-                        .UsingStrictCostComparison()
                         .UsingStrictEffectComparison());
 
-            return new AndConstraint<AbilityAssertion>(this);
+            return new AndConstraint<EffectAssertion>(this);
         }
     }
 
-    internal static class AbilityAssertionExtensions
+    internal static class EffectAssertionExtensions
     {
-        internal static EquivalencyOption UsingStrictCostComparison(this EquivalencyOption equivalencyOption)
-        {
-            Guard
-                .Require(equivalencyOption, nameof(equivalencyOption))
-                .Is.Not.Null();
-
-            return equivalencyOption
-                .Using<DefinedBlob.PayingManaCost>(context =>
-                {
-                    using (new AssertionScope())
-                    {
-                        Enum
-                            .GetValues(typeof(Mana))
-                            .Cast<Mana>()
-                            .Where(mana => mana != Mana.Unknown)
-                            .Where(mana => context.Subject[mana] != context.Expectation[mana])
-                            .ForEach(mana => Execute
-                                .Assertion
-                                .FailWith(
-                                    $"Expected ability to have paying [{mana}] mana cost, " +
-                                    $"with amount [{context.Expectation[mana]}], " +
-                                    $"but found [{context.Subject[mana]}]."));
-                    }
-                })
-                .When(info => info.RuntimeType == typeof(DefinedBlob.PayingManaCost));
-        }
-
         internal static EquivalencyOption UsingStrictEffectComparison(this EquivalencyOption equivalencyOption)
         {
             Guard

@@ -34,8 +34,10 @@ namespace nGratis.AI.Kvasir.Core.Test
     using FluentAssertions;
     using Moq;
     using Moq.AI.Kvasir;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Framework;
     using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Framework;
     using Xunit;
     using Arg = Moq.AI.Kvasir.Arg;
     using MockBuilder = Moq.AI.Kvasir.MockBuilder;
@@ -169,7 +171,9 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 var mockStorageManager = MockBuilder
                     .CreateMock<IStorageManager>()
-                    .WithCaching("[_MOCK_CACHING_NAME_]", "mock.html", "[_MOCK_CACHED_HTML_CONTENT_]");
+                    .WithCompressedEntry(
+                        new DataSpec("[_MOCK_CACHING_NAME_]", KvasirMime.Cache),
+                        (new DataSpec("mock", Mime.Html), "[_MOCK_CACHED_HTML_CONTENT_]"));
 
                 var mockKeyCalculator = MockBuilder
                     .CreateMock<IKeyCalculator>()

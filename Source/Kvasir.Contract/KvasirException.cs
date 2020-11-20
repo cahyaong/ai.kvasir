@@ -29,11 +29,17 @@
 namespace nGratis.AI.Kvasir.Contract
 {
     using System;
+    using System.Linq;
 
     public class KvasirException : Exception
     {
         public KvasirException(string message)
             : base(message)
+        {
+        }
+
+        public KvasirException(string message, params string[] submessages)
+            : base(submessages.Aggregate(message, (blob, submessage) => $"{blob} {message}"))
         {
         }
     }

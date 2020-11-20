@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IMagicRepository.cs" company="nGratis">
+// <copyright file="IUnprocessedMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -35,7 +35,7 @@ namespace nGratis.AI.Kvasir.Core
 
     // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
 
-    public interface IMagicRepository
+    public interface IUnprocessedMagicRepository
     {
         event EventHandler CardSetIndexed;
 

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DeckYamlTypeConverter.cs" company="nGratis">
+// <copyright file="DeckYamlConverter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -37,9 +37,30 @@ namespace nGratis.AI.Kvasir.Core
     using YamlDotNet.Core;
     using YamlDotNet.Core.Events;
     using YamlDotNet.Serialization;
+    using YamlFieldReader = System.Action<YamlDotNet.Core.IParser, Contract.DefinedBlob.Deck.Builder>;
 
-    public class DeckYamlTypeConverter : IYamlTypeConverter
+    public class DeckYamlConverter : IYamlTypeConverter
     {
+        private static readonly IReadOnlyDictionary<string, YamlFieldReader> FieldReaderLookup =
+            new Dictionary<string, YamlFieldReader>
+            {
+                [YamlSerializationExtensions.NamingConvention.Apply(Field.Code)] = (parser, builder) => builder
+                    .WithCode(parser.ParseScalarValue<string>()),
+
+                [YamlSerializationExtensions.NamingConvention.Apply(Field.Name)] = (parser, builder) => builder
+                    .WithName(parser.ParseScalarValue<string>()),
+
+                [YamlSerializationExtensions.NamingConvention.Apply(Field.Mainboard)] = (parser, builder) => parser
+                    .ParseSequentialValues(DeckYamlConverter.ParseCardQuantity)
+                    .ForEach(tuple => builder.WithCardAndQuantity(tuple.Card, tuple.Quantity))
+            };
+
+        private DeckYamlConverter()
+        {
+        }
+
+        public static DeckYamlConverter Instance { get; } = new DeckYamlConverter();
+
         public bool Accepts(Type type) => type == typeof(DefinedBlob.Deck);
 
         public object ReadYaml(IParser parser, Type type)
@@ -59,26 +80,15 @@ namespace nGratis.AI.Kvasir.Core
 
             while (parser.Current?.GetType() != typeof(MappingEnd))
             {
-                var property = parser.Consume<Scalar>().Value;
+                var field = parser.Consume<Scalar>().Value;
 
-                switch (property)
+                if (DeckYamlConverter.FieldReaderLookup.TryGetValue(field, out var reader))
                 {
-                    case Property.Code:
-                        deckBuilder.WithCode(parser.ParseScalarValue<string>());
-                        break;
-
-                    case Property.Name:
-                        deckBuilder.WithName(parser.ParseScalarValue<string>());
-                        break;
-
-                    case Property.Mainboard:
-                        parser
-                            .ParseSequentialValues(DeckYamlTypeConverter.ParseCardQuantity)
-                            .ForEach(tuple => deckBuilder.WithCardAndQuantity(tuple.Card, tuple.Quantity));
-                        break;
-
-                    default:
-                        throw new KvasirException("");
+                    reader(parser, deckBuilder);
+                }
+                else
+                {
+                    throw new KvasirException($"There is no handler to parse field [{field}]!");
                 }
             }
 
@@ -106,9 +116,9 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
 
             emitter
-                .EmitProperty(Property.Code, deck.Code)
-                .EmitProperty(Property.Name, deck.Name)
-                .EmitProperty(Property.Mainboard, serializedCardQuantities);
+                .EmitField(Field.Code, deck.Code)
+                .EmitField(Field.Name, deck.Name)
+                .EmitField(Field.Mainboard, serializedCardQuantities);
 
             emitter.Emit(new MappingEnd());
         }
@@ -138,13 +148,13 @@ namespace nGratis.AI.Kvasir.Core
             return (card, quantity);
         }
 
-        private static class Property
+        private static class Field
         {
-            public const string Code = "code";
+            public const string Code = nameof(Field.Code);
 
-            public const string Name = "name";
+            public const string Name = nameof(Field.Name);
 
-            public const string Mainboard = "mainboard";
+            public const string Mainboard = nameof(Field.Mainboard);
         }
 
         private static class Pattern

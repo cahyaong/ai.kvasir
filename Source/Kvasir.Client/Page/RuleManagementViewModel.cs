@@ -43,19 +43,19 @@ namespace nGratis.AI.Kvasir.Client
     [PageDefinition("Rule", Ordering = 3)]
     public sealed class RuleManagementViewModel : ReactiveScreen, IDisposable
     {
-        private readonly IMagicRepository _repository;
+        private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
         private IDisposableCollection<RuleViewModel> _ruleViewModels;
 
         private bool _isDisposed;
 
-        public RuleManagementViewModel(IMagicRepository repository)
+        public RuleManagementViewModel(IUnprocessedMagicRepository unprocessedRepository)
         {
             Guard
-                .Require(repository, nameof(repository))
+                .Require(unprocessedRepository, nameof(unprocessedRepository))
                 .Is.Not.Null();
 
-            this._repository = repository;
+            this._unprocessedRepository = unprocessedRepository;
         }
 
         ~RuleManagementViewModel()
@@ -71,7 +71,7 @@ namespace nGratis.AI.Kvasir.Client
 
         protected override async Task ActivateCoreAsync(CancellationToken cancellationToken)
         {
-            var virtualizingProvider = new RuleViewModelProvider(this._repository);
+            var virtualizingProvider = new RuleViewModelProvider(this._unprocessedRepository);
 
             this.RuleViewModels?.Dispose();
             this.RuleViewModels = new AsyncVirtualizingCollection<RuleViewModel>(virtualizingProvider);
@@ -89,9 +89,9 @@ namespace nGratis.AI.Kvasir.Client
 
         private sealed class RuleViewModelProvider : IPagingDataProvider<RuleViewModel>
         {
-            private readonly IMagicRepository _repository;
+            private readonly IUnprocessedMagicRepository _repository;
 
-            public RuleViewModelProvider(IMagicRepository repository)
+            public RuleViewModelProvider(IUnprocessedMagicRepository repository)
             {
                 Guard
                     .Require(repository, nameof(repository))

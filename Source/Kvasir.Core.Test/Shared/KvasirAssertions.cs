@@ -42,6 +42,11 @@ namespace nGratis.AI.Kvasir.Core.Test
             return new CostAssertion(cost);
         }
 
+        public static EffectAssertion Must(this DefinedBlob.Effect effect)
+        {
+            return new EffectAssertion(effect);
+        }
+
         public static AbilityAssertion Must(this DefinedBlob.Ability ability)
         {
             return new AbilityAssertion(ability);

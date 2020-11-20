@@ -35,31 +35,27 @@ namespace nGratis.AI.Kvasir.Contract
     {
         public abstract class Cost
         {
-            public static Cost Unknown => UnknownCost.Instance;
-
-            public static Cost Tapping => TappingCost.Instance;
-
             public abstract CostKind Kind { get; }
         }
 
-        internal sealed class UnknownCost : Cost
+        public sealed class UnknownCost : Cost
         {
             private UnknownCost()
             {
             }
 
-            internal static UnknownCost Instance { get; } = new UnknownCost();
+            public static UnknownCost Instance { get; } = new UnknownCost();
 
             public override CostKind Kind => CostKind.Unknown;
         }
 
-        internal sealed class TappingCost : Cost
+        public sealed class TappingCost : Cost
         {
             private TappingCost()
             {
             }
 
-            internal static TappingCost Instance { get; } = new TappingCost();
+            public static TappingCost Instance { get; } = new TappingCost();
 
             public override CostKind Kind => CostKind.Tapping;
         }

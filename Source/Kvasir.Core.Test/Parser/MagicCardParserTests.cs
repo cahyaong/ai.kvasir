@@ -155,9 +155,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     this.ParsedAbility = new DefinedBlob.Ability
                     {
                         Kind = AbilityKind.Activated,
-                        Costs = new[]
+                        Costs = new DefinedBlob.Cost[]
                         {
-                            DefinedBlob.Cost.Tapping
+                            DefinedBlob.TappingCost.Instance
                         },
                         Effects = new DefinedBlob.Effect[]
                         {
@@ -287,7 +287,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     return new CostTheory
                     {
                         UnparsedCost = unparsedCost,
-                        ParsedCost = DefinedBlob.Cost.Unknown
+                        ParsedCost = DefinedBlob.UnknownCost.Instance
                     };
                 }
 

@@ -44,7 +44,7 @@ namespace nGratis.AI.Kvasir.Client
     {
         // TODO: Need to make <DefinedCard> class as immutable as possible!
 
-        private readonly IMagicRepository _repository;
+        private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
         private readonly IMagicCardProcessor _cardProcessor;
 
@@ -56,26 +56,26 @@ namespace nGratis.AI.Kvasir.Client
 
         private IEnumerable<string> _processingMessages;
 
-        public CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository)
-            : this(unparsedCard, repository, MagicCardProcessor.Instance)
+        public CardViewModel(UnparsedBlob.Card unparsedCard, IUnprocessedMagicRepository unprocessedRepository)
+            : this(unparsedCard, unprocessedRepository, MagicCardProcessor.Instance)
         {
         }
 
-        internal CardViewModel(UnparsedBlob.Card unparsedCard, IMagicRepository repository, IMagicCardProcessor cardProcessor)
+        internal CardViewModel(UnparsedBlob.Card unparsedCard, IUnprocessedMagicRepository unprocessedRepository, IMagicCardProcessor cardProcessor)
         {
             Guard
                 .Require(unparsedCard, nameof(unparsedCard))
                 .Is.Not.Null();
 
             Guard
-                .Require(repository, nameof(repository))
+                .Require(unprocessedRepository, nameof(unprocessedRepository))
                 .Is.Not.Null();
 
             Guard
                 .Require(cardProcessor, nameof(cardProcessor))
                 .Is.Not.Null();
 
-            this._repository = repository;
+            this._unprocessedRepository = unprocessedRepository;
             this._cardProcessor = cardProcessor;
 
             this.UnparsedCard = unparsedCard;
@@ -116,7 +116,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateDetailAsync()
         {
-            var cardImage = await this._repository.GetCardImageAsync(this.UnparsedCard);
+            var cardImage = await this._unprocessedRepository.GetCardImageAsync(this.UnparsedCard);
 
             // TODO: Need to handle larger image size, e.g. Planechase card!
 

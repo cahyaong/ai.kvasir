@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DefinedBlob.Card.cs" company="nGratis">
+// <copyright file="IProcessedMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,54 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, December 27, 2019 7:22:02 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, October 16, 2020 6:16:52 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Core
 {
-    public static partial class DefinedBlob
+    using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract;
+
+    public interface IProcessedMagicRepository
     {
-        public class Card
-        {
-            public Card()
-            {
-                this.SubKinds = Default.SubKinds;
-                this.Cost = Default.Cost;
-                this.Abilities = Default.Abilities;
-            }
+        Task<DefinedBlob.Card> LoadCardAsync(string cardSetCode, ushort number);
 
-            public ushort Number { get; set; }
-
-            public string CardSetCode { get; set; }
-
-            public uint MultiverseId { get; set; }
-
-            public string Name { get; set; }
-
-            public CardKind Kind { get; set; }
-
-            public CardSuperKind SuperKind { get; set; }
-
-            public CardSubKind[] SubKinds { get; set; }
-
-            public bool IsTribal { get; set; }
-
-            public Cost Cost { get; set; }
-
-            public ushort Power { get; set; }
-
-            public ushort Toughness { get; set; }
-
-            public Ability[] Abilities { get; set; }
-
-            public static class Default
-            {
-                public static readonly CardSubKind[] SubKinds = new CardSubKind[0];
-
-                public static readonly Cost Cost = UnknownCost.Instance;
-
-                public static readonly Ability[] Abilities = new Ability[0];
-            }
-        }
+        Task SaveCardAsync(DefinedBlob.Card card);
     }
 }

@@ -45,7 +45,7 @@ namespace nGratis.AI.Kvasir.Client
     [PageDefinition("Library", Ordering = 1)]
     public sealed class LibraryManagementViewModel : ReactiveScreen, IDisposable
     {
-        private readonly IMagicRepository _repository;
+        private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
         private int _cardSetCount;
 
@@ -57,13 +57,13 @@ namespace nGratis.AI.Kvasir.Client
 
         private bool _isDisposed;
 
-        public LibraryManagementViewModel(IMagicRepository repository)
+        public LibraryManagementViewModel(IUnprocessedMagicRepository unprocessedRepository)
         {
             Guard
-                .Require(repository, nameof(repository))
+                .Require(unprocessedRepository, nameof(unprocessedRepository))
                 .Is.Not.Null();
 
-            this._repository = repository;
+            this._unprocessedRepository = unprocessedRepository;
         }
 
         ~LibraryManagementViewModel()
@@ -115,7 +115,7 @@ namespace nGratis.AI.Kvasir.Client
 
         private void PopulateCardSets()
         {
-            var virtualizingProvider = new CardSetViewModelProvider(this._repository);
+            var virtualizingProvider = new CardSetViewModelProvider(this._unprocessedRepository);
 
             this.CardSetViewModels?.Dispose();
             this.CardSetViewModels = new AsyncVirtualizingCollection<CardSetViewModel>(virtualizingProvider);
@@ -126,13 +126,13 @@ namespace nGratis.AI.Kvasir.Client
                 .Subscribe(async _ =>
                 {
                     this.CardSetCount = this.CardSetViewModels.Count;
-                    this.CardCount = await this._repository.GetCardCountAsync();
+                    this.CardCount = await this._unprocessedRepository.GetCardCountAsync();
                 });
 
             Observable
-                .FromEventPattern<EventArgs>(this._repository, "CardIndexed")
+                .FromEventPattern<EventArgs>(this._unprocessedRepository, "CardIndexed")
                 .Throttle(TimeSpan.FromMilliseconds(500))
-                .Subscribe(async _ => this.CardCount = await this._repository.GetCardCountAsync());
+                .Subscribe(async _ => this.CardCount = await this._unprocessedRepository.GetCardCountAsync());
         }
 
         private void Dispose(bool isDisposing)
@@ -152,9 +152,9 @@ namespace nGratis.AI.Kvasir.Client
 
         private sealed class CardSetViewModelProvider : IPagingDataProvider<CardSetViewModel>
         {
-            private readonly IMagicRepository _repository;
+            private readonly IUnprocessedMagicRepository _repository;
 
-            public CardSetViewModelProvider(IMagicRepository repository)
+            public CardSetViewModelProvider(IUnprocessedMagicRepository repository)
             {
                 Guard
                     .Require(repository, nameof(repository))

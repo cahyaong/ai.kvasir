@@ -108,6 +108,8 @@ namespace nGratis.AI.Kvasir.Core
 
                     if (card != null)
                     {
+                        card.ScryfallId = Text.None;
+                        card.ScryfallImageUrl = Text.None;
                         card.CardSetCode = cardSet.Code;
                         card.ManaCost ??= string.Empty;
                         card.Text ??= string.Empty;

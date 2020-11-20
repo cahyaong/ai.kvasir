@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicRepositoryExtensions.cs" company="nGratis">
+// <copyright file="ProcessedMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -23,50 +23,76 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, April 4, 2020 6:26:37 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, October 16, 2020 6:17:22 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Core
 {
+    using System;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
+    using YamlDotNet.Serialization;
 
-    public static class MagicRepositoryExtensions
+    public class ProcessedMagicRepository : IProcessedMagicRepository
     {
-        public static async Task<UnparsedBlob.CardSet> GetCardSetAsync(
-            this IUnprocessedMagicRepository unprocessedRepository,
-            string name)
+        private readonly IStorageManager _storageManager;
+
+        public ProcessedMagicRepository(IStorageManager storageManager)
         {
             Guard
-                .Require(unprocessedRepository, nameof(unprocessedRepository))
+                .Require(storageManager, nameof(storageManager))
                 .Is.Not.Null();
 
+            this._storageManager = storageManager;
+        }
+
+        public async Task<DefinedBlob.Card> LoadCardAsync(string cardSetCode, ushort number)
+        {
             Guard
-                .Require(name, nameof(name))
+                .Require(cardSetCode, nameof(cardSetCode))
                 .Is.Not.Empty();
 
-            var cardSets = (await unprocessedRepository
-                .GetCardSetsAsync())
-                .Where(cardSet => cardSet.Name == name)
+            Guard
+                .Require(number, nameof(number))
+                .Is.Positive();
+
+            var foundEntries = this
+                ._storageManager
+                .FindEntries($"{cardSetCode}_{number:D3}", Mime.Yaml)
                 .ToArray();
 
-            if (cardSets.Length <= 0)
+            if (foundEntries.Length != 1)
             {
                 throw new KvasirException(
-                    @"Failed to find card set! " +
-                    $"Name: [{name}].");
+                    @"Expecting to find exactly single defined card!",
+                    $"Card Set Code: [{cardSetCode}].",
+                    $"Number: [{number}].");
             }
 
-            if (cardSets.Length > 1)
-            {
-                throw new KvasirException(
-                    @"Found more than 1 card set! " +
-                    $"Name: [{name}].");
-            }
+            await using var cardStream = this._storageManager.LoadEntry(foundEntries.Single());
 
-            return cardSets.Single();
+            return cardStream
+                .ReadText()
+                .DeserializeFromYaml<DefinedBlob.Card>();
+        }
+
+        public async Task SaveCardAsync(DefinedBlob.Card card)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            await using var cardStream = card
+                .SerializeToYaml()
+                .AsStream();
+
+            this._storageManager.SaveEntry(
+                new DataSpec($"{card.CardSetCode}_{card.Number:D3}", Mime.Yaml),
+                cardStream,
+                true);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.MagicRepository.cs" company="nGratis">
+// <copyright file="MockExtensions.UnprocessedMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2020 Cahya Ong
@@ -41,8 +41,8 @@ namespace Moq.AI.Kvasir
 
     internal static partial class MockExtensions
     {
-        public static Mock<IMagicRepository> WithCardSets(
-            this Mock<IMagicRepository> mockRepository,
+        public static Mock<IUnprocessedMagicRepository> WithCardSets(
+            this Mock<IUnprocessedMagicRepository> mockRepository,
             params string[] names)
         {
             Guard

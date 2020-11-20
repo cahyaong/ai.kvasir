@@ -41,7 +41,7 @@ namespace nGratis.AI.Kvasir.Client
 
     public class CardSetViewModel : ReactiveObject
     {
-        private readonly IMagicRepository _repository;
+        private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
         private IEnumerable<CardViewModel> _cardViewModels;
 
@@ -53,17 +53,17 @@ namespace nGratis.AI.Kvasir.Client
 
         private int _invalidCardCount;
 
-        public CardSetViewModel(UnparsedBlob.CardSet unparsedCardSet, IMagicRepository repository)
+        public CardSetViewModel(UnparsedBlob.CardSet unparsedCardSet, IUnprocessedMagicRepository unprocessedRepository)
         {
             Guard
                 .Require(unparsedCardSet, nameof(unparsedCardSet))
                 .Is.Not.Null();
 
             Guard
-                .Require(repository, nameof(repository))
+                .Require(unprocessedRepository, nameof(unprocessedRepository))
                 .Is.Not.Null();
 
-            this._repository = repository;
+            this._unprocessedRepository = unprocessedRepository;
 
             this.UnparsedCardSet = unparsedCardSet;
             this.CardViewModels = Enumerable.Empty<CardViewModel>();
@@ -115,10 +115,10 @@ namespace nGratis.AI.Kvasir.Client
 
         private async Task PopulateCardsAsync()
         {
-            var unparsedCards = await this._repository.GetCardsAsync(this.UnparsedCardSet);
+            var unparsedCards = await this._unprocessedRepository.GetCardsAsync(this.UnparsedCardSet);
 
             this.CardViewModels = unparsedCards
-                .Select(unparsedCard => new CardViewModel(unparsedCard, this._repository))
+                .Select(unparsedCard => new CardViewModel(unparsedCard, this._unprocessedRepository))
                 .ToArray();
 
             this.NotParsedCardCount = this.CardViewModels.Count();
