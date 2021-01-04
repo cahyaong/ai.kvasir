@@ -1,6 +1,6 @@
 // TODO: Migrate all testing projects to .NET Core before updating xunit.runner.visualstudio to 2.4.2!
 
-framework: netcoreapp3.1
+framework: net5.0
 source https://api.nuget.org/v3/index.json
 
 nuget Antlr4
@@ -8,15 +8,17 @@ nuget HtmlAgilityPack
 nuget Humanizer.Core
 nuget JetBrains.Annotations
 nuget J2N ~> 1.0.0-beta-0002
-nuget Lucene.Net >= 4.8.0-beta00001
-nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
+nuget Lucene.Net ~> 4.8.0-beta00007
+nuget Lucene.Net.Analysis.Common ~> 4.8.0-beta00007
+nuget Microsoft.NETCore.Targets ~> 3.1.0
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
 nuget SixLabors.ImageSharp
 nuget Stateless
-nuget System.Reactive
-nuget System.Reactive.Linq
+nuget System.Reactive ~> 4.4.1.0
+nuget System.Reactive.Linq ~> 4.4.1.0
+nuget System.Runtime.InteropServices.WindowsRuntime ~> 4.3.0
 nuget System.Threading.Tasks.Extensions
 nuget Unity
 nuget Unity.RegistrationByConvention
@@ -24,58 +26,34 @@ nuget YamlDotNet
 
 group _UI
 
-    framework: netcoreapp3.1
+    framework: net5.0
     source https://api.nuget.org/v3/index.json
 
     nuget Caliburn.Micro ~> 4.0.136-rc
+    nuget Humanizer.Core
     nuget MahApps.Metro
     nuget OxyPlot.Wpf
-    nuget ReactiveUI
-    nuget ReactiveUI.WPF
+    nuget ReactiveUI ~> 11.5.17.0
+    nuget ReactiveUI.WPF ~> 11.5.17.0
+    nuget System.Reactive ~> 4.4.1.0
 
 group _Console
 
-    framework: netcoreapp3.1
+    framework: net5.0
     source https://api.nuget.org/v3/index.json
 
     nuget CommandLineParser
 
-group _Support
-
-    framework: netstandard2.1
-    source https://api.nuget.org/v3/index.json
-
-    nuget Antlr4
-    nuget HtmlAgilityPack
-    nuget Humanizer.Core
-    nuget JetBrains.Annotations
-    nuget J2N ~> 1.0.0-beta-0002
-    nuget Lucene.Net >= 4.8.0-beta00001
-    nuget Lucene.Net.Analysis.Common >= 4.8.0-beta00001
-    nuget Newtonsoft.Json
-    nuget NLog
-    nuget SixLabors.ImageSharp
-    nuget Stateless
-    nuget System.Reactive
-    nuget System.Reactive.Linq
-    nuget YamlDotNet
-
 group _Test
 
-    framework: netcoreapp3.1
+    framework: net5.0
     source https://api.nuget.org/v3/index.json
 
     nuget FluentAssertions
     nuget Microsoft.NET.Test.Sdk
+    nuget Microsoft.NETCore.Platforms ~> 3.1.2.0
     nuget Moq
+    nuget System.Drawing.Common ~> 4.7.0
+    nuget System.Windows.Extensions ~> 4.7.0
     nuget xunit
     nuget xunit.runner.visualstudio
-
-group _Test_Support
-
-    framework: netstandard2.1
-    source https://api.nuget.org/v3/index.json
-
-    nuget FluentAssertions
-    nuget Moq
-    nuget xunit

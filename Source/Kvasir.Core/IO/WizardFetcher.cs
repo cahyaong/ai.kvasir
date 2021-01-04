@@ -132,6 +132,8 @@ namespace nGratis.AI.Kvasir.Core
                 })
                 .ToArray();
 
+            // FIXME: Add validation when parsing rules is failing!
+
             return rules;
         }
 

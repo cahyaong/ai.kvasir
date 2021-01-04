@@ -1,6 +1,5 @@
-﻿group _Support
-    JetBrains.Annotations
+﻿JetBrains.Annotations
 
-group _Test_Support
+group _Test
     FluentAssertions
     Moq

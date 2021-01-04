@@ -30,7 +30,9 @@ steps:
 - task: VSTest@2
   inputs:
     testSelector: 'testAssemblies'
-    testAssemblyVer2: '**/bin/$(buildConfiguration)/**/*Test.dll'
+    testAssemblyVer2: |
+      **/bin/$(buildConfiguration)/**/*Test.dll
+      !**/bin/**/ref/**
     searchFolder: 'Source'
     pathToCustomTestAdapters: 'Source/packages/_test/xunit.runner.visualstudio/build/_common'
     platform: '$(buildPlatform)'

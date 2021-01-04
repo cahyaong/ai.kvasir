@@ -1,9 +1,8 @@
-﻿group _Support
-    Antlr4
-    HtmlAgilityPack
-    Humanizer.Core
-    J2N
-    Lucene.Net
-    Lucene.Net.Analysis.Common
-    SixLabors.ImageSharp
-    YamlDotNet
+﻿Antlr4
+HtmlAgilityPack
+Humanizer.Core
+J2N
+Lucene.Net
+Lucene.Net.Analysis.Common
+SixLabors.ImageSharp
+YamlDotNet

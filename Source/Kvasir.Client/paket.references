@@ -5,6 +5,8 @@ J2N
 Lucene.Net
 Lucene.Net.Analysis.Common
 System.Reactive
+System.Reactive.Linq
+System.Runtime.InteropServices.WindowsRuntime
 Unity
 Unity.RegistrationByConvention
 

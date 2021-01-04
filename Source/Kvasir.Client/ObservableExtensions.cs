@@ -43,9 +43,10 @@ namespace System.Reactive.Linq
                 .Require(reactiveObject, nameof(reactiveObject))
                 .Is.Not.Null();
 
-            return Observable.FromEventPattern<PropertyChangedEventArgs>(
-                reactiveObject,
-                nameof(INotifyPropertyChanged.PropertyChanged));
+            // FIXME: Find another way to create observable of events because issue encountered after upgrading to
+            // .NET 5 related to System.Runtime.InteropServices.WindowsRuntime binding failure!
+
+            return Observable.Empty<EventPattern<PropertyChangedEventArgs>>();
         }
     }
 }

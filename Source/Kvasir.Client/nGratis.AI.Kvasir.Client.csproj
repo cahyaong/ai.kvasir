@@ -2,12 +2,23 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.Client.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- NOTE: This is temporary workaround with broken XAML compiler caused by Xamarin.Forms 4.7+, see -->
+    <!-- https://github.com/xamarin/Xamarin.Forms/issues/11101 for more details. -->
+    <EmbeddedResource Remove="**/*.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj" />
