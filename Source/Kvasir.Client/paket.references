@@ -7,10 +7,9 @@ Lucene.Net.Analysis.Common
 System.Reactive
 System.Reactive.Linq
 System.Runtime.InteropServices.WindowsRuntime
-Unity
-Unity.RegistrationByConvention
 
 group _UI
+    Autofac
     Caliburn.Micro
     MahApps.Metro
     OxyPlot.Wpf

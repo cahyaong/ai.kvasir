@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Client
 {
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Reflection;
@@ -37,7 +38,7 @@ namespace nGratis.AI.Kvasir.Client
 
     public class AppViewModel : Conductor<IScreen>.Collection.OneActive
     {
-        public AppViewModel(params IScreen[] screens)
+        public AppViewModel(IEnumerable<IScreen> screens)
         {
             Guard
                 .Require(screens, nameof(screens))

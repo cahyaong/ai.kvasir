@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="AppBootstrapper.cs" company="nGratis">
 //  The MIT License (MIT)
 //
@@ -31,35 +31,23 @@ namespace nGratis.AI.Kvasir.Client
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Reflection;
     using System.Windows;
+    using Autofac;
+    using Autofac.Core;
     using Caliburn.Micro;
     using nGratis.AI.Kvasir.Core;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Framework;
     using nGratis.Cop.Olympus.Wpf;
-    using Unity;
-    using Unity.Injection;
-    using Unity.Lifetime;
-    using Unity.RegistrationByConvention;
 
-    internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
+    internal sealed class AppBootstrapper : BootstrapperBase
     {
-        private readonly IUnityContainer _unityContainer;
-
-        private bool _isDisposed;
+        private IContainer _container;
 
         public AppBootstrapper()
         {
-            this._unityContainer = new UnityContainer();
-
             this.Initialize();
-        }
-
-        ~AppBootstrapper()
-        {
-            this.Dispose(false);
         }
 
         protected override void Configure()
@@ -76,20 +64,23 @@ namespace nGratis.AI.Kvasir.Client
 
             var dataFolderUri = new Uri(dataFolderPath);
 
-            this._unityContainer
+            this._container = new ContainerBuilder()
                 .RegisterInfrastructure()
                 .RegisterRepository(dataFolderUri)
-                .RegisterViewModels();
+                .RegisterViewModels()
+                .Build();
         }
 
         protected override object GetInstance(Type type, string key)
         {
-            return this._unityContainer.Resolve(type, key);
+            return this._container.Resolve(type);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type type)
         {
-            return this._unityContainer.ResolveAll(type);
+            var service = new TypedService(typeof(IEnumerable<>).MakeGenericType(type));
+
+            return (object[])this._container.ResolveService(service);
         }
 
         protected override void OnStartup(object sender, StartupEventArgs args)
@@ -102,46 +93,27 @@ namespace nGratis.AI.Kvasir.Client
 
             this.DisplayRootViewFor<AppViewModel>();
         }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool isDisposing)
-        {
-            if (this._isDisposed)
-            {
-                return;
-            }
-
-            if (isDisposing)
-            {
-                this._unityContainer?.Dispose();
-            }
-
-            this._isDisposed = true;
-        }
     }
 
-    internal static class UnityExtensions
+    internal static class AutofacExtensions
     {
-        public static IUnityContainer RegisterInfrastructure(this IUnityContainer unityContainer)
+        public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder)
         {
             Guard
-                .Require(unityContainer, nameof(unityContainer))
+                .Require(containerBuilder, nameof(containerBuilder))
                 .Is.Not.Null();
 
-            unityContainer.RegisterType<IWindowManager, WindowManager>();
+            containerBuilder
+                .RegisterType<WindowManager>()
+                .As<IWindowManager>();
 
-            return unityContainer;
+            return containerBuilder;
         }
 
-        public static IUnityContainer RegisterRepository(this IUnityContainer unityContainer, Uri dataFolderUri)
+        public static ContainerBuilder RegisterRepository(this ContainerBuilder containerBuilder, Uri dataFolderUri)
         {
             Guard
-                .Require(unityContainer, nameof(unityContainer))
+                .Require(containerBuilder, nameof(containerBuilder))
                 .Is.Not.Null();
 
             Guard
@@ -150,46 +122,54 @@ namespace nGratis.AI.Kvasir.Client
                 .Is.Folder()
                 .Is.Exist();
 
-            unityContainer.RegisterType<IStorageManager, FileStorageManager>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionConstructor(dataFolderUri));
+            containerBuilder
+                .Register(_ => new FileStorageManager(dataFolderUri))
+                .As<IStorageManager>()
+                .InstancePerLifetimeScope();
 
-            unityContainer.RegisterType<IMagicFetcher, ScryfallFetcher>(
-                "SCRYFALL",
-                new ContainerControlledLifetimeManager());
+            containerBuilder
+                .RegisterType<ScryfallFetcher>()
+                .As<IMagicFetcher>()
+                .InstancePerLifetimeScope();
 
-            unityContainer.RegisterType<IMagicFetcher, WizardFetcher>(
-                "WIZARD",
-                new ContainerControlledLifetimeManager());
+            containerBuilder
+                .RegisterType<WizardFetcher>()
+                .As<IMagicFetcher>()
+                .InstancePerLifetimeScope();
 
-            unityContainer.RegisterType<IIndexManager, IndexManager>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionConstructor(dataFolderUri));
+            containerBuilder
+                .Register(_ => new IndexManager(dataFolderUri))
+                .As<IIndexManager>()
+                .InstancePerLifetimeScope();
 
-            unityContainer.RegisterType<IUnprocessedMagicRepository, UnprocessedMagicRepository>(
-                new ContainerControlledLifetimeManager());
+            containerBuilder
+                .RegisterType<UnprocessedMagicRepository>()
+                .As<IUnprocessedMagicRepository>()
+                .InstancePerLifetimeScope();
 
-            return unityContainer;
+            return containerBuilder;
         }
 
-        public static IUnityContainer RegisterViewModels(this IUnityContainer unityContainer)
+        public static ContainerBuilder RegisterViewModels(this ContainerBuilder containerBuilder)
         {
             Guard
-                .Require(unityContainer, nameof(unityContainer))
+                .Require(containerBuilder, nameof(containerBuilder))
                 .Is.Not.Null();
 
-            AllClasses
-                .FromAssemblies(false, Assembly.GetEntryAssembly())
+            containerBuilder
+                .RegisterType<AppViewModel>()
+                .AsSelf()
+                .InstancePerLifetimeScope();
+
+            containerBuilder
+                .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 .Where(type => typeof(IScreen).IsAssignableFrom(type))
                 .Where(type => type.FullName?.EndsWith("ViewModel") == true)
-                .Where(type => type.Name != nameof(AppViewModel))
-                .ForEach(type => unityContainer.RegisterType(
-                    typeof(IScreen),
-                    type,
-                    $"auto.{type.Name}",
-                    new ContainerControlledLifetimeManager()));
+                .Where(type => type != typeof(AppViewModel))
+                .As<IScreen>()
+                .InstancePerLifetimeScope();
 
-            return unityContainer;
+            return containerBuilder;
         }
     }
 }

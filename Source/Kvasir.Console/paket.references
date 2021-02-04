@@ -1,6 +1,6 @@
 ﻿JetBrains.Annotations
-Unity
 YamlDotNet
 
 group _Console
+	Autofac
 	CommandLineParser

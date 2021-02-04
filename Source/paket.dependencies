@@ -1,16 +1,17 @@
 // TODO: Migrate all testing projects to .NET Core before updating xunit.runner.visualstudio to 2.4.2!
 
+storage: none
 framework: net5.0
 source https://api.nuget.org/v3/index.json
 
 nuget Antlr4
 nuget HtmlAgilityPack
 nuget Humanizer.Core
-nuget JetBrains.Annotations
+nuget JetBrains.Annotations ~> 2020.3.0
 nuget J2N ~> 1.0.0-beta-0002
 nuget Lucene.Net ~> 4.8.0-beta00007
 nuget Lucene.Net.Analysis.Common ~> 4.8.0-beta00007
-nuget Microsoft.NETCore.Targets ~> 3.1.0
+nuget Microsoft.NETCore.Targets
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
@@ -20,38 +21,42 @@ nuget System.Reactive ~> 4.4.1.0
 nuget System.Reactive.Linq ~> 4.4.1.0
 nuget System.Runtime.InteropServices.WindowsRuntime ~> 4.3.0
 nuget System.Threading.Tasks.Extensions
-nuget Unity
-nuget Unity.RegistrationByConvention
 nuget YamlDotNet
 
 group _UI
 
-    framework: net5.0
+    storage: none
+    framework: net5.0-windows
     source https://api.nuget.org/v3/index.json
 
+    nuget Autofac
     nuget Caliburn.Micro ~> 4.0.136-rc
     nuget Humanizer.Core
     nuget MahApps.Metro
     nuget OxyPlot.Wpf
     nuget ReactiveUI ~> 11.5.17.0
     nuget ReactiveUI.WPF ~> 11.5.17.0
+    nuget Splat ~> 9.0
     nuget System.Reactive ~> 4.4.1.0
 
 group _Console
 
+    storage: none
     framework: net5.0
     source https://api.nuget.org/v3/index.json
 
+    nuget Autofac
     nuget CommandLineParser
 
 group _Test
 
+    storage: none
     framework: net5.0
     source https://api.nuget.org/v3/index.json
 
     nuget FluentAssertions
     nuget Microsoft.NET.Test.Sdk
-    nuget Microsoft.NETCore.Platforms ~> 3.1.2.0
+    nuget Microsoft.NETCore.Platforms
     nuget Moq
     nuget System.Drawing.Common ~> 4.7.0
     nuget System.Windows.Extensions ~> 4.7.0
