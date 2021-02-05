@@ -2,7 +2,7 @@
 // <copyright file="RuleManagementViewModel.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2020 Cahya Ong
+//  Copyright (c) 2014 - 2021 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ namespace nGratis.AI.Kvasir.Client
             await Task.CompletedTask;
         }
 
-        protected override async Task DeactivateCoreAysnc(bool isClosed, CancellationToken cancellationToken)
+        protected override async Task DeactivateCoreAsync(bool isClosed, CancellationToken cancellationToken)
         {
             this.RuleViewModels?.Dispose();
             this.RuleViewModels = null;
