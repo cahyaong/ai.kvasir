@@ -33,25 +33,25 @@ namespace nGratis.AI.Kvasir.Contract
 
     public static partial class DefinedBlob
     {
-        public abstract class Effect
+        public abstract record Effect
         {
             public static Effect Unknown => UnknownEffect.Instance;
 
             public abstract EffectKind Kind { get; }
         }
 
-        internal sealed class UnknownEffect : Effect
+        internal sealed record UnknownEffect : Effect
         {
             private UnknownEffect()
             {
             }
 
-            public static UnknownEffect Instance { get; } = new UnknownEffect();
+            public static UnknownEffect Instance { get; } = new();
 
             public override EffectKind Kind => EffectKind.Unknown;
         }
 
-        public sealed class ProducingManaEffect : Effect
+        public sealed record ProducingManaEffect : Effect
         {
             private readonly IDictionary<Mana, ushort> _amountLookup;
 
@@ -87,7 +87,7 @@ namespace nGratis.AI.Kvasir.Contract
 
                 public static Builder Create()
                 {
-                    return new Builder();
+                    return new();
                 }
 
                 public Builder WithAmount(Mana mana, ushort amount)

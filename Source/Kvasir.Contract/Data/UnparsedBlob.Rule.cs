@@ -30,11 +30,11 @@ namespace nGratis.AI.Kvasir.Contract
 {
     public static partial class UnparsedBlob
     {
-        public class Rule
+        public record Rule
         {
-            public string Id { get; set; }
+            public string Id { get; init; }
 
-            public string Text { get; set; }
+            public string Text { get; init; }
         }
     }
 }

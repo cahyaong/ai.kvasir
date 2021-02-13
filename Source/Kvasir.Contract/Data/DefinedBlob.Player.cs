@@ -30,13 +30,13 @@ namespace nGratis.AI.Kvasir.Contract
 {
     public static partial class DefinedBlob
     {
-        public class Player
+        public record Player
         {
-            public PlayerKind Kind { get; set; }
+            public PlayerKind Kind { get; init; }
 
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public Deck Deck { get; set; }
+            public Deck Deck { get; init; }
         }
     }
 }

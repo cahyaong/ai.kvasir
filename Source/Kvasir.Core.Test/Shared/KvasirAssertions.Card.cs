@@ -65,7 +65,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 this.Subject.ScryfallImageUrl
                     .Should().NotBeNullOrEmpty($"{this.Identifier} should have non-empty image URL");
 
-                this.Subject.CardSetCode
+                this.Subject.SetCode
                     .Should().NotBeNullOrEmpty(
                         $"{this.Identifier} should have non-empty card set code")
                     .And.MatchRegex(

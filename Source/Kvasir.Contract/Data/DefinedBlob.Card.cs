@@ -30,7 +30,7 @@ namespace nGratis.AI.Kvasir.Contract
 {
     public static partial class DefinedBlob
     {
-        public class Card
+        public record Card
         {
             public Card()
             {
@@ -39,29 +39,29 @@ namespace nGratis.AI.Kvasir.Contract
                 this.Abilities = Default.Abilities;
             }
 
-            public ushort Number { get; set; }
+            public ushort Number { get; init; }
 
-            public string CardSetCode { get; set; }
+            public string SetCode { get; init; }
 
-            public uint MultiverseId { get; set; }
+            public uint MultiverseId { get; init; }
 
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public CardKind Kind { get; set; }
+            public CardKind Kind { get; init; }
 
-            public CardSuperKind SuperKind { get; set; }
+            public CardSuperKind SuperKind { get; init; }
 
-            public CardSubKind[] SubKinds { get; set; }
+            public CardSubKind[] SubKinds { get; init; }
 
-            public bool IsTribal { get; set; }
+            public bool IsTribal { get; init; }
 
-            public Cost Cost { get; set; }
+            public Cost Cost { get; init; }
 
-            public ushort Power { get; set; }
+            public ushort Power { get; init; }
 
-            public ushort Toughness { get; set; }
+            public ushort Toughness { get; init; }
 
-            public Ability[] Abilities { get; set; }
+            public Ability[] Abilities { get; init; }
 
             public static class Default
             {

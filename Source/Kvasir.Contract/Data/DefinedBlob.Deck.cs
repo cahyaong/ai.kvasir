@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Contract
 
     public static partial class DefinedBlob
     {
-        public class Deck
+        public record Deck
         {
             private readonly IDictionary<Card, ushort> _quantityByCardLookup;
 
@@ -83,7 +83,7 @@ namespace nGratis.AI.Kvasir.Contract
                     this._deck = new Deck();
                 }
 
-                public static Builder Create() => new Builder();
+                public static Builder Create() => new();
 
                 public Builder WithCode(string code)
                 {
@@ -135,7 +135,7 @@ namespace nGratis.AI.Kvasir.Contract
                 }
             }
 
-            public class Card
+            public record Card
             {
                 public Card(string name, string cardSetCode, ushort number)
                 {
@@ -161,49 +161,6 @@ namespace nGratis.AI.Kvasir.Contract
                 public string CardSetCode { get; }
 
                 public ushort Number { get; }
-
-                public override bool Equals(object otherValue)
-                {
-                    if (object.ReferenceEquals(otherValue, null))
-                    {
-                        return false;
-                    }
-
-                    if (object.ReferenceEquals(otherValue, this))
-                    {
-                        return true;
-                    }
-
-                    if (this.GetType() != otherValue.GetType())
-                    {
-                        return false;
-                    }
-
-                    return this.Equals(otherValue as Card);
-                }
-
-                private bool Equals(Card otherCard)
-                {
-                    return
-                        otherCard != null &&
-                        otherCard.Number == this.Number &&
-                        otherCard.Name == this.Name &&
-                        otherCard.CardSetCode == this.CardSetCode;
-                }
-
-                public override int GetHashCode()
-                {
-                    unchecked
-                    {
-                        var hashCode = 13;
-
-                        hashCode = (hashCode * 397) ^ this.Name.GetHashCode();
-                        hashCode = (hashCode * 397) ^ this.CardSetCode.GetHashCode();
-                        hashCode = (hashCode * 397) ^ this.Number;
-
-                        return hashCode;
-                    }
-                }
             }
         }
     }

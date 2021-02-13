@@ -139,7 +139,7 @@ namespace nGratis.AI.Kvasir.Core
                             .Value<int>() ?? 0,
                         ScryfallId = token.ReadValue("id"),
                         ScryfallImageUrl = ScryfallFetcher.FindScryfallImageUrl(token),
-                        CardSetCode = cardSet.Code,
+                        SetCode = cardSet.Code,
                         Name = token.ReadValue("name"),
                         ManaCost = token.ReadValue("mana_cost"),
                         Type = token.ReadValue("type_line"),

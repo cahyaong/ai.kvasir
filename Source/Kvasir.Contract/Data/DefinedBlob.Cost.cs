@@ -33,34 +33,34 @@ namespace nGratis.AI.Kvasir.Contract
 
     public static partial class DefinedBlob
     {
-        public abstract class Cost
+        public abstract record Cost
         {
             public abstract CostKind Kind { get; }
         }
 
-        public sealed class UnknownCost : Cost
+        public sealed record UnknownCost : Cost
         {
             private UnknownCost()
             {
             }
 
-            public static UnknownCost Instance { get; } = new UnknownCost();
+            public static UnknownCost Instance { get; } = new();
 
             public override CostKind Kind => CostKind.Unknown;
         }
 
-        public sealed class TappingCost : Cost
+        public sealed record TappingCost : Cost
         {
             private TappingCost()
             {
             }
 
-            public static TappingCost Instance { get; } = new TappingCost();
+            public static TappingCost Instance { get; } = new();
 
             public override CostKind Kind => CostKind.Tapping;
         }
 
-        public sealed class PayingManaCost : Cost
+        public sealed record PayingManaCost : Cost
         {
             private readonly IDictionary<Mana, ushort> _amountLookup;
 
@@ -100,7 +100,7 @@ namespace nGratis.AI.Kvasir.Contract
 
                 public static Builder Create()
                 {
-                    return new Builder();
+                    return new();
                 }
 
                 public Builder WithAmount(Mana mana, ushort amount)

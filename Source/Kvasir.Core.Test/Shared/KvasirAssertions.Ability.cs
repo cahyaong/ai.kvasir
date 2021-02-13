@@ -64,6 +64,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 .Should().BeEquivalentTo(
                     ability,
                     option => option
+                        .ComparingByMembers<DefinedBlob.Ability>()
                         .UsingStrictCostComparison()
                         .UsingStrictEffectComparison());
 

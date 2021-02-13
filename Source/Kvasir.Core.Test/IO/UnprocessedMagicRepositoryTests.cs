@@ -332,7 +332,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().BePositive();
 
                     card
-                        .CardSetCode
+                        .SetCode
                         .Should().BeEquivalentTo("X03");
 
                     card
@@ -406,7 +406,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().BePositive();
 
                     card
-                        .CardSetCode
+                        .SetCode
                         .Should().BeEquivalentTo("X03");
 
                     card
@@ -475,7 +475,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().BePositive();
 
                     card
-                        .CardSetCode
+                        .SetCode
                         .Should().BeEquivalentTo("X03");
 
                     card

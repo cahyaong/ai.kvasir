@@ -28,21 +28,17 @@
 
 namespace nGratis.AI.Kvasir.Contract
 {
-    using System;
-
-    // TODO: Remove Base- prefix from all abstract classes!
-
     public static partial class DefinedBlob
     {
-        public class Ability
+        public record Ability
         {
             public static Ability NotSupported { get; } = NotSupportedAbilityDefinition.Instance;
 
-            public virtual AbilityKind Kind { get; set; }
+            public virtual AbilityKind Kind { get; init; }
 
-            public virtual Cost[] Costs { get; set; } = Default.Costs;
+            public virtual Cost[] Costs { get; init; } = Default.Costs;
 
-            public virtual Effect[] Effects { get; set; } = Default.Effects;
+            public virtual Effect[] Effects { get; init; } = Default.Effects;
 
             protected static class Default
             {
@@ -52,31 +48,19 @@ namespace nGratis.AI.Kvasir.Contract
             }
         }
 
-        internal sealed class NotSupportedAbilityDefinition : Ability
+        internal sealed record NotSupportedAbilityDefinition : Ability
         {
             private NotSupportedAbilityDefinition()
             {
             }
 
-            internal static NotSupportedAbilityDefinition Instance { get; } = new NotSupportedAbilityDefinition();
+            internal static NotSupportedAbilityDefinition Instance { get; } = new();
 
-            public override AbilityKind Kind
-            {
-                get => AbilityKind.NotSupported;
-                set => throw new NotSupportedException("Setting kind is not allowed!");
-            }
+            public override AbilityKind Kind => AbilityKind.NotSupported;
 
-            public override Cost[] Costs
-            {
-                get => Default.Costs;
-                set => throw new NotSupportedException("Setting costs is not allowed!");
-            }
+            public override Cost[] Costs => Default.Costs;
 
-            public override Effect[] Effects
-            {
-                get => Default.Effects;
-                set => throw new NotSupportedException("Setting effects is not allowed!");
-            }
+            public override Effect[] Effects => Default.Effects;
         }
     }
 }

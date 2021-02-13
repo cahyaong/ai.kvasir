@@ -90,7 +90,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 document.AddInt32Field("multiverse-id", card.MultiverseId, Field.Store.YES);
                 document.AddStringField("scryfall-id", card.ScryfallId, Field.Store.YES);
                 document.AddStringField("scryfall-image-url", card.ScryfallImageUrl, Field.Store.YES);
-                document.AddStringField("card-set-code", card.CardSetCode, Field.Store.YES);
+                document.AddStringField("set-code", card.SetCode, Field.Store.YES);
                 document.AddStringField("name", card.Name, Field.Store.YES);
                 document.AddStringField("mana-cost", card.ManaCost, Field.Store.YES);
                 document.AddStringField("type", card.Type, Field.Store.YES);

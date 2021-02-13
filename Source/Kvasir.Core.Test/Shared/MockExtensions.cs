@@ -238,7 +238,7 @@ namespace Moq.AI.Kvasir
                 .Is.Not.Empty();
 
             cards
-                .GroupBy(card => card.CardSetCode)
+                .GroupBy(card => card.SetCode)
                 .Select(grouping => new
                 {
                     CardSetCode = grouping.Key,

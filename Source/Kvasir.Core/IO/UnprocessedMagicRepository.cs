@@ -203,7 +203,7 @@ namespace nGratis.AI.Kvasir.Core
                 {
                     var indexReader = this._indexManager.FindIndexReader(IndexKind.Card);
                     var indexSearcher = new IndexSearcher(indexReader);
-                    var query = new TermQuery(new Term("card-set-code", cardSet.Code));
+                    var query = new TermQuery(new Term("set-code", cardSet.Code));
 
                     cards = indexSearcher
                          .Search(query, int.MaxValue)

@@ -79,7 +79,7 @@ namespace nGratis.AI.Kvasir.Framework
         {
             var card = new UnparsedBlob.Card
             {
-                CardSetCode = cardSet.Code,
+                SetCode = cardSet.Code,
                 Name = "[_MOCK_NAME_]"
             };
 

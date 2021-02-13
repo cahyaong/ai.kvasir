@@ -32,38 +32,36 @@ namespace nGratis.AI.Kvasir.Contract
 
     public static partial class UnparsedBlob
     {
-        // TODO: Make this class immutable once constructed!
-
         [DebuggerDisplay("[{this.MultiverseId}]: {this.Name ?? \"<undefined>\"}")]
-        public class Card
+        public record Card
         {
-            public int MultiverseId { get; set; }
+            public int MultiverseId { get; init; }
 
-            public string ScryfallId { get; set; }
+            public string ScryfallId { get; init; } = Cop.Olympus.Contract.Text.None;
 
-            public string ScryfallImageUrl { get; set; }
+            public string ScryfallImageUrl { get; init; } = Cop.Olympus.Contract.Text.None;
 
-            public string CardSetCode { get; set; }
+            public string SetCode { get; init; }
 
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public string ManaCost { get; set; }
+            public string ManaCost { get; init; } = string.Empty;
 
-            public string Type { get; set; }
+            public string Type { get; init; }
 
-            public string Rarity { get; set; }
+            public string Rarity { get; init; }
 
-            public string Text { get; set; }
+            public string Text { get; init; } = string.Empty;
 
-            public string FlavorText { get; set; }
+            public string FlavorText { get; init; } = string.Empty;
 
-            public string Power { get; set; }
+            public string Power { get; init; } = string.Empty;
 
-            public string Toughness { get; set; }
+            public string Toughness { get; init; } = string.Empty;
 
-            public string Number { get; set; }
+            public string Number { get; init; }
 
-            public string Artist { get; set; }
+            public string Artist { get; init; }
         }
     }
 }

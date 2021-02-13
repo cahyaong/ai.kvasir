@@ -90,7 +90,7 @@ namespace nGratis.AI.Kvasir.Core
                 .AsStream();
 
             this._storageManager.SaveEntry(
-                new DataSpec($"{card.CardSetCode}_{card.Number:D3}", Mime.Yaml),
+                new DataSpec($"{card.SetCode}_{card.Number:D3}", Mime.Yaml),
                 cardStream,
                 true);
         }

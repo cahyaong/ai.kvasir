@@ -63,7 +63,7 @@ namespace Moq.AI.Kvasir
                     MultiverseId = index,
                     ScryfallId = "[_MOCK_SCRYFALL_ID_]",
                     ScryfallImageUrl = "[_MOCK_SCRYFALL_IMAGE_URL_]",
-                    CardSetCode = cardSetCode,
+                    SetCode = cardSetCode,
                     Name = $"[_MOCK_CODE_{index:D2}_]",
                     ManaCost = "[_MOCK_MANA_COST_]",
                     Type = "[_MOCK_TYPE_]",

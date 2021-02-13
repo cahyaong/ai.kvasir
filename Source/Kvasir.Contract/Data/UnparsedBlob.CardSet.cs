@@ -34,13 +34,13 @@ namespace nGratis.AI.Kvasir.Contract
     public static partial class UnparsedBlob
     {
         [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
-        public class CardSet
+        public record CardSet
         {
-            public string Code { get; set; }
+            public string Code { get; init; }
 
-            public string Name { get; set; }
+            public string Name { get; init; }
 
-            public DateTime ReleasedTimestamp { get; set; }
+            public DateTime ReleasedTimestamp { get; init; }
         }
     }
 }

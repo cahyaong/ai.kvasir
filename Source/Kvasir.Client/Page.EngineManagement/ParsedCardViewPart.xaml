@@ -45,7 +45,7 @@
         Header="Card Set"
         Kind="Text"
         Mode="Output"
-        Value="{Binding DefinedCard.CardSetCode, Mode=OneWay}" />
+        Value="{Binding DefinedCard.SetCode, Mode=OneWay}" />
       <olympus:AweField
         Grid.Column="2"
         Header="Number"

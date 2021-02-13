@@ -102,23 +102,11 @@ namespace nGratis.AI.Kvasir.Core
 
             return cardsToken
                 .Children()
-                .Select(token =>
+                .Select(cardToken =>
                 {
-                    var card = token.ToObject<UnparsedBlob.Card>();
+                    cardToken[nameof(UnparsedBlob.Card.SetCode)] = cardSet.Code;
 
-                    if (card != null)
-                    {
-                        card.ScryfallId = Text.None;
-                        card.ScryfallImageUrl = Text.None;
-                        card.CardSetCode = cardSet.Code;
-                        card.ManaCost ??= string.Empty;
-                        card.Text ??= string.Empty;
-                        card.FlavorText ??= string.Empty;
-                        card.Power ??= string.Empty;
-                        card.Toughness ??= string.Empty;
-                    }
-
-                    return card;
+                    return cardToken.ToObject<UnparsedBlob.Card>();
                 })
                 .Where(card => card != null)
                 .ToArray();
