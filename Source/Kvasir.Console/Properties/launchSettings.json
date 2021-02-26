@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Run.ParsingCard": {
+      "commandName": "Project",
+      "commandLineArgs": "processing-card --card-set-name Portal"
+    },
+    "Run.PlayingRound": {
+      "commandName": "Project",
+      "commandLineArgs": "playing-round"
+    }
+  }
+}

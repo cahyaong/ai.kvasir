@@ -42,7 +42,7 @@ namespace nGratis.AI.Kvasir.Client
 
     public class CardViewModel : ReactiveObject
     {
-        // TODO: Need to make <DefinedCard> class as immutable as possible!
+        private static readonly IMagicCardProcessor CardProcessor = new MagicCardProcessor();
 
         private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
@@ -57,11 +57,14 @@ namespace nGratis.AI.Kvasir.Client
         private IEnumerable<string> _processingMessages;
 
         public CardViewModel(UnparsedBlob.Card unparsedCard, IUnprocessedMagicRepository unprocessedRepository)
-            : this(unparsedCard, unprocessedRepository, MagicCardProcessor.Instance)
+            : this(unparsedCard, unprocessedRepository, CardViewModel.CardProcessor)
         {
         }
 
-        internal CardViewModel(UnparsedBlob.Card unparsedCard, IUnprocessedMagicRepository unprocessedRepository, IMagicCardProcessor cardProcessor)
+        internal CardViewModel(
+            UnparsedBlob.Card unparsedCard,
+            IUnprocessedMagicRepository unprocessedRepository,
+            IMagicCardProcessor cardProcessor)
         {
             Guard
                 .Require(unparsedCard, nameof(unparsedCard))

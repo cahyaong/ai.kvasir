@@ -124,28 +124,28 @@ namespace nGratis.AI.Kvasir.Client
 
             containerBuilder
                 .Register(_ => new FileStorageManager(dataFolderUri))
-                .As<IStorageManager>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .As<IStorageManager>();
 
             containerBuilder
                 .RegisterType<ScryfallFetcher>()
-                .As<IMagicFetcher>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .As<IMagicFetcher>();
 
             containerBuilder
                 .RegisterType<WizardFetcher>()
-                .As<IMagicFetcher>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .As<IMagicFetcher>();
 
             containerBuilder
                 .Register(_ => new IndexManager(dataFolderUri))
-                .As<IIndexManager>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .As<IIndexManager>();
 
             containerBuilder
                 .RegisterType<UnprocessedMagicRepository>()
-                .As<IUnprocessedMagicRepository>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .As<IUnprocessedMagicRepository>();
 
             return containerBuilder;
         }
@@ -158,16 +158,16 @@ namespace nGratis.AI.Kvasir.Client
 
             containerBuilder
                 .RegisterType<AppViewModel>()
-                .AsSelf()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .AsSelf();
 
             containerBuilder
                 .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 .Where(type => typeof(IScreen).IsAssignableFrom(type))
                 .Where(type => type.FullName?.EndsWith("ViewModel") == true)
                 .Where(type => type != typeof(AppViewModel))
-                .As<IScreen>()
-                .InstancePerLifetimeScope();
+                .InstancePerLifetimeScope()
+                .As<IScreen>();
 
             return containerBuilder;
         }

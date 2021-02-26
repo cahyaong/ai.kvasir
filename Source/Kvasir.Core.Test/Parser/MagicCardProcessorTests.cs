@@ -59,9 +59,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Toughness = "1"
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -93,10 +95,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                 // Arrange.
 
                 var unparsedCard = new UnparsedBlob.Card();
+                var cardProcessor = new MagicCardProcessor();
 
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -131,9 +134,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Number = "42"
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -160,9 +165,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Number = "-42"
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -193,9 +200,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     MultiverseId = 42
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -222,9 +231,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     MultiverseId = -42
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -255,9 +266,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Name = "Llanowar Elves"
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -285,9 +298,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Type = theory.UnparsedType
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -332,9 +347,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Type = "Tribal Creature - Merfolk Wizard"
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -380,9 +397,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Type = theory.UnparsedType
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -405,9 +424,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ManaCost = string.Empty
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -432,9 +453,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ManaCost = theory.UnparsedManaCost
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -463,9 +486,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     ManaCost = theory.UnparsedManaCost
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -498,9 +523,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Power = theory.UnparsedPower
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -525,9 +552,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Power = theory.UnparsedPower
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -555,9 +584,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Toughness = theory.UnparsedToughness
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -582,9 +613,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                     Toughness = theory.UnparsedToughness
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -615,9 +648,11 @@ namespace nGratis.AI.Kvasir.Core.Test
                         "[_MOCK_UNPARSED_ABILITY_02_]"
                 };
 
+                var cardProcessor = new MagicCardProcessor();
+
                 // Act.
 
-                var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+                var processingResult = cardProcessor.Process(unparsedCard);
 
                 // Assert.
 
@@ -878,7 +913,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class TypeTheory : ParsingTheory
         {
-            public string UnparsedType { get; private set; }
+            public string UnparsedType { get; private init; }
 
             public CardKind ParsedCardKind { get; private set; }
 
@@ -888,7 +923,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public static TypeTheory Create(string unparsedType)
             {
-                return new TypeTheory
+                return new()
                 {
                     UnparsedType = unparsedType,
                     ParsedCardKind = CardKind.Unknown,
@@ -930,15 +965,15 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class ManaCostTheory : ParsingTheory
         {
-            public string UnparsedType { get; private set; }
+            public string UnparsedType { get; private init; }
 
-            public string UnparsedManaCost { get; private set; }
+            public string UnparsedManaCost { get; private init; }
 
             public DefinedBlob.Cost ParsedManaCost { get; private set; }
 
             public static ManaCostTheory Create(string unparsedType, string unparsedManaCost)
             {
-                return new ManaCostTheory
+                return new()
                 {
                     UnparsedType = unparsedType,
                     UnparsedManaCost = unparsedManaCost,
@@ -957,15 +992,15 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class PowerTheory : ParsingTheory
         {
-            public string UnparsedType { get; private set; }
+            public string UnparsedType { get; private init; }
 
-            public string UnparsedPower { get; private set; }
+            public string UnparsedPower { get; private init; }
 
             public ushort ParsedPower { get; private set; }
 
             public static PowerTheory Create(string unparsedType, string unparsedPower)
             {
-                return new PowerTheory
+                return new()
                 {
                     UnparsedType = unparsedType,
                     UnparsedPower = unparsedPower,
@@ -984,15 +1019,15 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public class ToughnessTheory : ParsingTheory
         {
-            public string UnparsedType { get; private set; }
+            public string UnparsedType { get; private init; }
 
-            public string UnparsedToughness { get; private set; }
+            public string UnparsedToughness { get; private init; }
 
             public ushort ParsedToughness { get; private set; }
 
             public static ToughnessTheory Create(string unparsedType, string unparsedToughness)
             {
-                return new ToughnessTheory
+                return new()
                 {
                     UnparsedType = unparsedType,
                     UnparsedToughness = unparsedToughness,

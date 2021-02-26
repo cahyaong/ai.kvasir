@@ -38,12 +38,6 @@ namespace nGratis.AI.Kvasir.Core.Parser
 
     public class MagicCardProcessor : IMagicCardProcessor
     {
-        private MagicCardProcessor()
-        {
-        }
-
-        public static MagicCardProcessor Instance { get; } = new MagicCardProcessor();
-
         public ProcessingResult Process(UnparsedBlob.Card unparsedCard)
         {
             Guard

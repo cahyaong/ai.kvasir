@@ -29,70 +29,52 @@
 namespace nGratis.AI.Kvasir.Console
 {
     using System;
-    using System.IO;
     using System.Threading.Tasks;
+    using CommandLine;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.AI.Kvasir.Core.Parser;
     using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Framework;
 
     public class Program
     {
-        private static void Main()
+        private static readonly AppBootstrapper AppBootstrapper = new();
+
+        private static void Main(string[] args)
         {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
-
-            // TODO: Use <Unity> to wire dependency injection!
-
-            var indexManager = new IndexManager(new Uri(dataFolderPath));
-            var fetcher = new NopFetcher();
-            var unprocessedRepository = new UnprocessedMagicRepository(indexManager, fetcher);
-
-            var dataStorageManager = new FileStorageManager(Program.FindDataFolderUri());
-
-            using var processedStorageManager = new CompressedStorageManager(
-                new DataSpec("Processed_Data", KvasirMime.Cache),
-                dataStorageManager);
-
-            var processedRepository = new ProcessedMagicRepository(processedStorageManager);
-
-            var logger = new ConsoleLogger("CardProcessing");
-
-            var processingExecutor = new ProcessingCardExecution(
-                unprocessedRepository,
-                processedRepository,
-                MagicCardProcessor.Instance,
-                logger);
-
-            var processingParameter = ExecutionParameter.Builder
-                .Create()
-                .WithEntry("CardSet.Name", "Portal")
-                .Build();
-
-            Task.WaitAll(processingExecutor.ExecuteAsync(processingParameter));
+            Parser.Default
+                .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingRoundOption))
+                .WithParsed<ProcessingCardOption>(Program.ProcessCard)
+                .WithParsed<PlayingRoundOption>(Program.PlayRound);
 
             Console.WriteLine();
             Console.WriteLine("Press <ANY> key to continue...");
             Console.ReadLine();
         }
 
-        private static Uri FindDataFolderUri()
+        private static void ProcessCard(ProcessingCardOption option)
         {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
+            Guard
+                .Require(option, nameof(option))
+                .Is.Not.Null();
 
-            if (!Directory.Exists(dataFolderPath))
-            {
-                Directory.CreateDirectory(dataFolderPath);
-            }
+            var processingExecution = Program.AppBootstrapper.CreateProcessingCardExecution();
 
-            return new Uri(dataFolderPath);
+            var processingParameter = ExecutionParameter.Builder
+                .Create()
+                .WithEntry("CardSet.Name", option.CardSetName)
+                .Build();
+
+            var processingTask = Task.Run(async () => await processingExecution.ExecuteAsync(processingParameter));
+
+            Task.WaitAll(processingTask);
+        }
+
+        private static void PlayRound(PlayingRoundOption option)
+        {
+            Guard
+                .Require(option, nameof(option))
+                .Is.Not.Null();
+
+            throw new NotImplementedException();
         }
     }
 }

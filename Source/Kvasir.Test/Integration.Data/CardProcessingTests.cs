@@ -54,11 +54,13 @@ namespace nGratis.AI.Kvasir.Test
                 .WithSuccessfulScryfallResponse("Raw_SCRYFALL");
 
             var fetcher = new ScryfallFetcher(stubHandler);
+            var cardProcessor = new MagicCardProcessor();
+
             var unparsedCard = await fetcher.FetchCardAsync(theory.CardSetName, theory.CardName);
 
             // Act.
 
-            var processingResult = MagicCardProcessor.Instance.Process(unparsedCard);
+            var processingResult = cardProcessor.Process(unparsedCard);
 
             // Assert.
 
@@ -179,9 +181,9 @@ namespace nGratis.AI.Kvasir.Test
             {
             }
 
-            public string CardSetName { get; private set; }
+            public string CardSetName { get; private init; }
 
-            public string CardName { get; private set; }
+            public string CardName { get; private init; }
 
             public DefinedBlob.Card ExpectedCard { get; private set; }
 
