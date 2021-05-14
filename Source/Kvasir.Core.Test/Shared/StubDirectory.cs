@@ -48,7 +48,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public static StubDirectory Create()
         {
-            return new StubDirectory();
+            return new();
         }
 
         public StubDirectory WithUnparsedCardSets(params UnparsedBlob.CardSet[] cardSets)

@@ -84,7 +84,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        public static EmptyImage Instance { get; } = new EmptyImage();
+        public static EmptyImage Instance { get; } = new();
 
         public int Width => 0;
 

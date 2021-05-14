@@ -32,6 +32,6 @@ namespace nGratis.AI.Kvasir.Contract
 
     public static class Constant
     {
-        public static readonly DateTime EpochTimestamp = new DateTime(1993, 1, 1);
+        public static readonly DateTime EpochTimestamp = new(1993, 1, 1);
     }
 }

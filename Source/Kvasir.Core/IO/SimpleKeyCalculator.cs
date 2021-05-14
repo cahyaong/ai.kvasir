@@ -39,7 +39,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        public static SimpleKeyCalculator Instance { get; } = new SimpleKeyCalculator();
+        public static SimpleKeyCalculator Instance { get; } = new();
 
         public DataSpec Calculate(Uri uri)
         {

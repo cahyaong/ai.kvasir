@@ -57,7 +57,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        public static EffectYamlConverter Instance { get; } = new EffectYamlConverter();
+        public static EffectYamlConverter Instance { get; } = new();
 
         public bool Accepts(Type type) => typeof(DefinedBlob.Effect).IsAssignableFrom(type);
 

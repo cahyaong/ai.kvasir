@@ -364,16 +364,16 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
                 // TODO: Need to support card with second face, e.g. Bloodline Keeper!
 
-                public static readonly Regex Type = new Regex(
+                public static readonly Regex Type = new(
                     @"^(?:(?<super>\w+)\s)?(?<kind>\w+){1}[—\s\-]*(?:(?<sub>\w+)\s?)*$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-                public static readonly Regex ManaCost = new Regex(
+                public static readonly Regex ManaCost = new(
                     @"^(?:{(?:(?<colorless>\d+)|(?<color>[WUBRG]))})+$",
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
             }
 
-            public static readonly Regex NewLine = new Regex(
+            public static readonly Regex NewLine = new(
                 @"[\r\n]+",
                 RegexOptions.Compiled);
         }

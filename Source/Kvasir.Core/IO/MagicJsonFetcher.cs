@@ -126,7 +126,7 @@ namespace nGratis.AI.Kvasir.Core
             var foundMatch = rootNode
                 .ChildNodes
                 .Where(node => node.Name == "#text")
-                .Select(node => Pattern.CodeWithReleasedTimestamp.Match(node.InnerText))
+                .Select(node => Pattern.SetCodeWithReleasedTimestamp.Match(node.InnerText))
                 .SingleOrDefault(match => match.Success);
 
             if (foundMatch == null)
@@ -148,20 +148,20 @@ namespace nGratis.AI.Kvasir.Core
             return new UnparsedBlob.CardSet
             {
                 Name = HttpUtility.HtmlDecode(nameNode.InnerText),
-                Code = foundMatch.Groups["code"].Value,
+                Code = foundMatch.Groups["set_code"].Value,
                 ReleasedTimestamp = releasedTimestamp
             };
         }
 
         private static class Link
         {
-            public static readonly Uri LandingUri = new Uri("https://mtgjson.com");
+            public static readonly Uri LandingUri = new("https://mtgjson.com");
         }
 
         private static class Pattern
         {
-            public static readonly Regex CodeWithReleasedTimestamp = new Regex(
-                @"^(?<code>\w{2,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
+            public static readonly Regex SetCodeWithReleasedTimestamp = new(
+                @"^(?<set_code>\w{2,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
                 RegexOptions.Compiled);
         }
     }

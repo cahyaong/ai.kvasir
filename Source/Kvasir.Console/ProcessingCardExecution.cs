@@ -147,7 +147,7 @@ namespace nGratis.AI.Kvasir.Console
 
             public static SummaryPrinter Create(int indentSize)
             {
-                return new SummaryPrinter(indentSize);
+                return new(indentSize);
             }
 
             public SummaryPrinter Indent()

@@ -179,7 +179,7 @@ namespace Lucene.Net
             {
             }
 
-            public static StringSerializer Instance { get; } = new StringSerializer();
+            public static StringSerializer Instance { get; } = new();
 
             public IIndexableField Serialize(string name, object value)
             {
@@ -211,7 +211,7 @@ namespace Lucene.Net
             {
             }
 
-            public static ShortSerializer Instance { get; } = new ShortSerializer();
+            public static ShortSerializer Instance { get; } = new();
 
             public IIndexableField Serialize(string name, object value)
             {
@@ -243,7 +243,7 @@ namespace Lucene.Net
             {
             }
 
-            public static IntegerSerializer Instance { get; } = new IntegerSerializer();
+            public static IntegerSerializer Instance { get; } = new();
 
             public IIndexableField Serialize(string name, object value)
             {
@@ -275,7 +275,7 @@ namespace Lucene.Net
             {
             }
 
-            public static DateTimeSerializer Instance { get; } = new DateTimeSerializer();
+            public static DateTimeSerializer Instance { get; } = new();
 
             public IIndexableField Serialize(string name, object value)
             {

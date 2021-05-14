@@ -229,9 +229,9 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Link
         {
-            public static readonly Uri ApiUri = new Uri("https://api.scryfall.com");
+            public static readonly Uri ApiUri = new("https://api.scryfall.com");
 
-            public static readonly Uri ImageUri = new Uri("https://img.scryfall.com/");
+            public static readonly Uri ImageUri = new("https://img.scryfall.com/");
         }
 
         private sealed class KeyCalculator : IKeyCalculator
@@ -240,7 +240,7 @@ namespace nGratis.AI.Kvasir.Core
             {
             }
 
-            public static KeyCalculator Instance { get; } = new KeyCalculator();
+            public static KeyCalculator Instance { get; } = new();
 
             public DataSpec Calculate(Uri uri)
             {
@@ -274,11 +274,11 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Pattern
         {
-            public static readonly Regex CardSetPagingUrl = new Regex(
+            public static readonly Regex CardSetPagingUrl = new(
                 @"/cards/search\?q=e%3a(?<code>\w+)&unique=prints&order=name&page=(?<page>\d+)",
                 RegexOptions.Compiled);
 
-            public static readonly Regex CardImageUrl = new Regex(
+            public static readonly Regex CardImageUrl = new(
                 @"/(scryfall\-)?cards/border_crop/(?<url>[a-z0-9/]+/[a-z0-9\-%]+\.jpg\?(?<salt>\d+))",
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
         }

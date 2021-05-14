@@ -34,12 +34,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
     {
         public static ZoneAssertion Must(this Zone zone)
         {
-            return new ZoneAssertion(zone);
+            return new(zone);
         }
 
         public static TabletopAssertion Must(this Tabletop tabletop)
         {
-            return new TabletopAssertion(tabletop);
+            return new(tabletop);
         }
     }
 }

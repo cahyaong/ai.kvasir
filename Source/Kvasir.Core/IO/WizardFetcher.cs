@@ -139,9 +139,9 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Link
         {
-            public static readonly Uri MagicUri = new Uri("https://magic.wizards.com");
+            public static readonly Uri MagicUri = new("https://magic.wizards.com");
 
-            public static readonly Uri GathererUri = new Uri("http://gatherer.wizards.com");
+            public static readonly Uri GathererUri = new("http://gatherer.wizards.com");
         }
 
         private sealed class KeyCalculator : IKeyCalculator
@@ -150,7 +150,7 @@ namespace nGratis.AI.Kvasir.Core
             {
             }
 
-            public static KeyCalculator Instance { get; } = new KeyCalculator();
+            public static KeyCalculator Instance { get; } = new();
 
             public DataSpec Calculate(Uri uri)
             {
@@ -179,11 +179,11 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Pattern
         {
-            public static readonly Regex CardImageUrl = new Regex(
+            public static readonly Regex CardImageUrl = new(
                 @"Image\.ashx\?multiverseid=(?<id>\d+)&type=card",
                 RegexOptions.Compiled);
 
-            public static readonly Regex Rule = new Regex(
+            public static readonly Regex Rule = new(
                 @"^(?<id>\d{1,3}(\.\d{1,3}[a-z]?)?)\.? (?<text>.+)$",
                 RegexOptions.Compiled);
         }

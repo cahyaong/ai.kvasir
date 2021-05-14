@@ -32,10 +32,10 @@ namespace nGratis.AI.Kvasir.Contract
 
     public static class KvasirMime
     {
-        public static readonly Mime Blob = new Mime("application/x-ng-kvasir-blob", "ngkblob");
+        public static readonly Mime Blob = new("application/x-ng-kvasir-blob", "ngkblob");
 
-        public static readonly Mime Cache = new Mime("application/x-ng-kvasir-cache", "ngkcache");
+        public static readonly Mime Cache = new("application/x-ng-kvasir-cache", "ngkcache");
 
-        public static readonly Mime Deck = new Mime("application/x-ng-kvasir-deck", "ngkdeck");
+        public static readonly Mime Deck = new("application/x-ng-kvasir-deck", "ngkdeck");
     }
 }

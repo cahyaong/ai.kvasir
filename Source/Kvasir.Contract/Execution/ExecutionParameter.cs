@@ -41,7 +41,7 @@ namespace nGratis.AI.Kvasir.Contract
             this._entries = new Dictionary<string, object>();
         }
 
-        public static ExecutionParameter None { get; } = new ExecutionParameter();
+        public static ExecutionParameter None { get; } = new();
 
         public string GetValue(string name)
         {
@@ -75,7 +75,7 @@ namespace nGratis.AI.Kvasir.Contract
 
             public static Builder Create()
             {
-                return new Builder();
+                return new();
             }
 
             public Builder WithEntry<T>(string name, T value)

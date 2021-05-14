@@ -42,7 +42,7 @@ namespace nGratis.AI.Kvasir.Engine
             this._random = new Random(seed);
         }
 
-        public static RandomGenerator Default { get; } = new RandomGenerator(Environment.TickCount);
+        public static RandomGenerator Default { get; } = new(Environment.TickCount);
 
         public ushort RollDice(ushort sideCount)
         {

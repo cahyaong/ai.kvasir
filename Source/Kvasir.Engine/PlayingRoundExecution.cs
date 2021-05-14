@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -177,7 +178,7 @@ namespace nGratis.AI.Kvasir.Engine
 
         private void OnTickerStateChanged(object sender, Ticker.StateChangedEventArgs args)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public class Result : ExecutionResult
@@ -196,7 +197,7 @@ namespace nGratis.AI.Kvasir.Engine
 
             public static Result CreateSuccessful(Tabletop tabletop)
             {
-                return new Result(tabletop);
+                return new(tabletop);
             }
 
             public static Result CreateFailure(Tabletop tabletop, string[] messages)

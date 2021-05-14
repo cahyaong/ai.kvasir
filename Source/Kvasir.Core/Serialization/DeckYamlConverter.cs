@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        public static DeckYamlConverter Instance { get; } = new DeckYamlConverter();
+        public static DeckYamlConverter Instance { get; } = new();
 
         public bool Accepts(Type type) => type == typeof(DefinedBlob.Deck);
 
@@ -159,7 +159,7 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Pattern
         {
-            public static readonly Regex EntryQuantity = new Regex(
+            public static readonly Regex EntryQuantity = new(
                 @"^(?<quantity>\d+) (?<name>[\w\-' ]+) \((?<set_code>[A-Z0-9]+)\) (?<number>\d+)$",
                 RegexOptions.Compiled);
         }

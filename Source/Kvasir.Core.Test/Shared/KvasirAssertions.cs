@@ -34,22 +34,22 @@ namespace nGratis.AI.Kvasir.Core.Test
     {
         public static CardAssertion Must(this UnparsedBlob.Card card)
         {
-            return new CardAssertion(card);
+            return new(card);
         }
 
         public static CostAssertion Must(this DefinedBlob.Cost cost)
         {
-            return new CostAssertion(cost);
+            return new(cost);
         }
 
         public static EffectAssertion Must(this DefinedBlob.Effect effect)
         {
-            return new EffectAssertion(effect);
+            return new(effect);
         }
 
         public static AbilityAssertion Must(this DefinedBlob.Ability ability)
         {
-            return new AbilityAssertion(ability);
+            return new(ability);
         }
     }
 }

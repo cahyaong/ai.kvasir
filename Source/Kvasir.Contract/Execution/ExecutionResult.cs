@@ -42,6 +42,6 @@ namespace nGratis.AI.Kvasir.Contract
 
         public IEnumerable<string> Messages { get; }
 
-        public static ExecutionResult Successful { get; } = new ExecutionResult();
+        public static ExecutionResult Successful { get; } = new();
     }
 }

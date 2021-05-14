@@ -47,7 +47,7 @@ namespace nGratis.AI.Kvasir.Framework
 
         public static StubMagicHttpFetcher Create(HttpMessageHandler messageHandler)
         {
-            return new StubMagicHttpFetcher(messageHandler);
+            return new(messageHandler);
         }
 
         public override ExternalResources AvailableResources => this._availableResources;

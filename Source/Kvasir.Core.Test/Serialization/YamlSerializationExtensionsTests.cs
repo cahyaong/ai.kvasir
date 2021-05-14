@@ -315,7 +315,7 @@ amount:
 
         public static CostTheory Create()
         {
-            return new CostTheory();
+            return new();
         }
 
         public CostTheory Expect(string serializedBlob)
@@ -349,7 +349,7 @@ amount:
 
         public static EffectTheory Create()
         {
-            return new EffectTheory();
+            return new();
         }
 
         public EffectTheory Expect(string serializedBlob)

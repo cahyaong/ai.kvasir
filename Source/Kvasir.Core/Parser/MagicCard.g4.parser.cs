@@ -118,7 +118,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
             }
 
-            public static AbilityVisitor Instance { get; } = new AbilityVisitor();
+            public static AbilityVisitor Instance { get; } = new();
 
             public override AbilityParsingResult VisitAbility_Bootstrapper(Ability_BootstrapperContext context)
             {
@@ -168,7 +168,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
             }
 
-            public static CostVisitor Instance { get; } = new CostVisitor();
+            public static CostVisitor Instance { get; } = new();
 
             public override CostParsingResult VisitCost_Bootstrapper(Cost_BootstrapperContext context)
             {
@@ -231,7 +231,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
             }
 
-            public static EffectVisitor Instance { get; } = new EffectVisitor();
+            public static EffectVisitor Instance { get; } = new();
 
             public override EffectParsingResult VisitEffect_ProducingMana(Effect_ProducingManaContext context)
             {
@@ -260,7 +260,7 @@ namespace nGratis.AI.Kvasir.Core.Parser
             {
             }
 
-            public static ThrowingExceptionListener Instance { get; } = new ThrowingExceptionListener();
+            public static ThrowingExceptionListener Instance { get; } = new();
 
             public void SyntaxError(
                 IRecognizer recognizer,
