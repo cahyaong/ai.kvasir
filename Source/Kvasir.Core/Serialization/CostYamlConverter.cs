@@ -51,7 +51,7 @@ namespace nGratis.AI.Kvasir.Core
         private static readonly IReadOnlyDictionary<Type, YamlWriter> WriterLookup =
             new Dictionary<Type, YamlWriter>
             {
-                [typeof(DefinedBlob.TappingCost)] = (_, __) => { },
+                [typeof(DefinedBlob.TappingCost)] = (_, _) => { },
                 [typeof(DefinedBlob.PayingManaCost)] = CostYamlConverter.WritePayingManaCost
             };
 
@@ -59,7 +59,7 @@ namespace nGratis.AI.Kvasir.Core
         {
         }
 
-        public static CostYamlConverter Instance { get; } = new CostYamlConverter();
+        public static CostYamlConverter Instance { get; } = new();
 
         public bool Accepts(Type type) => typeof(DefinedBlob.Cost).IsAssignableFrom(type);
 

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj" />
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
+    <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

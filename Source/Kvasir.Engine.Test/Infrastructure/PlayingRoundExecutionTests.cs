@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Engine.Test
 {
-    using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
     using FluentAssertions.Execution;
@@ -51,12 +50,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_01_]",
-                        Deck = MockBuilder.CreateDefinedElfDeck()
+                        DeckCode = "[_MOCK_CODE_ELF_]"
                     },
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_02_]",
-                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
                     }
                 };
 
@@ -130,12 +129,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_01_]",
-                        Deck = MockBuilder.CreateDefinedElfDeck()
+                        DeckCode = "[_MOCK_CODE_ELF_]"
                     },
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_02_]",
-                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
                     }
                 };
 
@@ -165,29 +164,25 @@ namespace nGratis.AI.Kvasir.Engine.Test
 
                 using (new AssertionScope())
                 {
-                    var activeDeck = definedPlayers
-                        .Single(player => player.Name == tabletop.ActivePlayer.Name)
-                        .Deck;
+                    var activeDeck = tabletop.ActivePlayer.Deck;
 
                     tabletop
                         .ActivePlayer.Library
                         .Must().NotBeNull("active player should have library")
                         .And.BeLibrary()
                         .And.BeHidden()
-                        .And.HaveCardQuantity((ushort)(activeDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
+                        .And.HaveCardQuantity((ushort)(activeDeck.Cards.Count - GameConstant.Hand.MaximumCardCount))
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(activeDeck);
 
-                    var nonactiveDeck = definedPlayers
-                        .Single(player => player.Name == tabletop.NonactivePlayer.Name)
-                        .Deck;
+                    var nonactiveDeck = tabletop.NonactivePlayer.Deck;
 
                     tabletop
                         .NonactivePlayer.Library
                         .Must().NotBeNull("nonactive player should have library")
                         .And.BeLibrary()
                         .And.BeHidden()
-                        .And.HaveCardQuantity((ushort)(nonactiveDeck.CardQuantity - GameConstant.Hand.MaximumCardCount))
+                        .And.HaveCardQuantity((ushort)(nonactiveDeck.Cards.Count - GameConstant.Hand.MaximumCardCount))
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(nonactiveDeck);
                 }
@@ -203,12 +198,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_01_]",
-                        Deck = MockBuilder.CreateDefinedElfDeck()
+                        DeckCode = "[_MOCK_CODE_ELF_]"
                     },
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_02_]",
-                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
                     }
                 };
 
@@ -245,9 +240,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(definedPlayers
-                            .Single(player => player.Name == tabletop.ActivePlayer.Name)
-                            .Deck);
+                        .And.BeSubsetOfConstructedDeck(tabletop.ActivePlayer.Deck);
 
                     tabletop
                         .NonactivePlayer.Hand
@@ -256,9 +249,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(definedPlayers
-                            .Single(player => player.Name == tabletop.NonactivePlayer.Name)
-                            .Deck);
+                        .And.BeSubsetOfConstructedDeck(tabletop.NonactivePlayer.Deck);
                 }
             }
 
@@ -272,12 +263,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_01_]",
-                        Deck = MockBuilder.CreateDefinedElfDeck()
+                        DeckCode = "[_MOCK_CODE_ELF_]"
                     },
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_02_]",
-                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
                     }
                 };
 
@@ -333,12 +324,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_01_]",
-                        Deck = MockBuilder.CreateDefinedElfDeck()
+                        DeckCode = "[_MOCK_CODE_ELF_]"
                     },
                     new DefinedBlob.Player
                     {
                         Name = "[_MOCK_PLAYER_02_]",
-                        Deck = MockBuilder.CreateDefinedGoblinDeck()
+                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
                     }
                 };
 

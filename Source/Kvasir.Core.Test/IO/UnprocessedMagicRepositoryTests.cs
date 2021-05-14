@@ -298,9 +298,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithAvailableResources(ExternalResources.All)
                     .WithCards(Enumerable
                         .Empty<UnparsedBlob.Card>()
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X03", 3))
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
+                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .Append(MockBuilder.CreateUnparsedCards("X03", 3))
+                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var unprocessedRepository = new UnprocessedMagicRepository(
@@ -367,9 +367,9 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithDefault(IndexKind.Card)
                     .WithExistingCards(Enumerable
                         .Empty<UnparsedBlob.Card>()
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X03", 3))
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
+                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .Append(MockBuilder.CreateUnparsedCards("X03", 3))
+                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var mockFetcher = MockBuilder
@@ -437,8 +437,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithDefault(IndexKind.Card)
                     .WithExistingCards(Enumerable
                         .Empty<UnparsedBlob.Card>()
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
+                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var mockFetcher = MockBuilder
@@ -652,8 +652,8 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .WithDefault(IndexKind.Card)
                     .WithExistingCards(Enumerable
                         .Empty<UnparsedBlob.Card>()
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .AppendItems(MockBuilder.CreateUnparsedCards("X05", 5))
+                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
                         .ToArray());
 
                 var mockFetcher = MockBuilder

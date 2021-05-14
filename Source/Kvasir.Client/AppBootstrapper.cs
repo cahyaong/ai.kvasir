@@ -41,13 +41,26 @@ namespace nGratis.AI.Kvasir.Client
     using nGratis.Cop.Olympus.Framework;
     using nGratis.Cop.Olympus.Wpf;
 
-    internal sealed class AppBootstrapper : BootstrapperBase
+    internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
     {
         private IContainer _container;
+
+        private bool _isDisposed;
 
         public AppBootstrapper()
         {
             this.Initialize();
+        }
+
+        ~AppBootstrapper()
+        {
+            this.Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected override void Configure()
@@ -92,6 +105,21 @@ namespace nGratis.AI.Kvasir.Client
             }
 
             this.DisplayRootViewFor<AppViewModel>();
+        }
+
+        private void Dispose(bool isDisposing)
+        {
+            if (this._isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                this._container?.Dispose();
+            }
+
+            this._isDisposed = true;
         }
     }
 

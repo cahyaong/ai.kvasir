@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Deck.cs" company="nGratis">
+// <copyright file="Card.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,19 +23,31 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, 3 February 2019 12:26:29 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
-    [DebuggerDisplay("<Deck> {this.Name}")]
-    public class Deck
+    // TODO: Introduce concept of design- and run-time card with sharing basic properties!
+
+    [DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
+    public abstract class Card
     {
-        public string Name { get; set; }
+        protected Card(string name, CardKind kind)
+        {
+            this.Name = !string.IsNullOrEmpty(name)
+                ? name
+                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
 
-        public IEnumerable<Card> Cards { get; set; }
+            this.Kind = kind;
+        }
+
+        public CardKind Kind { get; init; }
+
+        public string Name { get; init; }
     }
 }

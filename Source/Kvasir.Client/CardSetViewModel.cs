@@ -69,7 +69,7 @@ namespace nGratis.AI.Kvasir.Client
             this.CardViewModels = Enumerable.Empty<CardViewModel>();
 
             this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
-            this.ParseCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardsAysnc());
+            this.ParseCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardsAsync());
         }
 
         public UnparsedBlob.CardSet UnparsedCardSet { get; }
@@ -139,7 +139,7 @@ namespace nGratis.AI.Kvasir.Client
                 .FirstOrDefault();
         }
 
-        private async Task ParseCardsAysnc()
+        private async Task ParseCardsAsync()
         {
             if (this.CardViewModels?.Any() != true)
             {

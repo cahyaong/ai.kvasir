@@ -34,6 +34,7 @@ namespace nGratis.AI.Kvasir.Core
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
     public class ThrottlingMessageHandler : DelegatingHandler
@@ -60,9 +61,14 @@ namespace nGratis.AI.Kvasir.Core
             HttpRequestMessage requestMessage,
             CancellationToken cancellationToken)
         {
-            var hostUrl = requestMessage.RequestUri.Host;
+            var hostUrl = requestMessage.RequestUri?.Host;
 
-            ThrottlingInfo CreateThrottlingInfo() => new ThrottlingInfo(
+            if (string.IsNullOrEmpty(hostUrl))
+            {
+                throw new KvasirException("Request message must have valid host URL!");
+            }
+
+            ThrottlingInfo CreateThrottlingInfo() => new(
                 hostUrl,
                 DateTimeOffset.UtcNow - this._waitingDuration);
 

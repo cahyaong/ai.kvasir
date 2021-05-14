@@ -49,10 +49,10 @@ namespace nGratis.AI.Kvasir.Core
             this._storageManager = storageManager;
         }
 
-        public async Task<DefinedBlob.Card> LoadCardAsync(string cardSetCode, ushort number)
+        public async Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number)
         {
             Guard
-                .Require(cardSetCode, nameof(cardSetCode))
+                .Require(setCode, nameof(setCode))
                 .Is.Not.Empty();
 
             Guard
@@ -61,14 +61,14 @@ namespace nGratis.AI.Kvasir.Core
 
             var foundEntries = this
                 ._storageManager
-                .FindEntries($"{cardSetCode}_{number:D3}", Mime.Yaml)
+                .FindEntries($"{setCode}_{number:D3}", Mime.Yaml)
                 .ToArray();
 
             if (foundEntries.Length != 1)
             {
                 throw new KvasirException(
                     @"Expecting to find exactly single defined card!",
-                    $"Card Set Code: [{cardSetCode}].",
+                    $"Set Code: [{setCode}].",
                     $"Number: [{number}].");
             }
 

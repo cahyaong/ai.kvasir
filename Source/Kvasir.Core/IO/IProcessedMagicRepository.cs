@@ -33,7 +33,7 @@ namespace nGratis.AI.Kvasir.Core
 
     public interface IProcessedMagicRepository
     {
-        Task<DefinedBlob.Card> LoadCardAsync(string cardSetCode, ushort number);
+        Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number);
 
         Task SaveCardAsync(DefinedBlob.Card card);
     }

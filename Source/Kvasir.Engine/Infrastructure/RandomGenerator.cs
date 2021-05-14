@@ -33,11 +33,11 @@ namespace nGratis.AI.Kvasir.Engine
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
 
-    internal class RandomGenerator : IRandomGenerator
+    public class RandomGenerator : IRandomGenerator
     {
         private readonly Random _random;
 
-        internal RandomGenerator(int seed)
+        public RandomGenerator(int seed)
         {
             this._random = new Random(seed);
         }

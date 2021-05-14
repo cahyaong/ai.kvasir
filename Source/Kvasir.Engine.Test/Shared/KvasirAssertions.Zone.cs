@@ -51,7 +51,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             this.Subject = zone;
         }
 
-        protected override string Identifier { get; } = "zone";
+        protected override string Identifier => "zone";
 
         public AndConstraint<ZoneAssertion> BeLibrary()
         {
@@ -143,7 +143,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             return new AndConstraint<ZoneAssertion>(this);
         }
 
-        public AndConstraint<ZoneAssertion> MatchConstructedDeck(DefinedBlob.Deck deck)
+        public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(Deck deck)
         {
             Guard
                 .Require(deck, nameof(deck))
@@ -154,61 +154,14 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Is.Not.Null()
                 .Is.Not.Empty();
 
-            this
-                .Subject
-                .Must().HaveCardQuantity(deck.CardQuantity);
-
-            var actualCardNames = this
-                .Subject.Cards?
-                .Select(card => card.Name) ?? Enumerable.Empty<string>();
-
-            var expectedCardNames = deck
-                .Cards
-                .Select(card => card.Name);
-
-            actualCardNames
-                .Distinct()
-                .Should()
-                .BeEquivalentTo(expectedCardNames, $"{this.Identifier} should have card names defined by deck");
-
             using (new AssertionScope())
             {
-                deck
-                    .Cards
-                    .ForEach(card => this
-                        .Subject
-                        .Must().HaveCardQuantity(card.Name, deck[card]));
-            }
-
-            return new AndConstraint<ZoneAssertion>(this);
-        }
-
-        public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(DefinedBlob.Deck deck)
-        {
-            Guard
-                .Require(deck, nameof(deck))
-                .Is.Not.Null();
-
-            Guard
-                .Require(deck.Cards, $"{nameof(deck)}.{nameof(deck.Cards)}")
-                .Is.Not.Null()
-                .Is.Not.Empty();
-
-            var expectedCardNames = deck
-                .Cards
-                .Select(card => card.Name)
-                .ToArray();
-
-            using (new AssertionScope())
-            {
-                this
-                    .Subject.Cards?
-                    .Select(card => card.Name)
-                    .Distinct()
-                    .Where(cardName => !expectedCardNames.Contains(cardName))
-                    .ForEach(cardName => Execute
-                        .Assertion
-                        .FailWith($"Expected {{context:zone}} to not have card [{cardName}], not defined by deck."));
+                foreach (var card in this.Subject.Cards)
+                {
+                    deck
+                        .Cards
+                        .Should().ContainEquivalentOf(card, $"{this.Identifier} should contain card defined by deck.");
+                }
             }
 
             return new AndConstraint<ZoneAssertion>(this);

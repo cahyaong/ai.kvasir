@@ -28,9 +28,9 @@
 
 namespace nGratis.AI.Kvasir.Engine.Test
 {
+    using System.Collections.Immutable;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
 
     internal class StubDeck : Deck
@@ -41,16 +41,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Require(definedDeck, nameof(definedDeck))
                 .Is.Not.Null();
 
-            this.Name = !string.IsNullOrEmpty(definedDeck.Name)
-                ? definedDeck.Name
-                : Text.Empty;
-
             this.Cards = definedDeck
-                .Cards
-                .SelectMany(card => Enumerable
-                    .Range(0, definedDeck[card])
-                    .Select(_ => new Card(card.Name)))
-                .ToArray();
+                .Entries
+                .SelectMany(definedEntry => Enumerable
+                    .Range(0, definedDeck[definedEntry])
+                    .Select(_ => new StubCard(definedEntry.Name)))
+                .ToImmutableArray();
         }
     }
 }

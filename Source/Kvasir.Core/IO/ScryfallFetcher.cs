@@ -89,7 +89,8 @@ namespace nGratis.AI.Kvasir.Core
                 .ToArray();
         }
 
-        protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
+        protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(
+            UnparsedBlob.CardSet cardSet)
         {
             var cards = new List<UnparsedBlob.Card>();
             var pageNumber = 1;

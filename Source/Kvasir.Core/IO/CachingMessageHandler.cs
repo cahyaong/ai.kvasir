@@ -131,7 +131,7 @@ namespace nGratis.AI.Kvasir.Core
                     this._whenEntrySavingRequested.OnNext(new SavingRequest
                     {
                         EntrySpec = entrySpec,
-                        Blob = await responseMessage.Content.ReadAsByteArrayAsync()
+                        Blob = await responseMessage.Content.ReadAsByteArrayAsync(cancellationToken)
                     });
                 }
             }

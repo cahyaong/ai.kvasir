@@ -39,6 +39,8 @@ namespace nGratis.AI.Kvasir.Contract
         Stack,
         Exile,
         Command,
-        Ante
+        Ante,
+
+        Stub
     }
 }

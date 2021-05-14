@@ -33,5 +33,7 @@ namespace nGratis.AI.Kvasir.Engine
     public interface IMagicEntityFactory
     {
         Player CreatePlayer(DefinedBlob.Player definedPlayer);
+
+        Card CreateCard(DefinedBlob.Card definedCard);
     }
 }

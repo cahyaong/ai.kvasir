@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DefinedBlob.Player.cs" company="nGratis">
+// <copyright file="Player.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,20 +23,33 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, December 27, 2019 7:42:46 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Engine
 {
-    public static partial class DefinedBlob
+    using System.Diagnostics;
+    using nGratis.AI.Kvasir.Contract;
+
+    // TODO: Use builder pattern to make most properties immutable after creation!
+
+    [DebuggerDisplay("<Player> {this.Name}")]
+    public class Player
     {
-        public record Player
-        {
-            public PlayerKind Kind { get; init; }
+        public PlayerKind Kind { get; init; }
 
-            public string Name { get; init; }
+        public string Name { get; init; }
 
-            public string DeckCode { get; init; }
-        }
+        public Deck Deck { get; init; }
+
+        public int Life { get; set; }
+
+        public Zone Library { get; set; }
+
+        public Zone Hand { get; set; }
+
+        public Zone Graveyard { get; set; }
+
+        public Player Opponent { get; set; }
     }
 }

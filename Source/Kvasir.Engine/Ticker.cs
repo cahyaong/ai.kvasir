@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Turn.cs" company="nGratis">
+// <copyright file="Ticker.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -32,7 +32,7 @@ namespace nGratis.AI.Kvasir.Engine
     using nGratis.Cop.Olympus.Contract;
     using Stateless;
 
-    internal class Turn
+    internal class Ticker
     {
         public enum PhaseState
         {
@@ -73,20 +73,44 @@ namespace nGratis.AI.Kvasir.Engine
 
         private readonly StateMachine<StepState, Trigger> _stepStateMachine;
 
-        public Turn()
+        public Ticker()
         {
             this._phaseStateMachine = new StateMachine<PhaseState, Trigger>(PhaseState.Unknown);
             this._stepStateMachine = new StateMachine<StepState, Trigger>(StepState.Unknown);
 
+            this.TurnId = -1;
+            this.PhaseId = -1;
+            this.StepId = -1;
+
             this.ConfigurePhaseStateMachine();
             this.ConfigureStepStateMachine();
         }
+
+        public int TurnId { get; private set; }
+
+        public int PhaseId { get; private set; }
+
+        public int StepId { get; private set; }
+
+        public PhaseState Phase => this._phaseStateMachine.State;
+
+        public StepState Step => this._stepStateMachine.State;
 
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
         public void ProcessNextPhase()
         {
             this._phaseStateMachine.Fire(Trigger.Next);
+        }
+
+        public void ProcessUntilEndOfTurn()
+        {
+            while (!this._phaseStateMachine.IsInState(PhaseState.Ending))
+            {
+                this.ProcessNextPhase();
+            }
+
+            this.ProcessNextPhase();
         }
 
         private void ConfigurePhaseStateMachine()
@@ -97,7 +121,7 @@ namespace nGratis.AI.Kvasir.Engine
 
             this._phaseStateMachine
                 .Configure(PhaseState.Beginning)
-                .OnEntry(this.OnPhaseEntered)
+                .OnEntry(this.OnBeginningPhaseEntered)
                 .Permit(Trigger.Next, PhaseState.PrecombatMain);
 
             this._phaseStateMachine
@@ -140,7 +164,8 @@ namespace nGratis.AI.Kvasir.Engine
             this._stepStateMachine
                 .Configure(StepState.Upkeep)
                 .OnEntry(this.OnStepEntered)
-                .Permit(Trigger.Next, StepState.Draw);
+                .PermitIf(Trigger.Next, StepState.Draw, () => this.TurnId >= 1)
+                .PermitIf(Trigger.Next, StepState.Unknown, () => this.TurnId < 1);
 
             this._stepStateMachine
                 .Configure(StepState.Draw)
@@ -224,8 +249,19 @@ namespace nGratis.AI.Kvasir.Engine
                 .Permit(Trigger.Next, StepState.Unknown);
         }
 
+        public void OnBeginningPhaseEntered()
+        {
+            this.TurnId++;
+            this.PhaseId = -1;
+            this.StepId = -1;
+
+            this.OnPhaseEntered();
+        }
+
         private void OnPhaseEntered()
         {
+            this.PhaseId++;
+
             do
             {
                 this._stepStateMachine.Fire(Trigger.Next);
@@ -235,6 +271,8 @@ namespace nGratis.AI.Kvasir.Engine
 
         private void OnStepEntered()
         {
+            this.StepId++;
+
             this.StateChanged?.Invoke(
                 this,
                 new StateChangedEventArgs(this._phaseStateMachine.State, this._stepStateMachine.State));

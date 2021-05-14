@@ -28,17 +28,22 @@
 
 namespace nGratis.AI.Kvasir.Console
 {
+    using System;
+    using System.Collections.Generic;
     using System.Reflection;
     using Autofac;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Core;
     using nGratis.AI.Kvasir.Core.Parser;
+    using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
     using nGratis.Cop.Olympus.Framework;
 
-    internal class AppBootstrapper
+    internal class AppBootstrapper : IDisposable
     {
         private readonly IContainer _container;
+
+        private bool _isDisposed;
 
         public AppBootstrapper()
         {
@@ -47,12 +52,47 @@ namespace nGratis.AI.Kvasir.Console
                 .RegisterStorageManager()
                 .RegisterRepository()
                 .RegisterExecution()
+                .RegisterSimulator()
                 .Build();
+        }
+
+        ~AppBootstrapper()
+        {
+            this.Dispose(false);
         }
 
         public IExecution CreateProcessingCardExecution()
         {
             return this._container.Resolve<ProcessingCardExecution>();
+        }
+
+        public IExecution CreatePlayingRoundExecution(IReadOnlyCollection<DefinedBlob.Player> definedPlayers)
+        {
+            return new PlayingRoundExecution(
+                definedPlayers,
+                this._container.Resolve<IMagicEntityFactory>(),
+                this._container.Resolve<IRandomGenerator>());
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool isDisposing)
+        {
+            if (this._isDisposed)
+            {
+                return;
+            }
+
+            if (isDisposing)
+            {
+                this._container.Dispose();
+            }
+
+            this._isDisposed = true;
         }
     }
 
@@ -140,6 +180,25 @@ namespace nGratis.AI.Kvasir.Console
                 .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 .Where(type => typeof(IExecution).IsAssignableFrom(type))
                 .InstancePerLifetimeScope();
+
+            return containerBuilder;
+        }
+
+        public static ContainerBuilder RegisterSimulator(this ContainerBuilder containerBuilder)
+        {
+            Guard
+                .Require(containerBuilder, nameof(containerBuilder))
+                .Is.Not.Null();
+
+            containerBuilder
+                .Register(_ => RandomGenerator.Default)
+                .InstancePerLifetimeScope()
+                .As<IRandomGenerator>();
+
+            containerBuilder
+                .RegisterType<MagicEntityFactory>()
+                .InstancePerLifetimeScope()
+                .As<IMagicEntityFactory>();
 
             return containerBuilder;
         }

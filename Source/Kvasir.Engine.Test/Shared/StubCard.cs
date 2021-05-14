@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DefinedBlob.Player.cs" company="nGratis">
+// <copyright file="StubCard.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,20 +23,23 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, December 27, 2019 7:42:46 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, May 1, 2021 7:37:25 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Engine.Test
 {
-    public static partial class DefinedBlob
+    using nGratis.AI.Kvasir.Contract;
+
+    public class StubCard : Card
     {
-        public record Player
+        internal StubCard(int id)
+            : base($"[_STUB_CARD_{id:D2}_]", CardKind.Stub)
         {
-            public PlayerKind Kind { get; init; }
+        }
 
-            public string Name { get; init; }
-
-            public string DeckCode { get; init; }
+        internal StubCard(string name)
+            : base(name, CardKind.Stub)
+        {
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Player.cs" company="nGratis">
+// <copyright file="Land.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,33 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System.Diagnostics;
     using nGratis.AI.Kvasir.Contract;
 
-    // TODO: Use builder pattern to make most properties immutable after creation!
-
-    [DebuggerDisplay("<Player> {this.Name}")]
-    public class Player
+    public class Land : Card
     {
-        public PlayerKind Kind { get; set; }
-
-        public string Name { get; set; }
-
-        public int Life { get; set; }
-
-        public Deck Deck { get; set; }
-
-        public Zone Library { get; set; }
-
-        public Zone Hand { get; set; }
-
-        public Zone Graveyard { get; set; }
-
-        public Player Opponent { get; set; }
+        public Land(string name)
+            : base(name, CardKind.Land)
+        {
+        }
     }
 }

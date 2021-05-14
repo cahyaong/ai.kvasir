@@ -30,7 +30,6 @@ namespace nGratis.AI.Kvasir.Framework
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.IO.Compression;
     using System.Linq;
@@ -55,7 +54,7 @@ namespace nGratis.AI.Kvasir.Framework
 
         public static StubHttpMessageHandler Create()
         {
-            return new StubHttpMessageHandler();
+            return new();
         }
 
         public StubHttpMessageHandler WithSuccessfulResponse(string targetUrl, string content)
@@ -76,7 +75,7 @@ namespace nGratis.AI.Kvasir.Framework
 
             if (this._infoLookup.ContainsKey(targetUri))
             {
-                throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
+                throw new KvasirTestingException($"Target URI [{targetUri}] must be registered exactly once!");
             }
 
             var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
@@ -265,6 +264,11 @@ namespace nGratis.AI.Kvasir.Framework
 
             var targetUri = requestMessage.RequestUri;
 
+            if (targetUri == null)
+            {
+                throw new KvasirException("Request message must have valid URI!");
+            }
+
             if (!this._infoLookup.TryGetValue(targetUri, out var stubInfo))
             {
                 stubInfo = new StubInfo(targetUri, new HttpResponseMessage(HttpStatusCode.NotFound));
@@ -284,8 +288,6 @@ namespace nGratis.AI.Kvasir.Framework
                 : new StringContent(entryStream.ReadText(Encoding.UTF8));
         }
 
-        [SuppressMessage("ReSharper", "MemberCanBePrivate.Local")]
-        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Local")]
         private sealed class StubInfo
         {
             public StubInfo(Uri targetUri, HttpResponseMessage responseMessage)
@@ -313,7 +315,7 @@ namespace nGratis.AI.Kvasir.Framework
 
         private static class Pattern
         {
-            public static readonly Regex CardEntry = new Regex(
+            public static readonly Regex CardEntry = new(
                 @"(?<code>[A-Z0-9]{3})_(?<page>\d{2})\.json",
                 RegexOptions.Compiled);
         }

@@ -51,8 +51,8 @@ namespace nGratis.AI.Kvasir.Core
                     .WithName(parser.ParseScalarValue<string>()),
 
                 [YamlSerializationExtensions.NamingConvention.Apply(Field.Mainboard)] = (parser, builder) => parser
-                    .ParseSequentialValues(DeckYamlConverter.ParseCardQuantity)
-                    .ForEach(tuple => builder.WithCardAndQuantity(tuple.Card, tuple.Quantity))
+                    .ParseSequentialValues(DeckYamlConverter.ParseEntryQuantity)
+                    .ForEach(tuple => builder.WithCardAndQuantity(tuple.Entry, tuple.Quantity))
             };
 
         private DeckYamlConverter()
@@ -110,42 +110,42 @@ namespace nGratis.AI.Kvasir.Core
 
             emitter.Emit(new MappingStart());
 
-            var serializedCardQuantities = deck
-                .Cards
-                .Select(card => $"{deck[card]} {card.Name} ({card.CardSetCode}) {card.Number}")
+            var serializedEntryQuantities = deck
+                .Entries
+                .Select(card => $"{deck[card]} {card.Name} ({card.SetCode}) {card.Number}")
                 .ToArray();
 
             emitter
                 .EmitField(Field.Code, deck.Code)
                 .EmitField(Field.Name, deck.Name)
-                .EmitField(Field.Mainboard, serializedCardQuantities);
+                .EmitField(Field.Mainboard, serializedEntryQuantities);
 
             emitter.Emit(new MappingEnd());
         }
 
-        private static (DefinedBlob.Deck.Card Card, ushort Quantity) ParseCardQuantity(string value)
+        private static (DefinedBlob.Deck.Entry Entry, ushort Quantity) ParseEntryQuantity(string value)
         {
             Guard
                 .Require(value, nameof(value))
                 .Is.Not.Empty();
 
-            var match = Pattern.CardQuantity.Match(value);
+            var match = Pattern.EntryQuantity.Match(value);
 
             if (!match.Success)
             {
                 throw new KvasirException(
                     $"Value [{value}] does not match " +
-                    @"format 'Quantity Name (CardQuantity-Set-Code) Number'!");
+                    @"format 'Quantity Name (Set-Code) Number'!");
             }
 
-            var card = new DefinedBlob.Deck.Card(
+            var entry = new DefinedBlob.Deck.Entry(
                 match.Groups["name"].Value,
-                match.Groups["code"].Value,
+                match.Groups["set_code"].Value,
                 ushort.Parse(match.Groups["number"].Value));
 
             var quantity = ushort.Parse(match.Groups["quantity"].Value);
 
-            return (card, quantity);
+            return (entry, quantity);
         }
 
         private static class Field
@@ -159,8 +159,8 @@ namespace nGratis.AI.Kvasir.Core
 
         private static class Pattern
         {
-            public static readonly Regex CardQuantity = new Regex(
-                @"^(?<quantity>\d+) (?<name>[\w\-' ]+) \((?<code>[A-Z0-9]+)\) (?<number>\d+)$",
+            public static readonly Regex EntryQuantity = new Regex(
+                @"^(?<quantity>\d+) (?<name>[\w\-' ]+) \((?<set_code>[A-Z0-9]+)\) (?<number>\d+)$",
                 RegexOptions.Compiled);
         }
     }

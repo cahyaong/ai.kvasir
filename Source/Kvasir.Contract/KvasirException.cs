@@ -39,7 +39,7 @@ namespace nGratis.AI.Kvasir.Contract
         }
 
         public KvasirException(string message, params string[] submessages)
-            : base(submessages.Aggregate(message, (blob, submessage) => $"{blob} {message}"))
+            : base(submessages.Aggregate(message, (blob, submessage) => $"{blob} {submessage}"))
         {
         }
     }

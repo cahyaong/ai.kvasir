@@ -36,8 +36,6 @@ namespace nGratis.AI.Kvasir.Console
 
     public class Program
     {
-        private static readonly AppBootstrapper AppBootstrapper = new();
-
         private static void Main(string[] args)
         {
             Parser.Default
@@ -56,7 +54,9 @@ namespace nGratis.AI.Kvasir.Console
                 .Require(option, nameof(option))
                 .Is.Not.Null();
 
-            var processingExecution = Program.AppBootstrapper.CreateProcessingCardExecution();
+            using var appBootstrapper = new AppBootstrapper();
+
+            var processingExecution = appBootstrapper.CreateProcessingCardExecution();
 
             var processingParameter = ExecutionParameter.Builder
                 .Create()
@@ -74,7 +74,28 @@ namespace nGratis.AI.Kvasir.Console
                 .Require(option, nameof(option))
                 .Is.Not.Null();
 
-            throw new NotImplementedException();
+            var definedPlayers = new[]
+            {
+                new DefinedBlob.Player
+                {
+                    Name = "John Doe",
+                    Kind = PlayerKind.AI,
+                    DeckCode = "RED_01"
+                },
+                new DefinedBlob.Player
+                {
+                    Name = "Jane Doe",
+                    Kind = PlayerKind.AI,
+                    DeckCode = "WHITE_01"
+                }
+            };
+
+            using var appBootstrapper = new AppBootstrapper();
+
+            var playingExecution = appBootstrapper.CreatePlayingRoundExecution(definedPlayers);
+            var playingTask = Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None));
+
+            Task.WaitAll(playingTask);
         }
     }
 }

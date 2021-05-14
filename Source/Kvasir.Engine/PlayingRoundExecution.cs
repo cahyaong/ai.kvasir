@@ -29,6 +29,7 @@
 namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
@@ -36,11 +37,13 @@ namespace nGratis.AI.Kvasir.Engine
 
     public class PlayingRoundExecution : IExecution
     {
-        private readonly DefinedBlob.Player[] _definedPlayers;
+        private readonly ImmutableArray<DefinedBlob.Player> _definedPlayers;
 
         private readonly IMagicEntityFactory _entityFactory;
 
         private readonly IRandomGenerator _randomGenerator;
+
+        private readonly Ticker _ticker;
 
         private readonly Tabletop _tabletop;
 
@@ -61,9 +64,13 @@ namespace nGratis.AI.Kvasir.Engine
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
-            this._definedPlayers = definedPlayers.ToArray();
+            this._definedPlayers = definedPlayers.ToImmutableArray();
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
+
+            this._ticker = new Ticker();
+            this._ticker.StateChanged += this.OnTickerStateChanged;
+
             this._tabletop = new Tabletop();
         }
 
@@ -133,18 +140,18 @@ namespace nGratis.AI.Kvasir.Engine
                 throw new KvasirException($"Player [{player.Name}] does NOT have valid deck!");
             }
 
-            var cards = player
-                .Deck.Cards
-                .ToArray();
-
             player.Library = new Zone(ZoneKind.Library, Visibility.Hidden);
             player.Hand = new Zone(ZoneKind.Hand, Visibility.Hidden);
             player.Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public);
 
             this
                 ._randomGenerator
-                .GenerateShufflingIndexes((ushort)cards.Length)
-                .Select(index => cards[index])
+                .GenerateShufflingIndexes((ushort)player.Deck.Cards.Count)
+                .Select(index => player
+                    .Deck.Cards
+                    .Skip(index)
+                    .Take(1)
+                    .Single())
                 .ForEach(card => player.Library.AddCard(card));
 
             Enumerable
@@ -166,6 +173,11 @@ namespace nGratis.AI.Kvasir.Engine
             this._tabletop.Ante = new Zone(ZoneKind.Ante, Visibility.Public);
 
             return this;
+        }
+
+        private void OnTickerStateChanged(object sender, Ticker.StateChangedEventArgs args)
+        {
+            throw new System.NotImplementedException();
         }
 
         public class Result : ExecutionResult

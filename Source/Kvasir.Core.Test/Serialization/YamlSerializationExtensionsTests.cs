@@ -179,7 +179,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Should().Be("[_MOCK_DECK_NAME_]", "because deck should have name");
 
                     instance
-                        .Cards
+                        .Entries
                         .Should().NotBeNull()
                         .And.HaveCount(4, "because deck should contain defined card names");
 

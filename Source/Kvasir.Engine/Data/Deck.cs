@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DefinedBlob.Player.cs" company="nGratis">
+// <copyright file="Deck.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,20 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, December 27, 2019 7:42:46 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, May 1, 2021 6:33:23 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Engine
 {
-    public static partial class DefinedBlob
+    using System.Collections.Generic;
+
+    public class Deck
     {
-        public record Player
-        {
-            public PlayerKind Kind { get; init; }
-
-            public string Name { get; init; }
-
-            public string DeckCode { get; init; }
-        }
+        public IReadOnlyCollection<Card> Cards { get; init; }
     }
 }

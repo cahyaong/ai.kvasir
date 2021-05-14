@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Card.cs" company="nGratis">
+// <copyright file="Creature.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,44 +23,22 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, February 5, 2021 6:39:09 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System.Diagnostics;
     using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
 
-    [DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
-    public class Card
+    public class Creature : Card
     {
-        protected Card(DefinedBlob.Card definedCard)
+        public Creature(string name)
+            : base(name, CardKind.Creature)
         {
-            Guard
-                .Require(definedCard, nameof(definedCard))
-                .Is.Not.Null();
-
-            this.Name = !string.IsNullOrEmpty(definedCard.Name)
-                ? definedCard.Name
-                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
-
-            this.Kind = definedCard.Kind;
-
-            // TODO: Introduce concept of design- and run-time card with sharing basic properties!
         }
 
-        protected internal Card(string name)
-        {
-            this.Name = !string.IsNullOrEmpty(name)
-                ? name
-                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+        public int Power { get; init; }
 
-            this.Kind = CardKind.Stub;
-        }
-
-        public CardKind Kind { get; }
-
-        public string Name { get; }
+        public int Toughness { get; init; }
     }
 }

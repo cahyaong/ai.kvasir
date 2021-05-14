@@ -36,41 +36,41 @@ namespace nGratis.AI.Kvasir.Contract
     {
         public record Deck
         {
-            private readonly IDictionary<Card, ushort> _quantityByCardLookup;
+            private readonly IDictionary<Entry, ushort> _quantityByEntryLookup;
 
             private Deck()
             {
-                this._quantityByCardLookup = new Dictionary<Card, ushort>();
+                this._quantityByEntryLookup = new Dictionary<Entry, ushort>();
             }
 
-            public ushort this[Card card]
+            public ushort this[Entry entry]
             {
                 get
                 {
                     Guard
-                        .Require(card, nameof(card))
+                        .Require(entry, nameof(entry))
                         .Is.Not.Null();
 
-                    return this._quantityByCardLookup.TryGetValue(card, out var quantity)
+                    return this._quantityByEntryLookup.TryGetValue(entry, out var quantity)
                         ? quantity
                         : (ushort)0;
                 }
 
-                private set => this._quantityByCardLookup[card] = value;
+                private set => this._quantityByEntryLookup[entry] = value;
             }
 
             public ushort this[string name, string cardSetCode, ushort number]
             {
-                get => this[new Card(name, cardSetCode, number)];
+                get => this[new Entry(name, cardSetCode, number)];
 
-                private set => this[new Card(name, cardSetCode, number)] = value;
+                private set => this[new Entry(name, cardSetCode, number)] = value;
             }
 
             public string Code { get; private set; }
 
             public string Name { get; private set; }
 
-            public IEnumerable<Card> Cards => this._quantityByCardLookup.Keys;
+            public IEnumerable<Entry> Entries => this._quantityByEntryLookup.Keys;
 
             public ushort CardQuantity { get; private set; }
 
@@ -107,16 +107,16 @@ namespace nGratis.AI.Kvasir.Contract
                     return this;
                 }
 
-                public Builder WithCardAndQuantity(Card card, ushort quantity)
+                public Builder WithCardAndQuantity(Entry entry, ushort quantity)
                 {
-                    this._deck[card] = quantity;
+                    this._deck[entry] = quantity;
 
                     return this;
                 }
 
-                public Builder WithCardAndQuantity(string name, string cardSetCode, ushort number, ushort quantity)
+                public Builder WithCardAndQuantity(string name, string setCode, ushort number, ushort quantity)
                 {
-                    this._deck[name, cardSetCode, number] = quantity;
+                    this._deck[name, setCode, number] = quantity;
 
                     return this;
                 }
@@ -127,7 +127,7 @@ namespace nGratis.AI.Kvasir.Contract
 
                     this._deck.CardQuantity = (ushort)this
                         ._deck
-                        ._quantityByCardLookup
+                        ._quantityByEntryLookup
                         .Values
                         .Aggregate(0, (total, quantity) => total += quantity);
 
@@ -135,16 +135,16 @@ namespace nGratis.AI.Kvasir.Contract
                 }
             }
 
-            public record Card
+            public record Entry
             {
-                public Card(string name, string cardSetCode, ushort number)
+                public Entry(string name, string setCode, ushort number)
                 {
                     Guard
                         .Require(name, nameof(name))
                         .Is.Not.Empty();
 
                     Guard
-                        .Require(cardSetCode, nameof(cardSetCode))
+                        .Require(setCode, nameof(setCode))
                         .Is.Not.Empty();
 
                     Guard
@@ -152,13 +152,13 @@ namespace nGratis.AI.Kvasir.Contract
                         .Is.GreaterThan(0);
 
                     this.Name = name;
-                    this.CardSetCode = cardSetCode;
+                    this.SetCode = setCode;
                     this.Number = number;
                 }
 
                 public string Name { get; }
 
-                public string CardSetCode { get; }
+                public string SetCode { get; }
 
                 public ushort Number { get; }
             }
