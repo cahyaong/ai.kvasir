@@ -39,9 +39,9 @@ namespace nGratis.AI.Kvasir.Console
         private static void Main(string[] args)
         {
             Parser.Default
-                .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingRoundOption))
+                .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingGameOption))
                 .WithParsed<ProcessingCardOption>(Program.ProcessCard)
-                .WithParsed<PlayingRoundOption>(Program.PlayRound);
+                .WithParsed<PlayingGameOption>(Program.PlayGame);
 
             Console.WriteLine();
             Console.WriteLine("Press <ANY> key to continue...");
@@ -56,7 +56,7 @@ namespace nGratis.AI.Kvasir.Console
 
             using var appBootstrapper = new AppBootstrapper();
 
-            var processingExecution = appBootstrapper.CreateProcessingCardExecution();
+            var processingExecution = appBootstrapper.CreateExecution<ProcessingCardExecution>();
 
             var processingParameter = ExecutionParameter.Builder
                 .Create()
@@ -68,31 +68,15 @@ namespace nGratis.AI.Kvasir.Console
             Task.WaitAll(processingTask);
         }
 
-        private static void PlayRound(PlayingRoundOption option)
+        private static void PlayGame(PlayingGameOption option)
         {
             Guard
                 .Require(option, nameof(option))
                 .Is.Not.Null();
 
-            var definedPlayers = new[]
-            {
-                new DefinedBlob.Player
-                {
-                    Name = "John Doe",
-                    Kind = PlayerKind.AI,
-                    DeckCode = "RED_01"
-                },
-                new DefinedBlob.Player
-                {
-                    Name = "Jane Doe",
-                    Kind = PlayerKind.AI,
-                    DeckCode = "WHITE_01"
-                }
-            };
-
             using var appBootstrapper = new AppBootstrapper();
 
-            var playingExecution = appBootstrapper.CreatePlayingRoundExecution(definedPlayers);
+            var playingExecution = appBootstrapper.CreateExecution<PlayingGameExecution>();
             var playingTask = Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None));
 
             Task.WaitAll(playingTask);

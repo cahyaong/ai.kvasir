@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayingRoundExecutionTests.cs" company="nGratis">
+// <copyright file="MagicSimulationTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Engine.Test
 {
-    using System.Threading.Tasks;
     using FluentAssertions;
     using FluentAssertions.Execution;
     using Moq.AI.Kvasir;
@@ -36,12 +35,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using nGratis.AI.Kvasir.Engine;
     using Xunit;
 
-    public class PlayingRoundExecutionTests
+    public class MagicSimulationTests
     {
-        public class ExecuteAsyncMethod
+        public class SimulateMethod
         {
             [Fact]
-            public async Task WhenGettingValidParameter_ShouldSetupPlayer()
+            public void WhenGettingValidParameter_ShouldSetupPlayer()
             {
                 // Arrange.
 
@@ -63,64 +62,70 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var execution = new PlayingRoundExecution(
-                    definedPlayers,
-                    mockFactory.Object,
-                    RandomGenerator.Default);
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
 
                 // Act.
 
-                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
+                var simulationResult = simulation.Simulate(definedPlayers);
 
                 // Assert.
 
-                executionResult
+                simulationResult
                     .Should().NotBeNull()
-                    .And.BeOfType<PlayingRoundExecution.Result>();
+                    .And.BeOfType<SimulationResult>();
 
-                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
-
-                tabletop
+                simulationResult
+                    .Tabletop
                     .Must().HavePlayers();
 
-                if (tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
+                if (simulationResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Name
                         .Should().Be("[_MOCK_PLAYER_02_]", "nonactive player should be different from active player");
                 }
                 else
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Name
                         .Should().Be("[_MOCK_PLAYER_01_]", "nonactive player should be different from active player");
                 }
 
                 using (new AssertionScope())
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .ActivePlayer.Life
                         .Should().Be(20, "active player should begin with full life");
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Life
                         .Should().Be(20, "nonactive player should begin with full life");
                 }
 
                 using (new AssertionScope())
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .ActivePlayer.Opponent
-                        .Should().Be(tabletop.NonactivePlayer, "active player's opponent should be nonactive player");
+                        .Should().Be(
+                            simulationResult.Tabletop.NonactivePlayer,
+                            "active player's opponent should be nonactive player");
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Opponent
-                        .Should().Be(tabletop.ActivePlayer, "nonactive player's opponent should be active player");
+                        .Should().Be(
+                            simulationResult.Tabletop.ActivePlayer,
+                            "nonactive player's opponent should be active player");
                 }
             }
 
             [Fact]
-            public async Task WhenGettingValidParameter_ShouldSetupPlayerLibrary()
+            public void WhenGettingValidParameter_ShouldSetupPlayerLibrary()
             {
                 // Arrange.
 
@@ -142,31 +147,30 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var execution = new PlayingRoundExecution(
-                    definedPlayers,
-                    mockFactory.Object,
-                    RandomGenerator.Default);
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
 
                 // Act.
 
-                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
+                var simulationResult = simulation.Simulate(definedPlayers);
 
                 // Assert.
 
-                executionResult
+                simulationResult
                     .Should().NotBeNull()
-                    .And.BeOfType<PlayingRoundExecution.Result>();
+                    .And.BeOfType<SimulationResult>();
 
-                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
-
-                tabletop
+                simulationResult
+                    .Tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    var activeDeck = tabletop.ActivePlayer.Deck;
+                    var activeDeck = simulationResult
+                        .Tabletop
+                        .ActivePlayer.Deck;
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .ActivePlayer.Library
                         .Must().NotBeNull("active player should have library")
                         .And.BeLibrary()
@@ -175,9 +179,12 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(activeDeck);
 
-                    var nonactiveDeck = tabletop.NonactivePlayer.Deck;
+                    var nonactiveDeck = simulationResult
+                        .Tabletop
+                        .NonactivePlayer.Deck;
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Library
                         .Must().NotBeNull("nonactive player should have library")
                         .And.BeLibrary()
@@ -189,7 +196,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             }
 
             [Fact]
-            public async Task WhenGettingValidParameter_ShouldSetupPlayerHand()
+            public void WhenGettingValidParameter_ShouldSetupPlayerHand()
             {
                 // Arrange.
 
@@ -211,50 +218,48 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var execution = new PlayingRoundExecution(
-                    definedPlayers,
-                    mockFactory.Object,
-                    RandomGenerator.Default);
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
 
                 // Act.
 
-                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
+                var simulationResult = simulation.Simulate(definedPlayers);
 
                 // Assert.
 
-                executionResult
+                simulationResult
                     .Should().NotBeNull()
-                    .And.BeOfType<PlayingRoundExecution.Result>();
+                    .And.BeOfType<SimulationResult>();
 
-                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
-
-                tabletop
+                simulationResult
+                    .Tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .ActivePlayer.Hand
                         .Must().NotBeNull("active player should have hand")
                         .And.BeHand()
                         .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(tabletop.ActivePlayer.Deck);
+                        .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Hand
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeHand()
                         .And.BeHidden()
                         .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
                         .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(tabletop.NonactivePlayer.Deck);
+                        .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonactivePlayer.Deck);
                 }
             }
 
             [Fact]
-            public async Task WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
+            public void WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
             {
                 // Arrange.
 
@@ -276,36 +281,34 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var execution = new PlayingRoundExecution(
-                    definedPlayers,
-                    mockFactory.Object,
-                    RandomGenerator.Default);
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
 
                 // Act.
 
-                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
+                var simulationResult = simulation.Simulate(definedPlayers);
 
                 // Assert.
 
-                executionResult
+                simulationResult
                     .Should().NotBeNull()
-                    .And.BeOfType<PlayingRoundExecution.Result>();
+                    .And.BeOfType<SimulationResult>();
 
-                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
-
-                tabletop
+                simulationResult
+                    .Tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .ActivePlayer.Graveyard
                         .Must().NotBeNull("active player should have hand")
                         .And.BeGraveyard()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .NonactivePlayer.Graveyard
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeGraveyard()
@@ -315,7 +318,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
             }
 
             [Fact]
-            public async Task WhenGettingValidParameter_ShouldSetupSharedZones()
+            public void WhenGettingValidParameter_ShouldSetupSharedZones()
             {
                 // Arrange.
 
@@ -337,53 +340,54 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var execution = new PlayingRoundExecution(
-                    definedPlayers,
-                    mockFactory.Object,
-                    RandomGenerator.Default);
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
 
                 // Act.
 
-                var executionResult = await execution.ExecuteAsync(ExecutionParameter.None);
+                var simulationResult = simulation.Simulate(definedPlayers);
 
                 // Assert.
 
-                executionResult
+                simulationResult
                     .Should().NotBeNull()
-                    .And.BeOfType<PlayingRoundExecution.Result>();
+                    .And.BeOfType<SimulationResult>();
 
-                var tabletop = ((PlayingRoundExecution.Result)executionResult).Tabletop;
-
-                tabletop
+                simulationResult
+                    .Tabletop
                     .Must().HavePlayers();
 
                 using (new AssertionScope())
                 {
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .Battlefield
                         .Must().BeBattlefield()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .Stack
                         .Must().BeStack()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .Exile
                         .Must().BeExile()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .Command
                         .Must().BeCommand()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
 
-                    tabletop
+                    simulationResult
+                        .Tabletop
                         .Ante
                         .Must().BeAnte()
                         .And.BePublic()

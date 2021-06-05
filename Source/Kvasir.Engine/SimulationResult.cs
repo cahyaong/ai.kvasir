@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StubCard.cs" company="nGratis">
+// <copyright file="SimulationResult.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,23 +23,15 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, May 1, 2021 7:37:25 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, May 29, 2021 6:31:03 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.Test
+namespace nGratis.AI.Kvasir.Engine
 {
     using nGratis.AI.Kvasir.Contract;
 
-    public class StubCard : Card
+    public class SimulationResult : ExecutionResult
     {
-        internal StubCard(int id)
-            : base($"[_STUB_CARD_{id:D2}_]", CardKind.Stub)
-        {
-        }
-
-        internal StubCard(string name)
-            : base(name, CardKind.Stub)
-        {
-        }
+        public Tabletop Tabletop { get; init; }
     }
 }

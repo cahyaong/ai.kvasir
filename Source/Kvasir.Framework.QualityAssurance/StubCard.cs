@@ -1,8 +1,8 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Options.cs" company="nGratis">
+// <copyright file="StubCard.cs" company="nGratis">
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014 - 2020 Cahya Ong
+//  Copyright (c) 2014 - 2021 Cahya Ong
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,22 +23,24 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, July 28, 2020 6:47:18 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, May 1, 2021 7:37:25 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Framework
 {
-    using CommandLine;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
 
-    [Verb("processing-card")]
-    internal class ProcessingCardOption
+    public class StubCard : Card
     {
-        [Option("card-set-name", Required = true)]
-        public string CardSetName { get; set; }
-    }
+        internal StubCard(int id)
+            : base($"[_STUB_CARD_{id:D2}_]", CardKind.Stub)
+        {
+        }
 
-    [Verb("playing-game")]
-    internal class PlayingGameOption
-    {
+        internal StubCard(string name)
+            : base(name, CardKind.Stub)
+        {
+        }
     }
 }

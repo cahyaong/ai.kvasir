@@ -4,9 +4,9 @@
       "commandName": "Project",
       "commandLineArgs": "processing-card --card-set-name Portal"
     },
-    "Run.PlayingRound": {
+    "Run.PlayingGame": {
       "commandName": "Project",
-      "commandLineArgs": "playing-round"
+      "commandLineArgs": "playing-game"
     }
   }
 }

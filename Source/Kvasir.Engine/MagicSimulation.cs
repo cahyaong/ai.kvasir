@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayingRoundExecution.cs" company="nGratis">
+// <copyright file="MagicSimulation" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -32,31 +32,21 @@ namespace nGratis.AI.Kvasir.Engine
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class PlayingRoundExecution : IExecution
+    public class MagicSimulation
     {
-        private readonly ImmutableArray<DefinedBlob.Player> _definedPlayers;
-
         private readonly IMagicEntityFactory _entityFactory;
 
         private readonly IRandomGenerator _randomGenerator;
 
-        private readonly Ticker _ticker;
+        private Ticker _ticker;
 
-        private readonly Tabletop _tabletop;
+        private Tabletop _tabletop;
 
-        public PlayingRoundExecution(
-            IReadOnlyCollection<DefinedBlob.Player> definedPlayers,
-            IMagicEntityFactory entityFactory,
-            IRandomGenerator randomGenerator)
+        public MagicSimulation(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator)
         {
-            Guard
-                .Require(definedPlayers, nameof(definedPlayers))
-                .Is.Not.Null();
-
             Guard
                 .Require(entityFactory, nameof(entityFactory))
                 .Is.Not.Null();
@@ -65,45 +55,53 @@ namespace nGratis.AI.Kvasir.Engine
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
-            this._definedPlayers = definedPlayers.ToImmutableArray();
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
+        }
+
+        public SimulationResult Simulate(IReadOnlyCollection<DefinedBlob.Player> definedPlayers)
+        {
+            Guard
+                .Require(definedPlayers, nameof(definedPlayers))
+                .Is.Not.Null();
+
+            this
+                .SetupTabletop()
+                .SetupPlayers(definedPlayers.ToImmutableArray())
+                .SetupPlayerZones(this._tabletop.ActivePlayer)
+                .SetupPlayerZones(this._tabletop.NonactivePlayer)
+                .SetupSharedZones();
+
+            return new SimulationResult
+            {
+                Tabletop = this._tabletop
+            };
+        }
+
+        private MagicSimulation SetupTabletop()
+        {
+            if (this._ticker != null)
+            {
+                this._ticker.StateChanged -= this.OnTickerStateChanged;
+            }
 
             this._ticker = new Ticker();
             this._ticker.StateChanged += this.OnTickerStateChanged;
 
             this._tabletop = new Tabletop();
+
+            return this;
         }
 
-        public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
+        private MagicSimulation SetupPlayers(ImmutableArray<DefinedBlob.Player> definedPlayers)
         {
-            return await Task.Run(() => this.Execute(parameter));
-        }
-
-        private ExecutionResult Execute(ExecutionParameter parameter)
-        {
-            Guard
-                .Require(parameter, nameof(parameter))
-                .Is.Not.Null();
-
-            this
-                .SetupPlayers()
-                .SetupPlayerZones(this._tabletop.ActivePlayer)
-                .SetupPlayerZones(this._tabletop.NonactivePlayer)
-                .SetupSharedZones();
-
-            return Result.CreateSuccessful(this._tabletop);
-        }
-
-        private PlayingRoundExecution SetupPlayers()
-        {
-            if (this._definedPlayers.Length != 2)
+            if (definedPlayers.Length != 2)
             {
                 throw new KvasirException("Currently supporting 1 vs. 1 match!");
             }
 
-            var firstPlayer = this._entityFactory.CreatePlayer(this._definedPlayers[0]);
-            var secondPlayer = this._entityFactory.CreatePlayer(this._definedPlayers[1]);
+            var firstPlayer = this._entityFactory.CreatePlayer(definedPlayers[0]);
+            var secondPlayer = this._entityFactory.CreatePlayer(definedPlayers[1]);
 
             var firstValue = 0;
             var secondValue = 0;
@@ -134,7 +132,7 @@ namespace nGratis.AI.Kvasir.Engine
             return this;
         }
 
-        private PlayingRoundExecution SetupPlayerZones(Player player)
+        private MagicSimulation SetupPlayerZones(Player player)
         {
             if (player.Deck == null)
             {
@@ -165,7 +163,7 @@ namespace nGratis.AI.Kvasir.Engine
             return this;
         }
 
-        private PlayingRoundExecution SetupSharedZones()
+        private MagicSimulation SetupSharedZones()
         {
             this._tabletop.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
             this._tabletop.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
@@ -179,44 +177,6 @@ namespace nGratis.AI.Kvasir.Engine
         private void OnTickerStateChanged(object sender, Ticker.StateChangedEventArgs args)
         {
             throw new NotImplementedException();
-        }
-
-        public class Result : ExecutionResult
-        {
-            private Result(Tabletop tabletop, params string[] messages)
-                : base(messages)
-            {
-                Guard
-                    .Require(tabletop, nameof(tabletop))
-                    .Is.Not.Null();
-
-                this.Tabletop = tabletop;
-            }
-
-            public Tabletop Tabletop { get; }
-
-            public static Result CreateSuccessful(Tabletop tabletop)
-            {
-                return new(tabletop);
-            }
-
-            public static Result CreateFailure(Tabletop tabletop, string[] messages)
-            {
-                Guard
-                    .Require(messages, nameof(messages))
-                    .Is.Not.Null();
-
-                messages = messages
-                    .Where(message => !string.IsNullOrEmpty(message))
-                    .ToArray();
-
-                if (!messages.Any())
-                {
-                    throw new KvasirException("Failure result must contain at least 1 message!");
-                }
-
-                return new Result(tabletop, messages);
-            }
         }
     }
 }

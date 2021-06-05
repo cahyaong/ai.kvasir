@@ -29,7 +29,6 @@
 namespace nGratis.AI.Kvasir.Console
 {
     using System;
-    using System.Collections.Generic;
     using System.Reflection;
     using Autofac;
     using nGratis.AI.Kvasir.Contract;
@@ -61,17 +60,10 @@ namespace nGratis.AI.Kvasir.Console
             this.Dispose(false);
         }
 
-        public IExecution CreateProcessingCardExecution()
+        public IExecution CreateExecution<T>()
+            where T : class, IExecution
         {
-            return this._container.Resolve<ProcessingCardExecution>();
-        }
-
-        public IExecution CreatePlayingRoundExecution(IReadOnlyCollection<DefinedBlob.Player> definedPlayers)
-        {
-            return new PlayingRoundExecution(
-                definedPlayers,
-                this._container.Resolve<IMagicEntityFactory>(),
-                this._container.Resolve<IRandomGenerator>());
+            return this._container.Resolve<T>();
         }
 
         public void Dispose()

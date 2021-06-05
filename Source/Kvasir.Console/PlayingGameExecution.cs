@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.MagicEntityFactory.cs" company="nGratis">
+// <copyright file="PlayingGameExecution.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,54 +23,57 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Monday, 28 January 2019 5:37:12 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, May 29, 2021 6:14:57 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable once CheckNamespace
-
-namespace Moq.AI.Kvasir
+namespace nGratis.AI.Kvasir.Console
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Moq;
+    using System.Threading.Tasks;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
-    using nGratis.AI.Kvasir.Framework;
     using nGratis.Cop.Olympus.Contract;
 
-    internal static partial class MockExtensions
+    public class PlayingGameExecution : IExecution
     {
-        private static readonly IReadOnlyDictionary<string, DefinedBlob.Deck> DeckByCodeLookup = Enumerable
-            .Empty<DefinedBlob.Deck>()
-            .Append(MockBuilder.CreateDefinedElfDeck())
-            .Append(MockBuilder.CreateDefinedGoblinDeck())
-            .ToDictionary(deck => deck.Code);
+        private readonly IMagicEntityFactory _entityFactory;
+        private readonly IRandomGenerator _randomGenerator;
 
-        public static Mock<IMagicEntityFactory> WithDefaultPlayer(this Mock<IMagicEntityFactory> mockFactory)
+        public PlayingGameExecution(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator)
         {
             Guard
-                .Require(mockFactory, nameof(mockFactory))
+                .Require(entityFactory, nameof(entityFactory))
                 .Is.Not.Null();
 
-            mockFactory
-                .Setup(mock => mock.CreatePlayer(Arg.IsAny<DefinedBlob.Player>()))
-                .Returns<DefinedBlob.Player>(definedPlayer =>
+            Guard
+                .Require(randomGenerator, nameof(randomGenerator))
+                .Is.Not.Null();
+
+            this._entityFactory = entityFactory;
+            this._randomGenerator = randomGenerator;
+        }
+
+        public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
+        {
+            var definedPlayers = new[]
+            {
+                new DefinedBlob.Player
                 {
-                    if (!MockExtensions.DeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
-                    {
-                        throw new KvasirTestingException($"Deck code [{definedPlayer.DeckCode}] must be defined!");
-                    }
+                    Name = "John Doe",
+                    Kind = PlayerKind.AI,
+                    DeckCode = "RED_01"
+                },
+                new DefinedBlob.Player
+                {
+                    Name = "Jane Doe",
+                    Kind = PlayerKind.AI,
+                    DeckCode = "WHITE_01"
+                }
+            };
 
-                    return new Player
-                    {
-                        Kind = PlayerKind.Testing,
-                        Name = definedPlayer.Name,
-                        Deck = new StubDeck(definedDeck)
-                    };
-                })
-                .Verifiable();
+            var simulation = new MagicSimulation(this._entityFactory, this._randomGenerator);
+            simulation.Simulate(definedPlayers);
 
-            return mockFactory;
+            return await Task.FromResult(ExecutionResult.Successful);
         }
     }
 }
