@@ -110,7 +110,7 @@ namespace nGratis.AI.Kvasir.Console
                 .Require(containerBuilder, nameof(containerBuilder))
                 .Is.Not.Null();
 
-            var dataFolderUri = Configuration.FindDataFolderUri();
+            var dataFolderUri = Config.FindDataFolderUri();
 
             containerBuilder
                 .Register(_ => new IndexManager(dataFolderUri))
@@ -124,7 +124,7 @@ namespace nGratis.AI.Kvasir.Console
 
             containerBuilder
                 .Register(context => new CompressedStorageManager(
-                    Configuration.ProcessedContentSpec,
+                    Config.ProcessedContentSpec,
                     context.ResolveNamed<IStorageManager>(Name.StorageManager.Data)))
                 .InstancePerLifetimeScope()
                 .Named<IStorageManager>(Name.StorageManager.Processed);

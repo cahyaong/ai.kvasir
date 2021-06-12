@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Configuration.cs" company="nGratis">
+// <copyright file="SimulationConfig.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,32 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, February 26, 2021 4:21:38 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 5, 2021 5:58:56 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Engine
 {
-    using System;
-    using System.IO;
-    using nGratis.Cop.Olympus.Contract;
+    using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
 
-    public static class Configuration
+    public class SimulationConfig
     {
-        public static DataSpec ProcessedContentSpec { get; } = new("Processed_KVASIR", KvasirMime.Cache);
+        public int MaxTurnCount { get; init; }
 
-        public static Uri FindDataFolderUri()
-        {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
-
-            if (!Directory.Exists(dataFolderPath))
-            {
-                Directory.CreateDirectory(dataFolderPath);
-            }
-
-            return new Uri(dataFolderPath);
-        }
+        public IReadOnlyCollection<DefinedBlob.Player> DefinedPlayers { get; init; }
     }
 }

@@ -275,13 +275,20 @@ namespace nGratis.AI.Kvasir.Engine
 
             this.StateChanged?.Invoke(
                 this,
-                new StateChangedEventArgs(this._phaseStateMachine.State, this._stepStateMachine.State));
+                new StateChangedEventArgs(
+                    this.TurnId,
+                    this._phaseStateMachine.State,
+                    this._stepStateMachine.State));
         }
 
         public class StateChangedEventArgs : EventArgs
         {
-            public StateChangedEventArgs(PhaseState phaseState, StepState stepState)
+            public StateChangedEventArgs(int turnId, PhaseState phaseState, StepState stepState)
             {
+                Guard
+                    .Require(turnId, nameof(turnId))
+                    .Is.ZeroOrPositive();
+
                 Guard
                     .Require(phaseState, nameof(phaseState))
                     .Is.Not.Default();
@@ -290,9 +297,12 @@ namespace nGratis.AI.Kvasir.Engine
                     .Require(stepState, nameof(stepState))
                     .Is.Not.Default();
 
+                this.TurnId = turnId;
                 this.PhaseState = phaseState;
                 this.StepState = stepState;
             }
+
+            public int TurnId { get; }
 
             public PhaseState PhaseState { get; }
 

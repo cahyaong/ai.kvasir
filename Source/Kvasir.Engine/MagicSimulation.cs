@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -41,11 +40,16 @@ namespace nGratis.AI.Kvasir.Engine
 
         private readonly IRandomGenerator _randomGenerator;
 
+        private readonly ILogger _logger;
+
         private Ticker _ticker;
 
         private Tabletop _tabletop;
 
-        public MagicSimulation(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator)
+        public MagicSimulation(
+            IMagicEntityFactory entityFactory,
+            IRandomGenerator randomGenerator,
+            ILogger logger)
         {
             Guard
                 .Require(entityFactory, nameof(entityFactory))
@@ -55,22 +59,32 @@ namespace nGratis.AI.Kvasir.Engine
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
+            Guard
+                .Require(logger, nameof(logger))
+                .Is.Not.Null();
+
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
+            this._logger = logger;
         }
 
-        public SimulationResult Simulate(IReadOnlyCollection<DefinedBlob.Player> definedPlayers)
+        public SimulationResult Simulate(SimulationConfig config)
         {
             Guard
-                .Require(definedPlayers, nameof(definedPlayers))
+                .Require(config, nameof(config))
                 .Is.Not.Null();
 
             this
                 .SetupTabletop()
-                .SetupPlayers(definedPlayers.ToImmutableArray())
+                .SetupPlayers(config.DefinedPlayers.ToImmutableArray())
                 .SetupPlayerZones(this._tabletop.ActivePlayer)
                 .SetupPlayerZones(this._tabletop.NonactivePlayer)
                 .SetupSharedZones();
+
+            while (this._ticker.TurnId < config.MaxTurnCount)
+            {
+                this._ticker.ProcessUntilEndOfTurn();
+            }
 
             return new SimulationResult
             {
@@ -176,7 +190,18 @@ namespace nGratis.AI.Kvasir.Engine
 
         private void OnTickerStateChanged(object sender, Ticker.StateChangedEventArgs args)
         {
-            throw new NotImplementedException();
+            this._logger.LogInfoWithDetails(
+                "Processing turn and step...",
+                ("ID", $"{args.TurnId:D4}-{args.PhaseState}-{args.StepState}"),
+                ("Active Player", this._tabletop.ActivePlayer.Name));
+
+            if (args.PhaseState == Ticker.PhaseState.Ending && args.StepState == Ticker.StepState.Cleanup)
+            {
+                var swappedPlayer = this._tabletop.ActivePlayer;
+
+                this._tabletop.ActivePlayer = this._tabletop.NonactivePlayer;
+                this._tabletop.NonactivePlayer = swappedPlayer;
+            }
         }
     }
 }

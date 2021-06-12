@@ -33,6 +33,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using Moq.AI.Kvasir;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
+    using nGratis.Cop.Olympus.Contract;
     using Xunit;
 
     public class MagicSimulationTests
@@ -58,15 +59,24 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     }
                 };
 
+                var simulationConfig = new SimulationConfig
+                {
+                    MaxTurnCount = 0,
+                    DefinedPlayers = definedPlayers
+                };
+
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
+                var mockLogger = MockBuilder
+                    .CreateMock<ILogger>();
+
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(definedPlayers);
+                var simulationResult = simulation.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -143,15 +153,24 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     }
                 };
 
+                var simulationConfig = new SimulationConfig
+                {
+                    MaxTurnCount = 0,
+                    DefinedPlayers = definedPlayers
+                };
+
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
+                var mockLogger = MockBuilder
+                    .CreateMock<ILogger>();
+
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(definedPlayers);
+                var simulationResult = simulation.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -214,15 +233,24 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     }
                 };
 
+                var simulationConfig = new SimulationConfig
+                {
+                    MaxTurnCount = 0,
+                    DefinedPlayers = definedPlayers
+                };
+
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
+                var mockLogger = MockBuilder
+                    .CreateMock<ILogger>();
+
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(definedPlayers);
+                var simulationResult = simulation.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -277,15 +305,24 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     }
                 };
 
+                var simulationConfig = new SimulationConfig
+                {
+                    MaxTurnCount = 0,
+                    DefinedPlayers = definedPlayers
+                };
+
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
+                var mockLogger = MockBuilder
+                    .CreateMock<ILogger>();
+
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(definedPlayers);
+                var simulationResult = simulation.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -336,15 +373,24 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     }
                 };
 
+                var simulationConfig = new SimulationConfig
+                {
+                    MaxTurnCount = 0,
+                    DefinedPlayers = definedPlayers
+                };
+
                 var mockFactory = MockBuilder
                     .CreateMock<IMagicEntityFactory>()
                     .WithDefaultPlayer();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default);
+                var mockLogger = MockBuilder
+                    .CreateMock<ILogger>();
+
+                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(definedPlayers);
+                var simulationResult = simulation.Simulate(simulationConfig);
 
                 // Assert.
 

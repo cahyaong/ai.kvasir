@@ -37,8 +37,12 @@ namespace nGratis.AI.Kvasir.Console
     {
         private readonly IMagicEntityFactory _entityFactory;
         private readonly IRandomGenerator _randomGenerator;
+        private readonly ILogger _logger;
 
-        public PlayingGameExecution(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator)
+        public PlayingGameExecution(
+            IMagicEntityFactory entityFactory,
+            IRandomGenerator randomGenerator,
+            ILogger logger)
         {
             Guard
                 .Require(entityFactory, nameof(entityFactory))
@@ -50,6 +54,7 @@ namespace nGratis.AI.Kvasir.Console
 
             this._entityFactory = entityFactory;
             this._randomGenerator = randomGenerator;
+            this._logger = logger;
         }
 
         public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
@@ -70,8 +75,15 @@ namespace nGratis.AI.Kvasir.Console
                 }
             };
 
-            var simulation = new MagicSimulation(this._entityFactory, this._randomGenerator);
-            simulation.Simulate(definedPlayers);
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 10,
+                DefinedPlayers = definedPlayers
+            };
+
+            var simulation = new MagicSimulation(this._entityFactory, this._randomGenerator, this._logger);
+
+            simulation.Simulate(simulationConfig);
 
             return await Task.FromResult(ExecutionResult.Successful);
         }
