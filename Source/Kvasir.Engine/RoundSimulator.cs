@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicSimulation" company="nGratis">
+// <copyright file="RoundSimulator" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Engine
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class MagicSimulation
+    public class RoundSimulator
     {
         private readonly IMagicEntityFactory _entityFactory;
 
@@ -44,9 +44,11 @@ namespace nGratis.AI.Kvasir.Engine
 
         private Ticker _ticker;
 
+        private TurnCoordinator _turnCoordinator;
+
         private Tabletop _tabletop;
 
-        public MagicSimulation(
+        public RoundSimulator(
             IMagicEntityFactory entityFactory,
             IRandomGenerator randomGenerator,
             ILogger logger)
@@ -68,20 +70,20 @@ namespace nGratis.AI.Kvasir.Engine
             this._logger = logger;
         }
 
-        public SimulationResult Simulate(SimulationConfig config)
+        public SimulationResult Simulate(SimulationConfig simulationConfig)
         {
             Guard
-                .Require(config, nameof(config))
+                .Require(simulationConfig, nameof(simulationConfig))
                 .Is.Not.Null();
 
             this
                 .SetupTabletop()
-                .SetupPlayers(config.DefinedPlayers.ToImmutableArray())
+                .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
                 .SetupPlayerZones(this._tabletop.ActivePlayer)
                 .SetupPlayerZones(this._tabletop.NonactivePlayer)
                 .SetupSharedZones();
 
-            while (this._ticker.TurnId < config.MaxTurnCount)
+            while (this._ticker.TurnId < simulationConfig.MaxTurnCount)
             {
                 this._ticker.ProcessUntilEndOfTurn();
             }
@@ -92,22 +94,23 @@ namespace nGratis.AI.Kvasir.Engine
             };
         }
 
-        private MagicSimulation SetupTabletop()
+        private RoundSimulator SetupTabletop()
         {
             if (this._ticker != null)
             {
                 this._ticker.StateChanged -= this.OnTickerStateChanged;
             }
 
+            this._tabletop = new Tabletop();
+            this._turnCoordinator = new TurnCoordinator(this._tabletop, this._logger);
+
             this._ticker = new Ticker();
             this._ticker.StateChanged += this.OnTickerStateChanged;
-
-            this._tabletop = new Tabletop();
 
             return this;
         }
 
-        private MagicSimulation SetupPlayers(ImmutableArray<DefinedBlob.Player> definedPlayers)
+        private RoundSimulator SetupPlayers(ImmutableArray<DefinedBlob.Player> definedPlayers)
         {
             if (definedPlayers.Length != 2)
             {
@@ -146,7 +149,7 @@ namespace nGratis.AI.Kvasir.Engine
             return this;
         }
 
-        private MagicSimulation SetupPlayerZones(Player player)
+        private RoundSimulator SetupPlayerZones(Player player)
         {
             if (player.Deck == null)
             {
@@ -168,7 +171,7 @@ namespace nGratis.AI.Kvasir.Engine
                 .ForEach(card => player.Library.AddCard(card));
 
             Enumerable
-                .Range(0, GameConstant.Hand.MaximumCardCount)
+                .Range(0, MagicConstant.Hand.MaxCardCount)
                 .Select(_ => player.Library.RemoveCard())
                 .ForEach(card => player.Hand.AddCard(card));
 
@@ -177,7 +180,7 @@ namespace nGratis.AI.Kvasir.Engine
             return this;
         }
 
-        private MagicSimulation SetupSharedZones()
+        private RoundSimulator SetupSharedZones()
         {
             this._tabletop.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
             this._tabletop.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
@@ -190,18 +193,7 @@ namespace nGratis.AI.Kvasir.Engine
 
         private void OnTickerStateChanged(object sender, Ticker.StateChangedEventArgs args)
         {
-            this._logger.LogInfoWithDetails(
-                "Processing turn and step...",
-                ("ID", $"{args.TurnId:D4}-{args.PhaseState}-{args.StepState}"),
-                ("Active Player", this._tabletop.ActivePlayer.Name));
-
-            if (args.PhaseState == Ticker.PhaseState.Ending && args.StepState == Ticker.StepState.Cleanup)
-            {
-                var swappedPlayer = this._tabletop.ActivePlayer;
-
-                this._tabletop.ActivePlayer = this._tabletop.NonactivePlayer;
-                this._tabletop.NonactivePlayer = swappedPlayer;
-            }
+            this._turnCoordinator?.ExecuteStep(args.TurnId, args.PhaseState, args.StepState);
         }
     }
 }

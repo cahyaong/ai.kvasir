@@ -72,11 +72,11 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 var mockLogger = MockBuilder
                     .CreateMock<ILogger>();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(simulationConfig);
+                var simulationResult = simulator.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -166,11 +166,11 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 var mockLogger = MockBuilder
                     .CreateMock<ILogger>();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(simulationConfig);
+                var simulationResult = simulator.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -194,7 +194,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .Must().NotBeNull("active player should have library")
                         .And.BeLibrary()
                         .And.BeHidden()
-                        .And.HaveCardQuantity((ushort)(activeDeck.Cards.Count - GameConstant.Hand.MaximumCardCount))
+                        .And.HaveCardQuantity((ushort)(activeDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(activeDeck);
 
@@ -208,7 +208,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .Must().NotBeNull("nonactive player should have library")
                         .And.BeLibrary()
                         .And.BeHidden()
-                        .And.HaveCardQuantity((ushort)(nonactiveDeck.Cards.Count - GameConstant.Hand.MaximumCardCount))
+                        .And.HaveCardQuantity((ushort)(nonactiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(nonactiveDeck);
                 }
@@ -246,11 +246,11 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 var mockLogger = MockBuilder
                     .CreateMock<ILogger>();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(simulationConfig);
+                var simulationResult = simulator.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -270,7 +270,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .Must().NotBeNull("active player should have hand")
                         .And.BeHand()
                         .And.BeHidden()
-                        .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
+                        .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
 
@@ -280,7 +280,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                         .Must().NotBeNull("nonactive player should have hand")
                         .And.BeHand()
                         .And.BeHidden()
-                        .And.HaveCardQuantity(GameConstant.Hand.MaximumCardCount)
+                        .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
                         .And.HaveUniqueCardInstance()
                         .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonactivePlayer.Deck);
                 }
@@ -318,11 +318,11 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 var mockLogger = MockBuilder
                     .CreateMock<ILogger>();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(simulationConfig);
+                var simulationResult = simulator.Simulate(simulationConfig);
 
                 // Assert.
 
@@ -386,11 +386,11 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 var mockLogger = MockBuilder
                     .CreateMock<ILogger>();
 
-                var simulation = new MagicSimulation(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
                 // Act.
 
-                var simulationResult = simulation.Simulate(simulationConfig);
+                var simulationResult = simulator.Simulate(simulationConfig);
 
                 // Assert.
 

@@ -81,9 +81,9 @@ namespace nGratis.AI.Kvasir.Console
                 DefinedPlayers = definedPlayers
             };
 
-            var simulation = new MagicSimulation(this._entityFactory, this._randomGenerator, this._logger);
+            var simulator = new RoundSimulator(this._entityFactory, this._randomGenerator, this._logger);
 
-            simulation.Simulate(simulationConfig);
+            simulator.Simulate(simulationConfig);
 
             return await Task.FromResult(ExecutionResult.Successful);
         }

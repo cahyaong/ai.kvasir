@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="GameConstant.cs" company="nGratis">
+// <copyright file="MagicConstant.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -28,11 +28,12 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    public static class GameConstant
+    internal static class MagicConstant
+
     {
         public static class Hand
         {
-            public const ushort MaximumCardCount = 7;
+            public const ushort MaxCardCount = 7;
         }
     }
 }
