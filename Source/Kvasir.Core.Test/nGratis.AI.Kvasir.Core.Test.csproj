@@ -8,6 +8,9 @@
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.Core.Test.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
     <ProjectReference Include="..\Kvasir.Framework.QualityAssurance\nGratis.AI.Kvasir.Framework.QualityAssurance.csproj" />
   </ItemGroup>

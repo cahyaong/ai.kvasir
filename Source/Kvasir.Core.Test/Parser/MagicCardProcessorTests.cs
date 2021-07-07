@@ -288,8 +288,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.ValidTypeTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidType_ShouldParseValue(TypeTheory theory)
+            [MemberData(nameof(TestData.ParsingValidTypeTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidType_ShouldParseValue(ParsingTypeTheory theory)
             {
                 // Arrange.
 
@@ -387,8 +387,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.InvalidTypeTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidType_ShouldAddMessage(TypeTheory theory)
+            [MemberData(nameof(TestData.ParsingInvalidTypeTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidType_ShouldAddMessage(ParsingTypeTheory theory)
             {
                 // Arrange.
 
@@ -442,8 +442,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.ValidManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidManaCost_ShouldParseValue(ManaCostTheory theory)
+            [MemberData(nameof(TestData.ParsingValidManaCostTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidManaCost_ShouldParseValue(ParsingManaCostTheory theory)
             {
                 // Arrange.
 
@@ -475,8 +475,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.InvalidManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidManaCost_ShouldAddMessage(ManaCostTheory theory)
+            [MemberData(nameof(TestData.ParsingInvalidManaCostTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidManaCost_ShouldAddMessage(ParsingManaCostTheory theory)
             {
                 // Arrange.
 
@@ -512,8 +512,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.ValidPowerTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidPower_ShouldParseValue(PowerTheory theory)
+            [MemberData(nameof(TestData.ParsingValidPowerTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidPower_ShouldParseValue(ParsingPowerTheory theory)
             {
                 // Arrange.
 
@@ -541,8 +541,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.InvalidPowerTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidPower_ShouldAddMessage(PowerTheory theory)
+            [MemberData(nameof(TestData.ParsingInvalidPowerTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidPower_ShouldAddMessage(ParsingPowerTheory theory)
             {
                 // Arrange.
 
@@ -573,8 +573,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.ValidToughnessTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidToughness_ShouldParseValue(ToughnessTheory theory)
+            [MemberData(nameof(TestData.ParsingValidToughnessTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidToughness_ShouldParseValue(ParsingToughnessTheory theory)
             {
                 // Arrange.
 
@@ -602,8 +602,8 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Theory]
-            [MemberData(nameof(TestData.InvalidToughnessTheories), MemberType = typeof(TestData))]
-            public void WhenGettingInvalidToughness_ShouldAddMessage(ToughnessTheory theory)
+            [MemberData(nameof(TestData.ParsingInvalidToughnessTheories), MemberType = typeof(TestData))]
+            public void WhenGettingInvalidToughness_ShouldAddMessage(ParsingToughnessTheory theory)
             {
                 // Arrange.
 
@@ -677,109 +677,109 @@ namespace nGratis.AI.Kvasir.Core.Test
             [UsedImplicitly(ImplicitUseTargetFlags.Members)]
             private static class TestData
             {
-                public static IEnumerable<object[]> ValidTypeTheories
+                public static IEnumerable<object[]> ParsingValidTypeTheories
                 {
                     get
                     {
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Artifact")
                             .ExpectValid(
                                 CardKind.Artifact,
                                 CardSuperKind.None)
-                            .WithLabel(1, "Card type without sub-type")
+                            .WithLabel(1, "Parsing card type without sub-type")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Creature - Elf Warrior")
                             .ExpectValid(
                                 CardKind.Creature,
                                 CardSuperKind.None,
                                 CardSubKind.Elf,
                                 CardSubKind.Warrior)
-                            .WithLabel(2, "Card type with multiple sub-types")
+                            .WithLabel(2, "Parsing card type with multiple sub-types")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Legendary Creature - Goblin Shaman")
                             .ExpectValid(
                                 CardKind.Creature,
                                 CardSuperKind.Legendary,
                                 CardSubKind.Goblin,
                                 CardSubKind.Shaman)
-                            .WithLabel(3, "Card type with super-type and multiple sub-types")
+                            .WithLabel(3, "Parsing card type with super-type and multiple sub-types")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Creature — Kithkin Soldier")
                             .ExpectValid(
                                 CardKind.Creature,
                                 CardSuperKind.None,
                                 CardSubKind.Kithkin,
                                 CardSubKind.Soldier)
-                            .WithLabel(4, "Card type with separator from MTGJSON")
+                            .WithLabel(4, "Parsing card type with separator from MTGJSON")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> InvalidTypeTheories
+                public static IEnumerable<object[]> ParsingInvalidTypeTheories
                 {
                     get
                     {
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create(string.Empty)
                             .ExpectInvalid("<Kind> Value must not be <null> or empty.")
-                            .WithLabel(1, "Empty type")
+                            .WithLabel(1, "Parsing empty card type")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Food")
                             .ExpectInvalid("<Kind> No mapping for value [Food].")
-                            .WithLabel(2, "Invalid card type")
+                            .WithLabel(2, "Parsing invalid card type")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Extraordinary Creature")
                             .ExpectInvalid("<SuperKind> No mapping for value [Extraordinary].")
-                            .WithLabel(3, "Invalid card super-type")
+                            .WithLabel(3, "Parsing invalid card super-type")
                             .ToXunitTheory();
 
-                        yield return TypeTheory
+                        yield return ParsingTypeTheory
                             .Create("Creature - Quokka Ranger")
                             .ExpectInvalid("<SubKind> No mapping for value [Quokka], [Ranger].")
-                            .WithLabel(4, "Invalid card sub-types")
+                            .WithLabel(4, "Parsing invalid card sub-types")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> ValidManaCostTheories
+                public static IEnumerable<object[]> ParsingValidManaCostTheories
                 {
                     get
                     {
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Creature", "{0}")
                             .ExpectValid(DefinedBlob.PayingManaCost.Free)
-                            .WithLabel(1, "Non-land with zero amount")
+                            .WithLabel(1, "Parsing non-land card with zero amount")
                             .ToXunitTheory();
 
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Creature", "{42}")
                             .ExpectValid(DefinedBlob.PayingManaCost.Builder
                                 .Create()
                                 .WithAmount(Mana.Colorless, 42)
                                 .Build())
-                            .WithLabel(2, "Non-land with colorless amount")
+                            .WithLabel(2, "Parsing non-land card with colorless amount")
                             .ToXunitTheory();
 
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Creature", "{G}")
                             .ExpectValid(DefinedBlob.PayingManaCost.Builder
                                 .Create()
                                 .WithAmount(Mana.Green, 1)
                                 .Build())
-                            .WithLabel(3, "Non-land with mono-color amount")
+                            .WithLabel(3, "Parsing non-land card with mono-color amount")
                             .ToXunitTheory();
 
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Creature", "{1}{W}{U}{B}{R}{G}")
                             .ExpectValid(DefinedBlob.PayingManaCost.Builder
                                 .Create()
@@ -790,128 +790,128 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 .WithAmount(Mana.Red, 1)
                                 .WithAmount(Mana.Green, 1)
                                 .Build())
-                            .WithLabel(4, "Non-land with colorless and all colors amount")
+                            .WithLabel(4, "Parsing non-land card with colorless and all colors amount")
                             .ToXunitTheory();
 
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Land", string.Empty)
                             .ExpectValid(DefinedBlob.PayingManaCost.Free)
-                            .WithLabel(5, "Land with empty amount")
+                            .WithLabel(5, "Parsing land card with empty amount")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> InvalidManaCostTheories
+                public static IEnumerable<object[]> ParsingInvalidManaCostTheories
                 {
                     get
                     {
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Creature", string.Empty)
                             .ExpectInvalid("<ManaCost> Value must not be <null> or empty.")
-                            .WithLabel(1, "Non-land with empty mana cost")
+                            .WithLabel(1, "Parsing non-land card with empty mana cost")
                             .ToXunitTheory();
 
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Creature", "{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}")
                             .ExpectInvalid("<ManaCost> Value [{1}{W}{U}{B}{R}{G}{-}{A}{C}{E}] has invalid symbol.")
-                            .WithLabel(2, "Non-land with invalid mana symbol")
+                            .WithLabel(2, "Parsing non-land card with invalid mana symbol")
                             .ToXunitTheory();
 
-                        yield return ManaCostTheory
+                        yield return ParsingManaCostTheory
                             .Create("Land", "{42}")
                             .ExpectInvalid("<ManaCost> Non-empty value for type [Land].")
-                            .WithLabel(3, "Land with non-empty mana cost")
+                            .WithLabel(3, "Parsing land card with non-empty mana cost")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> ValidPowerTheories
+                public static IEnumerable<object[]> ParsingValidPowerTheories
                 {
                     get
                     {
-                        yield return PowerTheory
+                        yield return ParsingPowerTheory
                             .Create("Creature", "42")
                             .ExpectValid(42)
-                            .WithLabel(1, "Creature with non-zero power")
+                            .WithLabel(1, "Parsing creature card with non-zero power")
                             .ToXunitTheory();
 
-                        yield return PowerTheory
+                        yield return ParsingPowerTheory
                             .Create("Legendary Creature - Elf Warrior", "42")
                             .ExpectValid(42)
-                            .WithLabel(2, "Creature with super-, sub-types and non-zero power")
+                            .WithLabel(2, "Parsing creature card with super-, sub-types and non-zero power")
                             .ToXunitTheory();
 
-                        yield return PowerTheory
+                        yield return ParsingPowerTheory
                             .Create("Artifact", string.Empty)
                             .ExpectValid(0)
-                            .WithLabel(3, "Non-creature with empty power")
+                            .WithLabel(3, "Parsing non-creature card with empty power")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> InvalidPowerTheories
+                public static IEnumerable<object[]> ParsingInvalidPowerTheories
                 {
                     get
                     {
-                        yield return PowerTheory
+                        yield return ParsingPowerTheory
                             .Create("Creature", "X")
                             .ExpectInvalid("<Power> Invalid value [X].")
-                            .WithLabel(1, "Creature with invalid power")
+                            .WithLabel(1, "Parsing creature card with invalid power")
                             .ToXunitTheory();
 
-                        yield return PowerTheory
+                        yield return ParsingPowerTheory
                             .Create("Basic Land - Forest", "42")
                             .ExpectInvalid("<Power> Non-empty value for non-creature type [Land].")
-                            .WithLabel(2, "Non-creature with non-empty power")
+                            .WithLabel(2, "Parsing non-creature card with non-empty power")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> ValidToughnessTheories
+                public static IEnumerable<object[]> ParsingValidToughnessTheories
                 {
                     get
                     {
-                        yield return ToughnessTheory
+                        yield return ParsingToughnessTheory
                             .Create("Creature", "42")
                             .ExpectValid(42)
-                            .WithLabel(1, "Creature with non-zero toughness")
+                            .WithLabel(1, "Parsing creature card with non-zero toughness")
                             .ToXunitTheory();
 
-                        yield return ToughnessTheory
+                        yield return ParsingToughnessTheory
                             .Create("Legendary Creature - Elf Warrior", "42")
                             .ExpectValid(42)
-                            .WithLabel(2, "Creature with super-, sub-types and non-zero toughness")
+                            .WithLabel(2, "Parsing creature card with super-, sub-types and non-zero toughness")
                             .ToXunitTheory();
 
-                        yield return ToughnessTheory
+                        yield return ParsingToughnessTheory
                             .Create("Artifact", string.Empty)
                             .ExpectValid(0)
-                            .WithLabel(3, "Non-creature with empty toughness")
+                            .WithLabel(3, "Parsing non-creature card with empty toughness")
                             .ToXunitTheory();
                     }
                 }
 
-                public static IEnumerable<object[]> InvalidToughnessTheories
+                public static IEnumerable<object[]> ParsingInvalidToughnessTheories
                 {
                     get
                     {
-                        yield return ToughnessTheory
+                        yield return ParsingToughnessTheory
                             .Create("Creature", "X")
                             .ExpectInvalid("<Toughness> Invalid value [X].")
-                            .WithLabel(1, "Creature with invalid toughness")
+                            .WithLabel(1, "Parsing creature card with invalid toughness")
                             .ToXunitTheory();
 
-                        yield return ToughnessTheory
+                        yield return ParsingToughnessTheory
                             .Create("Basic Land - Forest", "42")
                             .ExpectInvalid("<Toughness> Non-empty value for non-creature type [Land].")
-                            .WithLabel(2, "Non-creature with non-empty toughness")
+                            .WithLabel(2, "Parsing non-creature card with non-empty toughness")
                             .ToXunitTheory();
                     }
                 }
             }
         }
 
-        public class TypeTheory : ParsingTheory
+        public class ParsingTypeTheory : ParsingTheory
         {
             public string UnparsedType { get; private init; }
 
@@ -921,7 +921,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public IEnumerable<CardSubKind> ParsedCardSubKinds { get; private set; }
 
-            public static TypeTheory Create(string unparsedType)
+            public static ParsingTypeTheory Create(string unparsedType)
             {
                 return new()
                 {
@@ -933,7 +933,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
             }
 
-            public TypeTheory ExpectValid(
+            public ParsingTypeTheory ExpectValid(
                 CardKind parsedCardKind,
                 CardSuperKind parsedCardSuperKind,
                 params CardSubKind[] parsedCardSubKinds)
@@ -963,7 +963,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class ManaCostTheory : ParsingTheory
+        public class ParsingManaCostTheory : ParsingTheory
         {
             public string UnparsedType { get; private init; }
 
@@ -971,7 +971,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public DefinedBlob.Cost ParsedManaCost { get; private set; }
 
-            public static ManaCostTheory Create(string unparsedType, string unparsedManaCost)
+            public static ParsingManaCostTheory Create(string unparsedType, string unparsedManaCost)
             {
                 return new()
                 {
@@ -982,7 +982,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
             }
 
-            public ManaCostTheory ExpectValid(DefinedBlob.PayingManaCost parsedManaCost)
+            public ParsingManaCostTheory ExpectValid(DefinedBlob.PayingManaCost parsedManaCost)
             {
                 this.ParsedManaCost = parsedManaCost;
 
@@ -990,7 +990,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class PowerTheory : ParsingTheory
+        public class ParsingPowerTheory : ParsingTheory
         {
             public string UnparsedType { get; private init; }
 
@@ -998,7 +998,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public ushort ParsedPower { get; private set; }
 
-            public static PowerTheory Create(string unparsedType, string unparsedPower)
+            public static ParsingPowerTheory Create(string unparsedType, string unparsedPower)
             {
                 return new()
                 {
@@ -1009,7 +1009,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
             }
 
-            public PowerTheory ExpectValid(ushort parsedPower)
+            public ParsingPowerTheory ExpectValid(ushort parsedPower)
             {
                 this.ParsedPower = parsedPower;
 
@@ -1017,7 +1017,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
         }
 
-        public class ToughnessTheory : ParsingTheory
+        public class ParsingToughnessTheory : ParsingTheory
         {
             public string UnparsedType { get; private init; }
 
@@ -1025,7 +1025,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public ushort ParsedToughness { get; private set; }
 
-            public static ToughnessTheory Create(string unparsedType, string unparsedToughness)
+            public static ParsingToughnessTheory Create(string unparsedType, string unparsedToughness)
             {
                 return new()
                 {
@@ -1036,7 +1036,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 };
             }
 
-            public ToughnessTheory ExpectValid(ushort parsedToughness)
+            public ParsingToughnessTheory ExpectValid(ushort parsedToughness)
             {
                 this.ParsedToughness = parsedToughness;
 

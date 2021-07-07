@@ -42,8 +42,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class ParseAbilityMethod
         {
             [Theory]
-            [MemberData(nameof(TestData.ProducingManaTheories), MemberType = typeof(TestData))]
-            public void WhenGettingAbilityToProduceMana_ShouldParseValue(AbilityTheory theory)
+            [MemberData(nameof(TestData.ParsingManaAbilityTheories), MemberType = typeof(TestData))]
+            public void WhenGettingAbilityToProduceMana_ShouldParseValue(ParsingAbilityTheory theory)
             {
                 // Arrange.
 
@@ -94,63 +94,63 @@ namespace nGratis.AI.Kvasir.Core.Test
             [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
             private static class TestData
             {
-                public static IEnumerable<object[]> ProducingManaTheories
+                public static IEnumerable<object[]> ParsingManaAbilityTheories
                 {
                     get
                     {
-                        yield return AbilityTheory
+                        yield return ParsingAbilityTheory
                             .Create("({T}: Add {W}.)")
                             .ExpectProducingMana(Mana.White)
-                            .WithLabel(1, "Producing mana from Plains")
+                            .WithLabel(1, "Parsing mana ability from Plains")
                             .ToXunitTheory();
 
-                        yield return AbilityTheory
+                        yield return ParsingAbilityTheory
                             .Create("({T}: Add {U}.)")
                             .ExpectProducingMana(Mana.Blue)
-                            .WithLabel(2, "Producing mana from Island")
+                            .WithLabel(2, "Parsing mana ability from Island")
                             .ToXunitTheory();
 
-                        yield return AbilityTheory
+                        yield return ParsingAbilityTheory
                             .Create("({T}: Add {B}.)")
                             .ExpectProducingMana(Mana.Black)
-                            .WithLabel(3, "Producing mana from Swamp")
+                            .WithLabel(3, "Parsing mana ability from Swamp")
                             .ToXunitTheory();
 
-                        yield return AbilityTheory
+                        yield return ParsingAbilityTheory
                             .Create("({T}: Add {R}.)")
                             .ExpectProducingMana(Mana.Red)
-                            .WithLabel(4, "Producing mana from Mountain")
+                            .WithLabel(4, "Parsing mana ability from Mountain")
                             .ToXunitTheory();
 
-                        yield return AbilityTheory
+                        yield return ParsingAbilityTheory
                             .Create("({T}: Add {G}.)")
                             .ExpectProducingMana(Mana.Green)
-                            .WithLabel(5, "Producing mana from Forest")
+                            .WithLabel(5, "Parsing mana ability from Forest")
                             .ToXunitTheory();
                     }
                 }
             }
 
-            public sealed class AbilityTheory : CopTheory
+            public sealed class ParsingAbilityTheory : CopTheory
             {
-                public string UnparsedAbility { get; private set; }
+                public string UnparsedAbility { get; private init; }
 
                 public DefinedBlob.Ability ParsedAbility { get; private set; }
 
-                public static AbilityTheory Create(string unparsedAbility)
+                public static ParsingAbilityTheory Create(string unparsedAbility)
                 {
                     Guard
                         .Require(unparsedAbility, nameof(unparsedAbility))
                         .Is.Not.Empty();
 
-                    return new AbilityTheory
+                    return new ParsingAbilityTheory
                     {
                         UnparsedAbility = unparsedAbility,
                         ParsedAbility = DefinedBlob.Ability.NotSupported
                     };
                 }
 
-                public AbilityTheory ExpectProducingMana(Mana mana)
+                public ParsingAbilityTheory ExpectProducingMana(Mana mana)
                 {
                     this.ParsedAbility = new DefinedBlob.Ability
                     {
@@ -176,8 +176,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class ParseCostMethod
         {
             [Theory]
-            [MemberData(nameof(TestData.PayingManaCostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingCostToPayMana_ShouldParseValue(CostTheory theory)
+            [MemberData(nameof(TestData.ParsingManaCostTheories), MemberType = typeof(TestData))]
+            public void WhenGettingCostToPayMana_ShouldParseValue(ParsingCostTheory theory)
             {
                 // Arrange.
 
@@ -227,35 +227,35 @@ namespace nGratis.AI.Kvasir.Core.Test
             [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
             private static class TestData
             {
-                public static IEnumerable<object[]> PayingManaCostTheories
+                public static IEnumerable<object[]> ParsingManaCostTheories
                 {
                     get
                     {
-                        yield return CostTheory
+                        yield return ParsingCostTheory
                             .Create("{0}")
                             .Expect(DefinedBlob.PayingManaCost.Free)
-                            .WithLabel(1, "Paying zero mana cost")
+                            .WithLabel(1, "Parsing zero mana cost")
                             .ToXunitTheory();
 
-                        yield return CostTheory
+                        yield return ParsingCostTheory
                             .Create("{42}")
                             .Expect(DefinedBlob.PayingManaCost.Builder
                                 .Create()
                                 .WithAmount(Mana.Colorless, 42)
                                 .Build())
-                            .WithLabel(2, "Paying colorless mana cost")
+                            .WithLabel(2, "Parsing colorless mana cost")
                             .ToXunitTheory();
 
-                        yield return CostTheory
+                        yield return ParsingCostTheory
                             .Create("{G}")
                             .Expect(DefinedBlob.PayingManaCost.Builder
                                 .Create()
                                 .WithAmount(Mana.Green, 1)
                                 .Build())
-                            .WithLabel(3, "Paying mono-color mana cost")
+                            .WithLabel(3, "Parsing mono-color mana cost")
                             .ToXunitTheory();
 
-                        yield return CostTheory
+                        yield return ParsingCostTheory
                             .Create("{1}{W}{W}{U}{U}{U}{B}{B}{B}{B}{R}{R}{R}{R}{R}{G}{G}{G}{G}{G}{G}")
                             .Expect(DefinedBlob.PayingManaCost.Builder
                                 .Create()
@@ -266,32 +266,32 @@ namespace nGratis.AI.Kvasir.Core.Test
                                 .WithAmount(Mana.Red, 5)
                                 .WithAmount(Mana.Green, 6)
                                 .Build())
-                            .WithLabel(4, "Paying colorless and all colors mana cost")
+                            .WithLabel(4, "Parsing colorless and all colors mana cost")
                             .ToXunitTheory();
                     }
                 }
             }
 
-            public sealed class CostTheory : CopTheory
+            public sealed class ParsingCostTheory : CopTheory
             {
-                public string UnparsedCost { get; private set; }
+                public string UnparsedCost { get; private init; }
 
                 public DefinedBlob.Cost ParsedCost { get; private set; }
 
-                public static CostTheory Create(string unparsedCost)
+                public static ParsingCostTheory Create(string unparsedCost)
                 {
                     Guard
                         .Require(unparsedCost, nameof(unparsedCost))
                         .Is.Not.Empty();
 
-                    return new CostTheory
+                    return new ParsingCostTheory
                     {
                         UnparsedCost = unparsedCost,
                         ParsedCost = DefinedBlob.UnknownCost.Instance
                     };
                 }
 
-                public CostTheory Expect(DefinedBlob.Cost parsedCost)
+                public ParsingCostTheory Expect(DefinedBlob.Cost parsedCost)
                 {
                     Guard
                         .Require(parsedCost, nameof(parsedCost))

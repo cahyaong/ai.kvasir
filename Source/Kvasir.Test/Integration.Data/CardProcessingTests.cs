@@ -45,7 +45,7 @@ namespace nGratis.AI.Kvasir.Test
     {
         [Theory]
         [MemberData(nameof(TestData.ParsingBasicCreatureCardTheories), MemberType = typeof(TestData))]
-        public async Task WhenGettingBasicCreatureCard_ShouldParseAndSerializeToKvasirFormatCorrectly(CardTheory theory)
+        public async Task WhenGettingBasicCreatureCard_ShouldParseAndSerializeToKvasirFormatCorrectly(ParsingCardTheory theory)
         {
             // Arrange.
 
@@ -112,7 +112,7 @@ namespace nGratis.AI.Kvasir.Test
             {
                 get
                 {
-                    yield return CardTheory
+                    yield return ParsingCardTheory
                         .Create("Portal", "Foot Soldiers")
                         .ExpectParsedCard(new DefinedBlob.Card
                         {
@@ -121,10 +121,10 @@ namespace nGratis.AI.Kvasir.Test
                             Power = 2,
                             Toughness = 4
                         })
-                        .WithLabel(1, "Basic white creature")
+                        .WithLabel(1, "Parsing basic white creature card")
                         .ToXunitTheory();
 
-                    yield return CardTheory
+                    yield return ParsingCardTheory
                         .Create("Portal", "Giant Octopus")
                         .ExpectParsedCard(new DefinedBlob.Card
                         {
@@ -133,10 +133,10 @@ namespace nGratis.AI.Kvasir.Test
                             Power = 3,
                             Toughness = 3
                         })
-                        .WithLabel(2, "Basic blue creature")
+                        .WithLabel(2, "Parsing basic blue creature card")
                         .ToXunitTheory();
 
-                    yield return CardTheory
+                    yield return ParsingCardTheory
                         .Create("Portal", "Muck Rats")
                         .ExpectParsedCard(new DefinedBlob.Card
                         {
@@ -145,10 +145,10 @@ namespace nGratis.AI.Kvasir.Test
                             Power = 1,
                             Toughness = 1
                         })
-                        .WithLabel(3, "Basic black creature")
+                        .WithLabel(3, "Parsing basic black creature card")
                         .ToXunitTheory();
 
-                    yield return CardTheory
+                    yield return ParsingCardTheory
                         .Create("Portal", "Goblin Bully")
                         .ExpectParsedCard(new DefinedBlob.Card
                         {
@@ -157,10 +157,10 @@ namespace nGratis.AI.Kvasir.Test
                             Power = 2,
                             Toughness = 1
                         })
-                        .WithLabel(4, "Basic red creature")
+                        .WithLabel(4, "Parsing basic red creature card")
                         .ToXunitTheory();
 
-                    yield return CardTheory
+                    yield return ParsingCardTheory
                         .Create("Portal", "Elvish Ranger")
                         .ExpectParsedCard(new DefinedBlob.Card
                         {
@@ -169,15 +169,15 @@ namespace nGratis.AI.Kvasir.Test
                             Power = 4,
                             Toughness = 1
                         })
-                        .WithLabel(5, "Basic green creature")
+                        .WithLabel(5, "Parsing basic green creature card")
                         .ToXunitTheory();
                 }
             }
         }
 
-        public class CardTheory : CopTheory
+        public class ParsingCardTheory : CopTheory
         {
-            private CardTheory()
+            private ParsingCardTheory()
             {
             }
 
@@ -187,7 +187,7 @@ namespace nGratis.AI.Kvasir.Test
 
             public DefinedBlob.Card ExpectedCard { get; private set; }
 
-            public static CardTheory Create(string cardSetName, string cardName)
+            public static ParsingCardTheory Create(string cardSetName, string cardName)
             {
                 Guard
                     .Require(cardSetName, nameof(cardSetName))
@@ -197,14 +197,14 @@ namespace nGratis.AI.Kvasir.Test
                     .Require(cardName, nameof(cardName))
                     .Is.Not.Empty();
 
-                return new CardTheory
+                return new ParsingCardTheory
                 {
                     CardSetName = cardSetName,
                     CardName = cardName
                 };
             }
 
-            public CardTheory ExpectParsedCard(DefinedBlob.Card definedCard)
+            public ParsingCardTheory ExpectParsedCard(DefinedBlob.Card definedCard)
             {
                 Guard
                     .Require(definedCard, nameof(definedCard))

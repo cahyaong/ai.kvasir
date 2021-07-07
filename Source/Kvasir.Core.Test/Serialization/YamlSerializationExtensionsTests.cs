@@ -43,8 +43,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class SerializeToYamlMethod_Cost
         {
             [Theory]
-            [MemberData(nameof(TestData.CostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidCost_ShouldSerializeImportantFields(CostTheory theory)
+            [MemberData(nameof(TestData.SerializingCostTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidCost_ShouldSerializeImportantFields(SerializingCostTheory theory)
             {
                 // Arrange.
 
@@ -64,8 +64,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class SerializeToYamlMethod_Effect
         {
             [Theory]
-            [MemberData(nameof(TestData.EffectTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidCost_ShouldSerializeImportantFields(EffectTheory theory)
+            [MemberData(nameof(TestData.SerializingEffectTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidCost_ShouldSerializeImportantFields(SerializingEffectTheory theory)
             {
                 // Arrange.
 
@@ -113,8 +113,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class DeserializedFromYamlMethod_Cost
         {
             [Theory]
-            [MemberData(nameof(TestData.CostTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidContent_ShouldDeserializeImportantFields(CostTheory theory)
+            [MemberData(nameof(TestData.SerializingCostTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidContent_ShouldDeserializeImportantFields(SerializingCostTheory theory)
             {
                 // Arrange.
 
@@ -134,8 +134,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class DeserializedFromYamlMethod_Effect
         {
             [Theory]
-            [MemberData(nameof(TestData.EffectTheories), MemberType = typeof(TestData))]
-            public void WhenGettingValidContent_ShouldDeserializeImportantFields(EffectTheory theory)
+            [MemberData(nameof(TestData.SerializingEffectTheories), MemberType = typeof(TestData))]
+            public void WhenGettingValidContent_ShouldDeserializeImportantFields(SerializingEffectTheory theory)
             {
                 // Arrange.
 
@@ -201,18 +201,18 @@ namespace nGratis.AI.Kvasir.Core.Test
         [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
         private static class TestData
         {
-            public static IEnumerable<object[]> CostTheories
+            public static IEnumerable<object[]> SerializingCostTheories
             {
                 get
                 {
-                    yield return CostTheory
+                    yield return SerializingCostTheory
                         .Create()
                         .Expect("kind: Tapping")
                         .Expect(DefinedBlob.TappingCost.Instance)
-                        .WithLabel(10, "Tapping cost")
+                        .WithLabel(10, "Serializing tapping cost")
                         .ToXunitTheory();
 
-                    yield return CostTheory
+                    yield return SerializingCostTheory
                         .Create()
                         .Expect(@"
 kind: PayingMana
@@ -232,10 +232,10 @@ amount:
                             .WithAmount(Mana.Red, 5)
                             .WithAmount(Mana.Green, 6)
                             .Build())
-                        .WithLabel(20, "Paying mana cost with all basic colors")
+                        .WithLabel(20, "Serializing paying mana cost with all basic colors")
                         .ToXunitTheory();
 
-                    yield return CostTheory
+                    yield return SerializingCostTheory
                         .Create()
                         .Expect(@"
 kind: PayingMana
@@ -247,25 +247,25 @@ amount:
                             .WithAmount(Mana.White, 1)
                             .WithAmount(Mana.Green, 2)
                             .Build())
-                        .WithLabel(21, "Paying mana cost with specific colors")
+                        .WithLabel(21, "Serializing paying mana cost with specific colors")
                         .ToXunitTheory();
 
-                    yield return CostTheory
+                    yield return SerializingCostTheory
                         .Create()
                         .Expect(@"
 kind: PayingMana
 amount: {}")
                         .Expect(DefinedBlob.PayingManaCost.Free)
-                        .WithLabel(22, "Paying without mana cost")
+                        .WithLabel(22, "Serializing paying without mana cost")
                         .ToXunitTheory();
                 }
             }
 
-            public static IEnumerable<object[]> EffectTheories
+            public static IEnumerable<object[]> SerializingEffectTheories
             {
                 get
                 {
-                    yield return EffectTheory
+                    yield return SerializingEffectTheory
                         .Create()
                         .Expect(@"
 kind: ProducingMana
@@ -285,10 +285,10 @@ amount:
                             .WithAmount(Mana.Red, 5)
                             .WithAmount(Mana.Green, 6)
                             .Build())
-                        .WithLabel(10, "Paying mana cost with all basic colors")
+                        .WithLabel(10, "Serializing producing mana cost with all basic colors")
                         .ToXunitTheory();
 
-                    yield return EffectTheory
+                    yield return SerializingEffectTheory
                         .Create()
                         .Expect(@"
 kind: ProducingMana
@@ -300,25 +300,25 @@ amount:
                             .WithAmount(Mana.White, 1)
                             .WithAmount(Mana.Green, 2)
                             .Build())
-                        .WithLabel(11, "Paying mana cost with specific colors")
+                        .WithLabel(11, "Serializing producing mana cost with specific colors")
                         .ToXunitTheory();
                 }
             }
         }
     }
 
-    public sealed class CostTheory : CopTheory
+    public sealed class SerializingCostTheory : CopTheory
     {
         public string SerializedBlob { get; private set; }
 
         public DefinedBlob.Cost DeserializedInstance { get; private set; }
 
-        public static CostTheory Create()
+        public static SerializingCostTheory Create()
         {
             return new();
         }
 
-        public CostTheory Expect(string serializedBlob)
+        public SerializingCostTheory Expect(string serializedBlob)
         {
             Guard
                 .Require(serializedBlob, nameof(serializedBlob))
@@ -329,7 +329,7 @@ amount:
             return this;
         }
 
-        public CostTheory Expect(DefinedBlob.Cost deserializedInstance)
+        public SerializingCostTheory Expect(DefinedBlob.Cost deserializedInstance)
         {
             Guard
                 .Require(deserializedInstance, nameof(deserializedInstance))
@@ -341,18 +341,18 @@ amount:
         }
     }
 
-    public sealed class EffectTheory : CopTheory
+    public sealed class SerializingEffectTheory : CopTheory
     {
         public string SerializedBlob { get; private set; }
 
         public DefinedBlob.Effect DeserializedInstance { get; private set; }
 
-        public static EffectTheory Create()
+        public static SerializingEffectTheory Create()
         {
             return new();
         }
 
-        public EffectTheory Expect(string serializedBlob)
+        public SerializingEffectTheory Expect(string serializedBlob)
         {
             Guard
                 .Require(serializedBlob, nameof(serializedBlob))
@@ -363,7 +363,7 @@ amount:
             return this;
         }
 
-        public EffectTheory Expect(DefinedBlob.Effect deserializedInstance)
+        public SerializingEffectTheory Expect(DefinedBlob.Effect deserializedInstance)
         {
             Guard
                 .Require(deserializedInstance, nameof(deserializedInstance))

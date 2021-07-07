@@ -30,7 +30,6 @@ namespace nGratis.AI.Kvasir.Core.Test
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
@@ -109,8 +108,8 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class FetchCardsAsyncMethod
         {
             [Theory]
-            [MemberData(nameof(TestData.ValidCardSetTheories), MemberType = typeof(TestData))]
-            public async Task WhenGettingSuccessfulResponse_ShouldParseJson(CardSetTheory theory)
+            [MemberData(nameof(TestData.FetchingValidCardSetTheories), MemberType = typeof(TestData))]
+            public async Task WhenGettingSuccessfulResponse_ShouldParseJson(FetchingCardsTheory theory)
             {
                 // Arrange.
 
@@ -157,7 +156,6 @@ namespace nGratis.AI.Kvasir.Core.Test
             }
 
             [Fact]
-            [SuppressMessage("ReSharper", "StringLiteralTypo")]
             public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
             {
                 // Arrange.
@@ -193,38 +191,38 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public static class TestData
             {
-                public static IEnumerable<object[]> ValidCardSetTheories
+                public static IEnumerable<object[]> FetchingValidCardSetTheories
                 {
                     get
                     {
-                        yield return CardSetTheory
+                        yield return FetchingCardsTheory
                             .Create("WAR", 2)
                             .ExpectCardCount(275)
-                            .WithLabel(1, "Card with standard single face")
+                            .WithLabel(1, "Fetching cards with standard single face")
                             .ToXunitTheory();
 
-                        yield return CardSetTheory
+                        yield return FetchingCardsTheory
                             .Create("ISD", 2)
                             .ExpectCardCount(239)
-                            .WithLabel(2, "Card with second face")
+                            .WithLabel(2, "Fetching cards with second face")
                             .ToXunitTheory();
                     }
                 }
             }
 
-            public class CardSetTheory : CopTheory
+            public class FetchingCardsTheory : CopTheory
             {
-                private CardSetTheory()
+                private FetchingCardsTheory()
                 {
                 }
 
-                public string CardSetCode { get; private set; }
+                public string CardSetCode { get; private init; }
 
-                public int PageCount { get; private set; }
+                public int PageCount { get; private init; }
 
                 public int ExpectedCardCount { get; private set; }
 
-                public static CardSetTheory Create(string code, int pageCount)
+                public static FetchingCardsTheory Create(string code, int pageCount)
                 {
                     Guard
                         .Require(code, nameof(code))
@@ -234,14 +232,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                         .Require(pageCount, nameof(pageCount))
                         .Is.Positive();
 
-                    return new CardSetTheory
+                    return new FetchingCardsTheory
                     {
                         CardSetCode = code,
                         PageCount = pageCount
                     };
                 }
 
-                public CardSetTheory ExpectCardCount(int cardCount)
+                public FetchingCardsTheory ExpectCardCount(int cardCount)
                 {
                     Guard
                         .Require(cardCount, nameof(cardCount))
