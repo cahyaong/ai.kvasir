@@ -34,5 +34,10 @@ namespace nGratis.AI.Kvasir.Contract
             : base(message)
         {
         }
+
+        public KvasirTestingException(string message, params string[] submessages)
+            : base(message, submessages)
+        {
+        }
     }
 }

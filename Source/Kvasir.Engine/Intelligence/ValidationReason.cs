@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="ValidationReason.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,44 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, November 12, 2021 12:09:03 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
-    public class Land : Permanent
+    public class ValidationReason
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
+        private ValidationReason()
         {
+        }
+
+        public int Id { get; init; }
+
+        public string Cause { get; init; }
+
+        public string Reference { get; init; }
+
+        public string Message { get; init; }
+
+        public static ValidationReason Create(string message, Permanent permanent)
+        {
+            Guard
+                .Require(message, nameof(message))
+                .Is.Not.Empty();
+
+            Guard
+                .Require(permanent, nameof(permanent))
+                .Is.Not.Null();
+
+            return new()
+            {
+                Id = permanent.Id,
+                Cause = $"Permanent_{permanent.Kind}",
+                Reference = permanent.Name,
+                Message = message
+            };
         }
     }
 }

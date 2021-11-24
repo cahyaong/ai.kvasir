@@ -30,40 +30,47 @@
 
 namespace System.Reflection
 {
+    using System.Collections.Generic;
     using System.IO;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
+    using nGratis.AI.Kvasir.Framework;
     using nGratis.Cop.Olympus.Contract;
+    using YamlDotNet.Serialization;
 
     public static class AssemblyExtensions
     {
-        public static Stream FindSessionDataStream(this Assembly assembly, string name)
+        public static Stream FindSessionDataStream(this object _, string name)
         {
-            Guard
-                .Require(assembly, nameof(assembly))
-                .Is.Not.Null();
-
             Guard
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            return
-                assembly.GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession") ??
-                throw new KvasirTestingException($"Session [{name}] must be embedded!");
+            return Assembly
+                .GetExecutingAssembly()
+                .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession") ??
+                throw new KvasirTestingException(@"Session data must be embedded!", $"Name: [{name}].");
         }
 
-        public static Stream FindDeckDataStream(this Assembly assembly, string name)
+        public static void LoadCreatureData(this Zone zone, string name)
         {
             Guard
-                .Require(assembly, nameof(assembly))
+                .Require(zone, nameof(zone))
                 .Is.Not.Null();
 
             Guard
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            return
-                assembly.GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkdeck") ??
-                throw new KvasirTestingException($"Session [{name}] must be embedded!");
+            using var dataStream = Assembly
+                .GetExecutingAssembly()
+                .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkcard") ??
+                throw new KvasirTestingException(@"Creatures data must be embedded!", $"Name: [{name}].");
+
+            dataStream
+                .ReadText()
+                .DeserializeFromYaml<List<StubCreature>>()
+                .ForEach(zone.AddCard);
         }
     }
 }

@@ -45,7 +45,8 @@ namespace nGratis.AI.Kvasir.Test
     {
         [Theory]
         [MemberData(nameof(TestData.ParsingBasicCreatureCardTheories), MemberType = typeof(TestData))]
-        public async Task WhenGettingBasicCreatureCard_ShouldParseAndSerializeToKvasirFormatCorrectly(ParsingCardTheory theory)
+        public async Task WhenGettingBasicCreatureCard_ShouldParseAndSerializeToKvasirFormatCorrectly(
+            ParsingCardTheory theory)
         {
             // Arrange.
 
@@ -114,7 +115,7 @@ namespace nGratis.AI.Kvasir.Test
                 {
                     yield return ParsingCardTheory
                         .Create("Portal", "Foot Soldiers")
-                        .ExpectParsedCard(new DefinedBlob.Card
+                        .Expect(new DefinedBlob.Card
                         {
                             Name = "Foot Soldiers",
                             SubKinds = new[] { CardSubKind.Human, CardSubKind.Soldier },
@@ -126,7 +127,7 @@ namespace nGratis.AI.Kvasir.Test
 
                     yield return ParsingCardTheory
                         .Create("Portal", "Giant Octopus")
-                        .ExpectParsedCard(new DefinedBlob.Card
+                        .Expect(new DefinedBlob.Card
                         {
                             Name = "Giant Octopus",
                             SubKinds = new[] { CardSubKind.Octopus },
@@ -138,7 +139,7 @@ namespace nGratis.AI.Kvasir.Test
 
                     yield return ParsingCardTheory
                         .Create("Portal", "Muck Rats")
-                        .ExpectParsedCard(new DefinedBlob.Card
+                        .Expect(new DefinedBlob.Card
                         {
                             Name = "Muck Rats",
                             SubKinds = new[] { CardSubKind.Rat },
@@ -150,7 +151,7 @@ namespace nGratis.AI.Kvasir.Test
 
                     yield return ParsingCardTheory
                         .Create("Portal", "Goblin Bully")
-                        .ExpectParsedCard(new DefinedBlob.Card
+                        .Expect(new DefinedBlob.Card
                         {
                             Name = "Goblin Bully",
                             SubKinds = new[] { CardSubKind.Goblin },
@@ -162,7 +163,7 @@ namespace nGratis.AI.Kvasir.Test
 
                     yield return ParsingCardTheory
                         .Create("Portal", "Elvish Ranger")
-                        .ExpectParsedCard(new DefinedBlob.Card
+                        .Expect(new DefinedBlob.Card
                         {
                             Name = "Elvish Ranger",
                             SubKinds = new[] { CardSubKind.Elf },
@@ -204,13 +205,13 @@ namespace nGratis.AI.Kvasir.Test
                 };
             }
 
-            public ParsingCardTheory ExpectParsedCard(DefinedBlob.Card definedCard)
+            public ParsingCardTheory Expect(DefinedBlob.Card card)
             {
                 Guard
-                    .Require(definedCard, nameof(definedCard))
+                    .Require(card, nameof(card))
                     .Is.Not.Null();
 
-                this.ExpectedCard = definedCard;
+                this.ExpectedCard = card;
 
                 return this;
             }

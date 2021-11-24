@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="ValidationResult.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,34 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using nGratis.AI.Kvasir.Contract;
+    using System.Collections.Generic;
+    using System.Linq;
 
-    public class Land : Permanent
+    public class ValidationResult
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
+        private ValidationResult()
         {
+        }
+
+        public static ValidationResult Successful { get; } = new()
+        {
+            Reasons = new List<ValidationReason>()
+        };
+
+        public bool HasError => this.Reasons.Any();
+
+        public IEnumerable<ValidationReason> Reasons { get; init; }
+
+        public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
+        {
+            return reasons?.Any() == true
+                ? new ValidationResult { Reasons = reasons }
+                : ValidationResult.Successful;
         }
     }
 }

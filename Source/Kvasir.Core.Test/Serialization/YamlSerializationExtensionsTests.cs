@@ -207,14 +207,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     yield return SerializingCostTheory
                         .Create()
-                        .Expect("kind: Tapping")
-                        .Expect(DefinedBlob.TappingCost.Instance)
+                        .WithSerializedBlob("kind: Tapping")
+                        .WithDeserializedInstance(DefinedBlob.TappingCost.Instance)
                         .WithLabel(10, "Serializing tapping cost")
                         .ToXunitTheory();
 
                     yield return SerializingCostTheory
                         .Create()
-                        .Expect(@"
+                        .WithSerializedBlob(@"
 kind: PayingMana
 amount:
   colorless: 1
@@ -223,7 +223,7 @@ amount:
   black: 4
   red: 5
   green: 6")
-                        .Expect(DefinedBlob.PayingManaCost.Builder
+                        .WithDeserializedInstance(DefinedBlob.PayingManaCost.Builder
                             .Create()
                             .WithAmount(Mana.Colorless, 1)
                             .WithAmount(Mana.White, 2)
@@ -237,12 +237,12 @@ amount:
 
                     yield return SerializingCostTheory
                         .Create()
-                        .Expect(@"
+                        .WithSerializedBlob(@"
 kind: PayingMana
 amount:
   white: 1
   green: 2")
-                        .Expect(DefinedBlob.PayingManaCost.Builder
+                        .WithDeserializedInstance(DefinedBlob.PayingManaCost.Builder
                             .Create()
                             .WithAmount(Mana.White, 1)
                             .WithAmount(Mana.Green, 2)
@@ -252,10 +252,10 @@ amount:
 
                     yield return SerializingCostTheory
                         .Create()
-                        .Expect(@"
+                        .WithSerializedBlob(@"
 kind: PayingMana
 amount: {}")
-                        .Expect(DefinedBlob.PayingManaCost.Free)
+                        .WithDeserializedInstance(DefinedBlob.PayingManaCost.Free)
                         .WithLabel(22, "Serializing paying without mana cost")
                         .ToXunitTheory();
                 }
@@ -267,7 +267,7 @@ amount: {}")
                 {
                     yield return SerializingEffectTheory
                         .Create()
-                        .Expect(@"
+                        .WithSerializedBlob(@"
 kind: ProducingMana
 amount:
   colorless: 1
@@ -276,7 +276,7 @@ amount:
   black: 4
   red: 5
   green: 6")
-                        .Expect(DefinedBlob.ProducingManaEffect.Builder
+                        .WithDeserializedInstance(DefinedBlob.ProducingManaEffect.Builder
                             .Create()
                             .WithAmount(Mana.Colorless, 1)
                             .WithAmount(Mana.White, 2)
@@ -290,12 +290,12 @@ amount:
 
                     yield return SerializingEffectTheory
                         .Create()
-                        .Expect(@"
+                        .WithSerializedBlob(@"
 kind: ProducingMana
 amount:
   white: 1
   green: 2")
-                        .Expect(DefinedBlob.ProducingManaEffect.Builder
+                        .WithDeserializedInstance(DefinedBlob.ProducingManaEffect.Builder
                             .Create()
                             .WithAmount(Mana.White, 1)
                             .WithAmount(Mana.Green, 2)
@@ -318,7 +318,7 @@ amount:
             return new();
         }
 
-        public SerializingCostTheory Expect(string serializedBlob)
+        public SerializingCostTheory WithSerializedBlob(string serializedBlob)
         {
             Guard
                 .Require(serializedBlob, nameof(serializedBlob))
@@ -329,7 +329,7 @@ amount:
             return this;
         }
 
-        public SerializingCostTheory Expect(DefinedBlob.Cost deserializedInstance)
+        public SerializingCostTheory WithDeserializedInstance(DefinedBlob.Cost deserializedInstance)
         {
             Guard
                 .Require(deserializedInstance, nameof(deserializedInstance))
@@ -352,7 +352,7 @@ amount:
             return new();
         }
 
-        public SerializingEffectTheory Expect(string serializedBlob)
+        public SerializingEffectTheory WithSerializedBlob(string serializedBlob)
         {
             Guard
                 .Require(serializedBlob, nameof(serializedBlob))
@@ -363,7 +363,7 @@ amount:
             return this;
         }
 
-        public SerializingEffectTheory Expect(DefinedBlob.Effect deserializedInstance)
+        public SerializingEffectTheory WithDeserializedInstance(DefinedBlob.Effect deserializedInstance)
         {
             Guard
                 .Require(deserializedInstance, nameof(deserializedInstance))

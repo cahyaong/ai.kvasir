@@ -32,6 +32,7 @@ namespace nGratis.AI.Kvasir.Engine
     using System.Collections.Generic;
     using System.Linq;
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Olympus.Contract;
 
     public class RandomGenerator : IRandomGenerator
     {
@@ -44,13 +45,21 @@ namespace nGratis.AI.Kvasir.Engine
 
         public static RandomGenerator Default { get; } = new(Environment.TickCount);
 
-        public ushort RollDice(ushort sideCount)
+        public int RollDice(int sideCount)
         {
-            return (ushort)(this._random.Next(sideCount) + 1);
+            Guard
+                .Require(sideCount, nameof(sideCount))
+                .Is.GreaterThan(0);
+
+            return this._random.Next(sideCount) + 1;
         }
 
-        public IEnumerable<ushort> GenerateShufflingIndexes(ushort entityCount)
+        public IEnumerable<int> GenerateShufflingIndexes(int entityCount)
         {
+            Guard
+                .Require(entityCount, nameof(entityCount))
+                .Is.GreaterThan(0);
+
             var indexes = Enumerable
                 .Range(0, entityCount)
                 .ToArray();

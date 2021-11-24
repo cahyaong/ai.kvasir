@@ -32,8 +32,8 @@ namespace nGratis.AI.Kvasir.Contract
 
     public interface IRandomGenerator
     {
-        ushort RollDice(ushort sideCount);
+        int RollDice(int sideCount);
 
-        IEnumerable<ushort> GenerateShufflingIndexes(ushort entityCount);
+        IEnumerable<int> GenerateShufflingIndexes(int entityCount);
     }
 }

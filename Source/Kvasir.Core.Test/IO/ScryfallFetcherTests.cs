@@ -108,7 +108,7 @@ namespace nGratis.AI.Kvasir.Core.Test
         public class FetchCardsAsyncMethod
         {
             [Theory]
-            [MemberData(nameof(TestData.FetchingValidCardSetTheories), MemberType = typeof(TestData))]
+            [MemberData(nameof(TestData.FetchingCardsTheories), MemberType = typeof(TestData))]
             public async Task WhenGettingSuccessfulResponse_ShouldParseJson(FetchingCardsTheory theory)
             {
                 // Arrange.
@@ -191,19 +191,19 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public static class TestData
             {
-                public static IEnumerable<object[]> FetchingValidCardSetTheories
+                public static IEnumerable<object[]> FetchingCardsTheories
                 {
                     get
                     {
                         yield return FetchingCardsTheory
                             .Create("WAR", 2)
-                            .ExpectCardCount(275)
+                            .Expect(275)
                             .WithLabel(1, "Fetching cards with standard single face")
                             .ToXunitTheory();
 
                         yield return FetchingCardsTheory
                             .Create("ISD", 2)
-                            .ExpectCardCount(239)
+                            .Expect(239)
                             .WithLabel(2, "Fetching cards with second face")
                             .ToXunitTheory();
                     }
@@ -239,7 +239,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     };
                 }
 
-                public FetchingCardsTheory ExpectCardCount(int cardCount)
+                public FetchingCardsTheory Expect(int cardCount)
                 {
                     Guard
                         .Require(cardCount, nameof(cardCount))

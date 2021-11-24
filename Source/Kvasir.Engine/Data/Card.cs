@@ -49,5 +49,9 @@ namespace nGratis.AI.Kvasir.Engine
         public CardKind Kind { get; init; }
 
         public string Name { get; init; }
+
+        public Player Owner { get; internal set; }
+
+        public Player Controller { get; internal set; }
     }
 }

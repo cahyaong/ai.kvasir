@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="StubCreature.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,17 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, November 5, 2021 5:54:33 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Framework
 {
-    using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
+    using nGratis.Cop.Olympus.Contract;
 
-    public class Land : Permanent
+    public class StubCreature : Creature
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
+        public StubCreature()
+            : base(Text.Undefined)
         {
         }
     }

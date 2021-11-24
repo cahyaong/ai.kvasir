@@ -79,7 +79,9 @@ namespace nGratis.AI.Kvasir.Engine
             this
                 .SetupTabletop()
                 .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
+                .SetupPlayerStrategy(this._tabletop.ActivePlayer)
                 .SetupPlayerZones(this._tabletop.ActivePlayer)
+                .SetupPlayerStrategy(this._tabletop.NonactivePlayer)
                 .SetupPlayerZones(this._tabletop.NonactivePlayer)
                 .SetupSharedZones();
 
@@ -145,6 +147,18 @@ namespace nGratis.AI.Kvasir.Engine
 
             this._tabletop.ActivePlayer.Opponent = this._tabletop.NonactivePlayer;
             this._tabletop.NonactivePlayer.Opponent = this._tabletop.ActivePlayer;
+
+            return this;
+        }
+
+        private RoundSimulator SetupPlayerStrategy(Player player)
+        {
+            // TODO (SHOULD): Move strategy initialization to <IMagicEntityFactory>!
+
+            var judge = new Judge(this._tabletop);
+            var strategy = new RandomStrategy(judge, player, this._randomGenerator);
+
+            player.Strategy = strategy;
 
             return this;
         }

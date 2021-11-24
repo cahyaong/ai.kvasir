@@ -30,13 +30,18 @@ namespace nGratis.AI.Kvasir.Engine
 {
     using System;
     using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
     internal class TurnCoordinator
     {
-        private readonly IReadOnlyDictionary<(Ticker.PhaseState, Ticker.StepState), Action> _handlerLookup;
-        private readonly ILogger _logger;
         private readonly Tabletop _tabletop;
+        private readonly ILogger _logger;
+
+        private readonly IDictionary<(Ticker.PhaseState, Ticker.StepState), Func<ExecutionResult>> _handlerLookup;
+
+        private AttackingDecision _attackingDecision = AttackingDecision.None;
+        private BlockingDecision _blockingDecision = BlockingDecision.None;
 
         public TurnCoordinator(Tabletop tabletop, ILogger logger)
         {
@@ -51,13 +56,15 @@ namespace nGratis.AI.Kvasir.Engine
             this._tabletop = tabletop;
             this._logger = logger;
 
-            this._handlerLookup = new Dictionary<(Ticker.PhaseState, Ticker.StepState), Action>
+            this._handlerLookup = new Dictionary<(Ticker.PhaseState, Ticker.StepState), Func<ExecutionResult>>
             {
-                [(Ticker.PhaseState.Ending, Ticker.StepState.Cleanup)] = this.HandleCleanupStepOnEndingPhase
+                [(Ticker.PhaseState.Combat, Ticker.StepState.DeclareAttackers)] = this.HandleDeclaringAttackerStep,
+                [(Ticker.PhaseState.Combat, Ticker.StepState.AssignBlockers)] = this.HandleAssigningBlockersStep,
+                [(Ticker.PhaseState.Ending, Ticker.StepState.Cleanup)] = this.HandleCleaningUpStep
             };
         }
 
-        public void ExecuteStep(int turnId, Ticker.PhaseState phaseState, Ticker.StepState stepState)
+        public ExecutionResult ExecuteStep(int turnId, Ticker.PhaseState phaseState, Ticker.StepState stepState)
         {
             Guard
                 .Require(turnId, nameof(turnId))
@@ -76,18 +83,49 @@ namespace nGratis.AI.Kvasir.Engine
                 ("ID", $"{turnId:D4}-{phaseState}-{stepState}"),
                 ("Active Player", this._tabletop.ActivePlayer.Name));
 
-            if (this._handlerLookup.TryGetValue((phaseState, stepState), out var handle))
-            {
-                handle();
-            }
+            return this._handlerLookup.TryGetValue((phaseState, stepState), out var handle)
+                ? handle()
+                : ExecutionResult.Successful;
         }
 
-        private void HandleCleanupStepOnEndingPhase()
+        private ExecutionResult HandleDeclaringAttackerStep()
         {
-            var swappedPlayer = this._tabletop.ActivePlayer;
+            var attackingDecision = this._tabletop.ActivePlayer.Strategy.DeclareAttackers();
+            var validationResult = Judge.Validate(attackingDecision);
 
-            this._tabletop.ActivePlayer = this._tabletop.NonactivePlayer;
-            this._tabletop.NonactivePlayer = swappedPlayer;
+            this._attackingDecision = !validationResult.HasError
+                ? attackingDecision
+                : AttackingDecision.None;
+
+            return ExecutionResult.Successful;
+        }
+
+        private ExecutionResult HandleAssigningBlockersStep()
+        {
+            if (this._attackingDecision == AttackingDecision.None)
+            {
+                return ExecutionResult.Successful;
+            }
+
+            var blockingDecision = this
+                ._tabletop
+                .ActivePlayer.Strategy
+                .AssignBlockers(this._attackingDecision.Attackers);
+
+            var validationResult = Judge.Validate(blockingDecision);
+
+            this._blockingDecision = !validationResult.HasError
+                ? blockingDecision
+                : BlockingDecision.None;
+
+            return ExecutionResult.Successful;
+        }
+
+        private ExecutionResult HandleCleaningUpStep()
+        {
+            this._tabletop.SwapActivePlayer();
+
+            return ExecutionResult.Successful;
         }
     }
 }

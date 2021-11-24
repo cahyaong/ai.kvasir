@@ -55,7 +55,7 @@ namespace nGratis.AI.Kvasir.Engine
             None,
             BeginningOfCombat,
             DeclareAttackers,
-            DeclareBlockers,
+            AssignBlockers,
             CombatDamage,
             EndOfCombat,
             End,
@@ -203,10 +203,10 @@ namespace nGratis.AI.Kvasir.Engine
             this._stepStateMachine
                 .Configure(StepState.DeclareAttackers)
                 .OnEntry(this.OnStepEntered)
-                .Permit(Trigger.Next, StepState.DeclareBlockers);
+                .Permit(Trigger.Next, StepState.AssignBlockers);
 
             this._stepStateMachine
-                .Configure(StepState.DeclareBlockers)
+                .Configure(StepState.AssignBlockers)
                 .OnEntry(this.OnStepEntered)
                 .Permit(Trigger.Next, StepState.CombatDamage);
 

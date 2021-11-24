@@ -42,6 +42,8 @@ namespace nGratis.AI.Kvasir.Engine
 
         public Deck Deck { get; init; }
 
+        public IStrategy Strategy { get; set; }
+
         public int Life { get; set; }
 
         public Zone Library { get; set; }

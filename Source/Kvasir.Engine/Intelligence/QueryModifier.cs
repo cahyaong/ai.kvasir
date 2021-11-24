@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="QueryModifier.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, July 7, 2021 5:24:28 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using nGratis.AI.Kvasir.Contract;
-
-    public class Land : Permanent
+    public enum QueryModifier
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
-        {
-        }
+        None = 0,
+
+        CanAttack = 1,
+        CanBlock = 2
     }
 }

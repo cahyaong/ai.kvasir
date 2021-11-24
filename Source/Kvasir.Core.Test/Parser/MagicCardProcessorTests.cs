@@ -318,17 +318,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     processingResult
                         .GetValue<DefinedBlob.Card>()
                         .Kind
-                        .Should().Be(theory.ParsedCardKind);
+                        .Should().Be(theory.ExpectedCardKind);
 
                     processingResult
                         .GetValue<DefinedBlob.Card>()
                         .SuperKind
-                        .Should().Be(theory.ParsedCardSuperKind);
+                        .Should().Be(theory.ExpectedCardSuperKind);
 
                     processingResult
                         .GetValue<DefinedBlob.Card>()
                         .SubKinds
-                        .Should().BeEquivalentTo(theory.ParsedCardSubKinds);
+                        .Should().BeEquivalentTo(theory.ExpectedCardSubKinds);
 
                     processingResult
                         .GetValue<DefinedBlob.Card>()
@@ -410,7 +410,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 processingResult
                     .Messages
-                    .Should().Contain(theory.Message);
+                    .Should().Contain(theory.ExpectedMessage);
             }
 
             [Fact]
@@ -471,7 +471,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Cost
-                    .Must().BeStrictEquivalentTo(theory.ParsedManaCost);
+                    .Must().BeStrictEquivalentTo(theory.ExpectedCost);
             }
 
             [Theory]
@@ -499,7 +499,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 processingResult
                     .Messages
-                    .Should().Contain(theory.Message);
+                    .Should().Contain(theory.ExpectedMessage);
 
                 processingResult
                     .GetValue<DefinedBlob.Card>()
@@ -537,7 +537,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Power
-                    .Should().Be(theory.ParsedPower);
+                    .Should().Be(theory.ExpectedPower);
             }
 
             [Theory]
@@ -565,7 +565,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 processingResult
                     .Messages
-                    .Should().Contain(theory.Message);
+                    .Should().Contain(theory.ExpectedMessage);
 
                 processingResult
                     .GetValue<DefinedBlob.Card>()
@@ -598,7 +598,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 processingResult
                     .GetValue<DefinedBlob.Card>()
                     .Toughness
-                    .Should().Be(theory.ParsedToughness);
+                    .Should().Be(theory.ExpectedToughness);
             }
 
             [Theory]
@@ -628,7 +628,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     processingResult
                         .Messages
-                        .Should().Contain(theory.Message);
+                        .Should().Contain(theory.ExpectedMessage);
 
                     processingResult
                         .GetValue<DefinedBlob.Card>()
@@ -915,49 +915,49 @@ namespace nGratis.AI.Kvasir.Core.Test
         {
             public string UnparsedType { get; private init; }
 
-            public CardKind ParsedCardKind { get; private set; }
+            public CardKind ExpectedCardKind { get; private set; }
 
-            public CardSuperKind ParsedCardSuperKind { get; private set; }
+            public CardSuperKind ExpectedCardSuperKind { get; private set; }
 
-            public IEnumerable<CardSubKind> ParsedCardSubKinds { get; private set; }
+            public IEnumerable<CardSubKind> ExpectedCardSubKinds { get; private set; }
 
             public static ParsingTypeTheory Create(string unparsedType)
             {
                 return new()
                 {
                     UnparsedType = unparsedType,
-                    ParsedCardKind = CardKind.Unknown,
-                    ParsedCardSuperKind = CardSuperKind.Unknown,
-                    ParsedCardSubKinds = Enumerable.Empty<CardSubKind>(),
-                    Message = string.Empty
+                    ExpectedCardKind = CardKind.Unknown,
+                    ExpectedCardSuperKind = CardSuperKind.Unknown,
+                    ExpectedCardSubKinds = Enumerable.Empty<CardSubKind>(),
+                    ExpectedMessage = string.Empty
                 };
             }
 
             public ParsingTypeTheory ExpectValid(
-                CardKind parsedCardKind,
-                CardSuperKind parsedCardSuperKind,
-                params CardSubKind[] parsedCardSubKinds)
+                CardKind cardKind,
+                CardSuperKind cardSuperKind,
+                params CardSubKind[] cardSubKinds)
             {
                 Guard
-                    .Require(parsedCardKind, nameof(parsedCardKind))
+                    .Require(cardKind, nameof(cardKind))
                     .Is.Not.EqualTo(CardKind.Unknown);
 
                 Guard
-                    .Require(parsedCardSuperKind, nameof(parsedCardSuperKind))
+                    .Require(cardSuperKind, nameof(cardSuperKind))
                     .Is.Not.EqualTo(CardSuperKind.Unknown);
 
                 // TODO: Extend <Guard> class to support collection check against specific value(s).
 
-                var hasInvalidSubKind = parsedCardSubKinds
+                var hasInvalidSubKind = cardSubKinds
                     .Any(subKind => subKind == CardSubKind.Unknown);
 
                 Guard
                     .Require(hasInvalidSubKind, nameof(hasInvalidSubKind))
                     .Is.False();
 
-                this.ParsedCardKind = parsedCardKind;
-                this.ParsedCardSuperKind = parsedCardSuperKind;
-                this.ParsedCardSubKinds = parsedCardSubKinds;
+                this.ExpectedCardKind = cardKind;
+                this.ExpectedCardSuperKind = cardSuperKind;
+                this.ExpectedCardSubKinds = cardSubKinds;
 
                 return this;
             }
@@ -969,7 +969,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public string UnparsedManaCost { get; private init; }
 
-            public DefinedBlob.Cost ParsedManaCost { get; private set; }
+            public DefinedBlob.Cost ExpectedCost { get; private set; }
 
             public static ParsingManaCostTheory Create(string unparsedType, string unparsedManaCost)
             {
@@ -977,14 +977,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     UnparsedType = unparsedType,
                     UnparsedManaCost = unparsedManaCost,
-                    ParsedManaCost = DefinedBlob.UnknownCost.Instance,
-                    Message = string.Empty
+                    ExpectedCost = DefinedBlob.UnknownCost.Instance,
+                    ExpectedMessage = string.Empty
                 };
             }
 
-            public ParsingManaCostTheory ExpectValid(DefinedBlob.PayingManaCost parsedManaCost)
+            public ParsingManaCostTheory ExpectValid(DefinedBlob.PayingManaCost cost)
             {
-                this.ParsedManaCost = parsedManaCost;
+                this.ExpectedCost = cost;
 
                 return this;
             }
@@ -996,7 +996,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public string UnparsedPower { get; private init; }
 
-            public ushort ParsedPower { get; private set; }
+            public ushort ExpectedPower { get; private set; }
 
             public static ParsingPowerTheory Create(string unparsedType, string unparsedPower)
             {
@@ -1004,14 +1004,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     UnparsedType = unparsedType,
                     UnparsedPower = unparsedPower,
-                    ParsedPower = 0,
-                    Message = string.Empty
+                    ExpectedPower = 0,
+                    ExpectedMessage = string.Empty
                 };
             }
 
-            public ParsingPowerTheory ExpectValid(ushort parsedPower)
+            public ParsingPowerTheory ExpectValid(ushort power)
             {
-                this.ParsedPower = parsedPower;
+                this.ExpectedPower = power;
 
                 return this;
             }
@@ -1023,7 +1023,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
             public string UnparsedToughness { get; private init; }
 
-            public ushort ParsedToughness { get; private set; }
+            public ushort ExpectedToughness { get; private set; }
 
             public static ParsingToughnessTheory Create(string unparsedType, string unparsedToughness)
             {
@@ -1031,14 +1031,14 @@ namespace nGratis.AI.Kvasir.Core.Test
                 {
                     UnparsedType = unparsedType,
                     UnparsedToughness = unparsedToughness,
-                    ParsedToughness = 0,
-                    Message = string.Empty
+                    ExpectedToughness = 0,
+                    ExpectedMessage = string.Empty
                 };
             }
 
-            public ParsingToughnessTheory ExpectValid(ushort parsedToughness)
+            public ParsingToughnessTheory ExpectValid(ushort toughness)
             {
-                this.ParsedToughness = parsedToughness;
+                this.ExpectedToughness = toughness;
 
                 return this;
             }
@@ -1046,7 +1046,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
         public abstract class ParsingTheory : CopTheory
         {
-            public string Message { get; protected set; }
+            public string ExpectedMessage { get; protected set; }
 
             public ParsingTheory ExpectInvalid(string message)
             {
@@ -1054,7 +1054,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Require(message, nameof(message))
                     .Is.Not.Empty();
 
-                this.Message = message;
+                this.ExpectedMessage = message;
 
                 return this;
             }

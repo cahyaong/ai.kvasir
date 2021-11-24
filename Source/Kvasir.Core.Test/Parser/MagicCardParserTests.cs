@@ -62,7 +62,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 parsingResult
                     .Value
-                    .Must().BeStrictEquivalentTo(theory.ParsedAbility);
+                    .Must().BeStrictEquivalentTo(theory.ExpectedAbility);
             }
 
             [Fact]
@@ -135,7 +135,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 public string UnparsedAbility { get; private init; }
 
-                public DefinedBlob.Ability ParsedAbility { get; private set; }
+                public DefinedBlob.Ability ExpectedAbility { get; private set; }
 
                 public static ParsingAbilityTheory Create(string unparsedAbility)
                 {
@@ -146,13 +146,13 @@ namespace nGratis.AI.Kvasir.Core.Test
                     return new ParsingAbilityTheory
                     {
                         UnparsedAbility = unparsedAbility,
-                        ParsedAbility = DefinedBlob.Ability.NotSupported
+                        ExpectedAbility = DefinedBlob.Ability.NotSupported
                     };
                 }
 
                 public ParsingAbilityTheory ExpectProducingMana(Mana mana)
                 {
-                    this.ParsedAbility = new DefinedBlob.Ability
+                    this.ExpectedAbility = new DefinedBlob.Ability
                     {
                         Kind = AbilityKind.Activated,
                         Costs = new DefinedBlob.Cost[]
@@ -196,7 +196,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 parsingResult
                     .Value
-                    .Must().BeStrictEquivalentTo(theory.ParsedCost);
+                    .Must().BeStrictEquivalentTo(theory.ExpectedCost);
             }
 
             [Fact]
@@ -276,7 +276,7 @@ namespace nGratis.AI.Kvasir.Core.Test
             {
                 public string UnparsedCost { get; private init; }
 
-                public DefinedBlob.Cost ParsedCost { get; private set; }
+                public DefinedBlob.Cost ExpectedCost { get; private set; }
 
                 public static ParsingCostTheory Create(string unparsedCost)
                 {
@@ -287,17 +287,17 @@ namespace nGratis.AI.Kvasir.Core.Test
                     return new ParsingCostTheory
                     {
                         UnparsedCost = unparsedCost,
-                        ParsedCost = DefinedBlob.UnknownCost.Instance
+                        ExpectedCost = DefinedBlob.UnknownCost.Instance
                     };
                 }
 
-                public ParsingCostTheory Expect(DefinedBlob.Cost parsedCost)
+                public ParsingCostTheory Expect(DefinedBlob.Cost cost)
                 {
                     Guard
-                        .Require(parsedCost, nameof(parsedCost))
+                        .Require(cost, nameof(cost))
                         .Is.Not.Null();
 
-                    this.ParsedCost = parsedCost;
+                    this.ExpectedCost = cost;
 
                     return this;
                 }

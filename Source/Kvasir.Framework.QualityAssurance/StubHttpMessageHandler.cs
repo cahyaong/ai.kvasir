@@ -94,11 +94,7 @@ namespace nGratis.AI.Kvasir.Framework
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            var sessionStream = Assembly
-                .GetExecutingAssembly()
-                .FindSessionDataStream(name);
-
-            using (sessionStream)
+            using (var sessionStream = this.FindSessionDataStream(name))
             using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
             {
                 sessionArchive
@@ -152,11 +148,7 @@ namespace nGratis.AI.Kvasir.Framework
                 throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
             }
 
-            var sessionStream = Assembly
-                .GetExecutingAssembly()
-                .FindSessionDataStream(name);
-
-            using (sessionStream)
+            using (var sessionStream = this.FindSessionDataStream(name))
             using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
             {
                 if (string.IsNullOrEmpty(entryKey))

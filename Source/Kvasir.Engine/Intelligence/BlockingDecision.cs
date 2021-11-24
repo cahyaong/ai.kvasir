@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="BlockingDecision.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,20 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, November 11, 2021 4:39:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using nGratis.AI.Kvasir.Contract;
+    using System.Collections.Generic;
 
-    public class Land : Permanent
+    public class BlockingDecision : IDecision
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
+        public static readonly BlockingDecision None = new()
         {
-        }
+            Combats = new List<Combat>()
+        };
+
+        public IReadOnlyCollection<Combat> Combats { get; init; }
     }
 }

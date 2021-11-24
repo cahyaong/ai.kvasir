@@ -30,7 +30,7 @@ namespace nGratis.AI.Kvasir.Engine
 {
     using nGratis.AI.Kvasir.Contract;
 
-    public class Creature : Card
+    public class Creature : Permanent
     {
         public Creature(string name)
             : base(name, CardKind.Creature)
@@ -40,5 +40,7 @@ namespace nGratis.AI.Kvasir.Engine
         public int Power { get; init; }
 
         public int Toughness { get; init; }
+
+        public bool HasSummoningSickness { get; internal set; }
     }
 }

@@ -1,0 +1,12 @@
+﻿- name: '[_MOCK_CREATURE_001_]'
+  has-summoning-sickness: false
+  is-tapped: false
+- name: '[_MOCK_CREATURE_002_]'
+  has-summoning-sickness: false
+  is-tapped: true
+- name: '[_MOCK_CREATURE_003_]'
+  has-summoning-sickness: true
+  is-tapped: false
+- name: '[_MOCK_CREATURE_004_]'
+  has-summoning-sickness: true
+  is-tapped: true

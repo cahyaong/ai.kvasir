@@ -157,7 +157,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 "PrecombatMain_None",
                 "Combat_BeginningOfCombat",
                 "Combat_DeclareAttackers",
-                "Combat_DeclareBlockers",
+                "Combat_AssignBlockers",
                 "Combat_CombatDamage",
                 "Combat_EndOfCombat",
                 "PostcombatMain_None",

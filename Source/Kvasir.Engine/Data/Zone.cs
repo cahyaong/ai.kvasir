@@ -76,6 +76,16 @@ namespace nGratis.AI.Kvasir.Engine
             this._cards.Push(card);
         }
 
+        public void AddCards(params Card[] cards)
+        {
+            Guard
+                .Require(cards, nameof(cards))
+                .Is.Not.Empty();
+
+            cards
+                .ForEach(this.AddCard);
+        }
+
         public Card RemoveCard()
         {
             if (this._cards.Count <= 0)

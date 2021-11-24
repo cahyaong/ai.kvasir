@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="Permanent.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,22 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, July 7, 2021 5:21:27 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
     using nGratis.AI.Kvasir.Contract;
 
-    public class Land : Permanent
+    public abstract class Permanent : Card
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
+        protected Permanent(string name, CardKind kind)
+            : base(name, kind)
         {
         }
+
+        public int Id => this.GetHashCode();
+
+        public bool IsTapped { get; internal set; }
     }
 }

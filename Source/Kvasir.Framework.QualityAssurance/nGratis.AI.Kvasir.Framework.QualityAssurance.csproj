@@ -11,8 +11,10 @@
     <None Remove="Data\Raw_MTGJSON4.ngksession" />
     <None Remove="Data\Raw_SCRYFALL.ngksession" />
     <None Remove="Data\Raw_WOTC.ngksession" />
+    <None Remove="Data\Theory_FindingCreatures.ngkcard" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Data\Theory_FindingCreatures.ngkcard" />
     <EmbeddedResource Include="Data\Raw_MTGJSON4.ngksession" />
     <EmbeddedResource Include="Data\Raw_SCRYFALL.ngksession" />
     <EmbeddedResource Include="Data\Raw_WOTC.ngksession" />

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Land.cs" company="nGratis">
+// <copyright file="Combat.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,17 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, November 11, 2021 4:47:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using nGratis.AI.Kvasir.Contract;
+    using System.Collections.Generic;
 
-    public class Land : Permanent
+    public class Combat
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
-        {
-        }
+        public Creature Attacker { get; init; }
+
+        public IReadOnlyCollection<Creature> Blockers { get; init; }
     }
 }

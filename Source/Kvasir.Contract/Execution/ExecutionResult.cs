@@ -33,15 +33,26 @@ namespace nGratis.AI.Kvasir.Contract
 
     public class ExecutionResult
     {
+        protected ExecutionResult()
+        {
+        }
+
         protected ExecutionResult(params string[] messages)
         {
             this.Messages = messages;
         }
 
+        public static ExecutionResult Successful { get; } = new();
+
         public bool HasError => this.Messages.Any();
 
-        public IEnumerable<string> Messages { get; }
+        public IEnumerable<string> Messages { get; init; }
 
-        public static ExecutionResult Successful { get; } = new();
+        public static ExecutionResult Create(params string[] messages)
+        {
+            return messages?.Any() == true
+                ? new ExecutionResult { Messages = messages }
+                : ExecutionResult.Successful;
+        }
     }
 }
