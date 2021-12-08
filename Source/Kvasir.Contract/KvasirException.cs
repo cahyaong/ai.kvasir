@@ -42,5 +42,10 @@ namespace nGratis.AI.Kvasir.Contract
             : base(submessages.Aggregate(message, (blob, submessage) => $"{blob} {submessage}"))
         {
         }
+
+        public KvasirException(string message, params (string Key, object Value)[] details)
+            : this(message, details.Select(detail => $"{detail.Key}: [{detail.Value}].").ToArray())
+        {
+        }
     }
 }

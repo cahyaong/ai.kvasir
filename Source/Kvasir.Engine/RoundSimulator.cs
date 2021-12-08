@@ -182,12 +182,12 @@ namespace nGratis.AI.Kvasir.Engine
                     .Skip(index)
                     .Take(1)
                     .Single())
-                .ForEach(card => player.Library.AddCard(card));
+                .ForEach(card => player.Library.AddCardToTop(card));
 
             Enumerable
                 .Range(0, MagicConstant.Hand.MaxCardCount)
-                .Select(_ => player.Library.RemoveCard())
-                .ForEach(card => player.Hand.AddCard(card));
+                .Select(_ => player.Library.RemoveCardFromTop())
+                .ForEach(card => player.Hand.AddCardToTop(card));
 
             // TODO: Implement proper `mulligan` for Rx-103.4 sub-rule.
 

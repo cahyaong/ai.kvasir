@@ -42,5 +42,7 @@ namespace nGratis.AI.Kvasir.Engine
         public int Toughness { get; init; }
 
         public bool HasSummoningSickness { get; internal set; }
+
+        public int Damage { get; internal set; }
     }
 }

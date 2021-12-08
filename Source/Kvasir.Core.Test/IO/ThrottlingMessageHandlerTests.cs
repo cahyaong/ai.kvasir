@@ -49,7 +49,7 @@ namespace nGratis.AI.Kvasir.Core.Test
                     .Create()
                     .WithSuccessfulResponse("http://www.mock-url.com", "[_MOCK_HTML_CONTENT_]");
 
-                var throttlingHandler = new ThrottlingMessageHandler(3.Seconds(), stubHandler);
+                var throttlingHandler = new ThrottlingMessageHandler(1.Seconds(), stubHandler);
 
                 var responseMessage = default(HttpResponseMessage);
                 var stopwatch = new Stopwatch();
@@ -70,7 +70,7 @@ namespace nGratis.AI.Kvasir.Core.Test
 
                 stopwatch
                     .Elapsed
-                    .Should().BeGreaterOrEqualTo(2950.Milliseconds());
+                    .Should().BeGreaterOrEqualTo(950.Milliseconds());
 
                 responseMessage
                     .Should().NotBeNull();

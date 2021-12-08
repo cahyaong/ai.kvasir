@@ -42,7 +42,10 @@ namespace nGratis.AI.Kvasir.Contract
             this.Messages = messages;
         }
 
-        public static ExecutionResult Successful { get; } = new();
+        public static ExecutionResult Successful { get; } = new()
+        {
+            Messages = new List<string>()
+        };
 
         public bool HasError => this.Messages.Any();
 

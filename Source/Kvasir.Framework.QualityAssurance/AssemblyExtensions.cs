@@ -70,7 +70,7 @@ namespace System.Reflection
             dataStream
                 .ReadText()
                 .DeserializeFromYaml<List<StubCreature>>()
-                .ForEach(zone.AddCard);
+                .ForEach(zone.AddCardToTop);
         }
     }
 }

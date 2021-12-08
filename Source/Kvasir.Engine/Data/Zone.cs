@@ -30,13 +30,14 @@ namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
     [DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
     public class Zone
     {
-        private readonly Stack<Card> _cards;
+        private readonly List<Card> _cards;
 
         public Zone(ZoneKind kind, Visibility visibility)
         {
@@ -48,7 +49,7 @@ namespace nGratis.AI.Kvasir.Engine
                 .Require(visibility, nameof(visibility))
                 .Is.Not.Default();
 
-            this._cards = new Stack<Card>();
+            this._cards = new List<Card>();
 
             this.Kind = kind;
             this.Visibility = visibility;
@@ -60,7 +61,7 @@ namespace nGratis.AI.Kvasir.Engine
 
         public IEnumerable<Card> Cards => this._cards;
 
-        public void AddCard(Card card)
+        public void AddCardToTop(Card card)
         {
             Guard
                 .Require(card, nameof(card))
@@ -69,31 +70,53 @@ namespace nGratis.AI.Kvasir.Engine
             if (this._cards.Contains(card))
             {
                 throw new KvasirException(
-                    $"Card instance [{card.GetHashCode()}] with name [{card.Name}] is found " +
-                    $"in zone [{this.Kind}].");
+                    "Zone has existing card!",
+                    ("Kind", this.Kind),
+                    ("Card Name", card.Name),
+                    ("Card ID", card.GetHashCode()));
             }
 
-            this._cards.Push(card);
+            this._cards.Add(card);
         }
 
-        public void AddCards(params Card[] cards)
-        {
-            Guard
-                .Require(cards, nameof(cards))
-                .Is.Not.Empty();
-
-            cards
-                .ForEach(this.AddCard);
-        }
-
-        public Card RemoveCard()
+        public Card RemoveCardFromTop()
         {
             if (this._cards.Count <= 0)
             {
-                throw new KvasirException($"Zone [{this.Kind}] has no more card to remove.");
+                throw new KvasirException(
+                    "Zone has no more card to remove!",
+                    ("Kind", this.Kind));
             }
 
-            return this._cards.Pop();
+            var card = this._cards.Last();
+            this._cards.RemoveAt(this._cards.Count - 1);
+
+            return card;
+        }
+
+        public void MoveCardToZone(Card card, Zone zone)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            Guard
+                .Require(zone, nameof(zone))
+                .Is.Not.Null();
+
+            var matchedIndex = this._cards.IndexOf(card);
+
+            if (matchedIndex < 0)
+            {
+                throw new KvasirException(
+                    "Zone does not contain card to move to different zone!",
+                    ("Kind", this.Kind),
+                    ("Card Name", card.Name),
+                    ("Card ID", card.GetHashCode()));
+            }
+
+            this._cards.RemoveAt(matchedIndex);
+            zone.AddCardToTop(card);
         }
     }
 }

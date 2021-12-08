@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AttackingDecision.cs" company="nGratis">
+// <copyright file="StubBuilder.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,20 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, July 6, 2021 7:07:41 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, November 26, 2021 10:47:20 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine.Test
 {
-    using System.Collections.Generic;
+    using nGratis.AI.Kvasir.Contract;
 
-    public class AttackingDecision
+    public static class StubBuilder
     {
-        public static readonly AttackingDecision None = new()
+        public static Tabletop CreateDefaultTabletop()
         {
-            Attackers = new List<Creature>()
-        };
+            var activePlayer = new Player
+            {
+                Name = "[_MOCK_ACTIVE_PLAYER_]",
+                Kind = PlayerKind.Testing,
+                Life = 20,
+                Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+            };
 
-        public IReadOnlyCollection<Creature> Attackers { get; init; }
+            var nonactivePlayer = new Player
+            {
+                Name = "[_MOCK_NONACTIVE_PLAYER_]",
+                Kind = PlayerKind.Testing,
+                Life = 20,
+                Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+            };
+
+            activePlayer.Opponent = nonactivePlayer;
+            nonactivePlayer.Opponent = activePlayer;
+
+            return new()
+            {
+                ActivePlayer = activePlayer,
+                NonactivePlayer = nonactivePlayer,
+                Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+            };
+        }
     }
 }

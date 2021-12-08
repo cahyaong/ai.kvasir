@@ -108,7 +108,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 var player = new Player();
 
                 var battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
-                battlefield.AddCard(new Land("[_MOCK_LAND_]")
+                battlefield.AddCardToTop(new Land("[_MOCK_LAND_]")
                 {
                     Owner = player,
                     Controller = player

@@ -30,7 +30,7 @@ namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
 
-    public class BlockingDecision : IDecision
+    public class BlockingDecision
     {
         public static readonly BlockingDecision None = new()
         {

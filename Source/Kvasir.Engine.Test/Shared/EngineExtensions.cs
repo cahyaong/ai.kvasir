@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IDecision.cs" company="nGratis">
+// <copyright file="EngineExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,12 +23,36 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, July 6, 2021 7:08:53 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, November 27, 2021 7:37:21 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine.Test
 {
-    public interface IDecision
+    using FluentAssertions;
+    using nGratis.Cop.Olympus.Contract;
+
+    internal static class EngineExtensions
     {
+        public static void ExecuteCombatPhase(this TurnCoordinator turnCoordinator)
+        {
+            Guard
+                .Require(turnCoordinator, nameof(turnCoordinator))
+                .Is.Not.Null();
+
+            turnCoordinator
+                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.DeclareAttackers)
+                .HasError
+                .Should().BeFalse("because declaring attackers should not fail");
+
+            turnCoordinator
+                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.AssignBlockers)
+                .HasError
+                .Should().BeFalse("because assigning blockers should not fail");
+
+            turnCoordinator
+                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.CombatDamage)
+                .HasError
+                .Should().BeFalse("because resolving combat damage should not fail");
+        }
     }
 }

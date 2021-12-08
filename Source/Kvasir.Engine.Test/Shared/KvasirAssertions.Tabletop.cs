@@ -32,6 +32,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
     using FluentAssertions.Execution;
     using FluentAssertions.Primitives;
     using nGratis.AI.Kvasir.Engine;
+    using nGratis.Cop.Olympus.Contract;
 
     internal class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAssertion>
     {
@@ -56,6 +57,96 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 this
                     .Subject.NonactivePlayer
                     .Should().NotBeNull($"{this.Identifier} should have nonactive player");
+            }
+
+            return new AndConstraint<TabletopAssertion>(this);
+        }
+
+        public AndConstraint<TabletopAssertion> HaveCardInBattlefield(Card card)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            using (new AssertionScope())
+            {
+                this
+                    .Subject.Battlefield.Cards
+                    .Should().Contain(
+                        card,
+                        $"{this.Identifier} should have card [{card.Name}] in battlefield");
+
+                this
+                    .Subject.ActivePlayer.Graveyard.Cards
+                    .Should().NotContain(
+                        card,
+                        $"{this.Identifier} should not have card [{card.Name}] in active graveyard");
+
+                this
+                    .Subject.NonactivePlayer.Graveyard.Cards
+                    .Should().NotContain(
+                        card,
+                        $"{this.Identifier} should not have card [{card.Name}] in nonactive graveyard");
+            }
+
+            return new AndConstraint<TabletopAssertion>(this);
+        }
+
+        public AndConstraint<TabletopAssertion> HaveCardInActiveGraveyard(Card card)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            using (new AssertionScope())
+            {
+                this
+                    .Subject.Battlefield.Cards
+                    .Should().NotContain(
+                        card,
+                        $"{this.Identifier} should not have card [{card.Name}] in battlefield");
+
+                this
+                    .Subject.ActivePlayer.Graveyard.Cards
+                    .Should().Contain(
+                        card,
+                        $"{this.Identifier} should have card [{card.Name}] in active graveyard");
+
+                this
+                    .Subject.NonactivePlayer.Graveyard.Cards
+                    .Should().NotContain(
+                        card,
+                        $"{this.Identifier} should not have card [{card.Name}] in nonactive graveyard");
+            }
+
+            return new AndConstraint<TabletopAssertion>(this);
+        }
+
+        public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(Card card)
+        {
+            Guard
+                .Require(card, nameof(card))
+                .Is.Not.Null();
+
+            using (new AssertionScope())
+            {
+                this
+                    .Subject.Battlefield.Cards
+                    .Should().NotContain(
+                        card,
+                        $"{this.Identifier} should not have card [{card.Name}] in battlefield");
+
+                this
+                    .Subject.ActivePlayer.Graveyard.Cards
+                    .Should().NotContain(
+                        card,
+                        $"{this.Identifier} should not have card [{card.Name}] in active graveyard");
+
+                this
+                    .Subject.NonactivePlayer.Graveyard.Cards
+                    .Should().Contain(
+                        card,
+                        $"{this.Identifier} should have card [{card.Name}] in nonactive graveyard");
             }
 
             return new AndConstraint<TabletopAssertion>(this);

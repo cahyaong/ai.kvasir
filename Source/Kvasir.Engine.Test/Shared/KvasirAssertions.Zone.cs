@@ -160,7 +160,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 {
                     deck
                         .Cards
-                        .Should().ContainEquivalentOf(card, $"{this.Identifier} should contain card defined by deck.");
+                        .Should().ContainEquivalentOf(card, $"{this.Identifier} should contain card defined by deck");
                 }
             }
 
@@ -178,7 +178,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                     .ForEach(grouping => Execute
                         .Assertion
                         .FailWith(
-                            @"Expected {{context:zone}} to have unique card instance, " +
+                            $"Expected {this.Identifier} to have unique card instance, " +
                             $"but found {grouping.Count()} [{grouping.First().Name}] cards " +
                             $"with ID [{grouping.First().GetHashCode()}]."));
             }
@@ -196,7 +196,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Assertion
                 .ForCondition(actualQuantity == quantity)
                 .FailWith(
-                    $"Expected {{context:zone}} to have {quantity} cards, " +
+                    $"Expected {this.Identifier} to have {quantity} cards, " +
                     $"but found {actualQuantity}.");
 
             return new AndConstraint<ZoneAssertion>(this);
@@ -216,7 +216,7 @@ namespace nGratis.AI.Kvasir.Engine.Test
                 .Assertion
                 .ForCondition(actualQuantity == quantity)
                 .FailWith(
-                    $"Expected {{context:zone}} to have {quantity} [{cardName}] cards, " +
+                    $"Expected {this.Identifier} to have {quantity} [{cardName}] cards, " +
                     $"but found {actualQuantity}.");
 
             return new AndConstraint<ZoneAssertion>(this);

@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Engine
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
@@ -60,6 +61,7 @@ namespace nGratis.AI.Kvasir.Engine
             {
                 [(Ticker.PhaseState.Combat, Ticker.StepState.DeclareAttackers)] = this.HandleDeclaringAttackerStep,
                 [(Ticker.PhaseState.Combat, Ticker.StepState.AssignBlockers)] = this.HandleAssigningBlockersStep,
+                [(Ticker.PhaseState.Combat, Ticker.StepState.CombatDamage)] = this.HandleResolvingCombatStep,
                 [(Ticker.PhaseState.Ending, Ticker.StepState.Cleanup)] = this.HandleCleaningUpStep
             };
         }
@@ -90,7 +92,10 @@ namespace nGratis.AI.Kvasir.Engine
 
         private ExecutionResult HandleDeclaringAttackerStep()
         {
-            var attackingDecision = this._tabletop.ActivePlayer.Strategy.DeclareAttackers();
+            var attackingDecision = this
+                ._tabletop
+                .ActivePlayer.Strategy.DeclareAttackers();
+
             var validationResult = Judge.Validate(attackingDecision);
 
             this._attackingDecision = !validationResult.HasError
@@ -109,7 +114,7 @@ namespace nGratis.AI.Kvasir.Engine
 
             var blockingDecision = this
                 ._tabletop
-                .ActivePlayer.Strategy
+                .NonactivePlayer.Strategy
                 .AssignBlockers(this._attackingDecision.Attackers);
 
             var validationResult = Judge.Validate(blockingDecision);
@@ -117,6 +122,63 @@ namespace nGratis.AI.Kvasir.Engine
             this._blockingDecision = !validationResult.HasError
                 ? blockingDecision
                 : BlockingDecision.None;
+
+            return ExecutionResult.Successful;
+        }
+
+        private ExecutionResult HandleResolvingCombatStep()
+        {
+            if (this._attackingDecision == AttackingDecision.None)
+            {
+                return ExecutionResult.Successful;
+            }
+
+            var combatLookup = this
+                ._blockingDecision.Combats?
+                .Where(combat => this._attackingDecision.Attackers.Contains(combat.Attacker))
+                .ToDictionary(combat => combat.Attacker) ?? new Dictionary<Creature, Combat>();
+
+            foreach (var attacker in this._attackingDecision.Attackers)
+            {
+                if (combatLookup.TryGetValue(attacker, out var matchedCombat))
+                {
+                    matchedCombat.Attacker.Damage = matchedCombat.Blockers.Sum(blocker => blocker.Power);
+
+                    var attackerPower = matchedCombat.Attacker.Power;
+
+                    matchedCombat
+                        .Blockers
+                        .ForEach(blocker =>
+                        {
+                            blocker.Damage = Math.Min(attackerPower, blocker.Toughness);
+                            attackerPower -= blocker.Damage;
+                        });
+                }
+                else
+                {
+                    this._tabletop.NonactivePlayer.Life -= attacker.Power;
+                }
+            }
+
+            combatLookup
+                .Values
+                .Select(combat => combat.Attacker)
+                .Where(attacker => attacker.Damage >= attacker.Toughness)
+                .ForEach(attacker =>
+                {
+                    this._tabletop.Battlefield.MoveCardToZone(attacker, this._tabletop.ActivePlayer.Graveyard);
+                    attacker.Damage = 0;
+                });
+
+            combatLookup
+                .Values
+                .SelectMany(combat => combat.Blockers)
+                .Where(blocker => blocker.Damage >= blocker.Toughness)
+                .ForEach(blocker =>
+                {
+                    this._tabletop.Battlefield.MoveCardToZone(blocker, this._tabletop.NonactivePlayer.Graveyard);
+                    blocker.Damage = 0;
+                });
 
             return ExecutionResult.Successful;
         }
