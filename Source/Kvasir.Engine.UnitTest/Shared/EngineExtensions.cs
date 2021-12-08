@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="EngineExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,36 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, November 27, 2021 7:37:21 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine.UnitTest
+{
+    using FluentAssertions;
+    using nGratis.Cop.Olympus.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("5e54785f-703f-45fe-94a8-74b888246056")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.IntegrationTest")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.UnitTest")]
+    internal static class EngineExtensions
+    {
+        public static void ExecuteCombatPhase(this TurnCoordinator turnCoordinator)
+        {
+            Guard
+                .Require(turnCoordinator, nameof(turnCoordinator))
+                .Is.Not.Null();
+
+            turnCoordinator
+                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.DeclareAttackers)
+                .HasError
+                .Should().BeFalse("because declaring attackers should not fail");
+
+            turnCoordinator
+                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.AssignBlockers)
+                .HasError
+                .Should().BeFalse("because assigning blockers should not fail");
+
+            turnCoordinator
+                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.CombatDamage)
+                .HasError
+                .Should().BeFalse("because resolving combat damage should not fail");
+        }
+    }
+}

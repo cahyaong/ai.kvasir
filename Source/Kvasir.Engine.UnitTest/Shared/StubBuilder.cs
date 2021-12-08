@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="StubBuilder.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, November 26, 2021 10:47:20 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine.UnitTest
+{
+    using nGratis.AI.Kvasir.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("5e54785f-703f-45fe-94a8-74b888246056")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.IntegrationTest")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.UnitTest")]
+    public static class StubBuilder
+    {
+        public static Tabletop CreateDefaultTabletop()
+        {
+            var activePlayer = new Player
+            {
+                Name = "[_MOCK_ACTIVE_PLAYER_]",
+                Kind = PlayerKind.Testing,
+                Life = 20,
+                Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+            };
+
+            var nonactivePlayer = new Player
+            {
+                Name = "[_MOCK_NONACTIVE_PLAYER_]",
+                Kind = PlayerKind.Testing,
+                Life = 20,
+                Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+            };
+
+            activePlayer.Opponent = nonactivePlayer;
+            nonactivePlayer.Opponent = activePlayer;
+
+            return new()
+            {
+                ActivePlayer = activePlayer,
+                NonactivePlayer = nonactivePlayer,
+                Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+            };
+        }
+    }
+}

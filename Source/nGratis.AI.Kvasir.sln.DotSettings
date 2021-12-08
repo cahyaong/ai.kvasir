@@ -16,7 +16,7 @@
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=E1756A0B953BA14CA69C781A6FFEE8D9/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=E1756A0B953BA14CA69C781A6FFEE8D9/RelativePath/@EntryValue">..\..\External\cop.olympus\Source\Olympus.Shared\nGratis.Shared.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/@KeyIndexDefined">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/RelativePath/@EntryValue">..\Kvasir.Core.Test\nGratis.AI.Kvasir.Core.Test.csproj.DotSettings</s:String>
+	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=EC7AFE1149B51840B05B0DA633733E64/RelativePath/@EntryValue">..\Kvasir.Core.UnitTest\nGratis.AI.Kvasir.Core.UnitTest.csproj.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File25D52ABFB7CDD248AC92DBB23E81DF89/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File25D52ABFB7CDD248AC92DBB23E81DF89/RelativePriority/@EntryValue">3</s:Double>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File3648DF540E7CA84F8CDF37372AF77F16/@KeyIndexDefined">True</s:Boolean>

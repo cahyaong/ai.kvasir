@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="XunitBootstrapper.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,25 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, February 11, 2020 7:39:38 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+[assembly: Xunit.TestFramework(
+    "nGratis.AI.Kvasir.Engine.Test.XunitBootstrapper",
+    "nGratis.AI.Kvasir.Engine.Test")]
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("5e54785f-703f-45fe-94a8-74b888246056")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.IntegrationTest")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.UnitTest")]
+namespace nGratis.AI.Kvasir.Engine.UnitTest
+{
+    using FluentAssertions.Formatting;
+    using nGratis.AI.Kvasir.Framework;
+    using Xunit.Abstractions;
+    using Xunit.Sdk;
+
+    public class XunitBootstrapper : XunitTestFramework
+    {
+        public XunitBootstrapper(IMessageSink messageSink) : base(messageSink)
+        {
+            Formatter.AddFormatter(new PlayerValueFormatter());
+        }
+    }
+}

@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="KvasirAssertions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,33 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Core.UnitTest
+{
+    using nGratis.AI.Kvasir.Contract;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("5e54785f-703f-45fe-94a8-74b888246056")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.IntegrationTest")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.UnitTest")]
+    internal static class KvasirAssertions
+    {
+        public static CardAssertion Must(this UnparsedBlob.Card card)
+        {
+            return new(card);
+        }
+
+        public static CostAssertion Must(this DefinedBlob.Cost cost)
+        {
+            return new(cost);
+        }
+
+        public static EffectAssertion Must(this DefinedBlob.Effect effect)
+        {
+            return new(effect);
+        }
+
+        public static AbilityAssertion Must(this DefinedBlob.Ability ability)
+        {
+            return new(ability);
+        }
+    }
+}

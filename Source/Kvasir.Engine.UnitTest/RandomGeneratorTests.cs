@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AssemblyInfo.cs" company="nGratis">
+// <copyright file="RandomGeneratorTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,18 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 2, 2020 5:27:48 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, 5 February 2019 8:51:27 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+namespace nGratis.AI.Kvasir.Engine.UnitTest
+{
+    using System.Linq;
+    using FluentAssertions;
+    using nGratis.AI.Kvasir.Engine;
+    using Xunit;
 
-[assembly: AssemblyTitle("nGratis.AI.Kvasir.Core")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: CLSCompliant(false)]
-[assembly: Guid("5e54785f-703f-45fe-94a8-74b888246056")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.IntegrationTest")]
-[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Core.UnitTest")]
+    public class RandomGeneratorTests
+    {
+        public class GenerateShufflingIndexesMethod
+        {
+            [Fact]
+            public void WhenGettingValueCount_ShouldGenerateRandomSequence()
+            {
+                // Arrange.
+
+                var randomGenerator = new RandomGenerator(42);
+
+                // Act.
+
+                var shufflingIndexes = randomGenerator
+                    .GenerateShufflingIndexes(60)?
+                    .ToArray();
+
+                // Assert.
+
+                shufflingIndexes
+                    .Should().NotBeNull()
+                    .And.HaveCount(60)
+                    .And.BeEquivalentTo(Enumerable.Range(0, 60), "indexes should contain unique value")
+                    .And.NotBeInAscendingOrder("indexes should be shuffled")
+                    .And.NotBeInDescendingOrder("indexes should be shuffled");
+            }
+        }
+    }
+}

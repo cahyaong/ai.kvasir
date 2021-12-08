@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Client", "Kvasir.Client\nGratis.AI.Kvasir.Client.csproj", "{CB2DE919-7E95-4A3E-908C-0EFB5AC131CD}"
 EndProject
@@ -31,17 +31,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Contract"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Engine", "Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj", "{A471742A-AD16-433E-8FB6-D44076A0B8BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Test", "Kvasir.Test\nGratis.AI.Kvasir.Test.csproj", "{7E94A019-8EB7-434E-9040-350716E3E61E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Framework.QualityAssurance", "..\External\cop.olympus\Source\Olympus.Framework.QualityAssurance\nGratis.Cop.Olympus.Framework.QualityAssurance.csproj", "{ECC17F00-D6F9-4FAD-AFCE-E6967D48F0AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Core", "Kvasir.Core\nGratis.AI.Kvasir.Core.csproj", "{5E54785F-703F-45FE-94A8-74B888246056}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Framework.QualityAssurance", "Kvasir.Framework.QualityAssurance\nGratis.AI.Kvasir.Framework.QualityAssurance.csproj", "{15853860-A77D-40CF-A49F-B81BAEACFCE5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Engine.Test", "Kvasir.Engine.Test\nGratis.AI.Kvasir.Engine.Test.csproj", "{E7096880-3B4B-426B-ADAD-22D4126F9632}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Core.UnitTest", "Kvasir.Core.UnitTest\nGratis.AI.Kvasir.Core.UnitTest.csproj", "{383C293F-5969-4B94-87F7-72A68568BCFB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Core.Test", "Kvasir.Core.Test\nGratis.AI.Kvasir.Core.Test.csproj", "{F34C7E84-C701-42A7-A965-C26873B2337A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Engine.UnitTest", "Kvasir.Engine.UnitTest\nGratis.AI.Kvasir.Engine.UnitTest.csproj", "{362628FA-8DD8-4699-818C-94B952CED1E7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.IntegrationTest", "Kvasir.IntegrationTest\nGratis.AI.Kvasir.IntegrationTest.csproj", "{C118B2B0-69E7-4B6C-9611-49EC5C43311A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,10 +85,6 @@ Global
 		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A471742A-AD16-433E-8FB6-D44076A0B8BD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7E94A019-8EB7-434E-9040-350716E3E61E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E94A019-8EB7-434E-9040-350716E3E61E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E94A019-8EB7-434E-9040-350716E3E61E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E94A019-8EB7-434E-9040-350716E3E61E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECC17F00-D6F9-4FAD-AFCE-E6967D48F0AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ECC17F00-D6F9-4FAD-AFCE-E6967D48F0AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECC17F00-D6F9-4FAD-AFCE-E6967D48F0AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -101,14 +97,18 @@ Global
 		{15853860-A77D-40CF-A49F-B81BAEACFCE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15853860-A77D-40CF-A49F-B81BAEACFCE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15853860-A77D-40CF-A49F-B81BAEACFCE5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7096880-3B4B-426B-ADAD-22D4126F9632}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7096880-3B4B-426B-ADAD-22D4126F9632}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7096880-3B4B-426B-ADAD-22D4126F9632}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7096880-3B4B-426B-ADAD-22D4126F9632}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F34C7E84-C701-42A7-A965-C26873B2337A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F34C7E84-C701-42A7-A965-C26873B2337A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F34C7E84-C701-42A7-A965-C26873B2337A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F34C7E84-C701-42A7-A965-C26873B2337A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{383C293F-5969-4B94-87F7-72A68568BCFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{383C293F-5969-4B94-87F7-72A68568BCFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{383C293F-5969-4B94-87F7-72A68568BCFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{383C293F-5969-4B94-87F7-72A68568BCFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{362628FA-8DD8-4699-818C-94B952CED1E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{362628FA-8DD8-4699-818C-94B952CED1E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{362628FA-8DD8-4699-818C-94B952CED1E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{362628FA-8DD8-4699-818C-94B952CED1E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -119,11 +119,11 @@ Global
 		{56449032-076D-4889-BDE1-4D2C8AA442F8} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
 		{2B8DE19C-BE3D-4516-AECB-01FC709F8ED8} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
 		{B90C4C38-A600-44BB-840E-2A7D4B46618A} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
-		{7E94A019-8EB7-434E-9040-350716E3E61E} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
 		{ECC17F00-D6F9-4FAD-AFCE-E6967D48F0AC} = {FB759C90-3124-49AD-AC55-904FA4DF2F85}
 		{15853860-A77D-40CF-A49F-B81BAEACFCE5} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
-		{E7096880-3B4B-426B-ADAD-22D4126F9632} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
-		{F34C7E84-C701-42A7-A965-C26873B2337A} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
+		{383C293F-5969-4B94-87F7-72A68568BCFB} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
+		{362628FA-8DD8-4699-818C-94B952CED1E7} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
+		{C118B2B0-69E7-4B6C-9611-49EC5C43311A} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4748ACEB-1A00-4CF8-AE5D-AD8F3B64852A}
