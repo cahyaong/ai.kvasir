@@ -58,6 +58,8 @@ group _Test
     nuget Microsoft.NET.Test.Sdk
     nuget Microsoft.NETCore.Platforms
     nuget Moq
+    nuget SpecFlow.Plus.LivingDocPlugin
+    nuget SpecFlow.xUnit
     nuget System.Drawing.Common ~> 4.7.0
     nuget System.Windows.Extensions ~> 4.7.0
     nuget xunit

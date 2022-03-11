@@ -33,6 +33,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest
     using Moq.AI.Kvasir;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
+    using nGratis.AI.Kvasir.Framework;
     using nGratis.Cop.Olympus.Contract;
     using Xunit;
 

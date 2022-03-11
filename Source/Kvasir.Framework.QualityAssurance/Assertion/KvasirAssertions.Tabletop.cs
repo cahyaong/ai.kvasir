@@ -26,7 +26,7 @@
 // <creation_timestamp>Thursday, February 20, 2020 7:18:36 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
+namespace nGratis.AI.Kvasir.Framework
 {
     using FluentAssertions;
     using FluentAssertions.Execution;
@@ -34,7 +34,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest
     using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAssertion>
+    public class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAssertion>
     {
         public TabletopAssertion(Tabletop tabletop)
         {

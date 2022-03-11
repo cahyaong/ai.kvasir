@@ -1,0 +1,10 @@
+﻿Humanizer.Core
+
+group _Test
+    FluentAssertions
+    Microsoft.NET.Test.Sdk
+    Moq
+    SpecFlow.Plus.LivingDocPlugin
+    SpecFlow.xUnit
+    xunit
+    xunit.runner.visualstudio

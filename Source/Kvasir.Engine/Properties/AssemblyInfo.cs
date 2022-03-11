@@ -34,4 +34,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("a471742a-ad16-433e-8fb6-d44076a0b8bd")]
+[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Framework.QualityAssurance")]
+[assembly: InternalsVisibleTo("nGratis.AI.Kvasir.AcceptanceTest")]
 [assembly: InternalsVisibleTo("nGratis.AI.Kvasir.Engine.UnitTest")]

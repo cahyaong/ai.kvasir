@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirTestingException.cs" company="nGratis">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AssemblyInfo.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,13 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 8 November 2018 10:34:13 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, December 8, 2021 5:42:12 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public class KvasirTestingException : KvasirException
-    {
-        public KvasirTestingException(string message)
-            : base(message)
-        {
-        }
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-        public KvasirTestingException(string message, params string[] submessages)
-            : base(message, submessages)
-        {
-        }
-
-        public KvasirTestingException(string message, params (string Key, object Value)[] details)
-            : base(message, details)
-        {
-        }
-    }
-}
+[assembly: AssemblyTitle("nGratis.AI.Kvasir.AcceptanceTest")]
+[assembly: AssemblyCulture("")]
+[assembly: ComVisible(false)]
+[assembly: Guid("1257b76c-9124-4d02-891b-f68dcbac1e03")]

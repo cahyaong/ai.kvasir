@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("nGratis.AI.Kvasir.Framework.QualityAssurance")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
-[assembly: Guid("ecc17f00-d6f9-4fad-afce-e6967d48f0ac")]
+[assembly: Guid("15853860-a77d-40cf-a49f-b81baeacfce5")]

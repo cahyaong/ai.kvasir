@@ -26,7 +26,7 @@
 // <creation_timestamp>Wednesday, 30 January 2019 11:57:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
+namespace nGratis.AI.Kvasir.Framework
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -37,7 +37,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest
     using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
 
-    internal class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
+    public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
     {
         public ZoneAssertion(Zone zone)
         {

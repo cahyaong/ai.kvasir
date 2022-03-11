@@ -1,5 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirTestingException.cs" company="nGratis">
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="KvasirAssertions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,23 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 8 November 2018 10:34:13 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Framework
 {
-    public class KvasirTestingException : KvasirException
+    using nGratis.AI.Kvasir.Engine;
+
+    public static class KvasirAssertions
     {
-        public KvasirTestingException(string message)
-            : base(message)
+        public static ZoneAssertion Must(this Zone zone)
         {
+            return new(zone);
         }
 
-        public KvasirTestingException(string message, params string[] submessages)
-            : base(message, submessages)
+        public static TabletopAssertion Must(this Tabletop tabletop)
         {
-        }
-
-        public KvasirTestingException(string message, params (string Key, object Value)[] details)
-            : base(message, details)
-        {
+            return new(tabletop);
         }
     }
 }

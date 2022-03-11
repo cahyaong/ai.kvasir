@@ -26,9 +26,10 @@
 // <creation_timestamp>Friday, November 26, 2021 10:47:20 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
+namespace nGratis.AI.Kvasir.Framework
 {
     using nGratis.AI.Kvasir.Contract;
+    using nGratis.AI.Kvasir.Engine;
 
     public static class StubBuilder
     {

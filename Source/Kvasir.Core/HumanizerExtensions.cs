@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="KvasirTestingException.cs" company="nGratis">
+// <copyright file="HumanizerExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,37 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 8 November 2018 10:34:13 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, December 8, 2021 6:45:54 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+// ReSharper disable once CheckNamespace
+
+namespace System
 {
-    public class KvasirTestingException : KvasirException
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using Humanizer;
+    using nGratis.AI.Kvasir.Contract;
+
+    // TODO (SHOULD): Move this extensions class to Cop.Olympus project!
+
+    public static class HumanizerExtensions
     {
-        public KvasirTestingException(string message)
-            : base(message)
-        {
-        }
+        private static readonly IDictionary<string, int> NumericalValueByOrdinalLookup = Enumerable
+            .Range(0, 25)
+            .ToImmutableDictionary(index => index.ToOrdinalWords());
 
-        public KvasirTestingException(string message, params string[] submessages)
-            : base(message, submessages)
+        public static int ToNumericalValue(this string text)
         {
-        }
+            if (!HumanizerExtensions.NumericalValueByOrdinalLookup.TryGetValue(text, out var value))
+            {
+                throw new KvasirException(
+                    "There is no matching ordinal value in lookup!",
+                    ("Text", text));
+            }
 
-        public KvasirTestingException(string message, params (string Key, object Value)[] details)
-            : base(message, details)
-        {
+            return value;
         }
     }
 }

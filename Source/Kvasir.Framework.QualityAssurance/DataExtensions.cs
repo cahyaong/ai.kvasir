@@ -26,7 +26,9 @@
 // <creation_timestamp>Friday, November 26, 2021 10:25:14 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
+// ReSharper disable once CheckNamespace
+
+namespace nGratis.AI.Kvasir.Engine
 {
     using System.Collections.Generic;
     using System.Linq;

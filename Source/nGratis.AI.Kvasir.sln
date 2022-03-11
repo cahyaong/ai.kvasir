@@ -43,6 +43,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Engine.Un
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.IntegrationTest", "Kvasir.IntegrationTest\nGratis.AI.Kvasir.IntegrationTest.csproj", "{C118B2B0-69E7-4B6C-9611-49EC5C43311A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.AcceptanceTest", "Kvasir.AcceptanceTest\nGratis.AI.Kvasir.AcceptanceTest.csproj", "{1257B76C-9124-4D02-891B-F68DCBAC1E03}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,10 @@ Global
 		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C118B2B0-69E7-4B6C-9611-49EC5C43311A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{383C293F-5969-4B94-87F7-72A68568BCFB} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
 		{362628FA-8DD8-4699-818C-94B952CED1E7} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
 		{C118B2B0-69E7-4B6C-9611-49EC5C43311A} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
+		{1257B76C-9124-4D02-891B-F68DCBAC1E03} = {AE1E95AC-FD1F-404C-88DB-C1A633A580D6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4748ACEB-1A00-4CF8-AE5D-AD8F3B64852A}
