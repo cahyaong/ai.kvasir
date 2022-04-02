@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="TurnCoordinatorDefinition.cs" company="nGratis">
+// <copyright file="JudgeDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -33,7 +33,6 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
     using System.Linq;
     using FluentAssertions;
     using FluentAssertions.Execution;
-    using Humanizer;
     using Moq.AI.Kvasir;
     using nGratis.AI.Kvasir.Contract;
     using nGratis.AI.Kvasir.Engine;
@@ -42,10 +41,10 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
     using TechTalk.SpecFlow;
 
     [Binding]
-    public sealed class TurnCoordinatorDefinition
+    public sealed class JudgeDefinition
     {
         private Tabletop _tabletop;
-        private TurnCoordinator _turnCoordinator;
+        private Judge _judge;
 
         private Creature _attacker;
         private List<Creature> _blockers;
@@ -61,7 +60,7 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
             var mockLogger = MockBuilder.CreateMock<ILogger>();
 
             this._tabletop = StubBuilder.CreateDefaultTabletop();
-            this._turnCoordinator = new TurnCoordinator(this._tabletop, mockLogger.Object);
+            this._judge = new Judge(mockLogger.Object);
 
             this._attacker = null;
             this._blockers = new List<Creature>();
@@ -101,13 +100,11 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
         [When(@"the combat phase is executed")]
         public void WhenCombatPhaseIsExecuted()
         {
-            this._tabletop
-                .WithAttackingDecision(this._attacker)
-                .WithBlockingDecision();
+            this._tabletop.ActivePlayer.WithAttackingDecision(this._attacker);
 
             if (this._blockers.Any())
             {
-                this._tabletop.WithBlockingDecision(new Combat
+                this._tabletop.NonactivePlayer.WithBlockingDecision(new Combat
                 {
                     Attacker = this._attacker,
                     Blockers = this._blockers
@@ -115,23 +112,13 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
             }
             else
             {
-                this._tabletop.WithBlockingDecision();
+                this._tabletop.NonactivePlayer.WithBlockingDecision();
             }
 
-            this._turnCoordinator
-                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.DeclareAttackers)
+            this._judge
+                .ExecuteNextTurn(this._tabletop)
                 .HasError
-                .Should().BeFalse("because declaring attackers should not fail");
-
-            this._turnCoordinator
-                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.AssignBlockers)
-                .HasError
-                .Should().BeFalse("because assigning blockers should not fail");
-
-            this._turnCoordinator
-                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.CombatDamage)
-                .HasError
-                .Should().BeFalse("because resolving combat damage should not fail");
+                .Should().BeFalse("because executing turn should not fail");
         }
 
         [Then(@"all players should have (\d+) life")]
@@ -158,7 +145,7 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
                 .Should().Be(life, $"because {status} player should have correct life");
         }
 
-        [Then(@"all creatures should be in (.+) with (\d+) damage")]
+        [Then(@"all creatures should be in (battlefield|graveyard) with (\d+) damage")]
         public void ThenAllCreaturesShouldBeInZoneWithDamage(ZoneKind zoneKind, int damage)
         {
             Guard
@@ -188,7 +175,7 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
             }
         }
 
-        [Then(@"the attacker should be in (.+) with (\d+) damage")]
+        [Then(@"the attacker should be in (battlefield|graveyard) with (\d+) damage")]
         public void ThenAttackerShouldBeInZoneWithDamage(ZoneKind zoneKind, int damage)
         {
             Guard
@@ -207,19 +194,13 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
                     this._tabletop
                         .Must().HaveCardInActiveGraveyard(this._attacker);
                 }
-                else
-                {
-                    throw new KvasirTestingException(
-                        "Assertion does not handle the given zone!",
-                        ("Zone Kind", zoneKind));
-                }
 
                 this._attacker.Damage
                     .Should().Be(damage, $"because attacker [{this._attacker.Name}] should have correct damage");
             }
         }
 
-        [Then(@"the blocker should be in (.+) with (\d+) damage")]
+        [Then(@"the blocker should be in (battlefield|graveyard) with (\d+) damage")]
         public void ThenBlockerShouldBeInZoneWithDamage(ZoneKind zoneKind, int damage)
         {
             Guard
@@ -250,16 +231,6 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
                 blocker.Damage
                     .Should().Be(damage, $"because blocker [{blocker.Name}] should have correct damage");
             }
-        }
-
-        [StepArgumentTransformation(@"(battlefield)")]
-        public ZoneKind TransformToZoneKind(string text)
-        {
-            Guard
-                .Require(text, nameof(text))
-                .Is.Not.Null();
-
-            return Enum.Parse<ZoneKind>(text.Titleize());
         }
 
         [StepArgumentTransformation(@"(active|nonactive) player")]

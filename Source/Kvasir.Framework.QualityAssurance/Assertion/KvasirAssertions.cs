@@ -28,10 +28,16 @@
 
 namespace nGratis.AI.Kvasir.Framework
 {
+    using FluentAssertions.Formatting;
     using nGratis.AI.Kvasir.Engine;
 
     public static class KvasirAssertions
     {
+        static KvasirAssertions()
+        {
+            Formatter.AddFormatter(new CardFormatter());
+        }
+
         public static ZoneAssertion Must(this Zone zone)
         {
             return new(zone);

@@ -36,36 +36,21 @@ namespace nGratis.AI.Kvasir.Engine
 
     public class RandomStrategy : IStrategy
     {
-        private readonly Judge _judge;
-
-        private readonly Player _player;
-
         private readonly IRandomGenerator _randomGenerator;
 
-        public RandomStrategy(Judge judge, Player player, IRandomGenerator randomGenerator)
+        public RandomStrategy(IRandomGenerator randomGenerator)
         {
-            Guard
-                .Require(judge, nameof(judge))
-                .Is.Not.Null();
-
-            Guard
-                .Require(player, nameof(player))
-                .Is.Not.Null();
-
             Guard
                 .Require(randomGenerator, nameof(randomGenerator))
                 .Is.Not.Null();
 
-            this._judge = judge;
-            this._player = player;
             this._randomGenerator = randomGenerator;
         }
 
-        public AttackingDecision DeclareAttackers()
+        public AttackingDecision DeclareAttacker(Tabletop tabletop)
         {
-            var attackers = this
-                ._judge
-                .FindCreatures(this._player, QueryModifier.CanAttack)
+            var attackers = Rulebook
+                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
                 .Where(_ => this._randomGenerator.RollDice(20) <= 10)
                 .ToImmutableList();
 
@@ -75,16 +60,15 @@ namespace nGratis.AI.Kvasir.Engine
             };
         }
 
-        public BlockingDecision AssignBlockers(IEnumerable<Creature> attackers)
+        public BlockingDecision DeclareBlocker(Tabletop tabletop)
         {
-            var blockers = this
-                ._judge
-                .FindCreatures(this._player, QueryModifier.CanBlock)
+            var blockers = Rulebook
+                .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
                 .ToList();
 
             var combats = new List<Combat>();
 
-            foreach (var attacker in attackers)
+            foreach (var attacker in tabletop.AttackingDecision.Attackers)
             {
                 if (!blockers.Any())
                 {

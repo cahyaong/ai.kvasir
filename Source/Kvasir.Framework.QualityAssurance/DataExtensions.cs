@@ -30,7 +30,6 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Moq;
     using nGratis.Cop.Olympus.Contract;
@@ -83,10 +82,10 @@ namespace nGratis.AI.Kvasir.Engine
             return blocker;
         }
 
-        public static Tabletop WithAttackingDecision(this Tabletop tabletop, params Creature[] attackers)
+        public static Player WithAttackingDecision(this Player player, params Creature[] attackers)
         {
             Guard
-                .Require(tabletop, nameof(tabletop))
+                .Require(player, nameof(player))
                 .Is.Not.Null();
 
             Guard
@@ -101,18 +100,18 @@ namespace nGratis.AI.Kvasir.Engine
             var mockStrategy = MockBuilder.CreateMock<IStrategy>();
 
             mockStrategy
-                .Setup(mock => mock.DeclareAttackers())
+                .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
                 .Returns(attackDecision);
 
-            tabletop.ActivePlayer.Strategy = mockStrategy.Object;
+            player.Strategy = mockStrategy.Object;
 
-            return tabletop;
+            return player;
         }
 
-        public static Tabletop WithBlockingDecision(this Tabletop tabletop, params Combat[] combats)
+        public static Player WithBlockingDecision(this Player player, params Combat[] combats)
         {
             Guard
-                .Require(tabletop, nameof(tabletop))
+                .Require(player, nameof(player))
                 .Is.Not.Null();
 
             var blockingDecision = combats.Any()
@@ -122,12 +121,12 @@ namespace nGratis.AI.Kvasir.Engine
             var mockStrategy = MockBuilder.CreateMock<IStrategy>();
 
             mockStrategy
-                .Setup(mock => mock.AssignBlockers(Arg.IsAny<IEnumerable<Creature>>()))
+                .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
                 .Returns(blockingDecision);
 
-            tabletop.NonactivePlayer.Strategy = mockStrategy.Object;
+            player.Strategy = mockStrategy.Object;
 
-            return tabletop;
+            return player;
         }
     }
 }

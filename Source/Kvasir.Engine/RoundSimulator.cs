@@ -42,9 +42,7 @@ namespace nGratis.AI.Kvasir.Engine
 
         private readonly ILogger _logger;
 
-        private Ticker _ticker;
-
-        private TurnCoordinator _turnCoordinator;
+        private Judge _judge;
 
         private Tabletop _tabletop;
 
@@ -85,9 +83,9 @@ namespace nGratis.AI.Kvasir.Engine
                 .SetupPlayerZones(this._tabletop.NonactivePlayer)
                 .SetupSharedZones();
 
-            while (this._ticker.TurnId < simulationConfig.MaxTurnCount)
+            while (this._tabletop.TurnId < simulationConfig.MaxTurnCount)
             {
-                this._ticker.ProcessUntilEndOfTurn();
+                this._judge.ExecuteNextTurn(this._tabletop);
             }
 
             return new SimulationResult
@@ -98,16 +96,12 @@ namespace nGratis.AI.Kvasir.Engine
 
         private RoundSimulator SetupTabletop()
         {
-            if (this._ticker != null)
+            this._judge = new Judge(this._logger);
+
+            this._tabletop = new Tabletop
             {
-                this._ticker.StateChanged -= this.OnTickerStateChanged;
-            }
-
-            this._tabletop = new Tabletop();
-            this._turnCoordinator = new TurnCoordinator(this._tabletop, this._logger);
-
-            this._ticker = new Ticker();
-            this._ticker.StateChanged += this.OnTickerStateChanged;
+                Phase = Phase.Setup
+            };
 
             return this;
         }
@@ -155,10 +149,7 @@ namespace nGratis.AI.Kvasir.Engine
         {
             // TODO (SHOULD): Move strategy initialization to <IMagicEntityFactory>!
 
-            var judge = new Judge(this._tabletop);
-            var strategy = new RandomStrategy(judge, player, this._randomGenerator);
-
-            player.Strategy = strategy;
+            player.Strategy = new RandomStrategy(this._randomGenerator);
 
             return this;
         }
@@ -167,7 +158,9 @@ namespace nGratis.AI.Kvasir.Engine
         {
             if (player.Deck == null)
             {
-                throw new KvasirException($"Player [{player.Name}] does NOT have valid deck!");
+                throw new KvasirException(
+                    "Player does NOT have valid deck!",
+                    ("Player", player.Name));
             }
 
             player.Library = new Zone(ZoneKind.Library, Visibility.Hidden);
@@ -199,15 +192,8 @@ namespace nGratis.AI.Kvasir.Engine
             this._tabletop.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
             this._tabletop.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
             this._tabletop.Exile = new Zone(ZoneKind.Exile, Visibility.Public);
-            this._tabletop.Command = new Zone(ZoneKind.Command, Visibility.Public);
-            this._tabletop.Ante = new Zone(ZoneKind.Ante, Visibility.Public);
 
             return this;
-        }
-
-        private void OnTickerStateChanged(object sender, Ticker.StateChangedEventArgs args)
-        {
-            this._turnCoordinator?.ExecuteStep(args.TurnId, args.PhaseState, args.StepState);
         }
     }
 }

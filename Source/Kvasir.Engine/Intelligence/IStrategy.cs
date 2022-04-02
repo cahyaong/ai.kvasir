@@ -28,12 +28,10 @@
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System.Collections.Generic;
-
     public interface IStrategy
     {
-        AttackingDecision DeclareAttackers();
+        AttackingDecision DeclareAttacker(Tabletop tabletop);
 
-        BlockingDecision AssignBlockers(IEnumerable<Creature> attackers);
+        BlockingDecision DeclareBlocker(Tabletop tabletop);
     }
 }

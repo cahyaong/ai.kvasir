@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataExtensions.cs" company="nGratis">
+// <copyright file="Phase.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,41 +23,21 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 5:15:47 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, March 11, 2022 7:19:42 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using System.Collections.Generic;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class DataExtensions
+    public enum Phase
     {
-        private static readonly IReadOnlyDictionary<Phase, Phase> NextPhaseLookup = new Dictionary<Phase, Phase>
-        {
-            [Phase.Setup] = Phase.Beginning,
-            [Phase.Beginning] = Phase.PrecombatMain,
-            [Phase.PrecombatMain] = Phase.Combat,
-            [Phase.Combat] = Phase.PostcombatMain,
-            [Phase.PostcombatMain] = Phase.Ending,
-            [Phase.Ending] = Phase.Beginning
-        };
+        Unknown = 0,
 
-        public static Phase Next(this Phase currentPhase)
-        {
-            Guard
-                .Require(currentPhase, nameof(currentPhase))
-                .Is.Not.Default();
+        Setup,
 
-            if (!DataExtensions.NextPhaseLookup.TryGetValue(currentPhase, out var nextPhase))
-            {
-                throw new KvasirException(
-                    "No lookup entry is defined for next phase!",
-                    ("Current Phase", currentPhase));
-            }
-
-            return nextPhase;
-        }
+        Beginning,
+        PrecombatMain,
+        Combat,
+        PostcombatMain,
+        Ending
     }
 }

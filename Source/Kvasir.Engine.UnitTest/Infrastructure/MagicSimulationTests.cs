@@ -425,20 +425,6 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest
                         .Must().BeExile()
                         .And.BePublic()
                         .And.HaveCardQuantity(0);
-
-                    simulationResult
-                        .Tabletop
-                        .Command
-                        .Must().BeCommand()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
-
-                    simulationResult
-                        .Tabletop
-                        .Ante
-                        .Must().BeAnte()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
                 }
             }
         }

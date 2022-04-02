@@ -1,0 +1,273 @@
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="RulebookTests.cs" company="nGratis">
+//  The MIT License (MIT)
+//
+//  Copyright (c) 2014 - 2021 Cahya Ong
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all
+//  copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  SOFTWARE.
+// </copyright>
+// <author>Cahya Ong - cahya.ong@gmail.com</author>
+// <creation_timestamp>Wednesday, July 7, 2021 5:35:31 PM UTC</creation_timestamp>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace nGratis.AI.Kvasir.Engine.UnitTest
+{
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.Linq;
+    using System.Reflection;
+    using FluentAssertions;
+    using nGratis.AI.Kvasir.Contract;
+    using nGratis.Cop.Olympus.Contract;
+    using nGratis.Cop.Olympus.Framework;
+    using Xunit;
+
+    public class RulebookTests
+    {
+        public class FindCreaturesMethod
+        {
+            [Theory]
+            [MemberData(nameof(TestData.FindingCreaturesControlledByActivePlayerTheories), MemberType = typeof(TestData))]
+            public void WhenGettingCreaturesControlledByActivePlayer_ShouldReturnFilteredCreatures(
+                FindingCreaturesTheory theory)
+            {
+                // Arrange.
+
+                // Act.
+
+                var creatures = Rulebook
+                    .FindCreatures(theory.Tabletop, PlayerModifier.Active, theory.CreatureModifier)
+                    .ToImmutableList();
+
+                // Assert.
+
+                creatures
+                    .Should().NotBeNull()
+                    .And.HaveCount(
+                        theory.ExpectedCreatureNames.Count(),
+                        "because query should return correct count of filtered creatures");
+
+                creatures
+                    .Select(creature => creature.Name)
+                    .Should().Contain(theory.ExpectedCreatureNames, "because query should find correct creature");
+            }
+
+            [Theory]
+            [MemberData(
+                nameof(TestData.FindingCreaturesControlledByNonactivePlayerTheories),
+                MemberType = typeof(TestData))]
+            public void WhenGettingCreaturesControlledByNonactivePlayer_ShouldReturnFilteredCreatures(
+                FindingCreaturesTheory theory)
+            {
+                // Arrange.
+
+                // Act.
+
+                var creatures = Rulebook
+                    .FindCreatures(theory.Tabletop, PlayerModifier.Nonactive, theory.CreatureModifier)
+                    .ToImmutableList();
+
+                // Assert.
+
+                creatures
+                    .Should().NotBeNull()
+                    .And.HaveCount(
+                        theory.ExpectedCreatureNames.Count(),
+                        "because query should return correct count of filtered creatures");
+
+                creatures
+                    .Select(creature => creature.Name)
+                    .Should().Contain(theory.ExpectedCreatureNames, "because query should find correct creature");
+            }
+
+            [Fact]
+            public void WhenHavingNonCreatures_ShouldNotIncludeThemInQuery()
+            {
+                // Arrange.
+
+                var tabletop = new Tabletop
+                {
+                    ActivePlayer = new Player(),
+                    Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+                };
+
+                tabletop.Battlefield.AddCardToTop(new Land("[_MOCK_LAND_]")
+                {
+                    Owner = tabletop.ActivePlayer,
+                    Controller = tabletop.ActivePlayer
+                });
+
+                // Act.
+
+                var creatures = Rulebook
+                    .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+                    .ToImmutableList();
+
+                // Assert.
+
+                creatures
+                    .Should().NotBeNull()
+                    .And.BeEmpty("because battlefield doesn't have any creature");
+            }
+
+            private static class TestData
+            {
+                public static IEnumerable<object[]> FindingCreaturesControlledByActivePlayerTheories
+                {
+                    get
+                    {
+                        yield return FindingCreaturesTheory
+                            .Create(CreatureModifier.None)
+                            .WithActivePlayerAsOwnerAndController()
+                            .ExpectAllCreatures()
+                            .WithLabel(1, "Finding creatures controlled by active player with 'None' modifier")
+                            .ToXunitTheory();
+
+                        yield return FindingCreaturesTheory
+                            .Create(CreatureModifier.CanAttack)
+                            .WithActivePlayerAsOwnerAndController()
+                            .ExpectCreature("[_MOCK_CREATURE_001_]")
+                            .WithLabel(2, "Finding creatures controlled by active player with 'Can Attack' modifier")
+                            .ToXunitTheory();
+
+                        yield return FindingCreaturesTheory
+                            .Create(CreatureModifier.CanBlock)
+                            .WithActivePlayerAsOwnerAndController()
+                            .ExpectCreature("[_MOCK_CREATURE_001_]", "[_MOCK_CREATURE_003_]")
+                            .WithLabel(3, "Finding creatures controlled by active player with 'Can Block' modifier")
+                            .ToXunitTheory();
+                    }
+                }
+
+                public static IEnumerable<object[]> FindingCreaturesControlledByNonactivePlayerTheories
+                {
+                    get
+                    {
+                        yield return FindingCreaturesTheory
+                            .Create(CreatureModifier.None)
+                            .WithNonactivePlayerAsOwnerAndController()
+                            .ExpectAllCreatures()
+                            .WithLabel(1, "Finding creatures controlled by nonactive player with 'None' modifier")
+                            .ToXunitTheory();
+
+                        yield return FindingCreaturesTheory
+                            .Create(CreatureModifier.CanAttack)
+                            .WithNonactivePlayerAsOwnerAndController()
+                            .ExpectCreature("[_MOCK_CREATURE_001_]")
+                            .WithLabel(2, "Finding creatures controlled by nonactive player with 'Can Attack' modifier")
+                            .ToXunitTheory();
+
+                        yield return FindingCreaturesTheory
+                            .Create(CreatureModifier.CanBlock)
+                            .WithNonactivePlayerAsOwnerAndController()
+                            .ExpectCreature("[_MOCK_CREATURE_001_]", "[_MOCK_CREATURE_003_]")
+                            .WithLabel(3, "Finding creatures controlled by nonactive player with 'Can Block' modifier")
+                            .ToXunitTheory();
+                    }
+                }
+            }
+
+            public sealed class FindingCreaturesTheory : CopTheory
+            {
+                private FindingCreaturesTheory()
+                {
+                }
+
+                public Tabletop Tabletop { get; private init; }
+
+                public CreatureModifier CreatureModifier { get; private init; }
+
+                public IEnumerable<string> ExpectedCreatureNames { get; private set; }
+
+                public static FindingCreaturesTheory Create(CreatureModifier creatureModifier)
+                {
+                    var tabletop = new Tabletop
+                    {
+                        ActivePlayer = new Player
+                        {
+                            Name = "[_MOCK_PLAYER_01_]"
+                        },
+                        NonactivePlayer = new Player
+                        {
+                            Name = "[_MOCK_PLAYER_02_]"
+                        },
+                        Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+                    };
+
+                    tabletop
+                        .Battlefield
+                        .LoadCreatureData("Theory_FindingCreatures");
+
+                    return new FindingCreaturesTheory
+                    {
+                        Tabletop = tabletop,
+                        CreatureModifier = creatureModifier
+                    };
+                }
+
+                public FindingCreaturesTheory WithActivePlayerAsOwnerAndController()
+                {
+                    this.Tabletop
+                        .Battlefield.Cards
+                        .ForEach(card =>
+                        {
+                            card.Owner = this.Tabletop.ActivePlayer;
+                            card.Controller = this.Tabletop.ActivePlayer;
+                        });
+
+                    return this;
+                }
+
+                public FindingCreaturesTheory WithNonactivePlayerAsOwnerAndController()
+                {
+                    this.Tabletop
+                        .Battlefield.Cards
+                        .ForEach(card =>
+                        {
+                            card.Owner = this.Tabletop.NonactivePlayer;
+                            card.Controller = this.Tabletop.NonactivePlayer;
+                        });
+
+                    return this;
+                }
+
+                public FindingCreaturesTheory ExpectAllCreatures()
+                {
+                    this.ExpectedCreatureNames = this
+                        .Tabletop.Battlefield.Cards
+                        .Select(card => card.Name)
+                        .Distinct();
+
+                    return this;
+                }
+
+                public FindingCreaturesTheory ExpectCreature(params string[] names)
+                {
+                    Guard
+                        .Require(names, nameof(names))
+                        .Is.Not.Null();
+
+                    this.ExpectedCreatureNames = names;
+
+                    return this;
+                }
+            }
+        }
+    }
+}

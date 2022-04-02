@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DataExtensions.cs" company="nGratis">
+// <copyright file="CardFormatter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,41 +23,34 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 5:15:47 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, March 29, 2022 2:47:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Framework
 {
     using System.Collections.Generic;
-    using nGratis.AI.Kvasir.Contract;
+    using System.Linq;
+    using FluentAssertions.Formatting;
+    using nGratis.AI.Kvasir.Engine;
     using nGratis.Cop.Olympus.Contract;
 
-    public static class DataExtensions
+    public class CardFormatter : IValueFormatter
     {
-        private static readonly IReadOnlyDictionary<Phase, Phase> NextPhaseLookup = new Dictionary<Phase, Phase>
-        {
-            [Phase.Setup] = Phase.Beginning,
-            [Phase.Beginning] = Phase.PrecombatMain,
-            [Phase.PrecombatMain] = Phase.Combat,
-            [Phase.Combat] = Phase.PostcombatMain,
-            [Phase.PostcombatMain] = Phase.Ending,
-            [Phase.Ending] = Phase.Beginning
-        };
+        public bool CanHandle(object value) => value is Card or IEnumerable<Card>;
 
-        public static Phase Next(this Phase currentPhase)
+        public string Format(object value, FormattingContext context, FormatChild formatChild)
         {
-            Guard
-                .Require(currentPhase, nameof(currentPhase))
-                .Is.Not.Default();
-
-            if (!DataExtensions.NextPhaseLookup.TryGetValue(currentPhase, out var nextPhase))
+            return value switch
             {
-                throw new KvasirException(
-                    "No lookup entry is defined for next phase!",
-                    ("Current Phase", currentPhase));
-            }
+                Card card => CardFormatter.Format(card),
+                IEnumerable<Card> cards => $"[{string.Join(", ", cards.Select(CardFormatter.Format))}]",
+                _ => Text.Unsupported
+            };
+        }
 
-            return nextPhase;
+        private static string Format(Card card)
+        {
+            return card?.Name ?? Text.Undefined;
         }
     }
 }

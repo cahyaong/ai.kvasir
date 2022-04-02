@@ -56,6 +56,7 @@ namespace nGratis.AI.Kvasir.Framework
 
             return new()
             {
+                Phase = Phase.Setup,
                 ActivePlayer = activePlayer,
                 NonactivePlayer = nonactivePlayer,
                 Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)

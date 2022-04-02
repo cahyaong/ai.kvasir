@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Judge.cs" company="nGratis">
+// <copyright file="Rulebook.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -34,42 +34,48 @@ namespace nGratis.AI.Kvasir.Engine
     using nGratis.AI.Kvasir.Contract;
     using nGratis.Cop.Olympus.Contract;
 
-    public class Judge
+    public static class Rulebook
     {
-        private readonly Tabletop _tabletop;
-
-        public Judge(Tabletop tabletop)
+        public static IEnumerable<Creature> FindCreatures(
+            Tabletop tabletop,
+            PlayerModifier playerModifier,
+            CreatureModifier creatureModifier)
         {
             Guard
                 .Require(tabletop, nameof(tabletop))
                 .Is.Not.Null();
 
-            this._tabletop = tabletop;
-        }
-
-        public IEnumerable<Creature> FindCreatures(Player player, QueryModifier queryModifier)
-        {
             Guard
-                .Require(player, nameof(player))
-                .Is.Not.Null();
+                .Require(playerModifier, nameof(playerModifier))
+                .Is.Not.Default();
 
-            var filteredCreatures = this
-                ._tabletop.Battlefield.Cards
+            Guard
+                .Require(creatureModifier, nameof(creatureModifier))
+                .Is.Not.Default();
+
+            var player = playerModifier == PlayerModifier.Active
+                ? tabletop.ActivePlayer
+                : tabletop.NonactivePlayer;
+
+            var filteredCreatures = tabletop
+                .Battlefield.Cards
                 .Where(card => card.Kind == CardKind.Creature)
                 .OfType<Creature>();
 
-            filteredCreatures = queryModifier switch
+            filteredCreatures = creatureModifier switch
             {
-                QueryModifier.CanAttack => filteredCreatures
+                CreatureModifier.None => filteredCreatures,
+
+                CreatureModifier.CanAttack => filteredCreatures
                     .Where(creature => creature.Controller == player)
                     .Where(creature => !creature.HasSummoningSickness)
                     .Where(creature => !creature.IsTapped),
 
-                QueryModifier.CanBlock => filteredCreatures
+                CreatureModifier.CanBlock => filteredCreatures
                     .Where(creature => creature.Controller == player)
                     .Where(creature => !creature.IsTapped),
 
-                _ => filteredCreatures
+                _ => Enumerable.Empty<Creature>()
             };
 
             return filteredCreatures.ToImmutableList();
@@ -80,6 +86,11 @@ namespace nGratis.AI.Kvasir.Engine
             Guard
                 .Require(attackingDecision, nameof(attackingDecision))
                 .Is.Not.Null();
+
+            if (attackingDecision == AttackingDecision.None)
+            {
+                return ValidationResult.Successful;
+            }
 
             var reasons = new List<ValidationReason>();
 

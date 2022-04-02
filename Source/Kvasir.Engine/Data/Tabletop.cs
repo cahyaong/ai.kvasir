@@ -30,6 +30,10 @@ namespace nGratis.AI.Kvasir.Engine
 {
     public class Tabletop
     {
+        public int TurnId { get; internal set; } = -1;
+
+        public Phase Phase { get; internal set; }
+
         public Player ActivePlayer { get; internal set; }
 
         public Player NonactivePlayer { get; internal set; }
@@ -40,8 +44,10 @@ namespace nGratis.AI.Kvasir.Engine
 
         public Zone Exile { get; internal set; }
 
-        public Zone Command { get; internal set; }
+        public AttackingDecision AttackingDecision { get; internal set; }
 
-        public Zone Ante { get; internal set; }
+        public BlockingDecision BlockingDecision { get; internal set; }
+
+        public bool IsFirstTurn => this.TurnId <= 0;
     }
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="EngineExtensions.cs" company="nGratis">
+// <copyright file="CreatureModifier.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,38 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, November 27, 2021 7:37:21 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, July 7, 2021 5:24:28 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
-
-// ReSharper disable once CheckNamespace
 
 namespace nGratis.AI.Kvasir.Engine
 {
-    using FluentAssertions;
-    using nGratis.Cop.Olympus.Contract;
-
-    internal static class EngineExtensions
+    public enum CreatureModifier
     {
-        public static void ExecuteCombatPhase(this TurnCoordinator turnCoordinator)
-        {
-            Guard
-                .Require(turnCoordinator, nameof(turnCoordinator))
-                .Is.Not.Null();
+        Unknown = 0,
 
-            turnCoordinator
-                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.DeclareAttackers)
-                .HasError
-                .Should().BeFalse("because declaring attackers should not fail");
+        None = 1,
 
-            turnCoordinator
-                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.AssignBlockers)
-                .HasError
-                .Should().BeFalse("because assigning blockers should not fail");
-
-            turnCoordinator
-                .ExecuteStep(0, Ticker.PhaseState.Combat, Ticker.StepState.CombatDamage)
-                .HasError
-                .Should().BeFalse("because resolving combat damage should not fail");
-        }
+        CanAttack = 2,
+        CanBlock = 3
     }
 }
