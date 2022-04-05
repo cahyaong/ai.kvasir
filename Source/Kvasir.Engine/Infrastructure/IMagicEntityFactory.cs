@@ -26,14 +26,13 @@
 // <creation_timestamp>Monday, 28 January 2019 5:02:42 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using nGratis.AI.Kvasir.Contract;
+
+public interface IMagicEntityFactory
 {
-    using nGratis.AI.Kvasir.Contract;
+    Player CreatePlayer(DefinedBlob.Player definedPlayer);
 
-    public interface IMagicEntityFactory
-    {
-        Player CreatePlayer(DefinedBlob.Player definedPlayer);
-
-        Card CreateCard(DefinedBlob.Card definedCard);
-    }
+    Card CreateCard(DefinedBlob.Card definedCard);
 }

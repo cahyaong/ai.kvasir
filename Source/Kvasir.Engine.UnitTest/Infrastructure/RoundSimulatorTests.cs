@@ -26,406 +26,405 @@
 // <creation_timestamp>Monday, 28 January 2019 4:07:09 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
+namespace nGratis.AI.Kvasir.Engine.UnitTest;
+
+using FluentAssertions;
+using FluentAssertions.Execution;
+using Moq.AI.Kvasir;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine;
+using nGratis.AI.Kvasir.Framework;
+using nGratis.Cop.Olympus.Contract;
+using Xunit;
+
+public class RoundSimulatorTests
 {
-    using FluentAssertions;
-    using FluentAssertions.Execution;
-    using Moq.AI.Kvasir;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
-    using nGratis.AI.Kvasir.Framework;
-    using nGratis.Cop.Olympus.Contract;
-    using Xunit;
-
-    public class RoundSimulatorTests
+    public class SimulateMethod
     {
-        public class SimulateMethod
+        [Fact]
+        public void WhenGettingValidParameter_ShouldSetupPlayer()
         {
-            [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayer()
+            // Arrange.
+
+            var definedPlayers = new[]
             {
-                // Arrange.
-
-                var definedPlayers = new[]
+                new DefinedBlob.Player
                 {
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_01_]",
-                        DeckCode = "[_MOCK_CODE_ELF_]"
-                    },
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_02_]",
-                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
-                    }
-                };
-
-                var simulationConfig = new SimulationConfig
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
                 {
-                    MaxTurnCount = 0,
-                    DefinedPlayers = definedPlayers
-                };
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
+                }
+            };
 
-                var mockFactory = MockBuilder
-                    .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultPlayer();
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 0,
+                DefinedPlayers = definedPlayers
+            };
 
-                var mockLogger = MockBuilder
-                    .CreateMock<ILogger>();
+            var mockFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
 
-                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var mockLogger = MockBuilder
+                .CreateMock<ILogger>();
 
-                // Act.
+            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
-                var simulationResult = simulator.Simulate(simulationConfig);
+            // Act.
 
-                // Assert.
+            var simulationResult = simulator.Simulate(simulationConfig);
 
-                simulationResult
-                    .Should().NotBeNull()
-                    .And.BeOfType<SimulationResult>();
+            // Assert.
 
+            simulationResult
+                .Should().NotBeNull()
+                .And.BeOfType<SimulationResult>();
+
+            simulationResult
+                .Tabletop
+                .Must().HavePlayers();
+
+            if (simulationResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
+            {
                 simulationResult
                     .Tabletop
-                    .Must().HavePlayers();
-
-                if (simulationResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
-                {
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Name
-                        .Should().Be("[_MOCK_PLAYER_02_]", "nonactive player should be different from active player");
-                }
-                else
-                {
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Name
-                        .Should().Be("[_MOCK_PLAYER_01_]", "nonactive player should be different from active player");
-                }
-
-                using (new AssertionScope())
-                {
-                    simulationResult
-                        .Tabletop
-                        .ActivePlayer.Life
-                        .Should().Be(20, "active player should begin with full life");
-
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Life
-                        .Should().Be(20, "nonactive player should begin with full life");
-                }
-
-                using (new AssertionScope())
-                {
-                    simulationResult
-                        .Tabletop
-                        .ActivePlayer.Opponent
-                        .Should().Be(
-                            simulationResult.Tabletop.NonactivePlayer,
-                            "active player's opponent should be nonactive player");
-
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Opponent
-                        .Should().Be(
-                            simulationResult.Tabletop.ActivePlayer,
-                            "nonactive player's opponent should be active player");
-                }
+                    .NonactivePlayer.Name
+                    .Should().Be("[_MOCK_PLAYER_02_]", "nonactive player should be different from active player");
+            }
+            else
+            {
+                simulationResult
+                    .Tabletop
+                    .NonactivePlayer.Name
+                    .Should().Be("[_MOCK_PLAYER_01_]", "nonactive player should be different from active player");
             }
 
-            [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayerLibrary()
+            using (new AssertionScope())
             {
-                // Arrange.
-
-                var definedPlayers = new[]
-                {
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_01_]",
-                        DeckCode = "[_MOCK_CODE_ELF_]"
-                    },
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_02_]",
-                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
-                    }
-                };
-
-                var simulationConfig = new SimulationConfig
-                {
-                    MaxTurnCount = 0,
-                    DefinedPlayers = definedPlayers
-                };
-
-                var mockFactory = MockBuilder
-                    .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultPlayer();
-
-                var mockLogger = MockBuilder
-                    .CreateMock<ILogger>();
-
-                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
-
-                // Act.
-
-                var simulationResult = simulator.Simulate(simulationConfig);
-
-                // Assert.
-
                 simulationResult
-                    .Should().NotBeNull()
-                    .And.BeOfType<SimulationResult>();
+                    .Tabletop
+                    .ActivePlayer.Life
+                    .Should().Be(20, "active player should begin with full life");
 
                 simulationResult
                     .Tabletop
-                    .Must().HavePlayers();
-
-                using (new AssertionScope())
-                {
-                    var activeDeck = simulationResult
-                        .Tabletop
-                        .ActivePlayer.Deck;
-
-                    simulationResult
-                        .Tabletop
-                        .ActivePlayer.Library
-                        .Must().NotBeNull("active player should have library")
-                        .And.BeLibrary()
-                        .And.BeHidden()
-                        .And.HaveCardQuantity((ushort)(activeDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
-                        .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(activeDeck);
-
-                    var nonactiveDeck = simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Deck;
-
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Library
-                        .Must().NotBeNull("nonactive player should have library")
-                        .And.BeLibrary()
-                        .And.BeHidden()
-                        .And.HaveCardQuantity((ushort)(nonactiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
-                        .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(nonactiveDeck);
-                }
+                    .NonactivePlayer.Life
+                    .Should().Be(20, "nonactive player should begin with full life");
             }
 
-            [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayerHand()
+            using (new AssertionScope())
             {
-                // Arrange.
-
-                var definedPlayers = new[]
-                {
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_01_]",
-                        DeckCode = "[_MOCK_CODE_ELF_]"
-                    },
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_02_]",
-                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
-                    }
-                };
-
-                var simulationConfig = new SimulationConfig
-                {
-                    MaxTurnCount = 0,
-                    DefinedPlayers = definedPlayers
-                };
-
-                var mockFactory = MockBuilder
-                    .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultPlayer();
-
-                var mockLogger = MockBuilder
-                    .CreateMock<ILogger>();
-
-                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
-
-                // Act.
-
-                var simulationResult = simulator.Simulate(simulationConfig);
-
-                // Assert.
-
                 simulationResult
-                    .Should().NotBeNull()
-                    .And.BeOfType<SimulationResult>();
+                    .Tabletop
+                    .ActivePlayer.Opponent
+                    .Should().Be(
+                        simulationResult.Tabletop.NonactivePlayer,
+                        "active player's opponent should be nonactive player");
 
                 simulationResult
                     .Tabletop
-                    .Must().HavePlayers();
-
-                using (new AssertionScope())
-                {
-                    simulationResult
-                        .Tabletop
-                        .ActivePlayer.Hand
-                        .Must().NotBeNull("active player should have hand")
-                        .And.BeHand()
-                        .And.BeHidden()
-                        .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
-                        .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
-
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Hand
-                        .Must().NotBeNull("nonactive player should have hand")
-                        .And.BeHand()
-                        .And.BeHidden()
-                        .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
-                        .And.HaveUniqueCardInstance()
-                        .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonactivePlayer.Deck);
-                }
+                    .NonactivePlayer.Opponent
+                    .Should().Be(
+                        simulationResult.Tabletop.ActivePlayer,
+                        "nonactive player's opponent should be active player");
             }
+        }
 
-            [Fact]
-            public void WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
+        [Fact]
+        public void WhenGettingValidParameter_ShouldSetupPlayerLibrary()
+        {
+            // Arrange.
+
+            var definedPlayers = new[]
             {
-                // Arrange.
-
-                var definedPlayers = new[]
+                new DefinedBlob.Player
                 {
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_01_]",
-                        DeckCode = "[_MOCK_CODE_ELF_]"
-                    },
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_02_]",
-                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
-                    }
-                };
-
-                var simulationConfig = new SimulationConfig
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
                 {
-                    MaxTurnCount = 0,
-                    DefinedPlayers = definedPlayers
-                };
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
+                }
+            };
 
-                var mockFactory = MockBuilder
-                    .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultPlayer();
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 0,
+                DefinedPlayers = definedPlayers
+            };
 
-                var mockLogger = MockBuilder
-                    .CreateMock<ILogger>();
+            var mockFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
 
-                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var mockLogger = MockBuilder
+                .CreateMock<ILogger>();
 
-                // Act.
+            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
-                var simulationResult = simulator.Simulate(simulationConfig);
+            // Act.
 
-                // Assert.
+            var simulationResult = simulator.Simulate(simulationConfig);
 
-                simulationResult
-                    .Should().NotBeNull()
-                    .And.BeOfType<SimulationResult>();
+            // Assert.
+
+            simulationResult
+                .Should().NotBeNull()
+                .And.BeOfType<SimulationResult>();
+
+            simulationResult
+                .Tabletop
+                .Must().HavePlayers();
+
+            using (new AssertionScope())
+            {
+                var activeDeck = simulationResult
+                    .Tabletop
+                    .ActivePlayer.Deck;
 
                 simulationResult
                     .Tabletop
-                    .Must().HavePlayers();
+                    .ActivePlayer.Library
+                    .Must().NotBeNull("active player should have library")
+                    .And.BeLibrary()
+                    .And.BeHidden()
+                    .And.HaveCardQuantity((ushort)(activeDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
+                    .And.HaveUniqueCardInstance()
+                    .And.BeSubsetOfConstructedDeck(activeDeck);
 
-                using (new AssertionScope())
-                {
-                    simulationResult
-                        .Tabletop
-                        .ActivePlayer.Graveyard
-                        .Must().NotBeNull("active player should have hand")
-                        .And.BeGraveyard()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
+                var nonactiveDeck = simulationResult
+                    .Tabletop
+                    .NonactivePlayer.Deck;
 
-                    simulationResult
-                        .Tabletop
-                        .NonactivePlayer.Graveyard
-                        .Must().NotBeNull("nonactive player should have hand")
-                        .And.BeGraveyard()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
-                }
+                simulationResult
+                    .Tabletop
+                    .NonactivePlayer.Library
+                    .Must().NotBeNull("nonactive player should have library")
+                    .And.BeLibrary()
+                    .And.BeHidden()
+                    .And.HaveCardQuantity((ushort)(nonactiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
+                    .And.HaveUniqueCardInstance()
+                    .And.BeSubsetOfConstructedDeck(nonactiveDeck);
             }
+        }
 
-            [Fact]
-            public void WhenGettingValidParameter_ShouldSetupSharedZones()
+        [Fact]
+        public void WhenGettingValidParameter_ShouldSetupPlayerHand()
+        {
+            // Arrange.
+
+            var definedPlayers = new[]
             {
-                // Arrange.
-
-                var definedPlayers = new[]
+                new DefinedBlob.Player
                 {
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_01_]",
-                        DeckCode = "[_MOCK_CODE_ELF_]"
-                    },
-                    new DefinedBlob.Player
-                    {
-                        Name = "[_MOCK_PLAYER_02_]",
-                        DeckCode = "[_MOCK_CODE_GOBLIN_]"
-                    }
-                };
-
-                var simulationConfig = new SimulationConfig
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
                 {
-                    MaxTurnCount = 0,
-                    DefinedPlayers = definedPlayers
-                };
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
+                }
+            };
 
-                var mockFactory = MockBuilder
-                    .CreateMock<IMagicEntityFactory>()
-                    .WithDefaultPlayer();
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 0,
+                DefinedPlayers = definedPlayers
+            };
 
-                var mockLogger = MockBuilder
-                    .CreateMock<ILogger>();
+            var mockFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
 
-                var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var mockLogger = MockBuilder
+                .CreateMock<ILogger>();
 
-                // Act.
+            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
 
-                var simulationResult = simulator.Simulate(simulationConfig);
+            // Act.
 
-                // Assert.
+            var simulationResult = simulator.Simulate(simulationConfig);
 
+            // Assert.
+
+            simulationResult
+                .Should().NotBeNull()
+                .And.BeOfType<SimulationResult>();
+
+            simulationResult
+                .Tabletop
+                .Must().HavePlayers();
+
+            using (new AssertionScope())
+            {
                 simulationResult
-                    .Should().NotBeNull()
-                    .And.BeOfType<SimulationResult>();
+                    .Tabletop
+                    .ActivePlayer.Hand
+                    .Must().NotBeNull("active player should have hand")
+                    .And.BeHand()
+                    .And.BeHidden()
+                    .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
+                    .And.HaveUniqueCardInstance()
+                    .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
 
                 simulationResult
                     .Tabletop
-                    .Must().HavePlayers();
+                    .NonactivePlayer.Hand
+                    .Must().NotBeNull("nonactive player should have hand")
+                    .And.BeHand()
+                    .And.BeHidden()
+                    .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
+                    .And.HaveUniqueCardInstance()
+                    .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonactivePlayer.Deck);
+            }
+        }
 
-                using (new AssertionScope())
+        [Fact]
+        public void WhenGettingValidParameter_ShouldSetupPlayerGraveyard()
+        {
+            // Arrange.
+
+            var definedPlayers = new[]
+            {
+                new DefinedBlob.Player
                 {
-                    simulationResult
-                        .Tabletop
-                        .Battlefield
-                        .Must().BeBattlefield()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
-
-                    simulationResult
-                        .Tabletop
-                        .Stack
-                        .Must().BeStack()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
-
-                    simulationResult
-                        .Tabletop
-                        .Exile
-                        .Must().BeExile()
-                        .And.BePublic()
-                        .And.HaveCardQuantity(0);
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
                 }
+            };
+
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 0,
+                DefinedPlayers = definedPlayers
+            };
+
+            var mockFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
+
+            var mockLogger = MockBuilder
+                .CreateMock<ILogger>();
+
+            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+
+            // Act.
+
+            var simulationResult = simulator.Simulate(simulationConfig);
+
+            // Assert.
+
+            simulationResult
+                .Should().NotBeNull()
+                .And.BeOfType<SimulationResult>();
+
+            simulationResult
+                .Tabletop
+                .Must().HavePlayers();
+
+            using (new AssertionScope())
+            {
+                simulationResult
+                    .Tabletop
+                    .ActivePlayer.Graveyard
+                    .Must().NotBeNull("active player should have hand")
+                    .And.BeGraveyard()
+                    .And.BePublic()
+                    .And.HaveCardQuantity(0);
+
+                simulationResult
+                    .Tabletop
+                    .NonactivePlayer.Graveyard
+                    .Must().NotBeNull("nonactive player should have hand")
+                    .And.BeGraveyard()
+                    .And.BePublic()
+                    .And.HaveCardQuantity(0);
+            }
+        }
+
+        [Fact]
+        public void WhenGettingValidParameter_ShouldSetupSharedZones()
+        {
+            // Arrange.
+
+            var definedPlayers = new[]
+            {
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
+                }
+            };
+
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 0,
+                DefinedPlayers = definedPlayers
+            };
+
+            var mockFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
+
+            var mockLogger = MockBuilder
+                .CreateMock<ILogger>();
+
+            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+
+            // Act.
+
+            var simulationResult = simulator.Simulate(simulationConfig);
+
+            // Assert.
+
+            simulationResult
+                .Should().NotBeNull()
+                .And.BeOfType<SimulationResult>();
+
+            simulationResult
+                .Tabletop
+                .Must().HavePlayers();
+
+            using (new AssertionScope())
+            {
+                simulationResult
+                    .Tabletop
+                    .Battlefield
+                    .Must().BeBattlefield()
+                    .And.BePublic()
+                    .And.HaveCardQuantity(0);
+
+                simulationResult
+                    .Tabletop
+                    .Stack
+                    .Must().BeStack()
+                    .And.BePublic()
+                    .And.HaveCardQuantity(0);
+
+                simulationResult
+                    .Tabletop
+                    .Exile
+                    .Must().BeExile()
+                    .And.BePublic()
+                    .And.HaveCardQuantity(0);
             }
         }
     }

@@ -28,105 +28,104 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Linq;
+using Moq;
+using nGratis.Cop.Olympus.Contract;
+
+public static class DataExtensions
 {
-    using System.Linq;
-    using Moq;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class DataExtensions
+    public static Creature CreateAttacker(this Tabletop tabletop, string name, int power, int toughness)
     {
-        public static Creature CreateAttacker(this Tabletop tabletop, string name, int power, int toughness)
+        Guard
+            .Require(power, nameof(power))
+            .Is.GreaterThanOrEqualTo(1);
+
+        Guard
+            .Require(toughness, nameof(toughness))
+            .Is.GreaterThanOrEqualTo(1);
+
+        var attacker = new Creature(name)
         {
-            Guard
-                .Require(power, nameof(power))
-                .Is.GreaterThanOrEqualTo(1);
+            Power = power,
+            Toughness = toughness,
+            Owner = tabletop.ActivePlayer,
+            Controller = tabletop.ActivePlayer
+        };
 
-            Guard
-                .Require(toughness, nameof(toughness))
-                .Is.GreaterThanOrEqualTo(1);
+        tabletop.Battlefield.AddCardToTop(attacker);
 
-            var attacker = new Creature(name)
-            {
-                Power = power,
-                Toughness = toughness,
-                Owner = tabletop.ActivePlayer,
-                Controller = tabletop.ActivePlayer
-            };
+        return attacker;
+    }
 
-            tabletop.Battlefield.AddCardToTop(attacker);
+    public static Creature CreateBlocker(this Tabletop tabletop, string name, int power, int toughness)
+    {
+        Guard
+            .Require(power, nameof(power))
+            .Is.GreaterThanOrEqualTo(1);
 
-            return attacker;
-        }
+        Guard
+            .Require(toughness, nameof(toughness))
+            .Is.GreaterThanOrEqualTo(1);
 
-        public static Creature CreateBlocker(this Tabletop tabletop, string name, int power, int toughness)
+        var blocker = new Creature(name)
         {
-            Guard
-                .Require(power, nameof(power))
-                .Is.GreaterThanOrEqualTo(1);
+            Power = power,
+            Toughness = toughness,
+            Owner = tabletop.NonactivePlayer,
+            Controller = tabletop.NonactivePlayer
+        };
 
-            Guard
-                .Require(toughness, nameof(toughness))
-                .Is.GreaterThanOrEqualTo(1);
+        tabletop.Battlefield.AddCardToTop(blocker);
 
-            var blocker = new Creature(name)
-            {
-                Power = power,
-                Toughness = toughness,
-                Owner = tabletop.NonactivePlayer,
-                Controller = tabletop.NonactivePlayer
-            };
+        return blocker;
+    }
 
-            tabletop.Battlefield.AddCardToTop(blocker);
+    public static Player WithAttackingDecision(this Player player, params Creature[] attackers)
+    {
+        Guard
+            .Require(player, nameof(player))
+            .Is.Not.Null();
 
-            return blocker;
-        }
+        Guard
+            .Require(attackers, nameof(attackers))
+            .Is.Not.Empty();
 
-        public static Player WithAttackingDecision(this Player player, params Creature[] attackers)
+        var attackDecision = new AttackingDecision
         {
-            Guard
-                .Require(player, nameof(player))
-                .Is.Not.Null();
+            Attackers = attackers
+        };
 
-            Guard
-                .Require(attackers, nameof(attackers))
-                .Is.Not.Empty();
+        var mockStrategy = MockBuilder.CreateMock<IStrategy>();
 
-            var attackDecision = new AttackingDecision
-            {
-                Attackers = attackers
-            };
+        mockStrategy
+            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
+            .Returns(attackDecision);
 
-            var mockStrategy = MockBuilder.CreateMock<IStrategy>();
+        player.Strategy = mockStrategy.Object;
 
-            mockStrategy
-                .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-                .Returns(attackDecision);
+        return player;
+    }
 
-            player.Strategy = mockStrategy.Object;
+    public static Player WithBlockingDecision(this Player player, params Combat[] combats)
+    {
+        Guard
+            .Require(player, nameof(player))
+            .Is.Not.Null();
 
-            return player;
-        }
+        var blockingDecision = combats.Any()
+            ? new BlockingDecision { Combats = combats }
+            : BlockingDecision.None;
 
-        public static Player WithBlockingDecision(this Player player, params Combat[] combats)
-        {
-            Guard
-                .Require(player, nameof(player))
-                .Is.Not.Null();
+        var mockStrategy = MockBuilder.CreateMock<IStrategy>();
 
-            var blockingDecision = combats.Any()
-                ? new BlockingDecision { Combats = combats }
-                : BlockingDecision.None;
+        mockStrategy
+            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
+            .Returns(blockingDecision);
 
-            var mockStrategy = MockBuilder.CreateMock<IStrategy>();
+        player.Strategy = mockStrategy.Object;
 
-            mockStrategy
-                .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-                .Returns(blockingDecision);
-
-            player.Strategy = mockStrategy.Object;
-
-            return player;
-        }
+        return player;
     }
 }

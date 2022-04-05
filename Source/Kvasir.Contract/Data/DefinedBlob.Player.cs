@@ -26,17 +26,16 @@
 // <creation_timestamp>Friday, December 27, 2019 7:42:46 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+public static partial class DefinedBlob
 {
-    public static partial class DefinedBlob
+    public record Player
     {
-        public record Player
-        {
-            public PlayerKind Kind { get; init; }
+        public PlayerKind Kind { get; init; }
 
-            public string Name { get; init; }
+        public string Name { get; init; }
 
-            public string DeckCode { get; init; }
-        }
+        public string DeckCode { get; init; }
     }
 }

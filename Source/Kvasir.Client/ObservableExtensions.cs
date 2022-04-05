@@ -28,25 +28,24 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace System.Reactive.Linq
+namespace System.Reactive.Linq;
+
+using System.ComponentModel;
+using nGratis.Cop.Olympus.Contract;
+using ReactiveUI;
+
+internal static class ObservableExtensions
 {
-    using System.ComponentModel;
-    using nGratis.Cop.Olympus.Contract;
-    using ReactiveUI;
-
-    internal static class ObservableExtensions
+    public static IObservable<EventPattern<PropertyChangedEventArgs>> WhenPropertyChanged(
+        this ReactiveObject reactiveObject)
     {
-        public static IObservable<EventPattern<PropertyChangedEventArgs>> WhenPropertyChanged(
-            this ReactiveObject reactiveObject)
-        {
-            Guard
-                .Require(reactiveObject, nameof(reactiveObject))
-                .Is.Not.Null();
+        Guard
+            .Require(reactiveObject, nameof(reactiveObject))
+            .Is.Not.Null();
 
-            // FIXME: Find another way to create observable of events because issue encountered after upgrading to
-            // .NET 5 related to System.Runtime.InteropServices.WindowsRuntime binding failure!
+        // FIXME: Find another way to create observable of events because issue encountered after upgrading to
+        // .NET 5 related to System.Runtime.InteropServices.WindowsRuntime binding failure!
 
-            return Observable.Empty<EventPattern<PropertyChangedEventArgs>>();
-        }
+        return Observable.Empty<EventPattern<PropertyChangedEventArgs>>();
     }
 }

@@ -26,14 +26,13 @@
 // <creation_timestamp>Monday, 28 January 2019 4:57:14 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum PlayerKind
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Contract;
 
-        AI,
-        Human,
-        Testing
-    }
+public enum PlayerKind
+{
+    Unknown = 0,
+
+    AI,
+    Human,
+    Testing
 }

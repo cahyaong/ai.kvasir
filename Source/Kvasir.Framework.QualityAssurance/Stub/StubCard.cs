@@ -26,21 +26,20 @@
 // <creation_timestamp>Saturday, May 1, 2021 7:37:25 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework
+namespace nGratis.AI.Kvasir.Framework;
+
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine;
+
+public class StubCard : Card
 {
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
-
-    public class StubCard : Card
+    internal StubCard(int id)
+        : base($"[_STUB_CARD_{id:D2}_]", CardKind.Stub)
     {
-        internal StubCard(int id)
-            : base($"[_STUB_CARD_{id:D2}_]", CardKind.Stub)
-        {
-        }
+    }
 
-        internal StubCard(string name)
-            : base(name, CardKind.Stub)
-        {
-        }
+    internal StubCard(string name)
+        : base(name, CardKind.Stub)
+    {
     }
 }

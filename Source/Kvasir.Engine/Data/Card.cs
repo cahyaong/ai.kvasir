@@ -26,32 +26,31 @@
 // <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Diagnostics;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+// TODO: Introduce concept of design- and run-time card with sharing basic properties!
+
+[DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
+public abstract class Card
 {
-    using System.Diagnostics;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    // TODO: Introduce concept of design- and run-time card with sharing basic properties!
-
-    [DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
-    public abstract class Card
+    protected Card(string name, CardKind kind)
     {
-        protected Card(string name, CardKind kind)
-        {
-            this.Name = !string.IsNullOrEmpty(name)
-                ? name
-                : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+        this.Name = !string.IsNullOrEmpty(name)
+            ? name
+            : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
 
-            this.Kind = kind;
-        }
-
-        public CardKind Kind { get; init; }
-
-        public string Name { get; init; }
-
-        public Player Owner { get; internal set; }
-
-        public Player Controller { get; internal set; }
+        this.Kind = kind;
     }
+
+    public CardKind Kind { get; init; }
+
+    public string Name { get; init; }
+
+    public Player Owner { get; internal set; }
+
+    public Player Controller { get; internal set; }
 }

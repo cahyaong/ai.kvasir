@@ -26,108 +26,107 @@
 // <creation_timestamp>Friday, December 27, 2019 7:27:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System.Collections.Generic;
+using nGratis.Cop.Olympus.Contract;
+
+public static partial class DefinedBlob
 {
-    using System.Collections.Generic;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static partial class DefinedBlob
+    public abstract record Cost
     {
-        public abstract record Cost
+        public abstract CostKind Kind { get; }
+    }
+
+    public sealed record UnknownCost : Cost
+    {
+        private UnknownCost()
         {
-            public abstract CostKind Kind { get; }
         }
 
-        public sealed record UnknownCost : Cost
+        public static UnknownCost Instance { get; } = new();
+
+        public override CostKind Kind => CostKind.Unknown;
+    }
+
+    public sealed record TappingCost : Cost
+    {
+        private TappingCost()
         {
-            private UnknownCost()
-            {
-            }
-
-            public static UnknownCost Instance { get; } = new();
-
-            public override CostKind Kind => CostKind.Unknown;
         }
 
-        public sealed record TappingCost : Cost
+        public static TappingCost Instance { get; } = new();
+
+        public override CostKind Kind => CostKind.Tapping;
+    }
+
+    public sealed record PayingManaCost : Cost
+    {
+        private readonly IDictionary<Mana, ushort> _amountLookup;
+
+        private PayingManaCost()
         {
-            private TappingCost()
-            {
-            }
-
-            public static TappingCost Instance { get; } = new();
-
-            public override CostKind Kind => CostKind.Tapping;
+            this._amountLookup = new Dictionary<Mana, ushort>();
         }
 
-        public sealed record PayingManaCost : Cost
+        public static PayingManaCost Free { get; } = PayingManaCost.Builder
+            .Create()
+            .Build();
+
+        public override CostKind Kind => CostKind.PayingMana;
+
+        public ushort this[Mana mana]
         {
-            private readonly IDictionary<Mana, ushort> _amountLookup;
-
-            private PayingManaCost()
+            get
             {
-                this._amountLookup = new Dictionary<Mana, ushort>();
+                Guard
+                    .Require(mana, nameof(mana))
+                    .Is.Not.Default();
+
+                return this._amountLookup.TryGetValue(mana, out var amount)
+                    ? amount
+                    : (ushort)0;
+            }
+        }
+
+        public class Builder
+        {
+            private readonly PayingManaCost _payingManaCost;
+
+            private Builder()
+            {
+                this._payingManaCost = new PayingManaCost();
             }
 
-            public static PayingManaCost Free { get; } = PayingManaCost.Builder
-                .Create()
-                .Build();
-
-            public override CostKind Kind => CostKind.PayingMana;
-
-            public ushort this[Mana mana]
+            public static Builder Create()
             {
-                get
-                {
-                    Guard
-                        .Require(mana, nameof(mana))
-                        .Is.Not.Default();
-
-                    return this._amountLookup.TryGetValue(mana, out var amount)
-                        ? amount
-                        : (ushort)0;
-                }
+                return new Builder();
             }
 
-            public class Builder
+            public Builder WithAmount(Mana mana, ushort amount)
             {
-                private readonly PayingManaCost _payingManaCost;
+                Guard
+                    .Require(mana, nameof(mana))
+                    .Is.Not.Default();
 
-                private Builder()
+                if (amount <= 0)
                 {
-                    this._payingManaCost = new PayingManaCost();
-                }
-
-                public static Builder Create()
-                {
-                    return new();
-                }
-
-                public Builder WithAmount(Mana mana, ushort amount)
-                {
-                    Guard
-                        .Require(mana, nameof(mana))
-                        .Is.Not.Default();
-
-                    if (amount <= 0)
-                    {
-                        return this;
-                    }
-
-                    if (!this._payingManaCost._amountLookup.ContainsKey(mana))
-                    {
-                        this._payingManaCost._amountLookup[mana] = 0;
-                    }
-
-                    this._payingManaCost._amountLookup[mana] += amount;
-
                     return this;
                 }
 
-                public PayingManaCost Build()
+                if (!this._payingManaCost._amountLookup.ContainsKey(mana))
                 {
-                    return this._payingManaCost;
+                    this._payingManaCost._amountLookup[mana] = 0;
                 }
+
+                this._payingManaCost._amountLookup[mana] += amount;
+
+                return this;
+            }
+
+            public PayingManaCost Build()
+            {
+                return this._payingManaCost;
             }
         }
     }

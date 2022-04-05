@@ -26,18 +26,17 @@
 // <creation_timestamp>Friday, March 11, 2022 7:19:42 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+public enum Phase
 {
-    public enum Phase
-    {
-        Unknown = 0,
+    Unknown = 0,
 
-        Setup,
+    Setup,
 
-        Beginning,
-        PrecombatMain,
-        Combat,
-        PostcombatMain,
-        Ending
-    }
+    Beginning,
+    PrecombatMain,
+    Combat,
+    PostcombatMain,
+    Ending
 }

@@ -26,9 +26,8 @@
 // <creation_timestamp>Saturday, December 28, 2019 6:08:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+public static partial class UnparsedBlob
 {
-    public static partial class UnparsedBlob
-    {
-    }
 }

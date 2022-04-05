@@ -26,39 +26,38 @@
 // <creation_timestamp>Tuesday, 5 February 2019 8:51:27 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
+namespace nGratis.AI.Kvasir.Engine.UnitTest;
+
+using System.Linq;
+using FluentAssertions;
+using nGratis.AI.Kvasir.Engine;
+using Xunit;
+
+public class RandomGeneratorTests
 {
-    using System.Linq;
-    using FluentAssertions;
-    using nGratis.AI.Kvasir.Engine;
-    using Xunit;
-
-    public class RandomGeneratorTests
+    public class GenerateShufflingIndexesMethod
     {
-        public class GenerateShufflingIndexesMethod
+        [Fact]
+        public void WhenGettingValueCount_ShouldGenerateRandomSequence()
         {
-            [Fact]
-            public void WhenGettingValueCount_ShouldGenerateRandomSequence()
-            {
-                // Arrange.
+            // Arrange.
 
-                var randomGenerator = new RandomGenerator(42);
+            var randomGenerator = new RandomGenerator(42);
 
-                // Act.
+            // Act.
 
-                var shufflingIndexes = randomGenerator
-                    .GenerateShufflingIndexes(60)?
-                    .ToArray();
+            var shufflingIndexes = randomGenerator
+                .GenerateShufflingIndexes(60)?
+                .ToArray();
 
-                // Assert.
+            // Assert.
 
-                shufflingIndexes
-                    .Should().NotBeNull()
-                    .And.HaveCount(60)
-                    .And.BeEquivalentTo(Enumerable.Range(0, 60), "indexes should contain unique value")
-                    .And.NotBeInAscendingOrder("indexes should be shuffled")
-                    .And.NotBeInDescendingOrder("indexes should be shuffled");
-            }
+            shufflingIndexes
+                .Should().NotBeNull()
+                .And.HaveCount(60)
+                .And.BeEquivalentTo(Enumerable.Range(0, 60), "indexes should contain unique value")
+                .And.NotBeInAscendingOrder("indexes should be shuffled")
+                .And.NotBeInDescendingOrder("indexes should be shuffled");
         }
     }
 }

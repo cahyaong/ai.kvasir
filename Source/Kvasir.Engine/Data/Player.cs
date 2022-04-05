@@ -26,32 +26,31 @@
 // <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Diagnostics;
+using nGratis.AI.Kvasir.Contract;
+
+// TODO: Use builder pattern to make most properties immutable after creation!
+
+[DebuggerDisplay("<Player> {this.Name}")]
+public class Player
 {
-    using System.Diagnostics;
-    using nGratis.AI.Kvasir.Contract;
+    public PlayerKind Kind { get; init; }
 
-    // TODO: Use builder pattern to make most properties immutable after creation!
+    public string Name { get; init; }
 
-    [DebuggerDisplay("<Player> {this.Name}")]
-    public class Player
-    {
-        public PlayerKind Kind { get; init; }
+    public Deck Deck { get; init; }
 
-        public string Name { get; init; }
+    public IStrategy Strategy { get; set; }
 
-        public Deck Deck { get; init; }
+    public int Life { get; set; }
 
-        public IStrategy Strategy { get; set; }
+    public Zone Library { get; set; }
 
-        public int Life { get; set; }
+    public Zone Hand { get; set; }
 
-        public Zone Library { get; set; }
+    public Zone Graveyard { get; set; }
 
-        public Zone Hand { get; set; }
-
-        public Zone Graveyard { get; set; }
-
-        public Player Opponent { get; set; }
-    }
+    public Player Opponent { get; set; }
 }

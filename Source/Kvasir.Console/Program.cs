@@ -26,60 +26,58 @@
 // <creation_timestamp>Saturday, March 28, 2020 6:00:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Console;
+
+using System;
+using System.Threading.Tasks;
+using CommandLine;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public class Program
 {
-    using System;
-    using System.Threading.Tasks;
-    using CommandLine;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public class Program
+    private static void Main(string[] args)
     {
-        private static void Main(string[] args)
-        {
-            Parser.Default
-                .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingGameOption))
-                .WithParsed<ProcessingCardOption>(Program.ProcessCard)
-                .WithParsed<PlayingGameOption>(Program.PlayGame);
+        Parser.Default
+            .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingGameOption))
+            .WithParsed<ProcessingCardOption>(Program.ProcessCard)
+            .WithParsed<PlayingGameOption>(Program.PlayGame);
 
-            Console.WriteLine();
-            Console.WriteLine("Press <ANY> key to continue...");
-            Console.ReadLine();
-        }
+        Console.WriteLine();
+        Console.WriteLine("Press <ANY> key to continue...");
+        Console.ReadLine();
+    }
 
-        private static void ProcessCard(ProcessingCardOption option)
-        {
-            Guard
-                .Require(option, nameof(option))
-                .Is.Not.Null();
+    private static void ProcessCard(ProcessingCardOption option)
+    {
+        Guard
+            .Require(option, nameof(option))
+            .Is.Not.Null();
 
-            using var appBootstrapper = new AppBootstrapper();
+        using var appBootstrapper = new AppBootstrapper();
 
-            var processingExecution = appBootstrapper.CreateExecution<ProcessingCardExecution>();
+        var processingExecution = appBootstrapper.CreateExecution<ProcessingCardExecution>();
 
-            var processingParameter = ExecutionParameter.Builder
-                .Create()
-                .WithEntry("CardSet.Name", option.CardSetName)
-                .Build();
+        var processingParameter = ExecutionParameter.Builder
+            .Create()
+            .WithEntry("CardSet.Name", option.CardSetName)
+            .Build();
 
-            var processingTask = Task.Run(async () => await processingExecution.ExecuteAsync(processingParameter));
+        Task.Run(async () => await processingExecution.ExecuteAsync(processingParameter))
+            .Wait();
+    }
 
-            Task.WaitAll(processingTask);
-        }
+    private static void PlayGame(PlayingGameOption option)
+    {
+        Guard
+            .Require(option, nameof(option))
+            .Is.Not.Null();
 
-        private static void PlayGame(PlayingGameOption option)
-        {
-            Guard
-                .Require(option, nameof(option))
-                .Is.Not.Null();
+        using var appBootstrapper = new AppBootstrapper();
 
-            using var appBootstrapper = new AppBootstrapper();
+        var playingExecution = appBootstrapper.CreateExecution<PlayingGameExecution>();
 
-            var playingExecution = appBootstrapper.CreateExecution<PlayingGameExecution>();
-            var playingTask = Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None));
-
-            Task.WaitAll(playingTask);
-        }
+        Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None))
+            .Wait();
     }
 }

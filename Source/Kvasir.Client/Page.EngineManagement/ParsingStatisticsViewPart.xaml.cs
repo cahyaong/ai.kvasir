@@ -26,13 +26,12 @@
 // <creation_timestamp>Wednesday, 9 January 2019 8:47:43 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+public partial class ParsingStatisticsViewPart
 {
-    public partial class ParsingStatisticsViewPart
+    public ParsingStatisticsViewPart()
     {
-        public ParsingStatisticsViewPart()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

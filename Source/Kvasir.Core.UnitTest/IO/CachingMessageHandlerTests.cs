@@ -26,253 +26,252 @@
 // <creation_timestamp>Saturday, 17 November 2018 10:08:47 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.UnitTest
+namespace nGratis.AI.Kvasir.Core.UnitTest;
+
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using Moq.AI.Kvasir;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Framework;
+using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
+using Xunit;
+using Arg = Moq.AI.Kvasir.Arg;
+using MockBuilder = Moq.AI.Kvasir.MockBuilder;
+
+public class CachingMessageHandlerTests
 {
-    using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Moq;
-    using Moq.AI.Kvasir;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Framework;
-    using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Framework;
-    using Xunit;
-    using Arg = Moq.AI.Kvasir.Arg;
-    using MockBuilder = Moq.AI.Kvasir.MockBuilder;
-
-    public class CachingMessageHandlerTests
+    public class SendAsyncMethod
     {
-        public class SendAsyncMethod
+        [Fact]
+        public async Task WhenGettingRequestWithoutCachingBlob_ShouldInvokeDelegatingHandler()
         {
-            [Fact]
-            public async Task WhenGettingRequestWithoutCachingBlob_ShouldInvokeDelegatingHandler()
-            {
-                // Arrange.
+            // Arrange.
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
 
-                var mockStorageManager = MockBuilder
-                    .CreateMock<IStorageManager>()
-                    .WithSelfCaching();
+            var mockStorageManager = MockBuilder
+                .CreateMock<IStorageManager>()
+                .WithSelfCaching();
 
-                var mockKeyCalculator = MockBuilder
-                    .CreateMock<IKeyCalculator>()
-                    .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
+            var mockKeyCalculator = MockBuilder
+                .CreateMock<IKeyCalculator>()
+                .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
-                var cachingHandler = new CachingMessageHandler(
-                    "[_MOCK_CACHING_NAME_]",
-                    mockStorageManager.Object,
-                    mockKeyCalculator.Object,
-                    stubHandler);
+            var cachingHandler = new CachingMessageHandler(
+                "[_MOCK_CACHING_NAME_]",
+                mockStorageManager.Object,
+                mockKeyCalculator.Object,
+                stubHandler);
 
-                using var client = new HttpClient(cachingHandler);
+            using var client = new HttpClient(cachingHandler);
 
-                // Act.
+            // Act.
 
-                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                // Assert.
+            // Assert.
 
-                responseMessage
-                    .Should().NotBeNull();
+            responseMessage
+                .Should().NotBeNull();
 
-                responseMessage
-                    .StatusCode
-                    .Should().Be(HttpStatusCode.OK);
+            responseMessage
+                .StatusCode
+                .Should().Be(HttpStatusCode.OK);
 
-                var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await responseMessage.Content.ReadAsStringAsync();
 
-                content
-                    .Should().Be("[_MOCK_HTML_CONTENT_]");
+            content
+                .Should().Be("[_MOCK_HTML_CONTENT_]");
 
-                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
+            stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
 
-                mockStorageManager.Verify(
-                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                    Times.Once);
+            mockStorageManager.Verify(
+                mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                Times.Once);
 
-                mockStorageManager.Verify(
-                    mock => mock.SaveEntry(
-                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                        Arg.IsAny<System.IO.Stream>(),
-                        Arg.IsAny<bool>()),
-                    Times.Once);
-            }
+            mockStorageManager.Verify(
+                mock => mock.SaveEntry(
+                    Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                    Arg.IsAny<System.IO.Stream>(),
+                    Arg.IsAny<bool>()),
+                Times.Once);
+        }
 
-            [Fact]
-            public async Task WhenGettingRequestWithoutCachedResponse_ShouldInvokeDelegatingHandler()
-            {
-                // Arrange.
+        [Fact]
+        public async Task WhenGettingRequestWithoutCachedResponse_ShouldInvokeDelegatingHandler()
+        {
+            // Arrange.
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
 
-                var mockStorageManager = MockBuilder
-                    .CreateMock<IStorageManager>()
-                    .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
+            var mockStorageManager = MockBuilder
+                .CreateMock<IStorageManager>()
+                .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
 
-                var mockKeyCalculator = MockBuilder
-                    .CreateMock<IKeyCalculator>()
-                    .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
+            var mockKeyCalculator = MockBuilder
+                .CreateMock<IKeyCalculator>()
+                .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
-                var cachingHandler = new CachingMessageHandler(
-                    "[_MOCK_CACHING_NAME_]",
-                    mockStorageManager.Object,
-                    mockKeyCalculator.Object,
-                    stubHandler);
+            var cachingHandler = new CachingMessageHandler(
+                "[_MOCK_CACHING_NAME_]",
+                mockStorageManager.Object,
+                mockKeyCalculator.Object,
+                stubHandler);
 
-                using var client = new HttpClient(cachingHandler);
+            using var client = new HttpClient(cachingHandler);
 
-                // Act.
+            // Act.
 
-                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                // Assert.
+            // Assert.
 
-                responseMessage
-                    .Should().NotBeNull();
+            responseMessage
+                .Should().NotBeNull();
 
-                responseMessage
-                    .StatusCode
-                    .Should().Be(HttpStatusCode.OK);
+            responseMessage
+                .StatusCode
+                .Should().Be(HttpStatusCode.OK);
 
-                var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await responseMessage.Content.ReadAsStringAsync();
 
-                content
-                    .Should().Be("[_MOCK_HTML_CONTENT_]");
+            content
+                .Should().Be("[_MOCK_HTML_CONTENT_]");
 
-                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
+            stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
 
-                mockStorageManager.Verify(
-                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                    Times.Once);
+            mockStorageManager.Verify(
+                mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                Times.Once);
 
-                mockStorageManager.Verify(
-                    mock => mock.SaveEntry(
-                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                        Arg.IsAny<System.IO.Stream>(),
-                        Arg.IsAny<bool>()),
-                    Times.Never);
-            }
+            mockStorageManager.Verify(
+                mock => mock.SaveEntry(
+                    Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                    Arg.IsAny<System.IO.Stream>(),
+                    Arg.IsAny<bool>()),
+                Times.Never);
+        }
 
-            [Fact]
-            public async Task WhenGettingRequestWithCachedResponse_ShouldNotInvokeDelegatingHandler()
-            {
-                // Arrange.
+        [Fact]
+        public async Task WhenGettingRequestWithCachedResponse_ShouldNotInvokeDelegatingHandler()
+        {
+            // Arrange.
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithSuccessfulResponse("http://www.mock-url.com/mock.html", "[_MOCK_HTML_CONTENT_]");
 
-                var mockStorageManager = MockBuilder
-                    .CreateMock<IStorageManager>()
-                    .WithCompressedEntry(
-                        new DataSpec("[_MOCK_CACHING_NAME_]", KvasirMime.Cache),
-                        (new DataSpec("mock", Mime.Html), "[_MOCK_CACHED_HTML_CONTENT_]"));
+            var mockStorageManager = MockBuilder
+                .CreateMock<IStorageManager>()
+                .WithCompressedEntry(
+                    new DataSpec("[_MOCK_CACHING_NAME_]", KvasirMime.Cache),
+                    (new DataSpec("mock", Mime.Html), "[_MOCK_CACHED_HTML_CONTENT_]"));
 
-                var mockKeyCalculator = MockBuilder
-                    .CreateMock<IKeyCalculator>()
-                    .WithMapping("http://www.mock-url.com/mock.html", "mock.html");
+            var mockKeyCalculator = MockBuilder
+                .CreateMock<IKeyCalculator>()
+                .WithMapping("http://www.mock-url.com/mock.html", "mock.html");
 
-                var cachingHandler = new CachingMessageHandler(
-                    "[_MOCK_CACHING_NAME_]",
-                    mockStorageManager.Object,
-                    mockKeyCalculator.Object,
-                    stubHandler);
+            var cachingHandler = new CachingMessageHandler(
+                "[_MOCK_CACHING_NAME_]",
+                mockStorageManager.Object,
+                mockKeyCalculator.Object,
+                stubHandler);
 
-                using var client = new HttpClient(cachingHandler);
+            using var client = new HttpClient(cachingHandler);
 
-                // Act.
+            // Act.
 
-                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                // Assert.
+            // Assert.
 
-                responseMessage
-                    .Should().NotBeNull();
+            responseMessage
+                .Should().NotBeNull();
 
-                responseMessage
-                    .StatusCode
-                    .Should().Be(HttpStatusCode.OK);
+            responseMessage
+                .StatusCode
+                .Should().Be(HttpStatusCode.OK);
 
-                var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await responseMessage.Content.ReadAsStringAsync();
 
-                content
-                    .Should().Be("[_MOCK_CACHED_HTML_CONTENT_]");
+            content
+                .Should().Be("[_MOCK_CACHED_HTML_CONTENT_]");
 
-                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 0);
+            stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 0);
 
-                mockStorageManager.Verify(
-                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                    Times.Once);
+            mockStorageManager.Verify(
+                mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                Times.Once);
 
-                mockStorageManager.Verify(
-                    mock => mock.SaveEntry(
-                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                        Arg.IsAny<System.IO.Stream>(),
-                        Arg.IsAny<bool>()),
-                    Times.Never);
-            }
+            mockStorageManager.Verify(
+                mock => mock.SaveEntry(
+                    Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                    Arg.IsAny<System.IO.Stream>(),
+                    Arg.IsAny<bool>()),
+                Times.Never);
+        }
 
-            [Fact]
-            public async Task WhenGettingRequestWithUnsuccessfulResponse_ShouldNotCacheAnything()
-            {
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithResponse("http://www.mock-url.com/mock.html", HttpStatusCode.NotFound, "[_MOCK_ERROR_CONTENT_]");
+        [Fact]
+        public async Task WhenGettingRequestWithUnsuccessfulResponse_ShouldNotCacheAnything()
+        {
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithResponse("http://www.mock-url.com/mock.html", HttpStatusCode.NotFound, "[_MOCK_ERROR_CONTENT_]");
 
-                var mockStorageManager = MockBuilder
-                    .CreateMock<IStorageManager>()
-                    .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
+            var mockStorageManager = MockBuilder
+                .CreateMock<IStorageManager>()
+                .WithEmptyCaching("[_MOCK_CACHING_NAME_]");
 
-                var mockKeyCalculator = MockBuilder
-                    .CreateMock<IKeyCalculator>()
-                    .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
+            var mockKeyCalculator = MockBuilder
+                .CreateMock<IKeyCalculator>()
+                .WithMapping("http://www.mock-url.com/mock.html", "[_MOCK_KEY_]");
 
-                var cachingHandler = new CachingMessageHandler(
-                    "[_MOCK_CACHING_NAME_]",
-                    mockStorageManager.Object,
-                    mockKeyCalculator.Object,
-                    stubHandler);
+            var cachingHandler = new CachingMessageHandler(
+                "[_MOCK_CACHING_NAME_]",
+                mockStorageManager.Object,
+                mockKeyCalculator.Object,
+                stubHandler);
 
-                using var client = new HttpClient(cachingHandler);
+            using var client = new HttpClient(cachingHandler);
 
-                // Act.
+            // Act.
 
-                var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
 
-                // Assert.
+            // Assert.
 
-                responseMessage
-                    .Should().NotBeNull();
+            responseMessage
+                .Should().NotBeNull();
 
-                responseMessage
-                    .StatusCode
-                    .Should().Be(HttpStatusCode.NotFound);
+            responseMessage
+                .StatusCode
+                .Should().Be(HttpStatusCode.NotFound);
 
-                var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await responseMessage.Content.ReadAsStringAsync();
 
-                content
-                    .Should().Be("[_MOCK_ERROR_CONTENT_]");
+            content
+                .Should().Be("[_MOCK_ERROR_CONTENT_]");
 
-                stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
+            stubHandler.VerifyInvoked("http://www.mock-url.com/mock.html", 1);
 
-                mockStorageManager.Verify(
-                    mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
-                    Times.Once);
+            mockStorageManager.Verify(
+                mock => mock.LoadEntry(Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]")),
+                Times.Once);
 
-                mockStorageManager.Verify(
-                    mock => mock.SaveEntry(
-                        Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
-                        Arg.IsAny<System.IO.Stream>(),
-                        Arg.IsAny<bool>()),
-                    Times.Never);
-            }
+            mockStorageManager.Verify(
+                mock => mock.SaveEntry(
+                    Arg.DataSpec.IsKvasirCaching("[_MOCK_CACHING_NAME_]"),
+                    Arg.IsAny<System.IO.Stream>(),
+                    Arg.IsAny<bool>()),
+                Times.Never);
         }
     }
 }

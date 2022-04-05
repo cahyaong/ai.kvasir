@@ -26,17 +26,16 @@
 // <creation_timestamp>Saturday, 10 November 2018 5:41:54 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using Lucene.Net.Index;
+
+public interface IIndexManager : IDisposable
 {
-    using System;
-    using Lucene.Net.Index;
+    bool HasIndex(IndexKind indexKind);
 
-    public interface IIndexManager : IDisposable
-    {
-        bool HasIndex(IndexKind indexKind);
+    IndexReader FindIndexReader(IndexKind indexKind);
 
-        IndexReader FindIndexReader(IndexKind indexKind);
-
-        IndexWriter FindIndexWriter(IndexKind indexKind);
-    }
+    IndexWriter FindIndexWriter(IndexKind indexKind);
 }

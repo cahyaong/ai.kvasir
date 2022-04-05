@@ -28,25 +28,24 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir
+namespace Moq.AI.Kvasir;
+
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public partial class Arg
 {
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public partial class Arg
+    public new class DataSpec : Moq.Arg.DataSpec
     {
-        public new class DataSpec : Moq.Arg.DataSpec
+        public static nGratis.Cop.Olympus.Contract.DataSpec IsKvasirCaching(string name)
         {
-            public static nGratis.Cop.Olympus.Contract.DataSpec IsKvasirCaching(string name)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-                return Match.Create<nGratis.Cop.Olympus.Contract.DataSpec>(spec =>
-                    spec.Name == name &&
-                    spec.Mime == KvasirMime.Cache);
-            }
+            return Match.Create<nGratis.Cop.Olympus.Contract.DataSpec>(spec =>
+                spec.Name == name &&
+                spec.Mime == KvasirMime.Cache);
         }
     }
 }

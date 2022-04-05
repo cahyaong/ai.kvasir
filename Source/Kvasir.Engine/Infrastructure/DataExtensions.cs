@@ -26,38 +26,37 @@
 // <creation_timestamp>Thursday, November 11, 2021 5:15:47 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public static class DataExtensions
 {
-    using System.Collections.Generic;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class DataExtensions
+    private static readonly IReadOnlyDictionary<Phase, Phase> NextPhaseLookup = new Dictionary<Phase, Phase>
     {
-        private static readonly IReadOnlyDictionary<Phase, Phase> NextPhaseLookup = new Dictionary<Phase, Phase>
+        [Phase.Setup] = Phase.Beginning,
+        [Phase.Beginning] = Phase.PrecombatMain,
+        [Phase.PrecombatMain] = Phase.Combat,
+        [Phase.Combat] = Phase.PostcombatMain,
+        [Phase.PostcombatMain] = Phase.Ending,
+        [Phase.Ending] = Phase.Beginning
+    };
+
+    public static Phase Next(this Phase currentPhase)
+    {
+        Guard
+            .Require(currentPhase, nameof(currentPhase))
+            .Is.Not.Default();
+
+        if (!DataExtensions.NextPhaseLookup.TryGetValue(currentPhase, out var nextPhase))
         {
-            [Phase.Setup] = Phase.Beginning,
-            [Phase.Beginning] = Phase.PrecombatMain,
-            [Phase.PrecombatMain] = Phase.Combat,
-            [Phase.Combat] = Phase.PostcombatMain,
-            [Phase.PostcombatMain] = Phase.Ending,
-            [Phase.Ending] = Phase.Beginning
-        };
-
-        public static Phase Next(this Phase currentPhase)
-        {
-            Guard
-                .Require(currentPhase, nameof(currentPhase))
-                .Is.Not.Default();
-
-            if (!DataExtensions.NextPhaseLookup.TryGetValue(currentPhase, out var nextPhase))
-            {
-                throw new KvasirException(
-                    "No lookup entry is defined for next phase!",
-                    ("Current Phase", currentPhase));
-            }
-
-            return nextPhase;
+            throw new KvasirException(
+                "No lookup entry is defined for next phase!",
+                ("Current Phase", currentPhase));
         }
+
+        return nextPhase;
     }
 }

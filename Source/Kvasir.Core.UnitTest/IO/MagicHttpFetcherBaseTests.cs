@@ -26,190 +26,189 @@
 // <creation_timestamp>Monday, 17 December 2018 11:49:47 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.UnitTest
+namespace nGratis.AI.Kvasir.Core.UnitTest;
+
+using System;
+using System.Threading.Tasks;
+using FluentAssertions;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Framework;
+using Xunit;
+
+public class MagicHttpFetcherBaseTests
 {
-    using System;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Framework;
-    using Xunit;
-
-    public class MagicHttpFetcherBaseTests
+    public class Constructor
     {
-        public class Constructor
+        [Fact]
+        public void WhenInvoked_ShouldConfigureRequestHeaders()
         {
-            [Fact]
-            public void WhenInvoked_ShouldConfigureRequestHeaders()
-            {
-                // Arrange.
+            // Arrange.
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
+            var stubHandler = StubHttpMessageHandler
+                .Create();
 
-                // Act.
+            // Act.
 
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler);
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler);
 
-                // Assert.
+            // Assert.
 
-                stubFetcher.VerifyRequestHeaders(
-                    "Accept: text/html, */*; q=0.8",
-                    "Accept-Encoding: deflate",
-                    "User-Agent: AI.Kvasir/0.1");
-            }
+            stubFetcher.VerifyRequestHeaders(
+                "Accept: text/html, */*; q=0.8",
+                "Accept-Encoding: deflate",
+                "User-Agent: AI.Kvasir/0.1");
+        }
+    }
+
+    public class FetchCardSetsAsyncMethod
+    {
+        [Fact]
+        public async Task WhenDetectingCardSetAsAvailableResource_ShouldInvokeOverridingMethod()
+        {
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create();
+
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler)
+                .WithAvailableResources(ExternalResources.CardSet);
+
+            // Act.
+
+            var cardSets = await stubFetcher.FetchCardSetsAsync();
+
+            // Assert.
+
+            cardSets
+                .Should().NotBeNullOrEmpty();
         }
 
-        public class FetchCardSetsAsyncMethod
+        [Fact]
+        public void WhenNotDetectingCardSetAsAvailableResource_ShouldThrowNotSupportedException()
         {
-            [Fact]
-            public async Task WhenDetectingCardSetAsAvailableResource_ShouldInvokeOverridingMethod()
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create();
+
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler);
+
+            // Act & Assert.
+
+            stubFetcher
+                .Awaiting(self => self.FetchCardSetsAsync())
+                .Should().ThrowAsync<NotSupportedException>();
+        }
+    }
+
+    public class FetchCardsAsyncMethod
+    {
+        [Fact]
+        public async Task WhenDetectingCardAsAvailableResource_ShouldInvokeOverridingMethod()
+        {
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create();
+
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler)
+                .WithAvailableResources(ExternalResources.Card);
+
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "[_MOCK_CODE_]",
+                Name = "[_MOCK_NAME_]"
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
+            // Act.
 
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler)
-                    .WithAvailableResources(ExternalResources.CardSet);
+            var cards = await stubFetcher.FetchCardsAsync(cardSet);
 
-                // Act.
+            // Assert.
 
-                var cardSets = await stubFetcher.FetchCardSetsAsync();
-
-                // Assert.
-
-                cardSets
-                    .Should().NotBeNullOrEmpty();
-            }
-
-            [Fact]
-            public void WhenNotDetectingCardSetAsAvailableResource_ShouldThrowNotSupportedException()
-            {
-                // Arrange.
-
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
-
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler);
-
-                // Act & Assert.
-
-                stubFetcher
-                    .Awaiting(self => self.FetchCardSetsAsync())
-                    .Should().ThrowAsync<NotSupportedException>();
-            }
+            cards
+                .Should().NotBeNullOrEmpty();
         }
 
-        public class FetchCardsAsyncMethod
+        [Fact]
+        public void WhenNotDetectingCardAsAvailableResource_ShouldThrowNotSupportedException()
         {
-            [Fact]
-            public async Task WhenDetectingCardAsAvailableResource_ShouldInvokeOverridingMethod()
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create();
+
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler);
+
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "[_MOCK_CODE_]",
+                Name = "[_MOCK_NAME_]"
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
+            // Act & Assert.
 
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler)
-                    .WithAvailableResources(ExternalResources.Card);
+            stubFetcher
+                .Awaiting(self => self.FetchCardsAsync(cardSet))
+                .Should().ThrowAsync<NotSupportedException>();
+        }
+    }
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "[_MOCK_CODE_]",
-                    Name = "[_MOCK_NAME_]"
-                };
+    public class FetchCardImageAsyncMethod
+    {
+        [Fact]
+        public async Task WhenDetectingCardImageAsAvailableResource_ShouldInvokeOverridingMethod()
+        {
+            // Arrange.
 
-                // Act.
+            var stubHandler = StubHttpMessageHandler
+                .Create();
 
-                var cards = await stubFetcher.FetchCardsAsync(cardSet);
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler)
+                .WithAvailableResources(ExternalResources.CardImage);
 
-                // Assert.
-
-                cards
-                    .Should().NotBeNullOrEmpty();
-            }
-
-            [Fact]
-            public void WhenNotDetectingCardAsAvailableResource_ShouldThrowNotSupportedException()
+            var card = new UnparsedBlob.Card
             {
-                // Arrange.
+                Name = "[_MOCK_NAME_]"
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
+            // Act.
 
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler);
+            var cardImage = await stubFetcher.FetchCardImageAsync(card);
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "[_MOCK_CODE_]",
-                    Name = "[_MOCK_NAME_]"
-                };
+            // Assert.
 
-                // Act & Assert.
-
-                stubFetcher
-                    .Awaiting(self => self.FetchCardsAsync(cardSet))
-                    .Should().ThrowAsync<NotSupportedException>();
-            }
+            cardImage
+                .Should().NotBeNull();
         }
 
-        public class FetchCardImageAsyncMethod
+        [Fact]
+        public void WhenNotDetectingCardImageAsAvailableResource_ShouldThrowNotSupportedException()
         {
-            [Fact]
-            public async Task WhenDetectingCardImageAsAvailableResource_ShouldInvokeOverridingMethod()
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create();
+
+            var stubFetcher = StubMagicHttpFetcher
+                .Create(stubHandler);
+
+            var card = new UnparsedBlob.Card
             {
-                // Arrange.
+                Name = "[_MOCK_NAME_]"
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
+            // Act & Assert.
 
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler)
-                    .WithAvailableResources(ExternalResources.CardImage);
-
-                var card = new UnparsedBlob.Card
-                {
-                    Name = "[_MOCK_NAME_]"
-                };
-
-                // Act.
-
-                var cardImage = await stubFetcher.FetchCardImageAsync(card);
-
-                // Assert.
-
-                cardImage
-                    .Should().NotBeNull();
-            }
-
-            [Fact]
-            public void WhenNotDetectingCardImageAsAvailableResource_ShouldThrowNotSupportedException()
-            {
-                // Arrange.
-
-                var stubHandler = StubHttpMessageHandler
-                    .Create();
-
-                var stubFetcher = StubMagicHttpFetcher
-                    .Create(stubHandler);
-
-                var card = new UnparsedBlob.Card
-                {
-                    Name = "[_MOCK_NAME_]"
-                };
-
-                // Act & Assert.
-
-                stubFetcher
-                    .Awaiting(self => self.FetchCardImageAsync(card))
-                    .Should().ThrowAsync<NotSupportedException>();
-            }
+            stubFetcher
+                .Awaiting(self => self.FetchCardImageAsync(card))
+                .Should().ThrowAsync<NotSupportedException>();
         }
     }
 }

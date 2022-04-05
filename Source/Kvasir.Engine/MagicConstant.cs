@@ -26,14 +26,13 @@
 // <creation_timestamp>Sunday, February 23, 2020 7:59:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
-{
-    internal static class MagicConstant
+namespace nGratis.AI.Kvasir.Engine;
 
+internal static class MagicConstant
+
+{
+    public static class Hand
     {
-        public static class Hand
-        {
-            public const ushort MaxCardCount = 7;
-        }
+        public const ushort MaxCardCount = 7;
     }
 }

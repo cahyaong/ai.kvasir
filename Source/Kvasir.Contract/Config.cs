@@ -26,29 +26,28 @@
 // <creation_timestamp>Friday, February 26, 2021 4:21:38 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System;
+using System.IO;
+using nGratis.Cop.Olympus.Contract;
+
+public static class Config
 {
-    using System;
-    using System.IO;
-    using nGratis.Cop.Olympus.Contract;
+    public static DataSpec ProcessedContentSpec { get; } = new("Processed_KVASIR", KvasirMime.Cache);
 
-    public static class Config
+    public static Uri FindDataFolderUri()
     {
-        public static DataSpec ProcessedContentSpec { get; } = new("Processed_KVASIR", KvasirMime.Cache);
+        var dataFolderPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "NGRATIS",
+            "ai.kvasir");
 
-        public static Uri FindDataFolderUri()
+        if (!Directory.Exists(dataFolderPath))
         {
-            var dataFolderPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "NGRATIS",
-                "ai.kvasir");
-
-            if (!Directory.Exists(dataFolderPath))
-            {
-                Directory.CreateDirectory(dataFolderPath);
-            }
-
-            return new Uri(dataFolderPath);
+            Directory.CreateDirectory(dataFolderPath);
         }
+
+        return new Uri(dataFolderPath);
     }
 }

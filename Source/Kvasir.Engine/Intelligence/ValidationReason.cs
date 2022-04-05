@@ -26,41 +26,40 @@
 // <creation_timestamp>Friday, November 12, 2021 12:09:03 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using nGratis.Cop.Olympus.Contract;
+
+public class ValidationReason
 {
-    using nGratis.Cop.Olympus.Contract;
-
-    public class ValidationReason
+    private ValidationReason()
     {
-        private ValidationReason()
+    }
+
+    public int Id { get; init; }
+
+    public string Cause { get; init; }
+
+    public string Reference { get; init; }
+
+    public string Message { get; init; }
+
+    public static ValidationReason Create(string message, Permanent permanent)
+    {
+        Guard
+            .Require(message, nameof(message))
+            .Is.Not.Empty();
+
+        Guard
+            .Require(permanent, nameof(permanent))
+            .Is.Not.Null();
+
+        return new()
         {
-        }
-
-        public int Id { get; init; }
-
-        public string Cause { get; init; }
-
-        public string Reference { get; init; }
-
-        public string Message { get; init; }
-
-        public static ValidationReason Create(string message, Permanent permanent)
-        {
-            Guard
-                .Require(message, nameof(message))
-                .Is.Not.Empty();
-
-            Guard
-                .Require(permanent, nameof(permanent))
-                .Is.Not.Null();
-
-            return new()
-            {
-                Id = permanent.Id,
-                Cause = $"Permanent_{permanent.Kind}",
-                Reference = permanent.Name,
-                Message = message
-            };
-        }
+            Id = permanent.Id,
+            Cause = $"Permanent_{permanent.Kind}",
+            Reference = permanent.Name,
+            Message = message
+        };
     }
 }

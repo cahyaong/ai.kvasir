@@ -26,17 +26,16 @@
 // <creation_timestamp>Thursday, November 11, 2021 4:39:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+
+public class BlockingDecision
 {
-    using System.Collections.Generic;
-
-    public class BlockingDecision
+    public static readonly BlockingDecision None = new()
     {
-        public static readonly BlockingDecision None = new()
-        {
-            Combats = new List<Combat>()
-        };
+        Combats = new List<Combat>()
+    };
 
-        public IReadOnlyCollection<Combat> Combats { get; init; }
-    }
+    public IReadOnlyCollection<Combat> Combats { get; init; }
 }

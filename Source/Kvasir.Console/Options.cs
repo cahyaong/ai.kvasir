@@ -26,19 +26,18 @@
 // <creation_timestamp>Tuesday, July 28, 2020 6:47:18 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Console;
+
+using CommandLine;
+
+[Verb("processing-card")]
+internal class ProcessingCardOption
 {
-    using CommandLine;
+    [Option("card-set-name", Required = true)]
+    public string CardSetName { get; set; }
+}
 
-    [Verb("processing-card")]
-    internal class ProcessingCardOption
-    {
-        [Option("card-set-name", Required = true)]
-        public string CardSetName { get; set; }
-    }
-
-    [Verb("playing-game")]
-    internal class PlayingGameOption
-    {
-    }
+[Verb("playing-game")]
+internal class PlayingGameOption
+{
 }

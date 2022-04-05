@@ -26,54 +26,53 @@
 // <creation_timestamp>Monday, May 18, 2020 1:49:28 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework
+namespace nGratis.AI.Kvasir.Framework;
+
+using System.Linq;
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
+using nGratis.Cop.Olympus.Contract;
+
+public static class MagicFetcherExtensions
 {
-    using System.Linq;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class MagicFetcherExtensions
+    public static async Task<UnparsedBlob.Card> FetchCardAsync(
+        this IMagicFetcher fetcher,
+        string cardSetName,
+        string cardName)
     {
-        public static async Task<UnparsedBlob.Card> FetchCardAsync(
-            this IMagicFetcher fetcher,
-            string cardSetName,
-            string cardName)
+        Guard
+            .Require(fetcher, nameof(fetcher))
+            .Is.Not.Null();
+
+        Guard
+            .Require(cardSetName, nameof(cardSetName))
+            .Is.Not.Empty();
+
+        Guard
+            .Require(cardName, nameof(cardName))
+            .Is.Not.Empty();
+
+        var cardSets = await fetcher.FetchCardSetsAsync();
+
+        var matchedCardSet = cardSets
+            .SingleOrDefault(cardSet => cardSet.Name == cardSetName);
+
+        if (matchedCardSet == null)
         {
-            Guard
-                .Require(fetcher, nameof(fetcher))
-                .Is.Not.Null();
-
-            Guard
-                .Require(cardSetName, nameof(cardSetName))
-                .Is.Not.Empty();
-
-            Guard
-                .Require(cardName, nameof(cardName))
-                .Is.Not.Empty();
-
-            var cardSets = await fetcher.FetchCardSetsAsync();
-
-            var matchedCardSet = cardSets
-                .SingleOrDefault(cardSet => cardSet.Name == cardSetName);
-
-            if (matchedCardSet == null)
-            {
-                throw new KvasirTestingException($"Card set [{cardSetName}] is missing!");
-            }
-
-            var cards = await fetcher.FetchCardsAsync(matchedCardSet);
-
-            var matchedCard = cards
-                .SingleOrDefault(card => card.Name == cardName);
-
-            if (cardName == null)
-            {
-                throw new KvasirTestingException($"Card [{cardName}] is missing!");
-            }
-
-            return matchedCard;
+            throw new KvasirTestingException($"Card set [{cardSetName}] is missing!");
         }
+
+        var cards = await fetcher.FetchCardsAsync(matchedCardSet);
+
+        var matchedCard = cards
+            .SingleOrDefault(card => card.Name == cardName);
+
+        if (cardName == null)
+        {
+            throw new KvasirTestingException($"Card [{cardName}] is missing!");
+        }
+
+        return matchedCard;
     }
 }

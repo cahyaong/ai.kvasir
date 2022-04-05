@@ -28,32 +28,31 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace System
+namespace System;
+
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Humanizer;
+using nGratis.AI.Kvasir.Contract;
+
+// TODO (SHOULD): Move this extensions class to Cop.Olympus project!
+
+public static class HumanizerExtensions
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Linq;
-    using Humanizer;
-    using nGratis.AI.Kvasir.Contract;
+    private static readonly IDictionary<string, int> NumericalValueByOrdinalLookup = Enumerable
+        .Range(0, 25)
+        .ToImmutableDictionary(index => index.ToOrdinalWords());
 
-    // TODO (SHOULD): Move this extensions class to Cop.Olympus project!
-
-    public static class HumanizerExtensions
+    public static int ToNumericalValue(this string text)
     {
-        private static readonly IDictionary<string, int> NumericalValueByOrdinalLookup = Enumerable
-            .Range(0, 25)
-            .ToImmutableDictionary(index => index.ToOrdinalWords());
-
-        public static int ToNumericalValue(this string text)
+        if (!HumanizerExtensions.NumericalValueByOrdinalLookup.TryGetValue(text, out var value))
         {
-            if (!HumanizerExtensions.NumericalValueByOrdinalLookup.TryGetValue(text, out var value))
-            {
-                throw new KvasirException(
-                    "There is no matching ordinal value in lookup!",
-                    ("Text", text));
-            }
-
-            return value;
+            throw new KvasirException(
+                "There is no matching ordinal value in lookup!",
+                ("Text", text));
         }
+
+        return value;
     }
 }

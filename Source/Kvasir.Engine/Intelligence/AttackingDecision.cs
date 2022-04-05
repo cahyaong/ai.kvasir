@@ -26,17 +26,16 @@
 // <creation_timestamp>Tuesday, July 6, 2021 7:07:41 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+
+public class AttackingDecision
 {
-    using System.Collections.Generic;
-
-    public class AttackingDecision
+    public static readonly AttackingDecision None = new()
     {
-        public static readonly AttackingDecision None = new()
-        {
-            Attackers = new List<Creature>()
-        };
+        Attackers = new List<Creature>()
+    };
 
-        public IReadOnlyCollection<Creature> Attackers { get; init; }
-    }
+    public IReadOnlyCollection<Creature> Attackers { get; init; }
 }

@@ -26,23 +26,22 @@
 // <creation_timestamp>Saturday, January 18, 2020 7:21:21 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+using ReactiveUI;
+
+public class RuleViewModel : ReactiveObject
 {
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-    using ReactiveUI;
-
-    public class RuleViewModel : ReactiveObject
+    public RuleViewModel(UnparsedBlob.Rule unparsedRule)
     {
-        public RuleViewModel(UnparsedBlob.Rule unparsedRule)
-        {
-            Guard
-                .Require(unparsedRule, nameof(unparsedRule))
-                .Is.Not.Null();
+        Guard
+            .Require(unparsedRule, nameof(unparsedRule))
+            .Is.Not.Null();
 
-            this.UnparsedRule = unparsedRule;
-        }
-
-        public UnparsedBlob.Rule UnparsedRule { get; }
+        this.UnparsedRule = unparsedRule;
     }
+
+    public UnparsedBlob.Rule UnparsedRule { get; }
 }

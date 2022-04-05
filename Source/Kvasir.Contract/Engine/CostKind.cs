@@ -26,13 +26,12 @@
 // <creation_timestamp>Monday, 14 January 2019 11:46:29 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum CostKind
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Contract;
 
-        Tapping,
-        PayingMana
-    }
+public enum CostKind
+{
+    Unknown = 0,
+
+    Tapping,
+    PayingMana
 }

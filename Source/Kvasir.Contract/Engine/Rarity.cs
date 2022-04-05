@@ -26,15 +26,14 @@
 // <creation_timestamp>Monday, 12 November 2018 8:57:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum Rarity
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Contract;
 
-        Common,
-        Uncommon,
-        Rare,
-        Mythic
-    }
+public enum Rarity
+{
+    Unknown = 0,
+
+    Common,
+    Uncommon,
+    Rare,
+    Mythic
 }

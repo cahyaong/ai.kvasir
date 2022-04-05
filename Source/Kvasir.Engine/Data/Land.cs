@@ -26,15 +26,14 @@
 // <creation_timestamp>Sunday, May 2, 2021 7:00:45 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
-{
-    using nGratis.AI.Kvasir.Contract;
+namespace nGratis.AI.Kvasir.Engine;
 
-    public class Land : Permanent
+using nGratis.AI.Kvasir.Contract;
+
+public class Land : Permanent
+{
+    public Land(string name)
+        : base(name, CardKind.Land)
     {
-        public Land(string name)
-            : base(name, CardKind.Land)
-        {
-        }
     }
 }

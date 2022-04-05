@@ -26,56 +26,55 @@
 // <creation_timestamp>Wednesday, 24 October 2018 7:49:06 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Reflection;
+using Caliburn.Micro;
+using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Wpf;
+
+public class AppViewModel : Conductor<IScreen>.Collection.OneActive
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Linq;
-    using System.Reflection;
-    using Caliburn.Micro;
-    using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Wpf;
-
-    public class AppViewModel : Conductor<IScreen>.Collection.OneActive
+    public AppViewModel(IEnumerable<IScreen> screens)
     {
-        public AppViewModel(IEnumerable<IScreen> screens)
-        {
-            Guard
-                .Require(screens, nameof(screens))
-                .Is.Not.Empty();
+        Guard
+            .Require(screens, nameof(screens))
+            .Is.Not.Empty();
 
-            var orderedScreens = screens
-                .Where(screen => screen != null)
-                .Select(screen =>
+        var orderedScreens = screens
+            .Where(screen => screen != null)
+            .Select(screen =>
+            {
+                var definitionAttribute = screen
+                    .GetType()
+                    .GetCustomAttribute<PageDefinitionAttribute>();
+
+                return new
                 {
-                    var definitionAttribute = screen
-                        .GetType()
-                        .GetCustomAttribute<PageDefinitionAttribute>();
+                    Screen = screen,
+                    DisplayText = definitionAttribute?.DisplayText ?? Text.Undefined,
+                    Ordering = definitionAttribute?.Ordering ?? int.MaxValue,
+                    TypeName = screen.GetType().Name
+                };
+            })
+            .Select(anon =>
+            {
+                anon.Screen.DisplayName = anon
+                    .DisplayText
+                    .ToLowerInvariant()
+                    .Replace(" ", "-");
 
-                    return new
-                    {
-                        Screen = screen,
-                        DisplayText = definitionAttribute?.DisplayText ?? Text.Undefined,
-                        Ordering = definitionAttribute?.Ordering ?? int.MaxValue,
-                        TypeName = screen.GetType().Name
-                    };
-                })
-                .Select(anon =>
-                {
-                    anon.Screen.DisplayName = anon
-                        .DisplayText
-                        .ToLowerInvariant()
-                        .Replace(" ", "-");
+                return anon;
+            })
+            .OrderBy(anon => anon.Ordering)
+            .ThenBy(anon => anon.DisplayText)
+            .ThenBy(anon => anon.TypeName)
+            .Select(anon => anon.Screen)
+            .ToImmutableList();
 
-                    return anon;
-                })
-                .OrderBy(anon => anon.Ordering)
-                .ThenBy(anon => anon.DisplayText)
-                .ThenBy(anon => anon.TypeName)
-                .Select(anon => anon.Screen)
-                .ToImmutableList();
-
-            this.Items.AddRange(orderedScreens);
-        }
+        this.Items.AddRange(orderedScreens);
     }
 }

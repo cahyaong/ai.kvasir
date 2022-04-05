@@ -28,36 +28,35 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir
+namespace Moq.AI.Kvasir;
+
+using Moq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public partial class Arg : Moq.Arg
 {
-    using Moq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public partial class Arg : Moq.Arg
+    public class UnparsedCardSet
     {
-        public class UnparsedCardSet
+        public static UnparsedBlob.CardSet Is(string code)
         {
-            public static UnparsedBlob.CardSet Is(string code)
-            {
-                Guard
-                    .Require(code, nameof(code))
-                    .Is.Not.Empty();
+            Guard
+                .Require(code, nameof(code))
+                .Is.Not.Empty();
 
-                return Match.Create<UnparsedBlob.CardSet>(cardSet => cardSet.Code == code);
-            }
+            return Match.Create<UnparsedBlob.CardSet>(cardSet => cardSet.Code == code);
         }
+    }
 
-        public class DefinedPlayer
+    public class DefinedPlayer
+    {
+        public static DefinedBlob.Player Is(string name)
         {
-            public static DefinedBlob.Player Is(string name)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-                return Match.Create<DefinedBlob.Player>(agent => agent.Name == name);
-            }
+            return Match.Create<DefinedBlob.Player>(agent => agent.Name == name);
         }
     }
 }

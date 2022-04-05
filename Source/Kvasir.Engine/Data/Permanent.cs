@@ -26,19 +26,18 @@
 // <creation_timestamp>Wednesday, July 7, 2021 5:21:27 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using nGratis.AI.Kvasir.Contract;
+
+public abstract class Permanent : Card
 {
-    using nGratis.AI.Kvasir.Contract;
-
-    public abstract class Permanent : Card
+    protected Permanent(string name, CardKind kind)
+        : base(name, kind)
     {
-        protected Permanent(string name, CardKind kind)
-            : base(name, kind)
-        {
-        }
-
-        public int Id => this.GetHashCode();
-
-        public bool IsTapped { get; internal set; }
     }
+
+    public int Id => this.GetHashCode();
+
+    public bool IsTapped { get; internal set; }
 }

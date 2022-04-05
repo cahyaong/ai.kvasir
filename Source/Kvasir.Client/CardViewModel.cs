@@ -26,142 +26,141 @@
 // <creation_timestamp>Friday, 21 December 2018 11:46:40 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using System.Windows.Media;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
+using nGratis.AI.Kvasir.Core.Parser;
+using nGratis.Cop.Olympus.Contract;
+using ReactiveUI;
+
+public class CardViewModel : ReactiveObject
 {
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Windows.Input;
-    using System.Windows.Media;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.AI.Kvasir.Core.Parser;
-    using nGratis.Cop.Olympus.Contract;
-    using ReactiveUI;
+    private static readonly IMagicCardProcessor CardProcessor = new MagicCardProcessor();
 
-    public class CardViewModel : ReactiveObject
+    private readonly IUnprocessedMagicRepository _unprocessedRepository;
+
+    private readonly IMagicCardProcessor _cardProcessor;
+
+    private ImageSource _originalImage;
+
+    private DefinedBlob.Card _definedCard;
+
+    private IEnumerable _combinedCardKinds;
+
+    private IEnumerable<string> _processingMessages;
+
+    public CardViewModel(UnparsedBlob.Card unparsedCard, IUnprocessedMagicRepository unprocessedRepository)
+        : this(unparsedCard, unprocessedRepository, CardViewModel.CardProcessor)
     {
-        private static readonly IMagicCardProcessor CardProcessor = new MagicCardProcessor();
+    }
 
-        private readonly IUnprocessedMagicRepository _unprocessedRepository;
+    internal CardViewModel(
+        UnparsedBlob.Card unparsedCard,
+        IUnprocessedMagicRepository unprocessedRepository,
+        IMagicCardProcessor cardProcessor)
+    {
+        Guard
+            .Require(unparsedCard, nameof(unparsedCard))
+            .Is.Not.Null();
 
-        private readonly IMagicCardProcessor _cardProcessor;
+        Guard
+            .Require(unprocessedRepository, nameof(unprocessedRepository))
+            .Is.Not.Null();
 
-        private ImageSource _originalImage;
+        Guard
+            .Require(cardProcessor, nameof(cardProcessor))
+            .Is.Not.Null();
 
-        private DefinedBlob.Card _definedCard;
+        this._unprocessedRepository = unprocessedRepository;
+        this._cardProcessor = cardProcessor;
 
-        private IEnumerable _combinedCardKinds;
+        this.UnparsedCard = unparsedCard;
 
-        private IEnumerable<string> _processingMessages;
+        this.PopulateDetailsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateDetailAsync());
+        this.ParseCardCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardAsync());
+    }
 
-        public CardViewModel(UnparsedBlob.Card unparsedCard, IUnprocessedMagicRepository unprocessedRepository)
-            : this(unparsedCard, unprocessedRepository, CardViewModel.CardProcessor)
+    public UnparsedBlob.Card UnparsedCard { get; }
+
+    public ImageSource OriginalImage
+    {
+        get => this._originalImage;
+        private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
+    }
+
+    public DefinedBlob.Card DefinedCard
+    {
+        get => this._definedCard;
+        private set => this.RaiseAndSetIfChanged(ref this._definedCard, value);
+    }
+
+    public IEnumerable CombinedCardKinds
+    {
+        get => this._combinedCardKinds;
+        private set => this.RaiseAndSetIfChanged(ref this._combinedCardKinds, value);
+    }
+
+    public IEnumerable<string> ProcessingMessages
+    {
+        get => this._processingMessages;
+        private set => this.RaiseAndSetIfChanged(ref this._processingMessages, value);
+    }
+
+    public ICommand PopulateDetailsCommand { get; }
+
+    public ICommand ParseCardCommand { get; }
+
+    private async Task PopulateDetailAsync()
+    {
+        var cardImage = await this._unprocessedRepository.GetCardImageAsync(this.UnparsedCard);
+
+        // TODO: Need to handle larger image size, e.g. Planechase card!
+
+        this.OriginalImage = cardImage.ToImageSource();
+    }
+
+    private async Task ParseCardAsync()
+    {
+        this.DefinedCard = default;
+        this.CombinedCardKinds = Enumerable.Empty<object>();
+        this.ProcessingMessages = Enumerable.Empty<string>();
+
+        if (this.UnparsedCard != null)
         {
-        }
+            var processingResult = await Task.Run(() => this._cardProcessor.Process(this.UnparsedCard));
 
-        internal CardViewModel(
-            UnparsedBlob.Card unparsedCard,
-            IUnprocessedMagicRepository unprocessedRepository,
-            IMagicCardProcessor cardProcessor)
-        {
-            Guard
-                .Require(unparsedCard, nameof(unparsedCard))
-                .Is.Not.Null();
-
-            Guard
-                .Require(unprocessedRepository, nameof(unprocessedRepository))
-                .Is.Not.Null();
-
-            Guard
-                .Require(cardProcessor, nameof(cardProcessor))
-                .Is.Not.Null();
-
-            this._unprocessedRepository = unprocessedRepository;
-            this._cardProcessor = cardProcessor;
-
-            this.UnparsedCard = unparsedCard;
-
-            this.PopulateDetailsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateDetailAsync());
-            this.ParseCardCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardAsync());
-        }
-
-        public UnparsedBlob.Card UnparsedCard { get; }
-
-        public ImageSource OriginalImage
-        {
-            get => this._originalImage;
-            private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
-        }
-
-        public DefinedBlob.Card DefinedCard
-        {
-            get => this._definedCard;
-            private set => this.RaiseAndSetIfChanged(ref this._definedCard, value);
-        }
-
-        public IEnumerable CombinedCardKinds
-        {
-            get => this._combinedCardKinds;
-            private set => this.RaiseAndSetIfChanged(ref this._combinedCardKinds, value);
-        }
-
-        public IEnumerable<string> ProcessingMessages
-        {
-            get => this._processingMessages;
-            private set => this.RaiseAndSetIfChanged(ref this._processingMessages, value);
-        }
-
-        public ICommand PopulateDetailsCommand { get; }
-
-        public ICommand ParseCardCommand { get; }
-
-        private async Task PopulateDetailAsync()
-        {
-            var cardImage = await this._unprocessedRepository.GetCardImageAsync(this.UnparsedCard);
-
-            // TODO: Need to handle larger image size, e.g. Planechase card!
-
-            this.OriginalImage = cardImage.ToImageSource();
-        }
-
-        private async Task ParseCardAsync()
-        {
-            this.DefinedCard = default;
-            this.CombinedCardKinds = Enumerable.Empty<object>();
-            this.ProcessingMessages = Enumerable.Empty<string>();
-
-            if (this.UnparsedCard != null)
+            if (processingResult.IsValid)
             {
-                var processingResult = await Task.Run(() => this._cardProcessor.Process(this.UnparsedCard));
+                this.DefinedCard = processingResult.GetValue<DefinedBlob.Card>();
 
-                if (processingResult.IsValid)
+                var combinedKinds = new List<object>();
+
+                if (this.DefinedCard.IsTribal)
                 {
-                    this.DefinedCard = processingResult.GetValue<DefinedBlob.Card>();
-
-                    var combinedKinds = new List<object>();
-
-                    if (this.DefinedCard.IsTribal)
-                    {
-                        combinedKinds.Add("Tribal");
-                    }
-
-                    if (this.DefinedCard.SuperKind != CardSuperKind.None)
-                    {
-                        combinedKinds.Add(this.DefinedCard.SuperKind);
-                    }
-
-                    combinedKinds.Add(this.DefinedCard.Kind);
-                    combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
-
-                    this.CombinedCardKinds = combinedKinds;
+                    combinedKinds.Add("Tribal");
                 }
-                else
+
+                if (this.DefinedCard.SuperKind != CardSuperKind.None)
                 {
-                    // FIXME: Need to distinguish between not-parsed and invalid cards!
-                    this.ProcessingMessages = processingResult.Messages;
+                    combinedKinds.Add(this.DefinedCard.SuperKind);
                 }
+
+                combinedKinds.Add(this.DefinedCard.Kind);
+                combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
+
+                this.CombinedCardKinds = combinedKinds;
+            }
+            else
+            {
+                // FIXME: Need to distinguish between not-parsed and invalid cards!
+                this.ProcessingMessages = processingResult.Messages;
             }
         }
     }

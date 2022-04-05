@@ -26,23 +26,22 @@
 // <creation_timestamp>Friday, February 5, 2021 6:39:09 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using nGratis.AI.Kvasir.Contract;
+
+public class Creature : Permanent
 {
-    using nGratis.AI.Kvasir.Contract;
-
-    public class Creature : Permanent
+    public Creature(string name)
+        : base(name, CardKind.Creature)
     {
-        public Creature(string name)
-            : base(name, CardKind.Creature)
-        {
-        }
-
-        public int Power { get; init; }
-
-        public int Toughness { get; init; }
-
-        public bool HasSummoningSickness { get; internal set; }
-
-        public int Damage { get; internal set; }
     }
+
+    public int Power { get; init; }
+
+    public int Toughness { get; init; }
+
+    public bool HasSummoningSickness { get; internal set; }
+
+    public int Damage { get; internal set; }
 }

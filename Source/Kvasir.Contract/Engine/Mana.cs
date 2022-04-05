@@ -26,18 +26,17 @@
 // <creation_timestamp>Tuesday, 25 December 2018 6:23:06 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+public enum Mana
 {
-    public enum Mana
-    {
-        Unknown = 0,
+    Unknown = 0,
 
-        Colorless,
+    Colorless,
 
-        White,
-        Blue,
-        Black,
-        Red,
-        Green
-    }
+    White,
+    Blue,
+    Black,
+    Red,
+    Green
 }

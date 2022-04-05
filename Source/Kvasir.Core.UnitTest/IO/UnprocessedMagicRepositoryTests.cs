@@ -26,665 +26,664 @@
 // <creation_timestamp>Monday, 5 November 2018 7:58:24 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.UnitTest
+namespace nGratis.AI.Kvasir.Core.UnitTest;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
+using Moq;
+using Moq.AI.Kvasir;
+using nGratis.AI.Kvasir.Contract;
+using Xunit;
+using Arg = Moq.AI.Kvasir.Arg;
+using MockBuilder = Moq.AI.Kvasir.MockBuilder;
+
+public class UnprocessedMagicRepositoryTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Moq;
-    using Moq.AI.Kvasir;
-    using nGratis.AI.Kvasir.Contract;
-    using Xunit;
-    using Arg = Moq.AI.Kvasir.Arg;
-    using MockBuilder = Moq.AI.Kvasir.MockBuilder;
-
-    public class UnprocessedMagicRepositoryTests
+    public class Constructor
     {
-        public class Constructor
+        [Fact]
+        public void WhenGettingFetchersWithEachAvailableResource_ShouldNotThrowException()
         {
-            [Fact]
-            public void WhenGettingFetchersWithEachAvailableResource_ShouldNotThrowException()
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>();
+
+            var mockFetchers = new[]
             {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>();
-
-                var mockFetchers = new[]
-                {
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.CardImage),
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.Rule)
-                };
-
-                // Act.
-
-                var action = new Action(() =>
-                {
-                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
-                });
-
-                // Assert.
-
-                action
-                    .Should().NotThrow();
-            }
-
-            [Fact]
-            public void WhenGettingFetcherWithoutAvailableResource_ShouldThrowKvasirException()
-            {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>();
-
-                var mockFetcher = MockBuilder
+                MockBuilder
                     .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.None);
+                    .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
+                MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.CardImage),
+                MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.Rule)
+            };
 
-                // Act.
+            // Act.
 
-                var action = new Action(() =>
-                {
-                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetcher.Object);
-                });
-
-                // Assert.
-
-                action
-                    .Should().Throw<KvasirException>()
-                    .WithMessage(
-                        "One or more external resource(s) are invalid! " +
-                        "Missing Resource(s): [CardSet], [Card], [CardImage], [Rule].");
-            }
-
-            [Fact]
-            public void WhenGettingFetchersWithDuplicatingAvailableResources_ShouldThrowKvasirException()
+            var action = new Action(() =>
             {
-                // Arrange.
+                var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
+            });
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>();
+            // Assert.
 
-                var mockFetchers = new[]
-                {
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.All),
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.All)
-                };
-
-                // Act.
-
-                var action = new Action(() =>
-                {
-                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
-                });
-
-                // Assert.
-
-                action
-                    .Should().Throw<KvasirException>()
-                    .WithMessage(
-                        "One or more external resource(s) are invalid! " +
-                        "Duplicating Resource(s): [CardSet], [Card], [CardImage], [Rule].");
-            }
-
-            [Fact]
-            public void WhenGettingFetchersWithMissingAndDuplicatingAvailableResources_ShouldThrowKvasirException()
-            {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>();
-
-                var mockFetchers = new[]
-                {
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
-                    MockBuilder
-                        .CreateMock<IMagicFetcher>()
-                        .WithAvailableResources(ExternalResources.Card)
-                };
-
-                // Act.
-
-                var action = new Action(() =>
-                {
-                    var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
-                });
-
-                // Assert.
-
-                action
-                    .Should().Throw<KvasirException>()
-                    .WithMessage(
-                        "One or more external resource(s) are invalid! " +
-                        "Missing Resource(s): [CardImage], [Rule]. " +
-                        "Duplicating Resource(s): [Card].");
-            }
+            action
+                .Should().NotThrow();
         }
 
-        public class GetCardSetsAsyncMethod
+        [Fact]
+        public void WhenGettingFetcherWithoutAvailableResource_ShouldThrowKvasirException()
         {
-            [Fact]
-            public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>();
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.None);
+
+            // Act.
+
+            var action = new Action(() =>
             {
-                // Arrange.
+                var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetcher.Object);
+            });
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.CardSet);
+            // Assert.
 
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
-
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
-
-                // Act.
-
-                var cardSets = await unprocessedRepository.GetCardSetsAsync();
-
-                // Assert.
-
-                cardSets
-                    .Should().NotBeNullOrEmpty()
-                    .And.HaveCount(3)
-                    .And.Contain(set =>
-                        !string.IsNullOrEmpty(set.Code) &&
-                        !string.IsNullOrEmpty(set.Name) &&
-                        set.ReleasedTimestamp > DateTime.MinValue);
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexReader(IndexKind.CardSet),
-                    Times.AtLeastOnce);
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexWriter(IndexKind.CardSet),
-                    Times.Once);
-
-                mockFetcher.Verify(
-                    mock => mock.FetchCardSetsAsync(),
-                    Times.Once);
-            }
-
-            [Fact]
-            public async Task WhenGettingNotEmptyIndex_ShouldPopulateItFromIndex()
-            {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.CardSet)
-                    .WithExistingCardSets(MockBuilder.CreateUnparsedCardSets(3));
-
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithoutCardSets();
-
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
-
-                // Act.
-
-                var cardSets = await unprocessedRepository.GetCardSetsAsync();
-
-                // Assert.
-
-                cardSets
-                    .Should().NotBeNullOrEmpty()
-                    .And.HaveCount(3)
-                    .And.NotContainNulls();
-
-                foreach (var cardSet in cardSets)
-                {
-                    cardSet
-                        .Code
-                        .Should().NotBeEmpty();
-
-                    cardSet
-                        .Name
-                        .Should().NotBeNullOrEmpty();
-
-                    cardSet
-                        .ReleasedTimestamp
-                        .Should().BeOnOrAfter(Constant.EpochTimestamp);
-                }
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexReader(IndexKind.CardSet),
-                    Times.AtLeastOnce);
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexWriter(IndexKind.CardSet),
-                    Times.Never);
-
-                mockFetcher.Verify(
-                    mock => mock.FetchCardSetsAsync(),
-                    Times.Never);
-            }
+            action
+                .Should().Throw<KvasirException>()
+                .WithMessage(
+                    "One or more external resource(s) are invalid! " +
+                    "Missing Resource(s): [CardSet], [Card], [CardImage], [Rule].");
         }
 
-        public class GetCardsAsyncMethod
+        [Fact]
+        public void WhenGettingFetchersWithDuplicatingAvailableResources_ShouldThrowKvasirException()
         {
-            [Fact]
-            public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>();
+
+            var mockFetchers = new[]
             {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.Card);
-
-                var mockFetcher = MockBuilder
+                MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.All),
+                MockBuilder
                     .CreateMock<IMagicFetcher>()
                     .WithAvailableResources(ExternalResources.All)
-                    .WithCards(Enumerable
-                        .Empty<UnparsedBlob.Card>()
-                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .Append(MockBuilder.CreateUnparsedCards("X03", 3))
-                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
-                        .ToArray());
+            };
 
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
+            // Act.
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X03",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
-
-                // Act.
-
-                var cards = await unprocessedRepository.GetCardsAsync(cardSet);
-
-                // Assert.
-
-                cards
-                    .Should().NotBeEmpty()
-                    .And.HaveCount(3)
-                    .And.NotContainNulls();
-
-                foreach (var card in cards)
-                {
-                    card
-                        .MultiverseId
-                        .Should().BePositive();
-
-                    card
-                        .SetCode
-                        .Should().BeEquivalentTo("X03");
-
-                    card
-                        .Number
-                        .Should().NotBeNullOrEmpty();
-                }
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexReader(IndexKind.Card),
-                    Times.Never);
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexWriter(IndexKind.Card),
-                    Times.Once);
-
-                mockFetcher.Verify(
-                    mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
-                    Times.Once);
-
-                mockFetcher.Verify(
-                    mock => mock.FetchCardsAsync(Arg.UnparsedCardSet.Is("X03")),
-                    Times.Once);
-            }
-
-            [Fact]
-            public async Task WhenGettingNotEmptyIndex_ShouldPopulateItFromIndex()
+            var action = new Action(() =>
             {
-                // Arrange.
+                var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
+            });
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.Card)
-                    .WithExistingCards(Enumerable
-                        .Empty<UnparsedBlob.Card>()
-                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .Append(MockBuilder.CreateUnparsedCards("X03", 3))
-                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
-                        .ToArray());
+            // Assert.
 
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithoutCards();
-
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
-
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X03",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
-
-                // Act.
-
-                var cards = await unprocessedRepository.GetCardsAsync(cardSet);
-
-                // Assert.
-
-                cards
-                    .Should().NotBeEmpty()
-                    .And.HaveCount(3)
-                    .And.NotContainNulls();
-
-                foreach (var card in cards)
-                {
-                    card
-                        .MultiverseId
-                        .Should().BePositive();
-
-                    card
-                        .SetCode
-                        .Should().BeEquivalentTo("X03");
-
-                    card
-                        .Number
-                        .Should().NotBeNullOrEmpty();
-                }
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexReader(IndexKind.Card),
-                    Times.Once);
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexWriter(IndexKind.Card),
-                    Times.Never);
-
-                mockFetcher.Verify(
-                    mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
-                    Times.Never);
-            }
-
-            [Fact]
-            public async Task WhenGettingNotEmptyIndexButMissingCards_ShouldPopulateItFromFetcher()
-            {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.Card)
-                    .WithExistingCards(Enumerable
-                        .Empty<UnparsedBlob.Card>()
-                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
-                        .ToArray());
-
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
-
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
-
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X03",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
-
-                // Act.
-
-                var cards = await unprocessedRepository.GetCardsAsync(cardSet);
-
-                // Assert.
-
-                cards
-                    .Should().NotBeEmpty()
-                    .And.HaveCount(3)
-                    .And.NotContainNulls();
-
-                foreach (var card in cards)
-                {
-                    card
-                        .MultiverseId
-                        .Should().BePositive();
-
-                    card
-                        .SetCode
-                        .Should().BeEquivalentTo("X03");
-
-                    card
-                        .Number
-                        .Should().NotBeNullOrEmpty();
-                }
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexReader(IndexKind.Card),
-                    Times.Once);
-
-                mockIndexManager.Verify(
-                    mock => mock.FindIndexWriter(IndexKind.Card),
-                    Times.Once);
-
-                mockFetcher.Verify(
-                    mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
-                    Times.Once);
-            }
+            action
+                .Should().Throw<KvasirException>()
+                .WithMessage(
+                    "One or more external resource(s) are invalid! " +
+                    "Duplicating Resource(s): [CardSet], [Card], [CardImage], [Rule].");
         }
 
-        public class CardSetIndexedEvent
+        [Fact]
+        public void WhenGettingFetchersWithMissingAndDuplicatingAvailableResources_ShouldThrowKvasirException()
         {
-            [Fact]
-            public async Task WhenGettingEmptyIndex_ShouldRaiseEvent()
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>();
+
+            var mockFetchers = new[]
             {
-                // Arrange.
-
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.CardSet);
-
-                var mockFetcher = MockBuilder
+                MockBuilder
                     .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
+                    .WithAvailableResources(ExternalResources.CardSet | ExternalResources.Card),
+                MockBuilder
+                    .CreateMock<IMagicFetcher>()
+                    .WithAvailableResources(ExternalResources.Card)
+            };
 
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
+            // Act.
 
-                using var monitoredRepository = unprocessedRepository.Monitor();
-
-                // Act.
-
-                var _ = await unprocessedRepository.GetCardSetsAsync();
-
-                // Assert.
-
-                monitoredRepository
-                    .Should().Raise(nameof(IUnprocessedMagicRepository.CardSetIndexed))
-                    .WithSender(unprocessedRepository)
-                    .WithArgs<EventArgs>(args => args == EventArgs.Empty);
-            }
-
-            [Fact]
-            public async Task WhenGettingNotEmptyIndex_ShouldNotRaiseEvent()
+            var action = new Action(() =>
             {
-                // Arrange.
+                var _ = new UnprocessedMagicRepository(mockIndexManager.Object, mockFetchers.ToObjects());
+            });
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.CardSet)
-                    .WithExistingCardSets(MockBuilder.CreateUnparsedCardSets(3));
+            // Assert.
 
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithoutCardSets();
+            action
+                .Should().Throw<KvasirException>()
+                .WithMessage(
+                    "One or more external resource(s) are invalid! " +
+                    "Missing Resource(s): [CardImage], [Rule]. " +
+                    "Duplicating Resource(s): [Card].");
+        }
+    }
 
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
+    public class GetCardSetsAsyncMethod
+    {
+        [Fact]
+        public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
+        {
+            // Arrange.
 
-                using var monitoredRepository = unprocessedRepository.Monitor();
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.CardSet);
 
-                // Act.
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
 
-                var _ = await unprocessedRepository.GetCardSetsAsync();
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
 
-                // Assert.
+            // Act.
 
-                monitoredRepository
-                    .Should().NotRaise(nameof(IUnprocessedMagicRepository.CardSetIndexed));
-            }
+            var cardSets = await unprocessedRepository.GetCardSetsAsync();
+
+            // Assert.
+
+            cardSets
+                .Should().NotBeNullOrEmpty()
+                .And.HaveCount(3)
+                .And.Contain(set =>
+                    !string.IsNullOrEmpty(set.Code) &&
+                    !string.IsNullOrEmpty(set.Name) &&
+                    set.ReleasedTimestamp > DateTime.MinValue);
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexReader(IndexKind.CardSet),
+                Times.AtLeastOnce);
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexWriter(IndexKind.CardSet),
+                Times.Once);
+
+            mockFetcher.Verify(
+                mock => mock.FetchCardSetsAsync(),
+                Times.Once);
         }
 
-        public class CardIndexedEvent
+        [Fact]
+        public async Task WhenGettingNotEmptyIndex_ShouldPopulateItFromIndex()
         {
-            [Fact]
-            public async Task WhenGettingEmptyIndex_ShouldFireEvent()
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.CardSet)
+                .WithExistingCardSets(MockBuilder.CreateUnparsedCardSets(3));
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithoutCardSets();
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            // Act.
+
+            var cardSets = await unprocessedRepository.GetCardSetsAsync();
+
+            // Assert.
+
+            cardSets
+                .Should().NotBeNullOrEmpty()
+                .And.HaveCount(3)
+                .And.NotContainNulls();
+
+            foreach (var cardSet in cardSets)
             {
-                // Arrange.
+                cardSet
+                    .Code
+                    .Should().NotBeEmpty();
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.Card);
+                cardSet
+                    .Name
+                    .Should().NotBeNullOrEmpty();
 
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithCards(MockBuilder.CreateUnparsedCards("X01", 1));
-
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
-
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X01",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
-
-                using var monitoredRepository = unprocessedRepository.Monitor();
-
-                // Act.
-
-                var _ = await unprocessedRepository.GetCardsAsync(cardSet);
-
-                // Assert.
-
-                monitoredRepository
-                    .Should().Raise(nameof(IUnprocessedMagicRepository.CardIndexed))
-                    .WithSender(unprocessedRepository)
-                    .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+                cardSet
+                    .ReleasedTimestamp
+                    .Should().BeOnOrAfter(Constant.EpochTimestamp);
             }
 
-            [Fact]
-            public async Task WhenGettingNotEmptyIndex_ShouldNotFireEvent()
+            mockIndexManager.Verify(
+                mock => mock.FindIndexReader(IndexKind.CardSet),
+                Times.AtLeastOnce);
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexWriter(IndexKind.CardSet),
+                Times.Never);
+
+            mockFetcher.Verify(
+                mock => mock.FetchCardSetsAsync(),
+                Times.Never);
+        }
+    }
+
+    public class GetCardsAsyncMethod
+    {
+        [Fact]
+        public async Task WhenGettingEmptyIndex_ShouldPopulateItFromFetcher()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.Card);
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithCards(Enumerable
+                    .Empty<UnparsedBlob.Card>()
+                    .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                    .Append(MockBuilder.CreateUnparsedCards("X03", 3))
+                    .Append(MockBuilder.CreateUnparsedCards("X05", 5))
+                    .ToArray());
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "X03",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.Card)
-                    .WithExistingCards(MockBuilder.CreateUnparsedCards("X01", 1));
+            // Act.
 
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithoutCards();
+            var cards = await unprocessedRepository.GetCardsAsync(cardSet);
 
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
+            // Assert.
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X01",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
+            cards
+                .Should().NotBeEmpty()
+                .And.HaveCount(3)
+                .And.NotContainNulls();
 
-                using var monitoredRepository = unprocessedRepository.Monitor();
+            foreach (var card in cards)
+            {
+                card
+                    .MultiverseId
+                    .Should().BePositive();
 
-                // Act.
+                card
+                    .SetCode
+                    .Should().BeEquivalentTo("X03");
 
-                var _ = await unprocessedRepository.GetCardsAsync(cardSet);
-
-                // Assert.
-
-                monitoredRepository
-                    .Should().NotRaise(nameof(IUnprocessedMagicRepository.CardIndexed));
+                card
+                    .Number
+                    .Should().NotBeNullOrEmpty();
             }
 
-            [Fact]
-            public async Task WhenGettingNotEmptyIndexButMissingCards_ShouldFireEvent()
+            mockIndexManager.Verify(
+                mock => mock.FindIndexReader(IndexKind.Card),
+                Times.Never);
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexWriter(IndexKind.Card),
+                Times.Once);
+
+            mockFetcher.Verify(
+                mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
+                Times.Once);
+
+            mockFetcher.Verify(
+                mock => mock.FetchCardsAsync(Arg.UnparsedCardSet.Is("X03")),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task WhenGettingNotEmptyIndex_ShouldPopulateItFromIndex()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.Card)
+                .WithExistingCards(Enumerable
+                    .Empty<UnparsedBlob.Card>()
+                    .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                    .Append(MockBuilder.CreateUnparsedCards("X03", 3))
+                    .Append(MockBuilder.CreateUnparsedCards("X05", 5))
+                    .ToArray());
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithoutCards();
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "X03",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
 
-                var mockIndexManager = MockBuilder
-                    .CreateMock<IIndexManager>()
-                    .WithDefault(IndexKind.Card)
-                    .WithExistingCards(Enumerable
-                        .Empty<UnparsedBlob.Card>()
-                        .Append(MockBuilder.CreateUnparsedCards("X02", 2))
-                        .Append(MockBuilder.CreateUnparsedCards("X05", 5))
-                        .ToArray());
+            // Act.
 
-                var mockFetcher = MockBuilder
-                    .CreateMock<IMagicFetcher>()
-                    .WithAvailableResources(ExternalResources.All)
-                    .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
+            var cards = await unprocessedRepository.GetCardsAsync(cardSet);
 
-                var unprocessedRepository = new UnprocessedMagicRepository(
-                    mockIndexManager.Object,
-                    mockFetcher.Object);
+            // Assert.
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X03",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
+            cards
+                .Should().NotBeEmpty()
+                .And.HaveCount(3)
+                .And.NotContainNulls();
 
-                using var monitoredRepository = unprocessedRepository.Monitor();
+            foreach (var card in cards)
+            {
+                card
+                    .MultiverseId
+                    .Should().BePositive();
 
-                // Act.
+                card
+                    .SetCode
+                    .Should().BeEquivalentTo("X03");
 
-                var _ = await unprocessedRepository.GetCardsAsync(cardSet);
-
-                // Assert.
-
-                monitoredRepository
-                    .Should().Raise(nameof(IUnprocessedMagicRepository.CardIndexed))
-                    .WithSender(unprocessedRepository)
-                    .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+                card
+                    .Number
+                    .Should().NotBeNullOrEmpty();
             }
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexReader(IndexKind.Card),
+                Times.Once);
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexWriter(IndexKind.Card),
+                Times.Never);
+
+            mockFetcher.Verify(
+                mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task WhenGettingNotEmptyIndexButMissingCards_ShouldPopulateItFromFetcher()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.Card)
+                .WithExistingCards(Enumerable
+                    .Empty<UnparsedBlob.Card>()
+                    .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                    .Append(MockBuilder.CreateUnparsedCards("X05", 5))
+                    .ToArray());
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            var cardSet = new UnparsedBlob.CardSet
+            {
+                Code = "X03",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
+
+            // Act.
+
+            var cards = await unprocessedRepository.GetCardsAsync(cardSet);
+
+            // Assert.
+
+            cards
+                .Should().NotBeEmpty()
+                .And.HaveCount(3)
+                .And.NotContainNulls();
+
+            foreach (var card in cards)
+            {
+                card
+                    .MultiverseId
+                    .Should().BePositive();
+
+                card
+                    .SetCode
+                    .Should().BeEquivalentTo("X03");
+
+                card
+                    .Number
+                    .Should().NotBeNullOrEmpty();
+            }
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexReader(IndexKind.Card),
+                Times.Once);
+
+            mockIndexManager.Verify(
+                mock => mock.FindIndexWriter(IndexKind.Card),
+                Times.Once);
+
+            mockFetcher.Verify(
+                mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()),
+                Times.Once);
+        }
+    }
+
+    public class CardSetIndexedEvent
+    {
+        [Fact]
+        public async Task WhenGettingEmptyIndex_ShouldRaiseEvent()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.CardSet);
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithCardSets(MockBuilder.CreateUnparsedCardSets(3));
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            using var monitoredRepository = unprocessedRepository.Monitor();
+
+            // Act.
+
+            var _ = await unprocessedRepository.GetCardSetsAsync();
+
+            // Assert.
+
+            monitoredRepository
+                .Should().Raise(nameof(IUnprocessedMagicRepository.CardSetIndexed))
+                .WithSender(unprocessedRepository)
+                .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+        }
+
+        [Fact]
+        public async Task WhenGettingNotEmptyIndex_ShouldNotRaiseEvent()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.CardSet)
+                .WithExistingCardSets(MockBuilder.CreateUnparsedCardSets(3));
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithoutCardSets();
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            using var monitoredRepository = unprocessedRepository.Monitor();
+
+            // Act.
+
+            var _ = await unprocessedRepository.GetCardSetsAsync();
+
+            // Assert.
+
+            monitoredRepository
+                .Should().NotRaise(nameof(IUnprocessedMagicRepository.CardSetIndexed));
+        }
+    }
+
+    public class CardIndexedEvent
+    {
+        [Fact]
+        public async Task WhenGettingEmptyIndex_ShouldFireEvent()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.Card);
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithCards(MockBuilder.CreateUnparsedCards("X01", 1));
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            var cardSet = new UnparsedBlob.CardSet
+            {
+                Code = "X01",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
+
+            using var monitoredRepository = unprocessedRepository.Monitor();
+
+            // Act.
+
+            var _ = await unprocessedRepository.GetCardsAsync(cardSet);
+
+            // Assert.
+
+            monitoredRepository
+                .Should().Raise(nameof(IUnprocessedMagicRepository.CardIndexed))
+                .WithSender(unprocessedRepository)
+                .WithArgs<EventArgs>(args => args == EventArgs.Empty);
+        }
+
+        [Fact]
+        public async Task WhenGettingNotEmptyIndex_ShouldNotFireEvent()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.Card)
+                .WithExistingCards(MockBuilder.CreateUnparsedCards("X01", 1));
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithoutCards();
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            var cardSet = new UnparsedBlob.CardSet
+            {
+                Code = "X01",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
+
+            using var monitoredRepository = unprocessedRepository.Monitor();
+
+            // Act.
+
+            var _ = await unprocessedRepository.GetCardsAsync(cardSet);
+
+            // Assert.
+
+            monitoredRepository
+                .Should().NotRaise(nameof(IUnprocessedMagicRepository.CardIndexed));
+        }
+
+        [Fact]
+        public async Task WhenGettingNotEmptyIndexButMissingCards_ShouldFireEvent()
+        {
+            // Arrange.
+
+            var mockIndexManager = MockBuilder
+                .CreateMock<IIndexManager>()
+                .WithDefault(IndexKind.Card)
+                .WithExistingCards(Enumerable
+                    .Empty<UnparsedBlob.Card>()
+                    .Append(MockBuilder.CreateUnparsedCards("X02", 2))
+                    .Append(MockBuilder.CreateUnparsedCards("X05", 5))
+                    .ToArray());
+
+            var mockFetcher = MockBuilder
+                .CreateMock<IMagicFetcher>()
+                .WithAvailableResources(ExternalResources.All)
+                .WithCards(MockBuilder.CreateUnparsedCards("X03", 3));
+
+            var unprocessedRepository = new UnprocessedMagicRepository(
+                mockIndexManager.Object,
+                mockFetcher.Object);
+
+            var cardSet = new UnparsedBlob.CardSet
+            {
+                Code = "X03",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
+
+            using var monitoredRepository = unprocessedRepository.Monitor();
+
+            // Act.
+
+            var _ = await unprocessedRepository.GetCardsAsync(cardSet);
+
+            // Assert.
+
+            monitoredRepository
+                .Should().Raise(nameof(IUnprocessedMagicRepository.CardIndexed))
+                .WithSender(unprocessedRepository)
+                .WithArgs<EventArgs>(args => args == EventArgs.Empty);
         }
     }
 }

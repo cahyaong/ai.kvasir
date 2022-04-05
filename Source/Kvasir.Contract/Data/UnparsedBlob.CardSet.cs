@@ -26,21 +26,20 @@
 // <creation_timestamp>Saturday, December 28, 2019 6:11:22 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System;
+using System.Diagnostics;
+
+public static partial class UnparsedBlob
 {
-    using System;
-    using System.Diagnostics;
-
-    public static partial class UnparsedBlob
+    [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
+    public record CardSet
     {
-        [DebuggerDisplay("[{this.Code ?? \"XXX\"}] {this.Name ?? \"<undefined>\"}")]
-        public record CardSet
-        {
-            public string Code { get; init; }
+        public string Code { get; init; }
 
-            public string Name { get; init; }
+        public string Name { get; init; }
 
-            public DateTime ReleasedTimestamp { get; init; }
-        }
+        public DateTime ReleasedTimestamp { get; init; }
     }
 }

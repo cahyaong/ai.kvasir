@@ -26,148 +26,147 @@
 // <creation_timestamp>Saturday, 10 November 2018 5:28:38 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
+using nGratis.Cop.Olympus.Contract;
+using ReactiveUI;
+
+public class CardSetViewModel : ReactiveObject
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reactive.Linq;
-    using System.Threading.Tasks;
-    using System.Windows.Input;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Olympus.Contract;
-    using ReactiveUI;
+    private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
-    public class CardSetViewModel : ReactiveObject
+    private IEnumerable<CardViewModel> _cardViewModels;
+
+    private CardViewModel _selectedCardViewModel;
+
+    private int _notParsedCardCount;
+
+    private int _validCardCount;
+
+    private int _invalidCardCount;
+
+    public CardSetViewModel(UnparsedBlob.CardSet unparsedCardSet, IUnprocessedMagicRepository unprocessedRepository)
     {
-        private readonly IUnprocessedMagicRepository _unprocessedRepository;
+        Guard
+            .Require(unparsedCardSet, nameof(unparsedCardSet))
+            .Is.Not.Null();
 
-        private IEnumerable<CardViewModel> _cardViewModels;
+        Guard
+            .Require(unprocessedRepository, nameof(unprocessedRepository))
+            .Is.Not.Null();
 
-        private CardViewModel _selectedCardViewModel;
+        this._unprocessedRepository = unprocessedRepository;
 
-        private int _notParsedCardCount;
+        this.UnparsedCardSet = unparsedCardSet;
+        this.CardViewModels = Enumerable.Empty<CardViewModel>();
 
-        private int _validCardCount;
+        this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
+        this.ParseCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardsAsync());
+    }
 
-        private int _invalidCardCount;
+    public UnparsedBlob.CardSet UnparsedCardSet { get; }
 
-        public CardSetViewModel(UnparsedBlob.CardSet unparsedCardSet, IUnprocessedMagicRepository unprocessedRepository)
+    public IEnumerable<CardViewModel> CardViewModels
+    {
+        get => this._cardViewModels;
+        private set => this.RaiseAndSetIfChanged(ref this._cardViewModels, value);
+    }
+
+    public CardViewModel SelectedCardViewModel
+    {
+        get => this._selectedCardViewModel;
+
+        set
         {
-            Guard
-                .Require(unparsedCardSet, nameof(unparsedCardSet))
-                .Is.Not.Null();
+            this.RaiseAndSetIfChanged(ref this._selectedCardViewModel, value);
+            this.SelectedCardViewModel?.PopulateDetailsCommand.Execute(null);
+        }
+    }
 
-            Guard
-                .Require(unprocessedRepository, nameof(unprocessedRepository))
-                .Is.Not.Null();
+    public int NotParsedCardCount
+    {
+        get => this._notParsedCardCount;
+        private set => this.RaiseAndSetIfChanged(ref this._notParsedCardCount, value);
+    }
 
-            this._unprocessedRepository = unprocessedRepository;
+    public int ValidCardCount
+    {
+        get => this._validCardCount;
+        private set => this.RaiseAndSetIfChanged(ref this._validCardCount, value);
+    }
 
-            this.UnparsedCardSet = unparsedCardSet;
-            this.CardViewModels = Enumerable.Empty<CardViewModel>();
+    public int InvalidCardCount
+    {
+        get => this._invalidCardCount;
+        private set => this.RaiseAndSetIfChanged(ref this._invalidCardCount, value);
+    }
 
-            this.PopulateCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.PopulateCardsAsync());
-            this.ParseCardsCommand = ReactiveCommand.CreateFromTask(async () => await this.ParseCardsAsync());
+    public ICommand PopulateCardsCommand { get; }
+
+    public ICommand ParseCardsCommand { get; }
+
+    private async Task PopulateCardsAsync()
+    {
+        var unparsedCards = await this._unprocessedRepository.GetCardsAsync(this.UnparsedCardSet);
+
+        this.CardViewModels = unparsedCards
+            .Select(unparsedCard => new CardViewModel(unparsedCard, this._unprocessedRepository))
+            .ToArray();
+
+        this.NotParsedCardCount = this.CardViewModels.Count();
+        this.ValidCardCount = 0;
+        this.InvalidCardCount = 0;
+
+        this.CardViewModels
+            .Select(vm => vm.WhenPropertyChanged())
+            .Merge()
+            .Where(pattern =>
+                pattern.EventArgs.PropertyName == nameof(CardViewModel.DefinedCard) ||
+                pattern.EventArgs.PropertyName == nameof(CardViewModel.ProcessingMessages))
+            .Throttle(TimeSpan.FromMilliseconds(250))
+            .Subscribe(_ => this.UpdateParsingStatistics());
+
+        this.SelectedCardViewModel = this
+            .CardViewModels
+            .FirstOrDefault();
+    }
+
+    private async Task ParseCardsAsync()
+    {
+        if (this.CardViewModels?.Any() != true)
+        {
+            return;
         }
 
-        public UnparsedBlob.CardSet UnparsedCardSet { get; }
+        this.SelectedCardViewModel ??= this.CardViewModels.First();
 
-        public IEnumerable<CardViewModel> CardViewModels
+        await Task.Run(() =>
         {
-            get => this._cardViewModels;
-            private set => this.RaiseAndSetIfChanged(ref this._cardViewModels, value);
-        }
-
-        public CardViewModel SelectedCardViewModel
-        {
-            get => this._selectedCardViewModel;
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref this._selectedCardViewModel, value);
-                this.SelectedCardViewModel?.PopulateDetailsCommand.Execute(null);
-            }
-        }
-
-        public int NotParsedCardCount
-        {
-            get => this._notParsedCardCount;
-            private set => this.RaiseAndSetIfChanged(ref this._notParsedCardCount, value);
-        }
-
-        public int ValidCardCount
-        {
-            get => this._validCardCount;
-            private set => this.RaiseAndSetIfChanged(ref this._validCardCount, value);
-        }
-
-        public int InvalidCardCount
-        {
-            get => this._invalidCardCount;
-            private set => this.RaiseAndSetIfChanged(ref this._invalidCardCount, value);
-        }
-
-        public ICommand PopulateCardsCommand { get; }
-
-        public ICommand ParseCardsCommand { get; }
-
-        private async Task PopulateCardsAsync()
-        {
-            var unparsedCards = await this._unprocessedRepository.GetCardsAsync(this.UnparsedCardSet);
-
-            this.CardViewModels = unparsedCards
-                .Select(unparsedCard => new CardViewModel(unparsedCard, this._unprocessedRepository))
-                .ToArray();
-
-            this.NotParsedCardCount = this.CardViewModels.Count();
-            this.ValidCardCount = 0;
-            this.InvalidCardCount = 0;
-
             this.CardViewModels
-                .Select(vm => vm.WhenPropertyChanged())
-                .Merge()
-                .Where(pattern =>
-                    pattern.EventArgs.PropertyName == nameof(CardViewModel.DefinedCard) ||
-                    pattern.EventArgs.PropertyName == nameof(CardViewModel.ProcessingMessages))
-                .Throttle(TimeSpan.FromMilliseconds(250))
-                .Subscribe(_ => this.UpdateParsingStatistics());
+                .AsParallel()
+                .WithDegreeOfParallelism(8)
+                .Where(vm => vm.ParseCardCommand.CanExecute(null))
+                .ForEach(vm => vm.ParseCardCommand.Execute(null));
+        });
+    }
 
-            this.SelectedCardViewModel = this
-                .CardViewModels
-                .FirstOrDefault();
-        }
+    private void UpdateParsingStatistics()
+    {
+        var parsedCardViewModels = this
+            .CardViewModels
+            .Where(vm => vm.DefinedCard != null)
+            .ToArray();
 
-        private async Task ParseCardsAsync()
-        {
-            if (this.CardViewModels?.Any() != true)
-            {
-                return;
-            }
-
-            this.SelectedCardViewModel ??= this.CardViewModels.First();
-
-            await Task.Run(() =>
-            {
-                this.CardViewModels
-                    .AsParallel()
-                    .WithDegreeOfParallelism(8)
-                    .Where(vm => vm.ParseCardCommand.CanExecute(null))
-                    .ForEach(vm => vm.ParseCardCommand.Execute(null));
-            });
-        }
-
-        private void UpdateParsingStatistics()
-        {
-            var parsedCardViewModels = this
-                .CardViewModels
-                .Where(vm => vm.DefinedCard != null)
-                .ToArray();
-
-            this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;
-            this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ProcessingMessages.Any());
-            this.InvalidCardCount = parsedCardViewModels.Length - this.ValidCardCount;
-        }
+        this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;
+        this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ProcessingMessages.Any());
+        this.InvalidCardCount = parsedCardViewModels.Length - this.ValidCardCount;
     }
 }

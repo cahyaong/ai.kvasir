@@ -26,173 +26,172 @@
 // <creation_timestamp>Saturday, 3 November 2018 9:03:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.UnitTest
+namespace nGratis.AI.Kvasir.Core.UnitTest;
+
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
+using FluentAssertions;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Framework;
+using Xunit;
+
+public class MagicJsonFetcherTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Net;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Framework;
-    using Xunit;
-
-    public class MagicJsonFetcherTests
+    public class FetchCardSetsAsyncMethod
     {
-        public class FetchCardSetsAsyncMethod
+        [Fact]
+        public async Task WhenGettingSuccessfulResponse_ShouldParseHtml()
         {
-            [Fact]
-            public async Task WhenGettingSuccessfulResponse_ShouldParseHtml()
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithSuccessfulResponseInSession("https://mtgjson.com/sets.html", "Raw_MTGJSON4");
+
+            var fetcher = new MagicJsonFetcher(stubHandler);
+
+            // Act.
+
+            var cardSets = await fetcher.FetchCardSetsAsync();
+
+            // Assert.
+
+            cardSets
+                .Should().NotBeNull()
+                .And.HaveCountGreaterOrEqualTo(438);
+
+            foreach (var cardSet in cardSets)
             {
-                // Arrange.
+                cardSet
+                    .Should().NotBeNull();
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponseInSession("https://mtgjson.com/sets.html", "Raw_MTGJSON4");
+                cardSet
+                    .Name
+                    .Should().NotBeNullOrWhiteSpace()
+                    .And.NotMatchRegex(";");
 
-                var fetcher = new MagicJsonFetcher(stubHandler);
+                cardSet
+                    .Code
+                    .Should().NotBeNullOrEmpty()
+                    .And.MatchRegex(@"\w{2,6}");
 
-                // Act.
-
-                var cardSets = await fetcher.FetchCardSetsAsync();
-
-                // Assert.
-
-                cardSets
-                    .Should().NotBeNull()
-                    .And.HaveCountGreaterOrEqualTo(438);
-
-                foreach (var cardSet in cardSets)
-                {
-                    cardSet
-                        .Should().NotBeNull();
-
-                    cardSet
-                        .Name
-                        .Should().NotBeNullOrWhiteSpace()
-                        .And.NotMatchRegex(";");
-
-                    cardSet
-                        .Code
-                        .Should().NotBeNullOrEmpty()
-                        .And.MatchRegex(@"\w{2,6}");
-
-                    cardSet
-                        .ReleasedTimestamp
-                        .Should().BeAfter(new DateTime(1993, 1, 1));
-                }
-            }
-
-            [Fact]
-            public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
-            {
-                // Arrange.
-
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithResponse("https://mtgjson.com/sets.html", HttpStatusCode.NotFound);
-
-                var fetcher = new MagicJsonFetcher(stubHandler);
-
-                // Act &  Assert.
-
-                fetcher
-                    .Awaiting(self => self.FetchCardSetsAsync())
-                    .Should().ThrowAsync<KvasirException>()
-                    .WithMessage(
-                        "Failed to reach MTGJSON4.com when trying to fetch card sets! " +
-                        "Status Code: [NotFound].");
+                cardSet
+                    .ReleasedTimestamp
+                    .Should().BeAfter(new DateTime(1993, 1, 1));
             }
         }
 
-        public class FetchCardsAsyncMethod
+        [Fact]
+        public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
         {
-            [Fact]
-            public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithResponse("https://mtgjson.com/sets.html", HttpStatusCode.NotFound);
+
+            var fetcher = new MagicJsonFetcher(stubHandler);
+
+            // Act &  Assert.
+
+            fetcher
+                .Awaiting(self => self.FetchCardSetsAsync())
+                .Should().ThrowAsync<KvasirException>()
+                .WithMessage(
+                    "Failed to reach MTGJSON4.com when trying to fetch card sets! " +
+                    "Status Code: [NotFound].");
+        }
+    }
+
+    public class FetchCardsAsyncMethod
+    {
+        [Fact]
+        public async Task WhenGettingSuccessfulResponse_ShouldParseJson()
+        {
+            // Arrange.
+
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithSuccessfulResponseInSession("https://mtgjson.com/json/GRN.json", "Raw_MTGJSON4");
+
+            var fetcher = new MagicJsonFetcher(stubHandler);
+
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "GRN",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponseInSession("https://mtgjson.com/json/GRN.json", "Raw_MTGJSON4");
+            // Act.
 
-                var fetcher = new MagicJsonFetcher(stubHandler);
+            var cards = await fetcher.FetchCardsAsync(cardSet);
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "GRN",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
+            // Assert.
 
-                // Act.
+            cards
+                .Should().NotBeNull()
+                .And.HaveCount(283);
 
-                var cards = await fetcher.FetchCardsAsync(cardSet);
+            cards
+                .ForEach(card => card.Must().HaveValidContent());
+        }
 
-                // Assert.
+        [Fact]
+        public void WhenGettingContentWithMissingCards_ShouldThrowKvasirException()
+        {
+            // Arrange.
 
-                cards
-                    .Should().NotBeNull()
-                    .And.HaveCount(283);
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithSuccessfulResponse("https://mtgjson.com/json/X42.json", "{ }");
 
-                cards
-                    .ForEach(card => card.Must().HaveValidContent());
-            }
+            var fetcher = new MagicJsonFetcher(stubHandler);
 
-            [Fact]
-            public void WhenGettingContentWithMissingCards_ShouldThrowKvasirException()
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "X42",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithSuccessfulResponse("https://mtgjson.com/json/X42.json", "{ }");
+            // Act & Assert.
 
-                var fetcher = new MagicJsonFetcher(stubHandler);
+            fetcher
+                .Awaiting(self => self.FetchCardsAsync(cardSet))
+                .Should().ThrowAsync<KvasirException>()
+                .WithMessage("Response from MTGJSON4.com is missing cards!");
+        }
 
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X42",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
+        [Fact]
+        public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
+        {
+            // Arrange.
 
-                // Act & Assert.
+            var stubHandler = StubHttpMessageHandler
+                .Create()
+                .WithResponse("https://mtgjson.com/json/X42.json", HttpStatusCode.NotFound);
 
-                fetcher
-                     .Awaiting(self => self.FetchCardsAsync(cardSet))
-                     .Should().ThrowAsync<KvasirException>()
-                     .WithMessage("Response from MTGJSON4.com is missing cards!");
-            }
+            var fetcher = new MagicJsonFetcher(stubHandler);
 
-            [Fact]
-            public void WhenGettingUnsuccessfulResponse_ShouldThrowKvasirException()
+            var cardSet = new UnparsedBlob.CardSet
             {
-                // Arrange.
+                Code = "X42",
+                Name = "[_MOCK_NAME_]",
+                ReleasedTimestamp = Constant.EpochTimestamp
+            };
 
-                var stubHandler = StubHttpMessageHandler
-                    .Create()
-                    .WithResponse("https://mtgjson.com/json/X42.json", HttpStatusCode.NotFound);
+            // Act & Assert.
 
-                var fetcher = new MagicJsonFetcher(stubHandler);
-
-                var cardSet = new UnparsedBlob.CardSet
-                {
-                    Code = "X42",
-                    Name = "[_MOCK_NAME_]",
-                    ReleasedTimestamp = Constant.EpochTimestamp
-                };
-
-                // Act & Assert.
-
-                fetcher
-                     .Awaiting(self => self.FetchCardsAsync(cardSet))
-                     .Should().ThrowAsync<KvasirException>()
-                     .WithMessage(
-                        "Failed to reach MTGJSON4.com when trying to fetch cards! " +
-                        "Card Set: [[_MOCK_NAME_]]. " +
-                        "Status Code: [NotFound].");
-            }
+            fetcher
+                .Awaiting(self => self.FetchCardsAsync(cardSet))
+                .Should().ThrowAsync<KvasirException>()
+                .WithMessage(
+                    "Failed to reach MTGJSON4.com when trying to fetch cards! " +
+                    "Card Set: [[_MOCK_NAME_]]. " +
+                    "Status Code: [NotFound].");
         }
     }
 }

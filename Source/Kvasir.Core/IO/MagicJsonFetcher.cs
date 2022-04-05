@@ -26,143 +26,142 @@
 // <creation_timestamp>Thursday, 25 October 2018 10:50:04 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Web;
+using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public class MagicJsonFetcher : MagicHttpFetcherBase
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using System.Web;
-    using HtmlAgilityPack;
-    using Newtonsoft.Json.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public class MagicJsonFetcher : MagicHttpFetcherBase
+    public MagicJsonFetcher(IStorageManager storageManager)
+        : base("MTGJSON4", storageManager)
     {
-        public MagicJsonFetcher(IStorageManager storageManager)
-            : base("MTGJSON4", storageManager)
+    }
+
+    internal MagicJsonFetcher(HttpMessageHandler messageHandler)
+        : base(messageHandler)
+    {
+    }
+
+    public override ExternalResources AvailableResources => ExternalResources.CardSet | ExternalResources.Card;
+
+    protected override async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
+    {
+        var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, "sets.html"));
+
+        if (!response.IsSuccessStatusCode)
         {
+            throw new KvasirException(
+                @"Failed to reach MTGJSON4.com when trying to fetch card sets! " +
+                $"Status Code: [{response.StatusCode}].");
         }
 
-        internal MagicJsonFetcher(HttpMessageHandler messageHandler)
-            : base(messageHandler)
+        var content = await response.Content.ReadAsStringAsync();
+
+        var document = new HtmlDocument();
+        document.LoadHtml(content);
+
+        return document
+            .DocumentNode
+            .SelectNodes("//table//tbody//tr//td")
+            .Where(node => node.ChildNodes.Count > 1)
+            .Select(MagicJsonFetcher.ConvertToCardSet)
+            .ToArray();
+    }
+
+    protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
+    {
+        var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{cardSet.Code}.json"));
+
+        if (!response.IsSuccessStatusCode)
         {
+            throw new KvasirException(
+                @"Failed to reach MTGJSON4.com when trying to fetch cards! " +
+                $"Card Set: [{cardSet.Name}]. " +
+                $"Status Code: [{response.StatusCode}].");
         }
 
-        public override ExternalResources AvailableResources => ExternalResources.CardSet | ExternalResources.Card;
+        var cardsToken = JObject
+            .Parse(await response.Content.ReadAsStringAsync())
+            .SelectToken("cards");
 
-        protected override async Task<IReadOnlyCollection<UnparsedBlob.CardSet>> FetchCardSetsCoreAsync()
+        if (cardsToken == null)
         {
-            var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, "sets.html"));
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new KvasirException(
-                    @"Failed to reach MTGJSON4.com when trying to fetch card sets! " +
-                    $"Status Code: [{response.StatusCode}].");
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            var document = new HtmlDocument();
-            document.LoadHtml(content);
-
-            return document
-                .DocumentNode
-                .SelectNodes("//table//tbody//tr//td")
-                .Where(node => node.ChildNodes.Count > 1)
-                .Select(MagicJsonFetcher.ConvertToCardSet)
-                .ToArray();
+            throw new KvasirException("Response from MTGJSON4.com is missing cards!");
         }
 
-        protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
+        return cardsToken
+            .Children()
+            .Select(cardToken =>
+            {
+                cardToken[nameof(UnparsedBlob.Card.SetCode)] = cardSet.Code;
+
+                return cardToken.ToObject<UnparsedBlob.Card>();
+            })
+            .Where(card => card != null)
+            .ToArray();
+    }
+
+    private static UnparsedBlob.CardSet ConvertToCardSet(HtmlNode rootNode)
+    {
+        var nameNode = rootNode
+            .ChildNodes
+            .SingleOrDefault(node => node.Name == "strong");
+
+        if (nameNode == null)
         {
-            var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{cardSet.Code}.json"));
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new KvasirException(
-                    @"Failed to reach MTGJSON4.com when trying to fetch cards! " +
-                    $"Card Set: [{cardSet.Name}]. " +
-                    $"Status Code: [{response.StatusCode}].");
-            }
-
-            var cardsToken = JObject
-                .Parse(await response.Content.ReadAsStringAsync())
-                .SelectToken("cards");
-
-            if (cardsToken == null)
-            {
-                throw new KvasirException("Response from MTGJSON4.com is missing cards!");
-            }
-
-            return cardsToken
-                .Children()
-                .Select(cardToken =>
-                {
-                    cardToken[nameof(UnparsedBlob.Card.SetCode)] = cardSet.Code;
-
-                    return cardToken.ToObject<UnparsedBlob.Card>();
-                })
-                .Where(card => card != null)
-                .ToArray();
+            throw new KvasirException("Card set name is not found!");
         }
 
-        private static UnparsedBlob.CardSet ConvertToCardSet(HtmlNode rootNode)
+        var foundMatch = rootNode
+            .ChildNodes
+            .Where(node => node.Name == "#text")
+            .Select(node => Pattern.SetCodeWithReleasedTimestamp.Match(node.InnerText))
+            .SingleOrDefault(match => match.Success);
+
+        if (foundMatch == null)
         {
-            var nameNode = rootNode
-                .ChildNodes
-                .SingleOrDefault(node => node.Name == "strong");
-
-            if (nameNode == null)
-            {
-                throw new KvasirException("Card set name is not found!");
-            }
-
-            var foundMatch = rootNode
-                .ChildNodes
-                .Where(node => node.Name == "#text")
-                .Select(node => Pattern.SetCodeWithReleasedTimestamp.Match(node.InnerText))
-                .SingleOrDefault(match => match.Success);
-
-            if (foundMatch == null)
-            {
-                throw new KvasirException("Card set code and released timestamp are not found!");
-            }
-
-            var releasedTimestamp = DateTime.MaxValue;
-
-            if (foundMatch.Groups["timestamp"].Success)
-            {
-                releasedTimestamp = DateTime.ParseExact(
-                    foundMatch.Groups["timestamp"].Value,
-                    "yyyy-MM-dd",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.AdjustToUniversal);
-            }
-
-            return new UnparsedBlob.CardSet
-            {
-                Name = HttpUtility.HtmlDecode(nameNode.InnerText),
-                Code = foundMatch.Groups["set_code"].Value,
-                ReleasedTimestamp = releasedTimestamp
-            };
+            throw new KvasirException("Card set code and released timestamp are not found!");
         }
 
-        private static class Link
+        var releasedTimestamp = DateTime.MaxValue;
+
+        if (foundMatch.Groups["timestamp"].Success)
         {
-            public static readonly Uri LandingUri = new("https://mtgjson.com");
+            releasedTimestamp = DateTime.ParseExact(
+                foundMatch.Groups["timestamp"].Value,
+                "yyyy-MM-dd",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AdjustToUniversal);
         }
 
-        private static class Pattern
+        return new UnparsedBlob.CardSet
         {
-            public static readonly Regex SetCodeWithReleasedTimestamp = new(
-                @"^(?<set_code>\w{2,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
-                RegexOptions.Compiled);
-        }
+            Name = HttpUtility.HtmlDecode(nameNode.InnerText),
+            Code = foundMatch.Groups["set_code"].Value,
+            ReleasedTimestamp = releasedTimestamp
+        };
+    }
+
+    private static class Link
+    {
+        public static readonly Uri LandingUri = new("https://mtgjson.com");
+    }
+
+    private static class Pattern
+    {
+        public static readonly Regex SetCodeWithReleasedTimestamp = new(
+            @"^(?<set_code>\w{2,6})( — (?<timestamp>\d{4}-\d{2}-\d{2}))?$",
+            RegexOptions.Compiled);
     }
 }

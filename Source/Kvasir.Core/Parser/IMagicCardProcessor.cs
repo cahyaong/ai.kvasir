@@ -26,12 +26,11 @@
 // <creation_timestamp>Tuesday, 25 December 2018 11:13:40 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Parser
-{
-    using nGratis.AI.Kvasir.Contract;
+namespace nGratis.AI.Kvasir.Core.Parser;
 
-    public interface IMagicCardProcessor
-    {
-        ProcessingResult Process(UnparsedBlob.Card unparsedCard);
-    }
+using nGratis.AI.Kvasir.Contract;
+
+public interface IMagicCardProcessor
+{
+    ProcessingResult Process(UnparsedBlob.Card unparsedCard);
 }

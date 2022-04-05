@@ -26,16 +26,15 @@
 // <creation_timestamp>Friday, November 5, 2021 5:54:33 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework
-{
-    using nGratis.AI.Kvasir.Engine;
-    using nGratis.Cop.Olympus.Contract;
+namespace nGratis.AI.Kvasir.Framework;
 
-    public class StubCreature : Creature
+using nGratis.AI.Kvasir.Engine;
+using nGratis.Cop.Olympus.Contract;
+
+public class StubCreature : Creature
+{
+    public StubCreature()
+        : base(Text.Undefined)
     {
-        public StubCreature()
-            : base(Text.Undefined)
-        {
-        }
     }
 }

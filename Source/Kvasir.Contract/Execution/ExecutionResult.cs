@@ -26,36 +26,35 @@
 // <creation_timestamp>Thursday, July 23, 2020 5:44:12 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System.Collections.Generic;
+using System.Linq;
+
+public class ExecutionResult
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    public class ExecutionResult
+    protected ExecutionResult()
     {
-        protected ExecutionResult()
-        {
-        }
+    }
 
-        protected ExecutionResult(params string[] messages)
-        {
-            this.Messages = messages;
-        }
+    protected ExecutionResult(params string[] messages)
+    {
+        this.Messages = messages;
+    }
 
-        public static ExecutionResult Successful { get; } = new()
-        {
-            Messages = new List<string>()
-        };
+    public static ExecutionResult Successful { get; } = new()
+    {
+        Messages = new List<string>()
+    };
 
-        public bool HasError => this.Messages.Any();
+    public bool HasError => this.Messages.Any();
 
-        public IEnumerable<string> Messages { get; init; }
+    public IEnumerable<string> Messages { get; init; }
 
-        public static ExecutionResult Create(params string[] messages)
-        {
-            return messages?.Any() == true
-                ? new ExecutionResult { Messages = messages }
-                : ExecutionResult.Successful;
-        }
+    public static ExecutionResult Create(params string[] messages)
+    {
+        return messages?.Any() == true
+            ? new ExecutionResult { Messages = messages }
+            : ExecutionResult.Successful;
     }
 }

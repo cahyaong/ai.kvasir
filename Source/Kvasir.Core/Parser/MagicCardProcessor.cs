@@ -26,356 +26,355 @@
 // <creation_timestamp>Tuesday, 25 December 2018 11:50:07 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Parser
+namespace nGratis.AI.Kvasir.Core.Parser;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public class MagicCardProcessor : IMagicCardProcessor
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using System.Text.RegularExpressions;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public class MagicCardProcessor : IMagicCardProcessor
+    public ProcessingResult Process(UnparsedBlob.Card unparsedCard)
     {
-        public ProcessingResult Process(UnparsedBlob.Card unparsedCard)
+        Guard
+            .Require(unparsedCard, nameof(unparsedCard))
+            .Is.Not.Null();
+
+        var definedCard = new DefinedBlob.Card
         {
-            Guard
-                .Require(unparsedCard, nameof(unparsedCard))
-                .Is.Not.Null();
+            Name = !string.IsNullOrEmpty(unparsedCard.Name)
+                ? unparsedCard.Name
+                : Text.Undefined,
+            SetCode = !string.IsNullOrEmpty(unparsedCard.SetCode)
+                ? unparsedCard.SetCode
+                : Text.Undefined
+        };
 
-            var definedCard = new DefinedBlob.Card
-            {
-                Name = !string.IsNullOrEmpty(unparsedCard.Name)
-                    ? unparsedCard.Name
-                    : Text.Undefined,
-                SetCode = !string.IsNullOrEmpty(unparsedCard.SetCode)
-                    ? unparsedCard.SetCode
-                    : Text.Undefined
-            };
+        return ValidProcessingResult
+            .Create(definedCard)
+            .ThenParseNumber(unparsedCard.Number)
+            .ThenProcessMultiverseId(unparsedCard.MultiverseId)
+            .ThenParseType(unparsedCard.Type)
+            .ThenParseManaCost(definedCard.Kind, unparsedCard.ManaCost)
+            .ThenParsePower(definedCard.Kind, unparsedCard.Power)
+            .ThenParseToughness(definedCard.Kind, unparsedCard.Toughness)
+            .ThenParseText(unparsedCard.Text);
+    }
+}
 
-            return ValidProcessingResult
-                .Create(definedCard)
-                .ThenParseNumber(unparsedCard.Number)
-                .ThenProcessMultiverseId(unparsedCard.MultiverseId)
-                .ThenParseType(unparsedCard.Type)
-                .ThenParseManaCost(definedCard.Kind, unparsedCard.ManaCost)
-                .ThenParsePower(definedCard.Kind, unparsedCard.Power)
-                .ThenParseToughness(definedCard.Kind, unparsedCard.Toughness)
-                .ThenParseText(unparsedCard.Text);
+internal static class MagicParserExtensions
+{
+    public static ProcessingResult ThenParseNumber(this ProcessingResult processingResult, string unparsedNumber)
+    {
+        Guard
+            .Require(processingResult, nameof(processingResult))
+            .Is.Not.Null();
+
+        var definedNumber = (ushort)0;
+
+        var isValid =
+            !string.IsNullOrEmpty(unparsedNumber) &&
+            ushort.TryParse(unparsedNumber, out definedNumber) &&
+            definedNumber > 0;
+
+        if (!isValid)
+        {
+            return processingResult.WithMessage("<Number> Value must be positive.");
         }
+
+        return processingResult
+            .WithChildResult(ValidProcessingResult.Create(definedNumber))
+            .BindToDefinedCard(card => card.Number);
     }
 
-    internal static class MagicParserExtensions
+    public static ProcessingResult ThenProcessMultiverseId(this ProcessingResult processingResult, int multiverseId)
     {
-        public static ProcessingResult ThenParseNumber(this ProcessingResult processingResult, string unparsedNumber)
+        Guard
+            .Require(processingResult, nameof(processingResult))
+            .Is.Not.Null();
+
+        if (multiverseId < 0)
         {
-            Guard
-                .Require(processingResult, nameof(processingResult))
-                .Is.Not.Null();
-
-            var definedNumber = (ushort)0;
-
-            var isValid =
-                !string.IsNullOrEmpty(unparsedNumber) &&
-                ushort.TryParse(unparsedNumber, out definedNumber) &&
-                definedNumber > 0;
-
-            if (!isValid)
-            {
-                return processingResult.WithMessage("<Number> Value must be positive.");
-            }
-
-            return processingResult
-                .WithChildResult(ValidProcessingResult.Create(definedNumber))
-                .BindToDefinedCard(card => card.Number);
+            return processingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
         }
 
-        public static ProcessingResult ThenProcessMultiverseId(this ProcessingResult processingResult, int multiverseId)
+        return processingResult
+            .WithChildResult(ValidProcessingResult.Create((uint)multiverseId))
+            .BindToDefinedCard(card => card.MultiverseId);
+    }
+
+    public static ProcessingResult ThenParseType(this ProcessingResult processingResult, string unparsedType)
+    {
+        Guard
+            .Require(processingResult, nameof(processingResult))
+            .Is.Not.Null();
+
+        if (string.IsNullOrEmpty(unparsedType))
         {
-            Guard
-                .Require(processingResult, nameof(processingResult))
-                .Is.Not.Null();
-
-            if (multiverseId < 0)
-            {
-                return processingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
-            }
-
-            return processingResult
-                .WithChildResult(ValidProcessingResult.Create((uint)multiverseId))
-                .BindToDefinedCard(card => card.MultiverseId);
+            return processingResult.WithMessage("<Kind> Value must not be <null> or empty.");
         }
 
-        public static ProcessingResult ThenParseType(this ProcessingResult processingResult, string unparsedType)
+        var typeMatch = Pattern.Card.Type.Match(unparsedType);
+
+        if (!typeMatch.Success)
         {
-            Guard
-                .Require(processingResult, nameof(processingResult))
-                .Is.Not.Null();
-
-            if (string.IsNullOrEmpty(unparsedType))
-            {
-                return processingResult.WithMessage("<Kind> Value must not be <null> or empty.");
-            }
-
-            var typeMatch = Pattern.Card.Type.Match(unparsedType);
-
-            if (!typeMatch.Success)
-            {
-                return processingResult.WithMessage($"<Kind> No matching pattern for value [{unparsedType}].");
-            }
-
-            var kindValue = typeMatch
-                .FindCaptureValues("kind")
-                .Single();
-
-            var superKindValue = typeMatch
-                .FindCaptureValues("super")
-                .SingleOrDefault();
-
-            var subKindValues = typeMatch
-                .FindCaptureValues("sub")
-                .ToArray();
-
-            return processingResult
-                .ThenParseKind(kindValue)
-                .ThenParseSuperKind(superKindValue)
-                .ThenParseSubKinds(subKindValues);
+            return processingResult.WithMessage($"<Kind> No matching pattern for value [{unparsedType}].");
         }
 
-        public static ProcessingResult ThenParseManaCost(
-            this ProcessingResult processingResult,
-            CardKind definedKind,
-            string unparsedManaCost)
+        var kindValue = typeMatch
+            .FindCaptureValues("kind")
+            .Single();
+
+        var superKindValue = typeMatch
+            .FindCaptureValues("super")
+            .SingleOrDefault();
+
+        var subKindValues = typeMatch
+            .FindCaptureValues("sub")
+            .ToArray();
+
+        return processingResult
+            .ThenParseKind(kindValue)
+            .ThenParseSuperKind(superKindValue)
+            .ThenParseSubKinds(subKindValues);
+    }
+
+    public static ProcessingResult ThenParseManaCost(
+        this ProcessingResult processingResult,
+        CardKind definedKind,
+        string unparsedManaCost)
+    {
+        Guard
+            .Require(processingResult, nameof(processingResult))
+            .Is.Not.Null();
+
+        if (definedKind == CardKind.Land)
         {
-            Guard
-                .Require(processingResult, nameof(processingResult))
-                .Is.Not.Null();
-
-            if (definedKind == CardKind.Land)
-            {
-                if (string.IsNullOrEmpty(unparsedManaCost))
-                {
-                    return processingResult
-                        .WithChildResult(ValidProcessingResult.Create(DefinedBlob.PayingManaCost.Free))
-                        .BindToDefinedCard(card => card.Cost);
-                }
-
-                return processingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
-            }
-
             if (string.IsNullOrEmpty(unparsedManaCost))
             {
-                return processingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
-            }
-
-            var parsingResult = MagicCardParser.ParseCost(unparsedManaCost);
-
-            if (parsingResult.HasError)
-            {
-                return processingResult.WithMessage($"<ManaCost> Value [{unparsedManaCost}] has invalid symbol.");
-            }
-
-            return processingResult
-                .WithChildResult(ValidProcessingResult.Create(parsingResult.Value))
-                .BindToDefinedCard(card => card.Cost);
-        }
-
-        public static ProcessingResult ThenParsePower(
-            this ProcessingResult processingResult,
-            CardKind definedKind,
-            string unparsedPower)
-        {
-            var definedPower = (ushort)0;
-
-            var isValid =
-                !string.IsNullOrEmpty(unparsedPower) &&
-                ushort.TryParse(unparsedPower, out definedPower);
-
-            if (definedKind != CardKind.Creature)
-            {
-                return isValid
-                    ? processingResult.WithMessage($"<Power> Non-empty value for non-creature type [{definedKind}].")
-                    : processingResult;
-            }
-
-            var powerResult = isValid
-                ? ValidProcessingResult.Create(definedPower)
-                : InvalidProcessingResult.Create($"<Power> Invalid value [{unparsedPower}].");
-
-            return processingResult
-                .WithChildResult(powerResult)
-                .BindToDefinedCard(card => card.Power);
-        }
-
-        public static ProcessingResult ThenParseToughness(
-            this ProcessingResult processingResult,
-            CardKind definedKind,
-            string unparsedToughness)
-        {
-            var definedToughness = (ushort)0;
-
-            var isValid =
-                !string.IsNullOrEmpty(unparsedToughness) &&
-                ushort.TryParse(unparsedToughness, out definedToughness);
-
-            if (definedKind != CardKind.Creature)
-            {
-                return isValid
-                    ? processingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{definedKind}].")
-                    : processingResult;
-            }
-
-            var toughnessResult = isValid
-                ? ValidProcessingResult.Create(definedToughness)
-                : InvalidProcessingResult.Create($"<Toughness> Invalid value [{unparsedToughness}].");
-
-            return processingResult
-                .WithChildResult(toughnessResult)
-                .BindToDefinedCard(card => card.Toughness);
-        }
-
-        public static ProcessingResult ThenParseText(this ProcessingResult processingResult, string unparsedText)
-        {
-            var definedAbilities = DefinedBlob.Card.Default.Abilities;
-
-            if (!string.IsNullOrEmpty(unparsedText))
-            {
-                var parsingResult = MagicCardParser.ParseAbility(unparsedText);
-
-                if (!parsingResult.HasError)
-                {
-                    definedAbilities = new[]
-                    {
-                        parsingResult.Value
-                    };
-                }
-                else
-                {
-                    definedAbilities = new[]
-                    {
-                        DefinedBlob.Ability.NotSupported
-                    };
-
-                    var prettifiedText = Pattern.NewLine.Replace(unparsedText, " ");
-                    processingResult.WithMessage($"<Ability> No support for value [{prettifiedText}].");
-                }
-            }
-
-            return processingResult
-                .WithChildResult(ValidProcessingResult.Create(definedAbilities))
-                .BindToDefinedCard(card => card.Abilities);
-        }
-
-        private static ProcessingResult ThenParseKind(this ProcessingResult processingResult, string unparsedKind)
-        {
-            var kindResult = Enum.TryParse(unparsedKind, out CardKind definedKind)
-                ? ValidProcessingResult.Create(definedKind)
-                : InvalidProcessingResult.Create($"<Kind> No mapping for value [{unparsedKind}].");
-
-            return processingResult
-                .WithChildResult(kindResult)
-                .BindToDefinedCard(card => card.Kind);
-        }
-
-        private static ProcessingResult ThenParseSuperKind(this ProcessingResult processingResult, string unparsedSuperKind)
-        {
-            var superKindResult = default(ProcessingResult);
-
-            if (string.Equals(unparsedSuperKind, "Tribal", StringComparison.OrdinalIgnoreCase))
-            {
                 return processingResult
-                    .WithChildResult(ValidProcessingResult.Create(true))
-                    .BindToDefinedCard(card => card.IsTribal)
-                    .WithChildResult(ValidProcessingResult.Create(CardSuperKind.None))
-                    .BindToDefinedCard(card => card.SuperKind);
+                    .WithChildResult(ValidProcessingResult.Create(DefinedBlob.PayingManaCost.Free))
+                    .BindToDefinedCard(card => card.Cost);
             }
 
-            if (string.IsNullOrEmpty(unparsedSuperKind))
+            return processingResult.WithMessage($"<ManaCost> Non-empty value for type [{nameof(CardKind.Land)}].");
+        }
+
+        if (string.IsNullOrEmpty(unparsedManaCost))
+        {
+            return processingResult.WithMessage("<ManaCost> Value must not be <null> or empty.");
+        }
+
+        var parsingResult = MagicCardParser.ParseCost(unparsedManaCost);
+
+        if (parsingResult.HasError)
+        {
+            return processingResult.WithMessage($"<ManaCost> Value [{unparsedManaCost}] has invalid symbol.");
+        }
+
+        return processingResult
+            .WithChildResult(ValidProcessingResult.Create(parsingResult.Value))
+            .BindToDefinedCard(card => card.Cost);
+    }
+
+    public static ProcessingResult ThenParsePower(
+        this ProcessingResult processingResult,
+        CardKind definedKind,
+        string unparsedPower)
+    {
+        var definedPower = (ushort)0;
+
+        var isValid =
+            !string.IsNullOrEmpty(unparsedPower) &&
+            ushort.TryParse(unparsedPower, out definedPower);
+
+        if (definedKind != CardKind.Creature)
+        {
+            return isValid
+                ? processingResult.WithMessage($"<Power> Non-empty value for non-creature type [{definedKind}].")
+                : processingResult;
+        }
+
+        var powerResult = isValid
+            ? ValidProcessingResult.Create(definedPower)
+            : InvalidProcessingResult.Create($"<Power> Invalid value [{unparsedPower}].");
+
+        return processingResult
+            .WithChildResult(powerResult)
+            .BindToDefinedCard(card => card.Power);
+    }
+
+    public static ProcessingResult ThenParseToughness(
+        this ProcessingResult processingResult,
+        CardKind definedKind,
+        string unparsedToughness)
+    {
+        var definedToughness = (ushort)0;
+
+        var isValid =
+            !string.IsNullOrEmpty(unparsedToughness) &&
+            ushort.TryParse(unparsedToughness, out definedToughness);
+
+        if (definedKind != CardKind.Creature)
+        {
+            return isValid
+                ? processingResult.WithMessage($"<Toughness> Non-empty value for non-creature type [{definedKind}].")
+                : processingResult;
+        }
+
+        var toughnessResult = isValid
+            ? ValidProcessingResult.Create(definedToughness)
+            : InvalidProcessingResult.Create($"<Toughness> Invalid value [{unparsedToughness}].");
+
+        return processingResult
+            .WithChildResult(toughnessResult)
+            .BindToDefinedCard(card => card.Toughness);
+    }
+
+    public static ProcessingResult ThenParseText(this ProcessingResult processingResult, string unparsedText)
+    {
+        var definedAbilities = DefinedBlob.Card.Default.Abilities;
+
+        if (!string.IsNullOrEmpty(unparsedText))
+        {
+            var parsingResult = MagicCardParser.ParseAbility(unparsedText);
+
+            if (!parsingResult.HasError)
             {
-                superKindResult = ValidProcessingResult.Create(CardSuperKind.None);
+                definedAbilities = new[]
+                {
+                    parsingResult.Value
+                };
             }
             else
             {
-                superKindResult = Enum.TryParse(unparsedSuperKind, out CardSuperKind definedSuperKind)
-                    ? ValidProcessingResult.Create(definedSuperKind)
-                    : InvalidProcessingResult.Create($"<SuperKind> No mapping for value [{unparsedSuperKind}].");
-            }
+                definedAbilities = new[]
+                {
+                    DefinedBlob.Ability.NotSupported
+                };
 
+                var prettifiedText = Pattern.NewLine.Replace(unparsedText, " ");
+                processingResult.WithMessage($"<Ability> No support for value [{prettifiedText}].");
+            }
+        }
+
+        return processingResult
+            .WithChildResult(ValidProcessingResult.Create(definedAbilities))
+            .BindToDefinedCard(card => card.Abilities);
+    }
+
+    private static ProcessingResult ThenParseKind(this ProcessingResult processingResult, string unparsedKind)
+    {
+        var kindResult = Enum.TryParse(unparsedKind, out CardKind definedKind)
+            ? ValidProcessingResult.Create(definedKind)
+            : InvalidProcessingResult.Create($"<Kind> No mapping for value [{unparsedKind}].");
+
+        return processingResult
+            .WithChildResult(kindResult)
+            .BindToDefinedCard(card => card.Kind);
+    }
+
+    private static ProcessingResult ThenParseSuperKind(this ProcessingResult processingResult, string unparsedSuperKind)
+    {
+        var superKindResult = default(ProcessingResult);
+
+        if (string.Equals(unparsedSuperKind, "Tribal", StringComparison.OrdinalIgnoreCase))
+        {
             return processingResult
-                .WithChildResult(superKindResult)
+                .WithChildResult(ValidProcessingResult.Create(true))
+                .BindToDefinedCard(card => card.IsTribal)
+                .WithChildResult(ValidProcessingResult.Create(CardSuperKind.None))
                 .BindToDefinedCard(card => card.SuperKind);
         }
 
-        private static ProcessingResult ThenParseSubKinds(this ProcessingResult processingResult, params string[] unparsedSubKinds)
+        if (string.IsNullOrEmpty(unparsedSuperKind))
         {
-            var definedSubKinds = new List<CardSubKind>();
-            var invalidValues = new List<string>();
+            superKindResult = ValidProcessingResult.Create(CardSuperKind.None);
+        }
+        else
+        {
+            superKindResult = Enum.TryParse(unparsedSuperKind, out CardSuperKind definedSuperKind)
+                ? ValidProcessingResult.Create(definedSuperKind)
+                : InvalidProcessingResult.Create($"<SuperKind> No mapping for value [{unparsedSuperKind}].");
+        }
 
-            foreach (var unparsedSubKind in unparsedSubKinds)
+        return processingResult
+            .WithChildResult(superKindResult)
+            .BindToDefinedCard(card => card.SuperKind);
+    }
+
+    private static ProcessingResult ThenParseSubKinds(this ProcessingResult processingResult, params string[] unparsedSubKinds)
+    {
+        var definedSubKinds = new List<CardSubKind>();
+        var invalidValues = new List<string>();
+
+        foreach (var unparsedSubKind in unparsedSubKinds)
+        {
+            if (Enum.TryParse(unparsedSubKind, out CardSubKind definedSubKind))
             {
-                if (Enum.TryParse(unparsedSubKind, out CardSubKind definedSubKind))
-                {
-                    definedSubKinds.Add(definedSubKind);
-                }
-                else
-                {
-                    invalidValues.Add(unparsedSubKind);
-                }
-            }
-
-            var subKindsResult = default(ProcessingResult);
-
-            if (invalidValues.Any())
-            {
-                var formattedValues = invalidValues.Select(value => $"[{value}]");
-                var message = $"<SubKind> No mapping for value {string.Join(", ", formattedValues)}.";
-
-                subKindsResult = InvalidProcessingResult.Create(message);
+                definedSubKinds.Add(definedSubKind);
             }
             else
             {
-                subKindsResult = ValidProcessingResult.Create(definedSubKinds.ToArray());
+                invalidValues.Add(unparsedSubKind);
             }
-
-            return processingResult
-                .WithChildResult(subKindsResult)
-                .BindToDefinedCard(card => card.SubKinds);
         }
 
-        private static ProcessingResult BindToDefinedCard(
-            this ProcessingResult processingResult,
-            Expression<Func<DefinedBlob.Card, object>> bindingExpression)
+        var subKindsResult = default(ProcessingResult);
+
+        if (invalidValues.Any())
         {
-            Guard
-                .Require(processingResult, nameof(processingResult))
-                .Is.Not.Null();
+            var formattedValues = invalidValues.Select(value => $"[{value}]");
+            var message = $"<SubKind> No mapping for value {string.Join(", ", formattedValues)}.";
 
-            Guard
-                .Require(bindingExpression, nameof(bindingExpression))
-                .Is.Not.Null();
-
-            return processingResult.BindTo(bindingExpression.GetPropertyInfo());
+            subKindsResult = InvalidProcessingResult.Create(message);
         }
-
-        private static class Pattern
+        else
         {
-            public static class Card
-            {
-                // TODO: Need to support card with second face, e.g. Bloodline Keeper!
-
-                public static readonly Regex Type = new(
-                    @"^(?:(?<super>\w+)\s)?(?<kind>\w+){1}[—\s\-]*(?:(?<sub>\w+)\s?)*$",
-                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
-
-                public static readonly Regex ManaCost = new(
-                    @"^(?:{(?:(?<colorless>\d+)|(?<color>[WUBRG]))})+$",
-                    RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            }
-
-            public static readonly Regex NewLine = new(
-                @"[\r\n]+",
-                RegexOptions.Compiled);
+            subKindsResult = ValidProcessingResult.Create(definedSubKinds.ToArray());
         }
+
+        return processingResult
+            .WithChildResult(subKindsResult)
+            .BindToDefinedCard(card => card.SubKinds);
+    }
+
+    private static ProcessingResult BindToDefinedCard(
+        this ProcessingResult processingResult,
+        Expression<Func<DefinedBlob.Card, object>> bindingExpression)
+    {
+        Guard
+            .Require(processingResult, nameof(processingResult))
+            .Is.Not.Null();
+
+        Guard
+            .Require(bindingExpression, nameof(bindingExpression))
+            .Is.Not.Null();
+
+        return processingResult.BindTo(bindingExpression.GetPropertyInfo());
+    }
+
+    private static class Pattern
+    {
+        public static class Card
+        {
+            // TODO: Need to support card with second face, e.g. Bloodline Keeper!
+
+            public static readonly Regex Type = new(
+                @"^(?:(?<super>\w+)\s)?(?<kind>\w+){1}[—\s\-]*(?:(?<sub>\w+)\s?)*$",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            public static readonly Regex ManaCost = new(
+                @"^(?:{(?:(?<colorless>\d+)|(?<color>[WUBRG]))})+$",
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        }
+
+        public static readonly Regex NewLine = new(
+            @"[\r\n]+",
+            RegexOptions.Compiled);
     }
 }

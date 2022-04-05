@@ -26,28 +26,27 @@
 // <creation_timestamp>Wednesday, 23 January 2019 10:45:26 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+public class Tabletop
 {
-    public class Tabletop
-    {
-        public int TurnId { get; internal set; } = -1;
+    public int TurnId { get; internal set; } = -1;
 
-        public Phase Phase { get; internal set; }
+    public Phase Phase { get; internal set; }
 
-        public Player ActivePlayer { get; internal set; }
+    public Player ActivePlayer { get; internal set; }
 
-        public Player NonactivePlayer { get; internal set; }
+    public Player NonactivePlayer { get; internal set; }
 
-        public Zone Battlefield { get; internal set; }
+    public Zone Battlefield { get; internal set; }
 
-        public Zone Stack { get; internal set; }
+    public Zone Stack { get; internal set; }
 
-        public Zone Exile { get; internal set; }
+    public Zone Exile { get; internal set; }
 
-        public AttackingDecision AttackingDecision { get; internal set; }
+    public AttackingDecision AttackingDecision { get; internal set; }
 
-        public BlockingDecision BlockingDecision { get; internal set; }
+    public BlockingDecision BlockingDecision { get; internal set; }
 
-        public bool IsFirstTurn => this.TurnId <= 0;
-    }
+    public bool IsFirstTurn => this.TurnId <= 0;
 }

@@ -26,31 +26,30 @@
 // <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+using System.Linq;
+
+public class ValidationResult
 {
-    using System.Collections.Generic;
-    using System.Linq;
-
-    public class ValidationResult
+    private ValidationResult()
     {
-        private ValidationResult()
-        {
-        }
+    }
 
-        public static ValidationResult Successful { get; } = new()
-        {
-            Reasons = new List<ValidationReason>()
-        };
+    public static ValidationResult Successful { get; } = new()
+    {
+        Reasons = new List<ValidationReason>()
+    };
 
-        public bool HasError => this.Reasons.Any();
+    public bool HasError => this.Reasons.Any();
 
-        public IEnumerable<ValidationReason> Reasons { get; init; }
+    public IEnumerable<ValidationReason> Reasons { get; init; }
 
-        public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
-        {
-            return reasons?.Any() == true
-                ? new ValidationResult { Reasons = reasons }
-                : ValidationResult.Successful;
-        }
+    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
+    {
+        return reasons?.Any() == true
+            ? new ValidationResult { Reasons = reasons }
+            : ValidationResult.Successful;
     }
 }

@@ -26,47 +26,46 @@
 // <creation_timestamp>Saturday, April 4, 2020 6:26:37 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System.Linq;
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public static class MagicRepositoryExtensions
 {
-    using System.Linq;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class MagicRepositoryExtensions
+    public static async Task<UnparsedBlob.CardSet> GetCardSetAsync(
+        this IUnprocessedMagicRepository unprocessedRepository,
+        string name)
     {
-        public static async Task<UnparsedBlob.CardSet> GetCardSetAsync(
-            this IUnprocessedMagicRepository unprocessedRepository,
-            string name)
-        {
-            Guard
-                .Require(unprocessedRepository, nameof(unprocessedRepository))
-                .Is.Not.Null();
+        Guard
+            .Require(unprocessedRepository, nameof(unprocessedRepository))
+            .Is.Not.Null();
 
-            Guard
-                .Require(name, nameof(name))
-                .Is.Not.Empty();
+        Guard
+            .Require(name, nameof(name))
+            .Is.Not.Empty();
 
-            var cardSets = (await unprocessedRepository
+        var cardSets = (await unprocessedRepository
                 .GetCardSetsAsync())
-                .Where(cardSet => cardSet.Name == name)
-                .ToArray();
+            .Where(cardSet => cardSet.Name == name)
+            .ToArray();
 
-            if (cardSets.Length <= 0)
-            {
-                throw new KvasirException(
-                    @"Failed to find card set! " +
-                    $"Name: [{name}].");
-            }
-
-            if (cardSets.Length > 1)
-            {
-                throw new KvasirException(
-                    @"Found more than 1 card set! " +
-                    $"Name: [{name}].");
-            }
-
-            return cardSets.Single();
+        if (cardSets.Length <= 0)
+        {
+            throw new KvasirException(
+                @"Failed to find card set! " +
+                $"Name: [{name}].");
         }
+
+        if (cardSets.Length > 1)
+        {
+            throw new KvasirException(
+                @"Found more than 1 card set! " +
+                $"Name: [{name}].");
+        }
+
+        return cardSets.Single();
     }
 }

@@ -26,37 +26,36 @@
 // <creation_timestamp>Thursday, 25 October 2018 10:48:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+
+// TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
+
+public interface IUnprocessedMagicRepository
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
+    event EventHandler CardSetIndexed;
 
-    // TODO: Consider implementing paging for <Card> after allowing native sort and filter capabilities?
+    event EventHandler CardIndexed;
 
-    public interface IUnprocessedMagicRepository
-    {
-        event EventHandler CardSetIndexed;
+    Task<int> GetCardSetCountAsync();
 
-        event EventHandler CardIndexed;
+    Task<int> GetCardCountAsync();
 
-        Task<int> GetCardSetCountAsync();
+    Task<int> GetRuleCountAsync();
 
-        Task<int> GetCardCountAsync();
+    Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync();
 
-        Task<int> GetRuleCountAsync();
+    Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount);
 
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync();
+    Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet);
 
-        Task<IReadOnlyCollection<UnparsedBlob.CardSet>> GetCardSetsAsync(int pagingIndex, int itemCount);
+    Task<IImage> GetCardImageAsync(UnparsedBlob.Card card);
 
-        Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet);
+    Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync();
 
-        Task<IImage> GetCardImageAsync(UnparsedBlob.Card card);
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync();
-
-        Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount);
-    }
+    Task<IReadOnlyCollection<UnparsedBlob.Rule>> GetRulesAsync(int pagingIndex, int itemCount);
 }

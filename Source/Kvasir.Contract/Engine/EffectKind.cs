@@ -26,12 +26,11 @@
 // <creation_timestamp>Thursday, 17 January 2019 8:25:08 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum EffectKind
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Contract;
 
-        ProducingMana
-    }
+public enum EffectKind
+{
+    Unknown = 0,
+
+    ProducingMana
 }

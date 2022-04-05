@@ -26,110 +26,109 @@
 // <creation_timestamp>Saturday, 10 November 2018 5:43:31 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Lucene.Net;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Index;
+using Lucene.Net.Store;
+using Lucene.Net.Util;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public sealed class IndexManager : IIndexManager
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using Lucene.Net;
-    using Lucene.Net.Analysis.Standard;
-    using Lucene.Net.Index;
-    using Lucene.Net.Store;
-    using Lucene.Net.Util;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryLookup;
 
-    public sealed class IndexManager : IIndexManager
+    private readonly ConcurrentDictionary<IndexKind, Lazy<IndexWriter>> _deferredWriterLookup;
+
+    private bool _isDisposed;
+
+    public IndexManager(Uri rootFolderUri)
     {
-        private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryLookup;
+        Guard
+            .Require(rootFolderUri, nameof(rootFolderUri))
+            .Is.Not.Null();
 
-        private readonly ConcurrentDictionary<IndexKind, Lazy<IndexWriter>> _deferredWriterLookup;
+        this._directoryLookup = Enum
+            .GetValues(typeof(IndexKind))
+            .Cast<IndexKind>()
+            .Where(indexKind => indexKind != IndexKind.Unknown)
+            .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
 
-        private bool _isDisposed;
+        this._deferredWriterLookup = new ConcurrentDictionary<IndexKind, Lazy<IndexWriter>>();
+    }
 
-        public IndexManager(Uri rootFolderUri)
+    public bool HasIndex(IndexKind indexKind)
+    {
+        Guard
+            .Require(indexKind, nameof(indexKind))
+            .Is.Not.Default();
+
+        return
+            this._directoryLookup.TryGetValue(indexKind, out var directory) &&
+            directory.ListAll().Any();
+    }
+
+    public IndexReader FindIndexReader(IndexKind indexKind)
+    {
+        Guard
+            .Require(indexKind, nameof(indexKind))
+            .Is.Not.Default();
+
+        return this
+            .FindIndexWriter(indexKind)
+            .GetReader(true);
+    }
+
+    public IndexWriter FindIndexWriter(IndexKind indexKind)
+    {
+        Guard
+            .Require(indexKind, nameof(indexKind))
+            .Is.Not.Default();
+
+        if (!this._directoryLookup.TryGetValue(indexKind, out var directory))
         {
-            Guard
-                .Require(rootFolderUri, nameof(rootFolderUri))
-                .Is.Not.Null();
-
-            this._directoryLookup = Enum
-                .GetValues(typeof(IndexKind))
-                .Cast<IndexKind>()
-                .Where(indexKind => indexKind != IndexKind.Unknown)
-                .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
-
-            this._deferredWriterLookup = new ConcurrentDictionary<IndexKind, Lazy<IndexWriter>>();
+            throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
         }
 
-        public bool HasIndex(IndexKind indexKind)
+        IndexWriter CreateIndexWriter()
         {
-            Guard
-                .Require(indexKind, nameof(indexKind))
-                .Is.Not.Default();
+            var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
 
-            return
-                this._directoryLookup.TryGetValue(indexKind, out var directory) &&
-                directory.ListAll().Any();
-        }
-
-        public IndexReader FindIndexReader(IndexKind indexKind)
-        {
-            Guard
-                .Require(indexKind, nameof(indexKind))
-                .Is.Not.Default();
-
-            return this
-                .FindIndexWriter(indexKind)
-                .GetReader(true);
-        }
-
-        public IndexWriter FindIndexWriter(IndexKind indexKind)
-        {
-            Guard
-                .Require(indexKind, nameof(indexKind))
-                .Is.Not.Default();
-
-            if (!this._directoryLookup.TryGetValue(indexKind, out var directory))
+            var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
             {
-                throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
-            }
+                OpenMode = OpenMode.CREATE_OR_APPEND
+            };
 
-            IndexWriter CreateIndexWriter()
-            {
-                var analyzer = new StandardAnalyzer(LuceneVersion.LUCENE_48);
-
-                var configuration = new IndexWriterConfig(LuceneVersion.LUCENE_48, analyzer)
-                {
-                    OpenMode = OpenMode.CREATE_OR_APPEND
-                };
-
-                return new IndexWriter(directory, configuration);
-            }
-
-            return this._deferredWriterLookup
-                .GetOrAdd(
-                    indexKind,
-                    _ => new Lazy<IndexWriter>(CreateIndexWriter, LazyThreadSafetyMode.ExecutionAndPublication))
-                .Value;
+            return new IndexWriter(directory, configuration);
         }
 
-        public void Dispose()
+        return this._deferredWriterLookup
+            .GetOrAdd(
+                indexKind,
+                _ => new Lazy<IndexWriter>(CreateIndexWriter, LazyThreadSafetyMode.ExecutionAndPublication))
+            .Value;
+    }
+
+    public void Dispose()
+    {
+        if (this._isDisposed)
         {
-            if (this._isDisposed)
-            {
-                return;
-            }
-
-            this
-                ._deferredWriterLookup?
-                .Values
-                .Where(deferredWriter => deferredWriter.IsValueCreated)
-                .ForEach(deferredWriter => deferredWriter.Value.Dispose());
-
-            this._isDisposed = true;
+            return;
         }
+
+        this
+            ._deferredWriterLookup?
+            .Values
+            .Where(deferredWriter => deferredWriter.IsValueCreated)
+            .ForEach(deferredWriter => deferredWriter.Value.Dispose());
+
+        this._isDisposed = true;
     }
 }

@@ -26,13 +26,12 @@
 // <creation_timestamp>Wednesday, March 30, 2022 2:50:03 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
-{
-    public enum PlayerModifier
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Engine;
 
-        Active = 1,
-        Nonactive = 2
-    }
+public enum PlayerModifier
+{
+    Unknown = 0,
+
+    Active = 1,
+    Nonactive = 2
 }

@@ -28,277 +28,276 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Lucene.Net
+namespace Lucene.Net;
+
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Humanizer;
+using Lucene.Net.Documents;
+using Lucene.Net.Index;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+internal static partial class LuceneExtensions
 {
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using Humanizer;
-    using Lucene.Net.Documents;
-    using Lucene.Net.Index;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
+    private static readonly ConcurrentDictionary<Type, IndexableTypeInfo> TypeInfoLookup;
 
-    internal static partial class LuceneExtensions
+    static LuceneExtensions()
     {
-        private static readonly ConcurrentDictionary<Type, IndexableTypeInfo> TypeInfoLookup;
+        LuceneExtensions.TypeInfoLookup = new ConcurrentDictionary<Type, IndexableTypeInfo>();
+    }
 
-        static LuceneExtensions()
-        {
-            LuceneExtensions.TypeInfoLookup = new ConcurrentDictionary<Type, IndexableTypeInfo>();
-        }
+    public static Document ToLuceneDocument<TInstance>(this TInstance instance)
+        where TInstance : class
+    {
+        Guard
+            .Require(instance, nameof(instance))
+            .Is.Not.Null();
 
-        public static Document ToLuceneDocument<TInstance>(this TInstance instance)
-              where TInstance : class
+        var document = new Document();
+
+        var typeInfo = LuceneExtensions.TypeInfoLookup.GetOrAdd(
+            typeof(TInstance),
+            type => new IndexableTypeInfo(type));
+
+        typeInfo
+            .SerializingPropertyInfos
+            .Select(info => info.IndexSerializer.Serialize(info.Name, info.BackingInfo.GetValue(instance)))
+            .ForEach(field => document.Add(field));
+
+        return document;
+    }
+
+    public static TInstance ToInstance<TInstance>(this Document document)
+        where TInstance : class, new()
+    {
+        Guard
+            .Require(document, nameof(document))
+            .Is.Not.Null();
+
+        var instance = new TInstance();
+
+        var typeInfo = LuceneExtensions.TypeInfoLookup.GetOrAdd(
+            typeof(TInstance),
+            type => new IndexableTypeInfo(type));
+
+        typeInfo
+            .DeserializingPropertyInfos
+            .ForEach(info => info.BackingInfo.SetValue(
+                instance,
+                info.IndexSerializer.Deserialize(document.GetField(info.Name))));
+
+        return instance;
+    }
+
+    private sealed class IndexableTypeInfo
+    {
+        public IndexableTypeInfo(Type type)
         {
             Guard
-                .Require(instance, nameof(instance))
+                .Require(type, nameof(type))
                 .Is.Not.Null();
 
-            var document = new Document();
+            var propertyInfos = type
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Select(info => new IndexablePropertyInfo(info))
+                .ToArray();
 
-            var typeInfo = LuceneExtensions.TypeInfoLookup.GetOrAdd(
-                typeof(TInstance),
-                type => new IndexableTypeInfo(type));
+            this.SerializingPropertyInfos = propertyInfos
+                .Where(info => info.CanSerialize)
+                .ToArray();
 
-            typeInfo
-                .SerializingPropertyInfos
-                .Select(info => info.IndexSerializer.Serialize(info.Name, info.BackingInfo.GetValue(instance)))
-                .ForEach(field => document.Add(field));
-
-            return document;
+            this.DeserializingPropertyInfos = propertyInfos
+                .Where(info => info.CanDeserialize)
+                .ToArray();
         }
 
-        public static TInstance ToInstance<TInstance>(this Document document)
-            where TInstance : class, new()
+        public IReadOnlyCollection<IndexablePropertyInfo> SerializingPropertyInfos { get; }
+
+        public IReadOnlyCollection<IndexablePropertyInfo> DeserializingPropertyInfos { get; }
+    }
+
+    private sealed class IndexablePropertyInfo
+    {
+        private static readonly IReadOnlyDictionary<Type, IIndexSerializer> SerializerLookup;
+
+        static IndexablePropertyInfo()
+        {
+            IndexablePropertyInfo.SerializerLookup = new Dictionary<Type, IIndexSerializer>
+            {
+                [typeof(string)] = StringSerializer.Instance,
+                [typeof(short)] = ShortSerializer.Instance,
+                [typeof(int)] = IntegerSerializer.Instance,
+                [typeof(DateTime)] = DateTimeSerializer.Instance
+            };
+        }
+
+        public IndexablePropertyInfo(PropertyInfo backingInfo)
         {
             Guard
-                .Require(document, nameof(document))
+                .Require(backingInfo, nameof(backingInfo))
                 .Is.Not.Null();
 
-            var instance = new TInstance();
+            var hasRegisteredSerializer = IndexablePropertyInfo
+                .SerializerLookup
+                .TryGetValue(backingInfo.PropertyType, out var indexSerializer);
 
-            var typeInfo = LuceneExtensions.TypeInfoLookup.GetOrAdd(
-                typeof(TInstance),
-                type => new IndexableTypeInfo(type));
+            if (!hasRegisteredSerializer)
+            {
+                throw new KvasirException($"Type [{backingInfo.PropertyType.FullName}] does not have serializer!");
+            }
 
-            typeInfo
-                .DeserializingPropertyInfos
-                .ForEach(info => info.BackingInfo.SetValue(
-                    instance,
-                    info.IndexSerializer.Deserialize(document.GetField(info.Name))));
-
-            return instance;
+            this.BackingInfo = backingInfo;
+            this.IndexSerializer = indexSerializer;
+            this.Name = backingInfo.Name.Kebaberize();
         }
 
-        private sealed class IndexableTypeInfo
+        public string Name { get; }
+
+        public bool CanSerialize => this.BackingInfo.CanRead;
+
+        public bool CanDeserialize => this.BackingInfo.CanWrite;
+
+        public IIndexSerializer IndexSerializer { get; }
+
+        internal PropertyInfo BackingInfo { get; }
+    }
+
+    private interface IIndexSerializer
+    {
+        IIndexableField Serialize(string name, object value);
+
+        object Deserialize(IIndexableField indexableField);
+    }
+
+    private sealed class StringSerializer : IIndexSerializer
+    {
+        private StringSerializer()
         {
-            public IndexableTypeInfo(Type type)
-            {
-                Guard
-                    .Require(type, nameof(type))
-                    .Is.Not.Null();
-
-                var propertyInfos = type
-                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Select(info => new IndexablePropertyInfo(info))
-                    .ToArray();
-
-                this.SerializingPropertyInfos = propertyInfos
-                    .Where(info => info.CanSerialize)
-                    .ToArray();
-
-                this.DeserializingPropertyInfos = propertyInfos
-                    .Where(info => info.CanDeserialize)
-                    .ToArray();
-            }
-
-            public IReadOnlyCollection<IndexablePropertyInfo> SerializingPropertyInfos { get; }
-
-            public IReadOnlyCollection<IndexablePropertyInfo> DeserializingPropertyInfos { get; }
         }
 
-        private sealed class IndexablePropertyInfo
+        public static StringSerializer Instance { get; } = new();
+
+        public IIndexableField Serialize(string name, object value)
         {
-            private static readonly IReadOnlyDictionary<Type, IIndexSerializer> SerializerLookup;
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-            static IndexablePropertyInfo()
-            {
-                IndexablePropertyInfo.SerializerLookup = new Dictionary<Type, IIndexSerializer>
-                {
-                    [typeof(string)] = StringSerializer.Instance,
-                    [typeof(short)] = ShortSerializer.Instance,
-                    [typeof(int)] = IntegerSerializer.Instance,
-                    [typeof(DateTime)] = DateTimeSerializer.Instance
-                };
-            }
+            Guard
+                .Require(value, nameof(value))
+                .Is.Not.Null()
+                .Is.OfType(typeof(string));
 
-            public IndexablePropertyInfo(PropertyInfo backingInfo)
-            {
-                Guard
-                    .Require(backingInfo, nameof(backingInfo))
-                    .Is.Not.Null();
-
-                var hasRegisteredSerializer = IndexablePropertyInfo
-                    .SerializerLookup
-                    .TryGetValue(backingInfo.PropertyType, out var indexSerializer);
-
-                if (!hasRegisteredSerializer)
-                {
-                    throw new KvasirException($"Type [{backingInfo.PropertyType.FullName}] does not have serializer!");
-                }
-
-                this.BackingInfo = backingInfo;
-                this.IndexSerializer = indexSerializer;
-                this.Name = backingInfo.Name.Kebaberize();
-            }
-
-            public string Name { get; }
-
-            public bool CanSerialize => this.BackingInfo.CanRead;
-
-            public bool CanDeserialize => this.BackingInfo.CanWrite;
-
-            public IIndexSerializer IndexSerializer { get; }
-
-            internal PropertyInfo BackingInfo { get; }
+            return new StringField(name, (string)value, Field.Store.YES);
         }
 
-        private interface IIndexSerializer
+        public object Deserialize(IIndexableField indexableField)
         {
-            IIndexableField Serialize(string name, object value);
+            Guard
+                .Require(indexableField, nameof(indexableField))
+                .Is.Not.Null();
 
-            object Deserialize(IIndexableField indexableField);
+            return indexableField.GetStringValue() ?? Text.Empty;
+        }
+    }
+
+    private sealed class ShortSerializer : IIndexSerializer
+    {
+        private ShortSerializer()
+        {
         }
 
-        private sealed class StringSerializer : IIndexSerializer
+        public static ShortSerializer Instance { get; } = new();
+
+        public IIndexableField Serialize(string name, object value)
         {
-            private StringSerializer()
-            {
-            }
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-            public static StringSerializer Instance { get; } = new();
+            Guard
+                .Require(value, nameof(value))
+                .Is.Not.Null()
+                .Is.OfType(typeof(short));
 
-            public IIndexableField Serialize(string name, object value)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
-
-                Guard
-                    .Require(value, nameof(value))
-                    .Is.Not.Null()
-                    .Is.OfType(typeof(string));
-
-                return new StringField(name, (string)value, Field.Store.YES);
-            }
-
-            public object Deserialize(IIndexableField indexableField)
-            {
-                Guard
-                    .Require(indexableField, nameof(indexableField))
-                    .Is.Not.Null();
-
-                return indexableField.GetStringValue() ?? Text.Empty;
-            }
+            return new Int32Field(name, (short)value, Field.Store.YES);
         }
 
-        private sealed class ShortSerializer : IIndexSerializer
+        public object Deserialize(IIndexableField indexableField)
         {
-            private ShortSerializer()
-            {
-            }
+            Guard
+                .Require(indexableField, nameof(indexableField))
+                .Is.Not.Null();
 
-            public static ShortSerializer Instance { get; } = new();
+            return (short)(indexableField.GetInt32Value() ?? 0);
+        }
+    }
 
-            public IIndexableField Serialize(string name, object value)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
-
-                Guard
-                    .Require(value, nameof(value))
-                    .Is.Not.Null()
-                    .Is.OfType(typeof(short));
-
-                return new Int32Field(name, (short)value, Field.Store.YES);
-            }
-
-            public object Deserialize(IIndexableField indexableField)
-            {
-                Guard
-                    .Require(indexableField, nameof(indexableField))
-                    .Is.Not.Null();
-
-                return (short)(indexableField.GetInt32Value() ?? 0);
-            }
+    private sealed class IntegerSerializer : IIndexSerializer
+    {
+        private IntegerSerializer()
+        {
         }
 
-        private sealed class IntegerSerializer : IIndexSerializer
+        public static IntegerSerializer Instance { get; } = new();
+
+        public IIndexableField Serialize(string name, object value)
         {
-            private IntegerSerializer()
-            {
-            }
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-            public static IntegerSerializer Instance { get; } = new();
+            Guard
+                .Require(value, nameof(value))
+                .Is.Not.Null()
+                .Is.OfType(typeof(int));
 
-            public IIndexableField Serialize(string name, object value)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
-
-                Guard
-                    .Require(value, nameof(value))
-                    .Is.Not.Null()
-                    .Is.OfType(typeof(int));
-
-                return new Int32Field(name, (int)value, Field.Store.YES);
-            }
-
-            public object Deserialize(IIndexableField indexableField)
-            {
-                Guard
-                    .Require(indexableField, nameof(indexableField))
-                    .Is.Not.Null();
-
-                return indexableField.GetInt32Value() ?? 0;
-            }
+            return new Int32Field(name, (int)value, Field.Store.YES);
         }
 
-        private sealed class DateTimeSerializer : IIndexSerializer
+        public object Deserialize(IIndexableField indexableField)
         {
-            private DateTimeSerializer()
-            {
-            }
+            Guard
+                .Require(indexableField, nameof(indexableField))
+                .Is.Not.Null();
 
-            public static DateTimeSerializer Instance { get; } = new();
+            return indexableField.GetInt32Value() ?? 0;
+        }
+    }
 
-            public IIndexableField Serialize(string name, object value)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
+    private sealed class DateTimeSerializer : IIndexSerializer
+    {
+        private DateTimeSerializer()
+        {
+        }
 
-                Guard
-                    .Require(value, nameof(value))
-                    .Is.Not.Null()
-                    .Is.OfType(typeof(DateTime));
+        public static DateTimeSerializer Instance { get; } = new();
 
-                return new Int64Field(name, ((DateTime)value).Ticks, Field.Store.YES);
-            }
+        public IIndexableField Serialize(string name, object value)
+        {
+            Guard
+                .Require(name, nameof(name))
+                .Is.Not.Empty();
 
-            public object Deserialize(IIndexableField indexableField)
-            {
-                Guard
-                    .Require(indexableField, nameof(indexableField))
-                    .Is.Not.Null();
+            Guard
+                .Require(value, nameof(value))
+                .Is.Not.Null()
+                .Is.OfType(typeof(DateTime));
 
-                return new DateTime(indexableField.GetInt64Value() ?? 0, DateTimeKind.Utc);
-            }
+            return new Int64Field(name, ((DateTime)value).Ticks, Field.Store.YES);
+        }
+
+        public object Deserialize(IIndexableField indexableField)
+        {
+            Guard
+                .Require(indexableField, nameof(indexableField))
+                .Is.Not.Null();
+
+            return new DateTime(indexableField.GetInt64Value() ?? 0, DateTimeKind.Utc);
         }
     }
 }

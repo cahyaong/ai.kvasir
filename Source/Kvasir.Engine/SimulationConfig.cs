@@ -26,15 +26,14 @@
 // <creation_timestamp>Saturday, June 5, 2021 5:58:56 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
+
+public class SimulationConfig
 {
-    using System.Collections.Generic;
-    using nGratis.AI.Kvasir.Contract;
+    public int MaxTurnCount { get; init; }
 
-    public class SimulationConfig
-    {
-        public int MaxTurnCount { get; init; }
-
-        public IReadOnlyCollection<DefinedBlob.Player> DefinedPlayers { get; init; }
-    }
+    public IReadOnlyCollection<DefinedBlob.Player> DefinedPlayers { get; init; }
 }

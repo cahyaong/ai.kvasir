@@ -26,13 +26,12 @@
 // <creation_timestamp>Saturday, January 18, 2020 7:02:48 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+public partial class RuleManagementView
 {
-    public partial class RuleManagementView
+    public RuleManagementView()
     {
-        public RuleManagementView()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

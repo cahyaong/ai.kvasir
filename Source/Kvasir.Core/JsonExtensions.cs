@@ -28,42 +28,41 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Newtonsoft.Json.Linq
+namespace Newtonsoft.Json.Linq;
+
+using nGratis.Cop.Olympus.Contract;
+
+public static class JsonExtensions
 {
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class JsonExtensions
+    public static string ReadValue(this JToken token, string key)
     {
-        public static string ReadValue(this JToken token, string key)
-        {
-            Guard
-                .Require(token, nameof(token))
-                .Is.Not.Null();
+        Guard
+            .Require(token, nameof(token))
+            .Is.Not.Null();
 
-            Guard
-                .Require(key, nameof(key))
-                .Is.Not.Empty();
+        Guard
+            .Require(key, nameof(key))
+            .Is.Not.Empty();
 
-            return
-                token[key]?.Value<string>() ??
-                string.Empty;
-        }
+        return
+            token[key]?.Value<string>() ??
+            string.Empty;
+    }
 
-        public static T ReadValue<T>(this JToken token, string key)
-        {
-            Guard
-                .Require(token, nameof(token))
-                .Is.Not.Null();
+    public static T ReadValue<T>(this JToken token, string key)
+    {
+        Guard
+            .Require(token, nameof(token))
+            .Is.Not.Null();
 
-            Guard
-                .Require(key, nameof(key))
-                .Is.Not.Empty();
+        Guard
+            .Require(key, nameof(key))
+            .Is.Not.Empty();
 
-            var fieldToken = token[key];
+        var fieldToken = token[key];
 
-            return fieldToken != null
-                ? fieldToken.Value<T>()
-                : default;
-        }
+        return fieldToken != null
+            ? fieldToken.Value<T>()
+            : default;
     }
 }

@@ -26,16 +26,15 @@
 // <creation_timestamp>Thursday, 22 November 2018 9:10:01 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using nGratis.Cop.Olympus.Contract;
+
+public static class KvasirMime
 {
-    using nGratis.Cop.Olympus.Contract;
+    public static readonly Mime Blob = new("application/x-ng-kvasir-blob", "ngkblob");
 
-    public static class KvasirMime
-    {
-        public static readonly Mime Blob = new("application/x-ng-kvasir-blob", "ngkblob");
+    public static readonly Mime Cache = new("application/x-ng-kvasir-cache", "ngkcache");
 
-        public static readonly Mime Cache = new("application/x-ng-kvasir-cache", "ngkcache");
-
-        public static readonly Mime Deck = new("application/x-ng-kvasir-deck", "ngkdeck");
-    }
+    public static readonly Mime Deck = new("application/x-ng-kvasir-deck", "ngkdeck");
 }

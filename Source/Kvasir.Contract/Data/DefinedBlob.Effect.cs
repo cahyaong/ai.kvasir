@@ -26,96 +26,95 @@
 // <creation_timestamp>Friday, December 27, 2019 7:31:42 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System.Collections.Generic;
+using nGratis.Cop.Olympus.Contract;
+
+public static partial class DefinedBlob
 {
-    using System.Collections.Generic;
-    using nGratis.Cop.Olympus.Contract;
-
-    public static partial class DefinedBlob
+    public abstract record Effect
     {
-        public abstract record Effect
-        {
-            public static Effect Unknown => UnknownEffect.Instance;
+        public static Effect Unknown => UnknownEffect.Instance;
 
-            public abstract EffectKind Kind { get; }
+        public abstract EffectKind Kind { get; }
+    }
+
+    internal sealed record UnknownEffect : Effect
+    {
+        private UnknownEffect()
+        {
         }
 
-        internal sealed record UnknownEffect : Effect
+        public static UnknownEffect Instance { get; } = new();
+
+        public override EffectKind Kind => EffectKind.Unknown;
+    }
+
+    public sealed record ProducingManaEffect : Effect
+    {
+        private readonly IDictionary<Mana, ushort> _amountLookup;
+
+        private ProducingManaEffect()
         {
-            private UnknownEffect()
-            {
-            }
-
-            public static UnknownEffect Instance { get; } = new();
-
-            public override EffectKind Kind => EffectKind.Unknown;
+            this._amountLookup = new Dictionary<Mana, ushort>();
         }
 
-        public sealed record ProducingManaEffect : Effect
+        public override EffectKind Kind => EffectKind.ProducingMana;
+
+        public ushort this[Mana mana]
         {
-            private readonly IDictionary<Mana, ushort> _amountLookup;
-
-            private ProducingManaEffect()
+            get
             {
-                this._amountLookup = new Dictionary<Mana, ushort>();
+                Guard
+                    .Require(mana, nameof(mana))
+                    .Is.Not.Default();
+
+                return this._amountLookup.TryGetValue(mana, out var amount)
+                    ? amount
+                    : (ushort)0;
+            }
+        }
+
+        public class Builder
+        {
+            private readonly ProducingManaEffect _producingManaEffect;
+
+            private Builder()
+            {
+                this._producingManaEffect = new ProducingManaEffect();
             }
 
-            public override EffectKind Kind => EffectKind.ProducingMana;
-
-            public ushort this[Mana mana]
+            public static Builder Create()
             {
-                get
-                {
-                    Guard
-                        .Require(mana, nameof(mana))
-                        .Is.Not.Default();
-
-                    return this._amountLookup.TryGetValue(mana, out var amount)
-                        ? amount
-                        : (ushort)0;
-                }
+                return new Builder();
             }
 
-            public class Builder
+            public Builder WithAmount(Mana mana, ushort amount)
             {
-                private readonly ProducingManaEffect _producingManaEffect;
+                // TODO: Consolidate logic with <PayingManaCost> implementation!
 
-                private Builder()
+                Guard
+                    .Require(mana, nameof(mana))
+                    .Is.Not.Default();
+
+                Guard
+                    .Require(amount, nameof(amount))
+                    .Is.Positive();
+
+                if (!this._producingManaEffect._amountLookup.ContainsKey(mana))
                 {
-                    this._producingManaEffect = new ProducingManaEffect();
+                    this._producingManaEffect._amountLookup[mana] = 0;
                 }
 
-                public static Builder Create()
-                {
-                    return new();
-                }
+                this._producingManaEffect._amountLookup[mana] += amount;
 
-                public Builder WithAmount(Mana mana, ushort amount)
-                {
-                    // TODO: Consolidate logic with <PayingManaCost> implementation!
+                return this;
+            }
 
-                    Guard
-                        .Require(mana, nameof(mana))
-                        .Is.Not.Default();
-
-                    Guard
-                        .Require(amount, nameof(amount))
-                        .Is.Positive();
-
-                    if (!this._producingManaEffect._amountLookup.ContainsKey(mana))
-                    {
-                        this._producingManaEffect._amountLookup[mana] = 0;
-                    }
-
-                    this._producingManaEffect._amountLookup[mana] += amount;
-
-                    return this;
-                }
-
-                public ProducingManaEffect Build()
-                {
-                    return this._producingManaEffect;
-                }
+            public ProducingManaEffect Build()
+            {
+                return this._producingManaEffect;
             }
         }
     }

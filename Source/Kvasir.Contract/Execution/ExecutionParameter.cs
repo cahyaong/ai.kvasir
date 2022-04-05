@@ -26,77 +26,76 @@
 // <creation_timestamp>Tuesday, April 7, 2020 6:39:59 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System;
+using System.Collections.Generic;
+using nGratis.Cop.Olympus.Contract;
+
+public class ExecutionParameter
 {
-    using System;
-    using System.Collections.Generic;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly Dictionary<string, object> _entries;
 
-    public class ExecutionParameter
+    private ExecutionParameter()
     {
-        private readonly Dictionary<string, object> _entries;
+        this._entries = new Dictionary<string, object>();
+    }
 
-        private ExecutionParameter()
+    public static ExecutionParameter None { get; } = new();
+
+    public string GetValue(string name)
+    {
+        return this.GetValue<string>(name);
+    }
+
+    public T GetValue<T>(string name)
+    {
+        Guard
+            .Require(name, nameof(name))
+            .Is.Not.Empty();
+
+        if (!this._entries.TryGetValue(name, out var value))
         {
-            this._entries = new Dictionary<string, object>();
+            throw new KvasirException(
+                @"Failed to find entry! " +
+                $"Name: [{name}].");
         }
 
-        public static ExecutionParameter None { get; } = new();
+        return (T)Convert.ChangeType(value, typeof(T));
+    }
 
-        public string GetValue(string name)
+    public class Builder
+    {
+        private readonly ExecutionParameter _executionParameter;
+
+        private Builder()
         {
-            return this.GetValue<string>(name);
+            this._executionParameter = new ExecutionParameter();
         }
 
-        public T GetValue<T>(string name)
+        public static Builder Create()
+        {
+            return new Builder();
+        }
+
+        public Builder WithEntry<T>(string name, T value)
         {
             Guard
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            if (!this._entries.TryGetValue(name, out var value))
-            {
-                throw new KvasirException(
-                    @"Failed to find entry! " +
-                    $"Name: [{name}].");
-            }
+            Guard
+                .Require(value, nameof(value))
+                .Is.Not.Default();
 
-            return (T)Convert.ChangeType(value, typeof(T));
+            this._executionParameter._entries[name] = value;
+
+            return this;
         }
 
-        public class Builder
+        public ExecutionParameter Build()
         {
-            private readonly ExecutionParameter _executionParameter;
-
-            private Builder()
-            {
-                this._executionParameter = new ExecutionParameter();
-            }
-
-            public static Builder Create()
-            {
-                return new();
-            }
-
-            public Builder WithEntry<T>(string name, T value)
-            {
-                Guard
-                    .Require(name, nameof(name))
-                    .Is.Not.Empty();
-
-                Guard
-                    .Require(value, nameof(value))
-                    .Is.Not.Default();
-
-                this._executionParameter._entries[name] = value;
-
-                return this;
-            }
-
-            public ExecutionParameter Build()
-            {
-                return this._executionParameter;
-            }
+            return this._executionParameter;
         }
     }
 }

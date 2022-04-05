@@ -26,9 +26,8 @@
 // <creation_timestamp>Wednesday, 17 October 2018 8:15:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+public partial class App
 {
-    public partial class App
-    {
-    }
 }

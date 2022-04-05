@@ -26,20 +26,19 @@
 // <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework
+namespace nGratis.AI.Kvasir.Framework;
+
+using nGratis.AI.Kvasir.Engine;
+
+public static class KvasirAssertions
 {
-    using nGratis.AI.Kvasir.Engine;
-
-    public static class KvasirAssertions
+    public static ZoneAssertion Must(this Zone zone)
     {
-        public static ZoneAssertion Must(this Zone zone)
-        {
-            return new(zone);
-        }
+        return new(zone);
+    }
 
-        public static TabletopAssertion Must(this Tabletop tabletop)
-        {
-            return new(tabletop);
-        }
+    public static TabletopAssertion Must(this Tabletop tabletop)
+    {
+        return new(tabletop);
     }
 }

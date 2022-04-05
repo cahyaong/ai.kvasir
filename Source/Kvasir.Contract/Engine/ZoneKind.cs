@@ -26,21 +26,20 @@
 // <creation_timestamp>Thursday, 24 January 2019 9:45:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+public enum ZoneKind
 {
-    public enum ZoneKind
-    {
-        Unknown = 0,
+    Unknown = 0,
 
-        Library,
-        Hand,
-        Battlefield,
-        Graveyard,
-        Stack,
-        Exile,
-        Command,
-        Ante,
+    Library,
+    Hand,
+    Battlefield,
+    Graveyard,
+    Stack,
+    Exile,
+    Command,
+    Ante,
 
-        Stub
-    }
+    Stub
 }

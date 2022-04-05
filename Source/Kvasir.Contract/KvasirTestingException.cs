@@ -26,23 +26,22 @@
 // <creation_timestamp>Thursday, 8 November 2018 10:34:13 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+public class KvasirTestingException : KvasirException
 {
-    public class KvasirTestingException : KvasirException
+    public KvasirTestingException(string message)
+        : base(message)
     {
-        public KvasirTestingException(string message)
-            : base(message)
-        {
-        }
+    }
 
-        public KvasirTestingException(string message, params string[] submessages)
-            : base(message, submessages)
-        {
-        }
+    public KvasirTestingException(string message, params string[] submessages)
+        : base(message, submessages)
+    {
+    }
 
-        public KvasirTestingException(string message, params (string Key, object Value)[] details)
-            : base(message, details)
-        {
-        }
+    public KvasirTestingException(string message, params (string Key, object Value)[] details)
+        : base(message, details)
+    {
     }
 }

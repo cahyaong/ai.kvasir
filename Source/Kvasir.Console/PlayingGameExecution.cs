@@ -26,66 +26,65 @@
 // <creation_timestamp>Saturday, May 29, 2021 6:14:57 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Console;
+
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine;
+using nGratis.Cop.Olympus.Contract;
+
+public class PlayingGameExecution : IExecution
 {
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly IMagicEntityFactory _entityFactory;
+    private readonly IRandomGenerator _randomGenerator;
+    private readonly ILogger _logger;
 
-    public class PlayingGameExecution : IExecution
+    public PlayingGameExecution(
+        IMagicEntityFactory entityFactory,
+        IRandomGenerator randomGenerator,
+        ILogger logger)
     {
-        private readonly IMagicEntityFactory _entityFactory;
-        private readonly IRandomGenerator _randomGenerator;
-        private readonly ILogger _logger;
+        Guard
+            .Require(entityFactory, nameof(entityFactory))
+            .Is.Not.Null();
 
-        public PlayingGameExecution(
-            IMagicEntityFactory entityFactory,
-            IRandomGenerator randomGenerator,
-            ILogger logger)
+        Guard
+            .Require(randomGenerator, nameof(randomGenerator))
+            .Is.Not.Null();
+
+        this._entityFactory = entityFactory;
+        this._randomGenerator = randomGenerator;
+        this._logger = logger;
+    }
+
+    public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
+    {
+        var definedPlayers = new[]
         {
-            Guard
-                .Require(entityFactory, nameof(entityFactory))
-                .Is.Not.Null();
+            new DefinedBlob.Player
+            {
+                Name = "John Doe",
+                Kind = PlayerKind.AI,
+                DeckCode = "RED_01"
+            },
+            new DefinedBlob.Player
+            {
+                Name = "Jane Doe",
+                Kind = PlayerKind.AI,
+                DeckCode = "WHITE_01"
+            }
+        };
 
-            Guard
-                .Require(randomGenerator, nameof(randomGenerator))
-                .Is.Not.Null();
-
-            this._entityFactory = entityFactory;
-            this._randomGenerator = randomGenerator;
-            this._logger = logger;
-        }
-
-        public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
+        var simulationConfig = new SimulationConfig
         {
-            var definedPlayers = new[]
-            {
-                new DefinedBlob.Player
-                {
-                    Name = "John Doe",
-                    Kind = PlayerKind.AI,
-                    DeckCode = "RED_01"
-                },
-                new DefinedBlob.Player
-                {
-                    Name = "Jane Doe",
-                    Kind = PlayerKind.AI,
-                    DeckCode = "WHITE_01"
-                }
-            };
+            MaxTurnCount = 10,
+            DefinedPlayers = definedPlayers
+        };
 
-            var simulationConfig = new SimulationConfig
-            {
-                MaxTurnCount = 10,
-                DefinedPlayers = definedPlayers
-            };
+        var simulator = new RoundSimulator(this._entityFactory, this._randomGenerator, this._logger);
 
-            var simulator = new RoundSimulator(this._entityFactory, this._randomGenerator, this._logger);
+        simulator.Simulate(simulationConfig);
 
-            simulator.Simulate(simulationConfig);
-
-            return await Task.FromResult(ExecutionResult.Successful);
-        }
+        return await Task.FromResult(ExecutionResult.Successful);
     }
 }

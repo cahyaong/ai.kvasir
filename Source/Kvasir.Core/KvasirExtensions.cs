@@ -26,18 +26,17 @@
 // <creation_timestamp>Friday, 9 November 2018 10:55:58 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
-{
-    using System;
-    using nGratis.AI.Kvasir.Contract;
+namespace nGratis.AI.Kvasir.Core;
 
-    public static class KvasirExtensions
+using System;
+using nGratis.AI.Kvasir.Contract;
+
+public static class KvasirExtensions
+{
+    public static bool IsDated(this DateTime timestamp)
     {
-        public static bool IsDated(this DateTime timestamp)
-        {
-            return
-                timestamp >= Constant.EpochTimestamp &&
-                timestamp <= DateTime.UtcNow;
-        }
+        return
+            timestamp >= Constant.EpochTimestamp &&
+            timestamp <= DateTime.UtcNow;
     }
 }

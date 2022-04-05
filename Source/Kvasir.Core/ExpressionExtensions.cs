@@ -28,30 +28,29 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace System.Linq.Expressions
+namespace System.Linq.Expressions;
+
+using System;
+using System.Reflection;
+using nGratis.AI.Kvasir.Contract;
+
+internal static class ExpressionExtensions
 {
-    using System;
-    using System.Reflection;
-    using nGratis.AI.Kvasir.Contract;
-
-    internal static class ExpressionExtensions
+    public static PropertyInfo GetPropertyInfo<T>(this Expression<Func<T, object>> expression)
     {
-        public static PropertyInfo GetPropertyInfo<T>(this Expression<Func<T, object>> expression)
+        var unaryExpression = expression.Body as UnaryExpression;
+
+        var memberExpression =
+            unaryExpression?.Operand as MemberExpression ??
+            expression.Body as MemberExpression;
+
+        var propertyInfo = memberExpression?.Member as PropertyInfo;
+
+        if (propertyInfo == null)
         {
-            var unaryExpression = expression.Body as UnaryExpression;
-
-            var memberExpression =
-                unaryExpression?.Operand as MemberExpression ??
-                expression.Body as MemberExpression;
-
-            var propertyInfo = memberExpression?.Member as PropertyInfo;
-
-            if (propertyInfo == null)
-            {
-                throw new KvasirException("Binding expression must return <Property> value!");
-            }
-
-            return propertyInfo;
+            throw new KvasirException("Binding expression must return <Property> value!");
         }
+
+        return propertyInfo;
     }
 }

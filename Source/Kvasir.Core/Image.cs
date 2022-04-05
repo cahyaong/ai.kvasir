@@ -26,78 +26,77 @@
 // <creation_timestamp>Sunday, August 16, 2020 2:06:30 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.IO;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.Formats.Png;
+
+public static class Image
 {
-    using System;
-    using System.IO;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-    using SixLabors.ImageSharp.Advanced;
-    using SixLabors.ImageSharp.Formats.Png;
+    public static IImage Empty => EmptyImage.Instance;
+}
 
-    public static class Image
+public class WritableImage : IImage
+{
+    private SixLabors.ImageSharp.Image _image;
+
+    public int Width => this._image.Width;
+
+    public int Height => this._image.Height;
+
+    public void LoadData(Stream dataSteam)
     {
-        public static IImage Empty => EmptyImage.Instance;
+        Guard
+            .Require(dataSteam, nameof(dataSteam))
+            .Is.Not.Null()
+            .Is.Readable();
+
+        // TODO: Handle a case when input data contains transparency.
+
+        dataSteam.Position = 0;
+
+        this._image = SixLabors.ImageSharp.Image.Load(dataSteam);
     }
 
-    public class WritableImage : IImage
+    public Stream SaveData()
     {
-        private SixLabors.ImageSharp.Image _image;
+        var dataStream = new MemoryStream();
 
-        public int Width => this._image.Width;
+        var encoder = this
+            ._image
+            .GetConfiguration()
+            .ImageFormatsManager
+            .FindEncoder(PngFormat.Instance);
 
-        public int Height => this._image.Height;
+        this._image.Save(dataStream, encoder);
 
-        public void LoadData(Stream dataSteam)
-        {
-            Guard
-                .Require(dataSteam, nameof(dataSteam))
-                .Is.Not.Null()
-                .Is.Readable();
+        return dataStream;
+    }
+}
 
-            // TODO: Handle a case when input data contains transparency.
-
-            dataSteam.Position = 0;
-
-            this._image = SixLabors.ImageSharp.Image.Load(dataSteam);
-        }
-
-        public Stream SaveData()
-        {
-            var dataStream = new MemoryStream();
-
-            var encoder = this
-                ._image
-                .GetConfiguration()
-                .ImageFormatsManager
-                .FindEncoder(PngFormat.Instance);
-
-            this._image.Save(dataStream, encoder);
-
-            return dataStream;
-        }
+internal class EmptyImage : IImage
+{
+    private EmptyImage()
+    {
     }
 
-    internal class EmptyImage : IImage
+    public static EmptyImage Instance { get; } = new();
+
+    public int Width => 0;
+
+    public int Height => 0;
+
+    public void LoadData(Stream dataSteam)
     {
-        private EmptyImage()
-        {
-        }
+        throw new NotSupportedException("Loading data is not supported!");
+    }
 
-        public static EmptyImage Instance { get; } = new();
-
-        public int Width => 0;
-
-        public int Height => 0;
-
-        public void LoadData(Stream dataSteam)
-        {
-            throw new NotSupportedException("Loading data is not supported!");
-        }
-
-        public Stream SaveData()
-        {
-            throw new NotSupportedException("Saving data is not supported!");
-        }
+    public Stream SaveData()
+    {
+        throw new NotSupportedException("Saving data is not supported!");
     }
 }

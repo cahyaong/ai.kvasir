@@ -26,183 +26,182 @@
 // <creation_timestamp>Saturday, February 20, 2021 7:58:00 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Console
+namespace nGratis.AI.Kvasir.Console;
+
+using System;
+using System.Reflection;
+using Autofac;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
+using nGratis.AI.Kvasir.Core.Parser;
+using nGratis.AI.Kvasir.Engine;
+using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
+
+internal class AppBootstrapper : IDisposable
 {
-    using System;
-    using System.Reflection;
-    using Autofac;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.AI.Kvasir.Core.Parser;
-    using nGratis.AI.Kvasir.Engine;
-    using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Framework;
+    private readonly IContainer _container;
 
-    internal class AppBootstrapper : IDisposable
+    private bool _isDisposed;
+
+    public AppBootstrapper()
     {
-        private readonly IContainer _container;
-
-        private bool _isDisposed;
-
-        public AppBootstrapper()
-        {
-            this._container = new ContainerBuilder()
-                .RegisterInfrastructure()
-                .RegisterStorageManager()
-                .RegisterRepository()
-                .RegisterExecution()
-                .RegisterSimulator()
-                .Build();
-        }
-
-        ~AppBootstrapper()
-        {
-            this.Dispose(false);
-        }
-
-        public IExecution CreateExecution<T>()
-            where T : class, IExecution
-        {
-            return this._container.Resolve<T>();
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool isDisposing)
-        {
-            if (this._isDisposed)
-            {
-                return;
-            }
-
-            if (isDisposing)
-            {
-                this._container.Dispose();
-            }
-
-            this._isDisposed = true;
-        }
+        this._container = new ContainerBuilder()
+            .RegisterInfrastructure()
+            .RegisterStorageManager()
+            .RegisterRepository()
+            .RegisterExecution()
+            .RegisterSimulator()
+            .Build();
     }
 
-    internal static class AutofacExtensions
+    ~AppBootstrapper()
     {
-        public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder)
+        this.Dispose(false);
+    }
+
+    public IExecution CreateExecution<T>()
+        where T : class, IExecution
+    {
+        return this._container.Resolve<T>();
+    }
+
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool isDisposing)
+    {
+        if (this._isDisposed)
         {
-            Guard
-                .Require(containerBuilder, nameof(containerBuilder))
-                .Is.Not.Null();
-
-            containerBuilder
-                .Register(_ => new ConsoleLogger("Main"))
-                .InstancePerLifetimeScope()
-                .As<ILogger>();
-
-            return containerBuilder;
+            return;
         }
 
-        public static ContainerBuilder RegisterStorageManager(this ContainerBuilder containerBuilder)
+        if (isDisposing)
         {
-            Guard
-                .Require(containerBuilder, nameof(containerBuilder))
-                .Is.Not.Null();
-
-            var dataFolderUri = Config.FindDataFolderUri();
-
-            containerBuilder
-                .Register(_ => new IndexManager(dataFolderUri))
-                .InstancePerLifetimeScope()
-                .As<IIndexManager>();
-
-            containerBuilder
-                .Register(_ => new FileStorageManager(dataFolderUri))
-                .InstancePerLifetimeScope()
-                .Named<IStorageManager>(Name.StorageManager.Data);
-
-            containerBuilder
-                .Register(context => new CompressedStorageManager(
-                    Config.ProcessedContentSpec,
-                    context.ResolveNamed<IStorageManager>(Name.StorageManager.Data)))
-                .InstancePerLifetimeScope()
-                .Named<IStorageManager>(Name.StorageManager.Processed);
-
-            return containerBuilder;
+            this._container.Dispose();
         }
 
-        public static ContainerBuilder RegisterRepository(this ContainerBuilder containerBuilder)
+        this._isDisposed = true;
+    }
+}
+
+internal static class AutofacExtensions
+{
+    public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder)
+    {
+        Guard
+            .Require(containerBuilder, nameof(containerBuilder))
+            .Is.Not.Null();
+
+        containerBuilder
+            .Register(_ => new ConsoleLogger("Main"))
+            .InstancePerLifetimeScope()
+            .As<ILogger>();
+
+        return containerBuilder;
+    }
+
+    public static ContainerBuilder RegisterStorageManager(this ContainerBuilder containerBuilder)
+    {
+        Guard
+            .Require(containerBuilder, nameof(containerBuilder))
+            .Is.Not.Null();
+
+        var dataFolderUri = Config.FindDataFolderUri();
+
+        containerBuilder
+            .Register(_ => new IndexManager(dataFolderUri))
+            .InstancePerLifetimeScope()
+            .As<IIndexManager>();
+
+        containerBuilder
+            .Register(_ => new FileStorageManager(dataFolderUri))
+            .InstancePerLifetimeScope()
+            .Named<IStorageManager>(Name.StorageManager.Data);
+
+        containerBuilder
+            .Register(context => new CompressedStorageManager(
+                Config.ProcessedContentSpec,
+                context.ResolveNamed<IStorageManager>(Name.StorageManager.Data)))
+            .InstancePerLifetimeScope()
+            .Named<IStorageManager>(Name.StorageManager.Processed);
+
+        return containerBuilder;
+    }
+
+    public static ContainerBuilder RegisterRepository(this ContainerBuilder containerBuilder)
+    {
+        Guard
+            .Require(containerBuilder, nameof(containerBuilder))
+            .Is.Not.Null();
+
+        containerBuilder
+            .RegisterType<NopFetcher>()
+            .InstancePerLifetimeScope()
+            .As<IMagicFetcher>();
+
+        containerBuilder
+            .RegisterType<UnprocessedMagicRepository>()
+            .As<IUnprocessedMagicRepository>()
+            .InstancePerLifetimeScope();
+
+        containerBuilder
+            .Register(context => new ProcessedMagicRepository(
+                context.ResolveNamed<IStorageManager>(Name.StorageManager.Processed)))
+            .InstancePerLifetimeScope()
+            .As<IProcessedMagicRepository>();
+
+        return containerBuilder;
+    }
+
+    public static ContainerBuilder RegisterExecution(this ContainerBuilder containerBuilder)
+    {
+        Guard
+            .Require(containerBuilder, nameof(containerBuilder))
+            .Is.Not.Null();
+
+        containerBuilder
+            .RegisterType<MagicCardProcessor>()
+            .InstancePerLifetimeScope()
+            .As<IMagicCardProcessor>();
+
+        containerBuilder
+            .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+            .Where(type => typeof(IExecution).IsAssignableFrom(type))
+            .InstancePerLifetimeScope();
+
+        return containerBuilder;
+    }
+
+    public static ContainerBuilder RegisterSimulator(this ContainerBuilder containerBuilder)
+    {
+        Guard
+            .Require(containerBuilder, nameof(containerBuilder))
+            .Is.Not.Null();
+
+        containerBuilder
+            .Register(_ => RandomGenerator.Default)
+            .InstancePerLifetimeScope()
+            .As<IRandomGenerator>();
+
+        containerBuilder
+            .RegisterType<MagicEntityFactory>()
+            .InstancePerLifetimeScope()
+            .As<IMagicEntityFactory>();
+
+        return containerBuilder;
+    }
+
+    private static class Name
+    {
+        public static class StorageManager
         {
-            Guard
-                .Require(containerBuilder, nameof(containerBuilder))
-                .Is.Not.Null();
+            public static readonly string Data = "StorageManager.Data";
 
-            containerBuilder
-                .RegisterType<NopFetcher>()
-                .InstancePerLifetimeScope()
-                .As<IMagicFetcher>();
-
-            containerBuilder
-                .RegisterType<UnprocessedMagicRepository>()
-                .As<IUnprocessedMagicRepository>()
-                .InstancePerLifetimeScope();
-
-            containerBuilder
-                .Register(context => new ProcessedMagicRepository(
-                    context.ResolveNamed<IStorageManager>(Name.StorageManager.Processed)))
-                .InstancePerLifetimeScope()
-                .As<IProcessedMagicRepository>();
-
-            return containerBuilder;
-        }
-
-        public static ContainerBuilder RegisterExecution(this ContainerBuilder containerBuilder)
-        {
-            Guard
-                .Require(containerBuilder, nameof(containerBuilder))
-                .Is.Not.Null();
-
-            containerBuilder
-                .RegisterType<MagicCardProcessor>()
-                .InstancePerLifetimeScope()
-                .As<IMagicCardProcessor>();
-
-            containerBuilder
-                .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                .Where(type => typeof(IExecution).IsAssignableFrom(type))
-                .InstancePerLifetimeScope();
-
-            return containerBuilder;
-        }
-
-        public static ContainerBuilder RegisterSimulator(this ContainerBuilder containerBuilder)
-        {
-            Guard
-                .Require(containerBuilder, nameof(containerBuilder))
-                .Is.Not.Null();
-
-            containerBuilder
-                .Register(_ => RandomGenerator.Default)
-                .InstancePerLifetimeScope()
-                .As<IRandomGenerator>();
-
-            containerBuilder
-                .RegisterType<MagicEntityFactory>()
-                .InstancePerLifetimeScope()
-                .As<IMagicEntityFactory>();
-
-            return containerBuilder;
-        }
-
-        private static class Name
-        {
-            public static class StorageManager
-            {
-                public static readonly string Data = "StorageManager.Data";
-
-                public static readonly string Processed = "StorageManager.Processed";
-            }
+            public static readonly string Processed = "StorageManager.Processed";
         }
     }
 }

@@ -26,13 +26,12 @@
 // <creation_timestamp>Wednesday, 9 January 2019 8:40:01 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+public partial class ParsedCardViewPart
 {
-    public partial class ParsedCardViewPart
+    public ParsedCardViewPart()
     {
-        public ParsedCardViewPart()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

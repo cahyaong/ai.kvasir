@@ -26,73 +26,72 @@
 // <creation_timestamp>Friday, October 16, 2020 6:17:22 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+using YamlDotNet.Serialization;
+
+public class ProcessedMagicRepository : IProcessedMagicRepository
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-    using YamlDotNet.Serialization;
+    private readonly IStorageManager _storageManager;
 
-    public class ProcessedMagicRepository : IProcessedMagicRepository
+    public ProcessedMagicRepository(IStorageManager storageManager)
     {
-        private readonly IStorageManager _storageManager;
+        Guard
+            .Require(storageManager, nameof(storageManager))
+            .Is.Not.Null();
 
-        public ProcessedMagicRepository(IStorageManager storageManager)
+        this._storageManager = storageManager;
+    }
+
+    public async Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number)
+    {
+        Guard
+            .Require(setCode, nameof(setCode))
+            .Is.Not.Empty();
+
+        Guard
+            .Require(number, nameof(number))
+            .Is.Positive();
+
+        var foundEntries = this
+            ._storageManager
+            .FindEntries($"{setCode}_{number:D3}", Mime.Yaml)
+            .ToArray();
+
+        if (foundEntries.Length != 1)
         {
-            Guard
-                .Require(storageManager, nameof(storageManager))
-                .Is.Not.Null();
-
-            this._storageManager = storageManager;
+            throw new KvasirException(
+                @"Expecting to find exactly single defined card!",
+                $"Set Code: [{setCode}].",
+                $"Number: [{number}].");
         }
 
-        public async Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number)
-        {
-            Guard
-                .Require(setCode, nameof(setCode))
-                .Is.Not.Empty();
+        await using var cardStream = this._storageManager.LoadEntry(foundEntries.Single());
 
-            Guard
-                .Require(number, nameof(number))
-                .Is.Positive();
+        return cardStream
+            .ReadText()
+            .DeserializeFromYaml<DefinedBlob.Card>();
+    }
 
-            var foundEntries = this
-                ._storageManager
-                .FindEntries($"{setCode}_{number:D3}", Mime.Yaml)
-                .ToArray();
+    public async Task SaveCardAsync(DefinedBlob.Card card)
+    {
+        Guard
+            .Require(card, nameof(card))
+            .Is.Not.Null();
 
-            if (foundEntries.Length != 1)
-            {
-                throw new KvasirException(
-                    @"Expecting to find exactly single defined card!",
-                    $"Set Code: [{setCode}].",
-                    $"Number: [{number}].");
-            }
+        await using var cardStream = card
+            .SerializeToYaml()
+            .AsStream();
 
-            await using var cardStream = this._storageManager.LoadEntry(foundEntries.Single());
-
-            return cardStream
-                .ReadText()
-                .DeserializeFromYaml<DefinedBlob.Card>();
-        }
-
-        public async Task SaveCardAsync(DefinedBlob.Card card)
-        {
-            Guard
-                .Require(card, nameof(card))
-                .Is.Not.Null();
-
-            await using var cardStream = card
-                .SerializeToYaml()
-                .AsStream();
-
-            this._storageManager.SaveEntry(
-                new DataSpec($"{card.SetCode}_{card.Number:D3}", Mime.Yaml),
-                cardStream,
-                true);
-        }
+        this._storageManager.SaveEntry(
+            new DataSpec($"{card.SetCode}_{card.Number:D3}", Mime.Yaml),
+            cardStream,
+            true);
     }
 }

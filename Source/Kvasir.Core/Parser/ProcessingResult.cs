@@ -26,158 +26,157 @@
 // <creation_timestamp>Sunday, December 8, 2019 6:22:17 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.Parser
+namespace nGratis.AI.Kvasir.Core.Parser;
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public sealed class ValidProcessingResult : ProcessingResult
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly object _value;
 
-    public sealed class ValidProcessingResult : ProcessingResult
+    private object _childValue;
+
+    private ValidProcessingResult(object value)
+        : base(Enumerable.Empty<string>())
     {
-        private readonly object _value;
+        Guard
+            .Require(value, nameof(value))
+            .Is.Not.Default();
 
-        private object _childValue;
+        this._value = value;
+    }
 
-        private ValidProcessingResult(object value)
-            : base(Enumerable.Empty<string>())
+    public static ProcessingResult Create(object value)
+    {
+        return new ValidProcessingResult(value);
+    }
+
+    public override TValue GetValue<TValue>()
+    {
+        return (TValue)this._value;
+    }
+
+    protected override ProcessingResult WithChildResultCore(ProcessingResult childResult)
+    {
+        if (childResult.IsValid && childResult is ValidProcessingResult validChildResult)
         {
-            Guard
-                .Require(value, nameof(value))
-                .Is.Not.Default();
-
-            this._value = value;
+            this._childValue = validChildResult._value;
         }
-
-        public static ProcessingResult Create(object value)
+        else
         {
-            return new ValidProcessingResult(value);
-        }
-
-        public override TValue GetValue<TValue>()
-        {
-            return (TValue)this._value;
-        }
-
-        protected override ProcessingResult WithChildResultCore(ProcessingResult childResult)
-        {
-            if (childResult.IsValid && childResult is ValidProcessingResult validChildResult)
-            {
-                this._childValue = validChildResult._value;
-            }
-            else
-            {
-                this._childValue = default;
-            }
-
-            return this;
-        }
-
-        protected override ProcessingResult BindToCore(PropertyInfo propertyInfo)
-        {
-            propertyInfo.SetValue(this._value, this._childValue);
             this._childValue = default;
-
-            return this;
         }
+
+        return this;
     }
 
-    public sealed class InvalidProcessingResult : ProcessingResult
+    protected override ProcessingResult BindToCore(PropertyInfo propertyInfo)
     {
-        private InvalidProcessingResult(IEnumerable<string> messages)
-            : base(messages)
-        {
-        }
+        propertyInfo.SetValue(this._value, this._childValue);
+        this._childValue = default;
 
-        public static ProcessingResult Create(params string[] messages)
-        {
-            return new InvalidProcessingResult(messages);
-        }
+        return this;
+    }
+}
 
-        public override TValue GetValue<TValue>()
-        {
-            throw new KvasirException("No valid value for this parsing result!");
-        }
+public sealed class InvalidProcessingResult : ProcessingResult
+{
+    private InvalidProcessingResult(IEnumerable<string> messages)
+        : base(messages)
+    {
     }
 
-    // TODO: Instead of valid and invalid parsing results, we need to support card and field parsing results!
-
-    public abstract class ProcessingResult
+    public static ProcessingResult Create(params string[] messages)
     {
-        // TODO: Add category to messages, e.g. ability, kind, etc.!
-        // TODO: Refactor this class to extend from <ExecutionResult>!
+        return new InvalidProcessingResult(messages);
+    }
 
-        private readonly List<string> _messages;
+    public override TValue GetValue<TValue>()
+    {
+        throw new KvasirException("No valid value for this parsing result!");
+    }
+}
 
-        protected ProcessingResult(IEnumerable<string> messages)
+// TODO: Instead of valid and invalid parsing results, we need to support card and field parsing results!
+
+public abstract class ProcessingResult
+{
+    // TODO: Add category to messages, e.g. ability, kind, etc.!
+    // TODO: Refactor this class to extend from <ExecutionResult>!
+
+    private readonly List<string> _messages;
+
+    protected ProcessingResult(IEnumerable<string> messages)
+    {
+        Guard
+            .Require(messages, nameof(messages))
+            .Is.Not.Null();
+
+        this._messages = messages
+            .Where(message => !string.IsNullOrEmpty(message))
+            .ToList();
+    }
+
+    public bool IsValid =>
+        this.IsValidCore &&
+        !this.Messages.Any();
+
+    public IEnumerable<string> Messages => this._messages;
+
+    protected virtual bool IsValidCore => true;
+
+    internal ProcessingResult WithMessage(string message)
+    {
+        Guard
+            .Require(message, nameof(message))
+            .Is.Not.Empty();
+
+        this._messages.Add(message);
+
+        return this;
+    }
+
+    internal ProcessingResult WithChildResult(ProcessingResult childResult)
+    {
+        Guard
+            .Require(childResult, nameof(childResult))
+            .Is.Not.Null();
+
+        if (!childResult.IsValid)
         {
-            Guard
-                .Require(messages, nameof(messages))
-                .Is.Not.Null();
-
-            this._messages = messages
+            var filteredMessages = childResult
+                .Messages
                 .Where(message => !string.IsNullOrEmpty(message))
-                .ToList();
+                .ToArray();
+
+            this._messages.AddRange(filteredMessages);
         }
 
-        public bool IsValid =>
-            this.IsValidCore &&
-            !this.Messages.Any();
+        return this.WithChildResultCore(childResult);
+    }
 
-        public IEnumerable<string> Messages => this._messages;
+    internal ProcessingResult BindTo(PropertyInfo propertyInfo)
+    {
+        Guard
+            .Require(propertyInfo, nameof(propertyInfo))
+            .Is.Not.Null();
 
-        protected virtual bool IsValidCore => true;
+        return this.BindToCore(propertyInfo);
+    }
 
-        internal ProcessingResult WithMessage(string message)
-        {
-            Guard
-                .Require(message, nameof(message))
-                .Is.Not.Empty();
+    public abstract TValue GetValue<TValue>();
 
-            this._messages.Add(message);
+    protected virtual ProcessingResult WithChildResultCore(ProcessingResult childResult)
+    {
+        return this;
+    }
 
-            return this;
-        }
-
-        internal ProcessingResult WithChildResult(ProcessingResult childResult)
-        {
-            Guard
-                .Require(childResult, nameof(childResult))
-                .Is.Not.Null();
-
-            if (!childResult.IsValid)
-            {
-                var filteredMessages = childResult
-                    .Messages
-                    .Where(message => !string.IsNullOrEmpty(message))
-                    .ToArray();
-
-                this._messages.AddRange(filteredMessages);
-            }
-
-            return this.WithChildResultCore(childResult);
-        }
-
-        internal ProcessingResult BindTo(PropertyInfo propertyInfo)
-        {
-            Guard
-                .Require(propertyInfo, nameof(propertyInfo))
-                .Is.Not.Null();
-
-            return this.BindToCore(propertyInfo);
-        }
-
-        public abstract TValue GetValue<TValue>();
-
-        protected virtual ProcessingResult WithChildResultCore(ProcessingResult childResult)
-        {
-            return this;
-        }
-
-        protected virtual ProcessingResult BindToCore(PropertyInfo propertyInfo)
-        {
-            return this;
-        }
+    protected virtual ProcessingResult BindToCore(PropertyInfo propertyInfo)
+    {
+        return this;
     }
 }

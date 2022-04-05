@@ -28,9 +28,8 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir
+namespace Moq.AI.Kvasir;
+
+internal static partial class MockExtensions
 {
-    internal static partial class MockExtensions
-    {
-    }
 }

@@ -26,13 +26,12 @@
 // <creation_timestamp>Thursday, March 5, 2020 6:33:51 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum Visibility
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Contract;
 
-        Public,
-        Hidden
-    }
+public enum Visibility
+{
+    Unknown = 0,
+
+    Public,
+    Hidden
 }

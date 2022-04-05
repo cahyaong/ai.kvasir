@@ -26,15 +26,14 @@
 // <creation_timestamp>Wednesday, July 7, 2021 5:24:28 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+public enum CreatureModifier
 {
-    public enum CreatureModifier
-    {
-        Unknown = 0,
+    Unknown = 0,
 
-        None = 1,
+    None = 1,
 
-        CanAttack = 2,
-        CanBlock = 3
-    }
+    CanAttack = 2,
+    CanBlock = 3
 }

@@ -26,97 +26,96 @@
 // <creation_timestamp>Thursday, 24 January 2019 9:55:01 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+[DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
+public class Zone
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly List<Card> _cards;
 
-    [DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
-    public class Zone
+    public Zone(ZoneKind kind, Visibility visibility)
     {
-        private readonly List<Card> _cards;
+        Guard
+            .Require(kind, nameof(kind))
+            .Is.Not.Default();
 
-        public Zone(ZoneKind kind, Visibility visibility)
+        Guard
+            .Require(visibility, nameof(visibility))
+            .Is.Not.Default();
+
+        this._cards = new List<Card>();
+
+        this.Kind = kind;
+        this.Visibility = visibility;
+    }
+
+    public ZoneKind Kind { get; }
+
+    public Visibility Visibility { get; }
+
+    public IEnumerable<Card> Cards => this._cards;
+
+    public void AddCardToTop(Card card)
+    {
+        Guard
+            .Require(card, nameof(card))
+            .Is.Not.Null();
+
+        if (this._cards.Contains(card))
         {
-            Guard
-                .Require(kind, nameof(kind))
-                .Is.Not.Default();
-
-            Guard
-                .Require(visibility, nameof(visibility))
-                .Is.Not.Default();
-
-            this._cards = new List<Card>();
-
-            this.Kind = kind;
-            this.Visibility = visibility;
+            throw new KvasirException(
+                "Zone has existing card!",
+                ("Kind", this.Kind),
+                ("Card Name", card.Name),
+                ("Card ID", card.GetHashCode()));
         }
 
-        public ZoneKind Kind { get; }
+        this._cards.Add(card);
+    }
 
-        public Visibility Visibility { get; }
-
-        public IEnumerable<Card> Cards => this._cards;
-
-        public void AddCardToTop(Card card)
+    public Card RemoveCardFromTop()
+    {
+        if (this._cards.Count <= 0)
         {
-            Guard
-                .Require(card, nameof(card))
-                .Is.Not.Null();
-
-            if (this._cards.Contains(card))
-            {
-                throw new KvasirException(
-                    "Zone has existing card!",
-                    ("Kind", this.Kind),
-                    ("Card Name", card.Name),
-                    ("Card ID", card.GetHashCode()));
-            }
-
-            this._cards.Add(card);
+            throw new KvasirException(
+                "Zone has no more card to remove!",
+                ("Kind", this.Kind));
         }
 
-        public Card RemoveCardFromTop()
+        var card = this._cards.Last();
+        this._cards.RemoveAt(this._cards.Count - 1);
+
+        return card;
+    }
+
+    public void MoveCardToZone(Card card, Zone zone)
+    {
+        Guard
+            .Require(card, nameof(card))
+            .Is.Not.Null();
+
+        Guard
+            .Require(zone, nameof(zone))
+            .Is.Not.Null();
+
+        var matchedIndex = this._cards.IndexOf(card);
+
+        if (matchedIndex < 0)
         {
-            if (this._cards.Count <= 0)
-            {
-                throw new KvasirException(
-                    "Zone has no more card to remove!",
-                    ("Kind", this.Kind));
-            }
-
-            var card = this._cards.Last();
-            this._cards.RemoveAt(this._cards.Count - 1);
-
-            return card;
+            throw new KvasirException(
+                "Zone does not contain card to move to different zone!",
+                ("Kind", this.Kind),
+                ("Card Name", card.Name),
+                ("Card ID", card.GetHashCode()));
         }
 
-        public void MoveCardToZone(Card card, Zone zone)
-        {
-            Guard
-                .Require(card, nameof(card))
-                .Is.Not.Null();
-
-            Guard
-                .Require(zone, nameof(zone))
-                .Is.Not.Null();
-
-            var matchedIndex = this._cards.IndexOf(card);
-
-            if (matchedIndex < 0)
-            {
-                throw new KvasirException(
-                    "Zone does not contain card to move to different zone!",
-                    ("Kind", this.Kind),
-                    ("Card Name", card.Name),
-                    ("Card ID", card.GetHashCode()));
-            }
-
-            this._cards.RemoveAt(matchedIndex);
-            zone.AddCardToTop(card);
-        }
+        this._cards.RemoveAt(matchedIndex);
+        zone.AddCardToTop(card);
     }
 }

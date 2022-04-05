@@ -26,30 +26,29 @@
 // <creation_timestamp>Wednesday, 30 January 2019 11:56:11 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core.UnitTest
+namespace nGratis.AI.Kvasir.Core.UnitTest;
+
+using nGratis.AI.Kvasir.Contract;
+
+internal static class KvasirAssertions
 {
-    using nGratis.AI.Kvasir.Contract;
-
-    internal static class KvasirAssertions
+    public static CardAssertion Must(this UnparsedBlob.Card card)
     {
-        public static CardAssertion Must(this UnparsedBlob.Card card)
-        {
-            return new(card);
-        }
+        return new(card);
+    }
 
-        public static CostAssertion Must(this DefinedBlob.Cost cost)
-        {
-            return new(cost);
-        }
+    public static CostAssertion Must(this DefinedBlob.Cost cost)
+    {
+        return new(cost);
+    }
 
-        public static EffectAssertion Must(this DefinedBlob.Effect effect)
-        {
-            return new(effect);
-        }
+    public static EffectAssertion Must(this DefinedBlob.Effect effect)
+    {
+        return new(effect);
+    }
 
-        public static AbilityAssertion Must(this DefinedBlob.Ability ability)
-        {
-            return new(ability);
-        }
+    public static AbilityAssertion Must(this DefinedBlob.Ability ability)
+    {
+        return new(ability);
     }
 }

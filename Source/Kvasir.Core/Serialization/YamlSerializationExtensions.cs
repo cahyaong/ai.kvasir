@@ -28,202 +28,201 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace YamlDotNet.Serialization
+namespace YamlDotNet.Serialization;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
+using nGratis.Cop.Olympus.Contract;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
+using YamlDotNet.Serialization.NamingConventions;
+
+public static class YamlSerializationExtensions
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Olympus.Contract;
-    using YamlDotNet.Core;
-    using YamlDotNet.Core.Events;
-    using YamlDotNet.Serialization.NamingConventions;
+    public static readonly INamingConvention NamingConvention = HyphenatedNamingConvention.Instance;
 
-    public static class YamlSerializationExtensions
+    private static readonly ISerializer Serializer = new SerializerBuilder()
+        .WithNamingConvention(YamlSerializationExtensions.NamingConvention)
+        .WithTypeConverter(CostYamlConverter.Instance)
+        .WithTypeConverter(EffectYamlConverter.Instance)
+        .WithTypeConverter(DeckYamlConverter.Instance)
+        .Build();
+
+    private static readonly IDeserializer Deserializer = new DeserializerBuilder()
+        .WithNamingConvention(YamlSerializationExtensions.NamingConvention)
+        .WithTypeConverter(CostYamlConverter.Instance)
+        .WithTypeConverter(EffectYamlConverter.Instance)
+        .WithTypeConverter(DeckYamlConverter.Instance)
+        .Build();
+
+    public static string SerializeToYaml<T>(this T value)
+        where T : class
     {
-        public static readonly INamingConvention NamingConvention = HyphenatedNamingConvention.Instance;
+        Guard
+            .Require(value, nameof(value))
+            .Is.Not.Null();
 
-        private static readonly ISerializer Serializer = new SerializerBuilder()
-            .WithNamingConvention(YamlSerializationExtensions.NamingConvention)
-            .WithTypeConverter(CostYamlConverter.Instance)
-            .WithTypeConverter(EffectYamlConverter.Instance)
-            .WithTypeConverter(DeckYamlConverter.Instance)
-            .Build();
+        return YamlSerializationExtensions
+            .Serializer
+            .Serialize(value)
+            .Trim();
+    }
 
-        private static readonly IDeserializer Deserializer = new DeserializerBuilder()
-            .WithNamingConvention(YamlSerializationExtensions.NamingConvention)
-            .WithTypeConverter(CostYamlConverter.Instance)
-            .WithTypeConverter(EffectYamlConverter.Instance)
-            .WithTypeConverter(DeckYamlConverter.Instance)
-            .Build();
+    public static T DeserializeFromYaml<T>(this string value)
+    {
+        Guard
+            .Require(value, nameof(value))
+            .Is.Not.Empty();
 
-        public static string SerializeToYaml<T>(this T value)
-            where T : class
+        return YamlSerializationExtensions
+            .Deserializer
+            .Deserialize<T>(value.Trim());
+    }
+
+    internal static IEmitter EmitField(this IEmitter emitter, string name, string value)
+    {
+        Guard
+            .Require(emitter, nameof(emitter))
+            .Is.Not.Null();
+
+        var isValid =
+            !string.IsNullOrEmpty(name) &&
+            !string.IsNullOrEmpty(value);
+
+        if (isValid)
         {
-            Guard
-                .Require(value, nameof(value))
-                .Is.Not.Null();
-
-            return YamlSerializationExtensions
-                .Serializer
-                .Serialize(value)
-                .Trim();
+            emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
+            emitter.Emit(new Scalar(value));
         }
 
-        public static T DeserializeFromYaml<T>(this string value)
-        {
-            Guard
-                .Require(value, nameof(value))
-                .Is.Not.Empty();
+        return emitter;
+    }
 
-            return YamlSerializationExtensions
-                .Deserializer
-                .Deserialize<T>(value.Trim());
+    internal static IEmitter EmitField(this IEmitter emitter, string name, params string[] values)
+    {
+        Guard
+            .Require(emitter, nameof(emitter))
+            .Is.Not.Null();
+
+        values = values
+            .Where(value => !string.IsNullOrEmpty(value))
+            .ToArray();
+
+        var isValid = !string.IsNullOrEmpty(name);
+
+        if (isValid)
+        {
+            emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
+
+            emitter.Emit(new SequenceStart(default, default, false, SequenceStyle.Block));
+
+            values
+                .Select(value => new Scalar(value))
+                .ForEach(emitter.Emit);
+
+            emitter.Emit(new SequenceEnd());
         }
 
-        internal static IEmitter EmitField(this IEmitter emitter, string name, string value)
+        return emitter;
+    }
+
+    internal static IEmitter EmitField(
+        this IEmitter emitter,
+        string name,
+        IReadOnlyDictionary<string, string> lookup)
+    {
+        Guard
+            .Require(emitter, nameof(emitter))
+            .Is.Not.Null();
+
+        var isValid =
+            !string.IsNullOrEmpty(name) &&
+            lookup != null;
+
+        if (isValid)
         {
-            Guard
-                .Require(emitter, nameof(emitter))
-                .Is.Not.Null();
+            emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
 
-            var isValid =
-                !string.IsNullOrEmpty(name) &&
-                !string.IsNullOrEmpty(value);
+            emitter.Emit(new MappingStart());
 
-            if (isValid)
+            foreach (var (key, value) in lookup)
             {
-                emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
-                emitter.Emit(new Scalar(value));
+                emitter.EmitField(key, value);
             }
 
-            return emitter;
+            emitter.Emit(new MappingEnd());
         }
 
-        internal static IEmitter EmitField(this IEmitter emitter, string name, params string[] values)
+        return emitter;
+    }
+
+    internal static T ParseScalarValue<T>(this IParser parser, Func<string, T> convert = null)
+    {
+        Guard
+            .Require(parser, nameof(parser))
+            .Is.Not.Null();
+
+        var value = parser
+            .Consume<Scalar>()
+            .Value;
+
+        return convert != null
+            ? convert(value)
+            : (T)Convert.ChangeType(value, typeof(T));
+    }
+
+    internal static IEnumerable<T> ParseSequentialValues<T>(this IParser parser, Func<string, T> convert = null)
+    {
+        Guard
+            .Require(parser, nameof(parser))
+            .Is.Not.Null();
+
+        if (parser.Current?.GetType() != typeof(SequenceStart))
         {
-            Guard
-                .Require(emitter, nameof(emitter))
-                .Is.Not.Null();
-
-            values = values
-                .Where(value => !string.IsNullOrEmpty(value))
-                .ToArray();
-
-            var isValid = !string.IsNullOrEmpty(name);
-
-            if (isValid)
-            {
-                emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
-
-                emitter.Emit(new SequenceStart(default, default, false, SequenceStyle.Block));
-
-                values
-                    .Select(value => new Scalar(value))
-                    .ForEach(emitter.Emit);
-
-                emitter.Emit(new SequenceEnd());
-            }
-
-            return emitter;
+            throw new KvasirException($"Parser current token does not begin with <{typeof(SequenceStart)}>!");
         }
 
-        internal static IEmitter EmitField(
-            this IEmitter emitter,
-            string name,
-            IReadOnlyDictionary<string, string> lookup)
+        parser.MoveNext();
+
+        while (parser.Current?.GetType() != typeof(SequenceEnd))
         {
-            Guard
-                .Require(emitter, nameof(emitter))
-                .Is.Not.Null();
-
-            var isValid =
-                !string.IsNullOrEmpty(name) &&
-                lookup != null;
-
-            if (isValid)
-            {
-                emitter.Emit(new Scalar(YamlSerializationExtensions.NamingConvention.Apply(name)));
-
-                emitter.Emit(new MappingStart());
-
-                foreach (var (key, value) in lookup)
-                {
-                    emitter.EmitField(key, value);
-                }
-
-                emitter.Emit(new MappingEnd());
-            }
-
-            return emitter;
+            yield return parser.ParseScalarValue(convert);
         }
 
-        internal static T ParseScalarValue<T>(this IParser parser, Func<string, T> convert = null)
+        parser.MoveNext();
+    }
+
+    internal static IReadOnlyDictionary<TKey, TValue> ParseLookup<TKey, TValue>(
+        this IParser parser,
+        Func<string, TKey> convertKey = null,
+        Func<string, TValue> convertValue = null)
+    {
+        Guard
+            .Require(parser, nameof(parser))
+            .Is.Not.Null();
+
+        if (parser.Current?.GetType() != typeof(MappingStart))
         {
-            Guard
-                .Require(parser, nameof(parser))
-                .Is.Not.Null();
-
-            var value = parser
-                .Consume<Scalar>()
-                .Value;
-
-            return convert != null
-                ? convert(value)
-                : (T)Convert.ChangeType(value, typeof(T));
+            throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
         }
 
-        internal static IEnumerable<T> ParseSequentialValues<T>(this IParser parser, Func<string, T> convert = null)
+        var lookup = new Dictionary<TKey, TValue>();
+
+        parser.MoveNext();
+
+        while (parser.Current?.GetType() != typeof(MappingEnd))
         {
-            Guard
-                .Require(parser, nameof(parser))
-                .Is.Not.Null();
+            var key = parser.ParseScalarValue(convertKey);
+            var value = parser.ParseScalarValue(convertValue);
 
-            if (parser.Current?.GetType() != typeof(SequenceStart))
-            {
-                throw new KvasirException($"Parser current token does not begin with <{typeof(SequenceStart)}>!");
-            }
-
-            parser.MoveNext();
-
-            while (parser.Current?.GetType() != typeof(SequenceEnd))
-            {
-                yield return parser.ParseScalarValue(convert);
-            }
-
-            parser.MoveNext();
+            lookup[key] = value;
         }
 
-        internal static IReadOnlyDictionary<TKey, TValue> ParseLookup<TKey, TValue>(
-            this IParser parser,
-            Func<string, TKey> convertKey = null,
-            Func<string, TValue> convertValue = null)
-        {
-            Guard
-                .Require(parser, nameof(parser))
-                .Is.Not.Null();
+        parser.MoveNext();
 
-            if (parser.Current?.GetType() != typeof(MappingStart))
-            {
-                throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
-            }
-
-            var lookup = new Dictionary<TKey, TValue>();
-
-            parser.MoveNext();
-
-            while (parser.Current?.GetType() != typeof(MappingEnd))
-            {
-                var key = parser.ParseScalarValue(convertKey);
-                var value = parser.ParseScalarValue(convertValue);
-
-                lookup[key] = value;
-            }
-
-            parser.MoveNext();
-
-            return lookup;
-        }
+        return lookup;
     }
 }

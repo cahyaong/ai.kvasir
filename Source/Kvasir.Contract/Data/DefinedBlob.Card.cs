@@ -26,51 +26,52 @@
 // <creation_timestamp>Friday, December 27, 2019 7:22:02 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System;
+
+public static partial class DefinedBlob
 {
-    public static partial class DefinedBlob
+    public record Card
     {
-        public record Card
+        public Card()
         {
-            public Card()
-            {
-                this.SubKinds = Default.SubKinds;
-                this.Cost = Default.Cost;
-                this.Abilities = Default.Abilities;
-            }
+            this.SubKinds = Default.SubKinds;
+            this.Cost = Default.Cost;
+            this.Abilities = Default.Abilities;
+        }
 
-            public ushort Number { get; init; }
+        public ushort Number { get; init; }
 
-            public string SetCode { get; init; }
+        public string SetCode { get; init; }
 
-            public uint MultiverseId { get; init; }
+        public uint MultiverseId { get; init; }
 
-            public string Name { get; init; }
+        public string Name { get; init; }
 
-            public CardKind Kind { get; init; }
+        public CardKind Kind { get; init; }
 
-            public CardSuperKind SuperKind { get; init; }
+        public CardSuperKind SuperKind { get; init; }
 
-            public CardSubKind[] SubKinds { get; init; }
+        public CardSubKind[] SubKinds { get; init; }
 
-            public bool IsTribal { get; init; }
+        public bool IsTribal { get; init; }
 
-            public Cost Cost { get; init; }
+        public Cost Cost { get; init; }
 
-            public ushort Power { get; init; }
+        public ushort Power { get; init; }
 
-            public ushort Toughness { get; init; }
+        public ushort Toughness { get; init; }
 
-            public Ability[] Abilities { get; init; }
+        public Ability[] Abilities { get; init; }
 
-            public static class Default
-            {
-                public static readonly CardSubKind[] SubKinds = new CardSubKind[0];
+        public static class Default
+        {
+            public static readonly CardSubKind[] SubKinds = Array.Empty<CardSubKind>();
 
-                public static readonly Cost Cost = UnknownCost.Instance;
+            public static readonly Cost Cost = UnknownCost.Instance;
 
-                public static readonly Ability[] Abilities = new Ability[0];
-            }
+            public static readonly Ability[] Abilities = Array.Empty<Ability>();
         }
     }
 }

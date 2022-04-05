@@ -26,12 +26,11 @@
 // <creation_timestamp>Saturday, May 29, 2021 6:31:03 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
-{
-    using nGratis.AI.Kvasir.Contract;
+namespace nGratis.AI.Kvasir.Engine;
 
-    public class SimulationResult : ExecutionResult
-    {
-        public Tabletop Tabletop { get; init; }
-    }
+using nGratis.AI.Kvasir.Contract;
+
+public class SimulationResult : ExecutionResult
+{
+    public Tabletop Tabletop { get; init; }
 }

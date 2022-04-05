@@ -26,14 +26,13 @@
 // <creation_timestamp>Thursday, November 11, 2021 4:47:23 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+
+public class Combat
 {
-    using System.Collections.Generic;
+    public Creature Attacker { get; init; }
 
-    public class Combat
-    {
-        public Creature Attacker { get; init; }
-
-        public IReadOnlyCollection<Creature> Blockers { get; init; }
-    }
+    public IReadOnlyCollection<Creature> Blockers { get; init; }
 }

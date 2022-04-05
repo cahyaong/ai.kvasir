@@ -26,41 +26,40 @@
 // <creation_timestamp>Friday, November 26, 2021 10:47:20 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework
+namespace nGratis.AI.Kvasir.Framework;
+
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine;
+
+public static class StubBuilder
 {
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
-
-    public static class StubBuilder
+    public static Tabletop CreateDefaultTabletop()
     {
-        public static Tabletop CreateDefaultTabletop()
+        var activePlayer = new Player
         {
-            var activePlayer = new Player
-            {
-                Name = "[_MOCK_ACTIVE_PLAYER_]",
-                Kind = PlayerKind.Testing,
-                Life = 20,
-                Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
-            };
+            Name = "[_MOCK_ACTIVE_PLAYER_]",
+            Kind = PlayerKind.Testing,
+            Life = 20,
+            Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+        };
 
-            var nonactivePlayer = new Player
-            {
-                Name = "[_MOCK_NONACTIVE_PLAYER_]",
-                Kind = PlayerKind.Testing,
-                Life = 20,
-                Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
-            };
+        var nonactivePlayer = new Player
+        {
+            Name = "[_MOCK_NONACTIVE_PLAYER_]",
+            Kind = PlayerKind.Testing,
+            Life = 20,
+            Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+        };
 
-            activePlayer.Opponent = nonactivePlayer;
-            nonactivePlayer.Opponent = activePlayer;
+        activePlayer.Opponent = nonactivePlayer;
+        nonactivePlayer.Opponent = activePlayer;
 
-            return new()
-            {
-                Phase = Phase.Setup,
-                ActivePlayer = activePlayer,
-                NonactivePlayer = nonactivePlayer,
-                Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
-            };
-        }
+        return new()
+        {
+            Phase = Phase.Setup,
+            ActivePlayer = activePlayer,
+            NonactivePlayer = nonactivePlayer,
+            Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+        };
     }
 }

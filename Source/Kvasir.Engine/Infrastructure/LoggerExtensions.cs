@@ -26,26 +26,25 @@
 // <creation_timestamp>Saturday, March 26, 2022 6:51:05 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using nGratis.Cop.Olympus.Contract;
+
+public static class LoggerExtensions
 {
-    using nGratis.Cop.Olympus.Contract;
-
-    public static class LoggerExtensions
+    public static void LogDiagnostic(this ILogger logger, Tabletop tabletop)
     {
-        public static void LogDiagnostic(this ILogger logger, Tabletop tabletop)
-        {
-            Guard
-                .Require(logger, nameof(logger))
-                .Is.Not.Null();
+        Guard
+            .Require(logger, nameof(logger))
+            .Is.Not.Null();
 
-            Guard
-                .Require(tabletop, nameof(tabletop))
-                .Is.Not.Null();
+        Guard
+            .Require(tabletop, nameof(tabletop))
+            .Is.Not.Null();
 
-            logger.LogDebug(
-                "Processing phase...",
-                ("ID", $"{tabletop.TurnId:D4}-{tabletop.Phase}"),
-                ("Active Player", tabletop.ActivePlayer.Name));
-        }
+        logger.LogDebug(
+            "Processing phase...",
+            ("ID", $"{tabletop.TurnId:D4}-{tabletop.Phase}"),
+            ("Active Player", tabletop.ActivePlayer.Name));
     }
 }

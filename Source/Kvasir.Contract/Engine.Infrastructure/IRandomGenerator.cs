@@ -26,14 +26,13 @@
 // <creation_timestamp>Wednesday, 23 January 2019 11:31:53 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System.Collections.Generic;
+
+public interface IRandomGenerator
 {
-    using System.Collections.Generic;
+    int RollDice(int sideCount);
 
-    public interface IRandomGenerator
-    {
-        int RollDice(int sideCount);
-
-        IEnumerable<int> GenerateShufflingIndexes(int entityCount);
-    }
+    IEnumerable<int> GenerateShufflingIndexes(int entityCount);
 }

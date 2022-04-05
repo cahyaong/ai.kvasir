@@ -26,77 +26,76 @@
 // <creation_timestamp>Tuesday, July 6, 2021 6:47:06 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public class RandomStrategy : IStrategy
 {
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly IRandomGenerator _randomGenerator;
 
-    public class RandomStrategy : IStrategy
+    public RandomStrategy(IRandomGenerator randomGenerator)
     {
-        private readonly IRandomGenerator _randomGenerator;
+        Guard
+            .Require(randomGenerator, nameof(randomGenerator))
+            .Is.Not.Null();
 
-        public RandomStrategy(IRandomGenerator randomGenerator)
+        this._randomGenerator = randomGenerator;
+    }
+
+    public AttackingDecision DeclareAttacker(Tabletop tabletop)
+    {
+        var attackers = Rulebook
+            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+            .Where(_ => this._randomGenerator.RollDice(20) <= 10)
+            .ToImmutableList();
+
+        return new AttackingDecision
         {
-            Guard
-                .Require(randomGenerator, nameof(randomGenerator))
-                .Is.Not.Null();
+            Attackers = attackers
+        };
+    }
 
-            this._randomGenerator = randomGenerator;
-        }
+    public BlockingDecision DeclareBlocker(Tabletop tabletop)
+    {
+        var blockers = Rulebook
+            .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
+            .ToList();
 
-        public AttackingDecision DeclareAttacker(Tabletop tabletop)
+        var combats = new List<Combat>();
+
+        foreach (var attacker in tabletop.AttackingDecision.Attackers)
         {
-            var attackers = Rulebook
-                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
-                .Where(_ => this._randomGenerator.RollDice(20) <= 10)
-                .ToImmutableList();
-
-            return new AttackingDecision
+            if (!blockers.Any())
             {
-                Attackers = attackers
-            };
-        }
-
-        public BlockingDecision DeclareBlocker(Tabletop tabletop)
-        {
-            var blockers = Rulebook
-                .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
-                .ToList();
-
-            var combats = new List<Combat>();
-
-            foreach (var attacker in tabletop.AttackingDecision.Attackers)
-            {
-                if (!blockers.Any())
-                {
-                    break;
-                }
-
-                var shouldBlock = this._randomGenerator.RollDice(20) <= 10;
-
-                if (!shouldBlock)
-                {
-                    continue;
-                }
-
-                var blockerIndex = this._randomGenerator.RollDice(blockers.Count) - 1;
-
-                combats.Add(new Combat
-                {
-                    Attacker = attacker,
-                    Blockers = new List<Creature> { blockers[blockerIndex] }
-                });
-
-                blockers.RemoveAt(blockerIndex);
+                break;
             }
 
-            return new BlockingDecision
+            var shouldBlock = this._randomGenerator.RollDice(20) <= 10;
+
+            if (!shouldBlock)
             {
-                Combats = combats
-            };
+                continue;
+            }
+
+            var blockerIndex = this._randomGenerator.RollDice(blockers.Count) - 1;
+
+            combats.Add(new Combat
+            {
+                Attacker = attacker,
+                Blockers = new List<Creature> { blockers[blockerIndex] }
+            });
+
+            blockers.RemoveAt(blockerIndex);
         }
+
+        return new BlockingDecision
+        {
+            Combats = combats
+        };
     }
 }

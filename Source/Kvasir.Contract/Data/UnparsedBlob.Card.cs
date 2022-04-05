@@ -26,42 +26,41 @@
 // <creation_timestamp>Saturday, December 28, 2019 6:09:39 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System.Diagnostics;
+
+public static partial class UnparsedBlob
 {
-    using System.Diagnostics;
-
-    public static partial class UnparsedBlob
+    [DebuggerDisplay("[{this.MultiverseId}]: {this.Name ?? \"<undefined>\"}")]
+    public record Card
     {
-        [DebuggerDisplay("[{this.MultiverseId}]: {this.Name ?? \"<undefined>\"}")]
-        public record Card
-        {
-            public int MultiverseId { get; init; }
+        public int MultiverseId { get; init; }
 
-            public string ScryfallId { get; init; } = Cop.Olympus.Contract.Text.None;
+        public string ScryfallId { get; init; } = Cop.Olympus.Contract.Text.None;
 
-            public string ScryfallImageUrl { get; init; } = Cop.Olympus.Contract.Text.None;
+        public string ScryfallImageUrl { get; init; } = Cop.Olympus.Contract.Text.None;
 
-            public string SetCode { get; init; }
+        public string SetCode { get; init; }
 
-            public string Name { get; init; }
+        public string Name { get; init; }
 
-            public string ManaCost { get; init; } = string.Empty;
+        public string ManaCost { get; init; } = string.Empty;
 
-            public string Type { get; init; }
+        public string Type { get; init; }
 
-            public string Rarity { get; init; }
+        public string Rarity { get; init; }
 
-            public string Text { get; init; } = string.Empty;
+        public string Text { get; init; } = string.Empty;
 
-            public string FlavorText { get; init; } = string.Empty;
+        public string FlavorText { get; init; } = string.Empty;
 
-            public string Power { get; init; } = string.Empty;
+        public string Power { get; init; } = string.Empty;
 
-            public string Toughness { get; init; } = string.Empty;
+        public string Toughness { get; init; } = string.Empty;
 
-            public string Number { get; init; }
+        public string Number { get; init; }
 
-            public string Artist { get; init; }
-        }
+        public string Artist { get; init; }
     }
 }

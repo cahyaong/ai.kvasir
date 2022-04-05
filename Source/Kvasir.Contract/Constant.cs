@@ -26,12 +26,11 @@
 // <creation_timestamp>Friday, 9 November 2018 10:30:02 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    using System;
+namespace nGratis.AI.Kvasir.Contract;
 
-    public static class Constant
-    {
-        public static readonly DateTime EpochTimestamp = new(1993, 1, 1);
-    }
+using System;
+
+public static class Constant
+{
+    public static readonly DateTime EpochTimestamp = new(1993, 1, 1);
 }

@@ -26,162 +26,161 @@
 // <creation_timestamp>Friday, October 30, 2020 9:57:36 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
+using YamlDotNet.Serialization;
+using YamlReader = System.Func<YamlDotNet.Core.IParser, Contract.DefinedBlob.Cost>;
+using YamlWriter = System.Action<YamlDotNet.Core.IEmitter, Contract.DefinedBlob.Cost>;
+
+public class CostYamlConverter : IYamlTypeConverter
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-    using YamlDotNet.Core;
-    using YamlDotNet.Core.Events;
-    using YamlDotNet.Serialization;
-    using YamlReader = System.Func<YamlDotNet.Core.IParser, Contract.DefinedBlob.Cost>;
-    using YamlWriter = System.Action<YamlDotNet.Core.IEmitter, Contract.DefinedBlob.Cost>;
-
-    public class CostYamlConverter : IYamlTypeConverter
-    {
-        private static readonly IReadOnlyDictionary<CostKind, YamlReader> ReaderLookup =
-            new Dictionary<CostKind, YamlReader>
-            {
-                [CostKind.Tapping] = _ => DefinedBlob.TappingCost.Instance,
-                [CostKind.PayingMana] = CostYamlConverter.ReadPayingManaCost
-            };
-
-        private static readonly IReadOnlyDictionary<Type, YamlWriter> WriterLookup =
-            new Dictionary<Type, YamlWriter>
-            {
-                [typeof(DefinedBlob.TappingCost)] = (_, _) => { },
-                [typeof(DefinedBlob.PayingManaCost)] = CostYamlConverter.WritePayingManaCost
-            };
-
-        private CostYamlConverter()
+    private static readonly IReadOnlyDictionary<CostKind, YamlReader> ReaderLookup =
+        new Dictionary<CostKind, YamlReader>
         {
+            [CostKind.Tapping] = _ => DefinedBlob.TappingCost.Instance,
+            [CostKind.PayingMana] = CostYamlConverter.ReadPayingManaCost
+        };
+
+    private static readonly IReadOnlyDictionary<Type, YamlWriter> WriterLookup =
+        new Dictionary<Type, YamlWriter>
+        {
+            [typeof(DefinedBlob.TappingCost)] = (_, _) => { },
+            [typeof(DefinedBlob.PayingManaCost)] = CostYamlConverter.WritePayingManaCost
+        };
+
+    private CostYamlConverter()
+    {
+    }
+
+    public static CostYamlConverter Instance { get; } = new();
+
+    public bool Accepts(Type type) => typeof(DefinedBlob.Cost).IsAssignableFrom(type);
+
+    public object ReadYaml(IParser parser, Type type)
+    {
+        Guard
+            .Require(parser, nameof(parser))
+            .Is.Not.Null();
+
+        if (parser.Current?.GetType() != typeof(MappingStart))
+        {
+            throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
         }
 
-        public static CostYamlConverter Instance { get; } = new();
+        parser.MoveNext();
 
-        public bool Accepts(Type type) => typeof(DefinedBlob.Cost).IsAssignableFrom(type);
+        var field = parser.Consume<Scalar>().Value;
 
-        public object ReadYaml(IParser parser, Type type)
+        if (field != Field.Kind)
         {
-            Guard
-                .Require(parser, nameof(parser))
-                .Is.Not.Null();
+            throw new KvasirException($"Expecting field [{Field.Kind}] before parsing can continue!");
+        }
 
-            if (parser.Current?.GetType() != typeof(MappingStart))
-            {
-                throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
-            }
+        var costKind = (CostKind)Enum.Parse(typeof(CostKind), parser.ParseScalarValue<string>());
 
-            parser.MoveNext();
+        if (!CostYamlConverter.ReaderLookup.TryGetValue(costKind, out var reader))
+        {
+            throw new KvasirException($"There is no handler to read cost kind [{costKind}]!");
+        }
 
+        var cost = reader(parser);
+
+        parser.MoveNext();
+
+        return cost;
+    }
+
+    public void WriteYaml(IEmitter emitter, object value, Type type)
+    {
+        Guard
+            .Require(emitter, nameof(emitter))
+            .Is.Not.Null();
+
+        if (!(value is DefinedBlob.Cost cost))
+        {
+            return;
+        }
+
+        emitter.Emit(new MappingStart());
+        emitter.EmitField(Field.Kind, cost.Kind.ToString());
+
+        if (CostYamlConverter.WriterLookup.TryGetValue(cost.GetType(), out var writer))
+        {
+            writer(emitter, cost);
+        }
+        else
+        {
+            throw new KvasirException($"There is no handler to write <{cost.GetType()}>!");
+        }
+
+        emitter.Emit(new MappingEnd());
+    }
+
+    private static DefinedBlob.Cost ReadPayingManaCost(IParser parser)
+    {
+        var amountLookup = default(IReadOnlyDictionary<Mana, ushort>);
+
+        while (parser.Current?.GetType() != typeof(MappingEnd))
+        {
             var field = parser.Consume<Scalar>().Value;
 
-            if (field != Field.Kind)
+            if (field == Field.Amount)
             {
-                throw new KvasirException($"Expecting field [{Field.Kind}] before parsing can continue!");
+                amountLookup = parser.ParseLookup(
+                    mana => (Mana)Enum.Parse(typeof(Mana), mana, true),
+                    ushort.Parse);
             }
-
-            var costKind = (CostKind)Enum.Parse(typeof(CostKind), parser.ParseScalarValue<string>());
-
-            if (!CostYamlConverter.ReaderLookup.TryGetValue(costKind, out var reader))
-            {
-                throw new KvasirException($"There is no handler to read cost kind [{costKind}]!");
-            }
-
-            var cost = reader(parser);
-
-            parser.MoveNext();
-
-            return cost;
         }
 
-        public void WriteYaml(IEmitter emitter, object value, Type type)
+        if (amountLookup?.Any() != true)
         {
-            Guard
-                .Require(emitter, nameof(emitter))
-                .Is.Not.Null();
-
-            if (!(value is DefinedBlob.Cost cost))
-            {
-                return;
-            }
-
-            emitter.Emit(new MappingStart());
-            emitter.EmitField(Field.Kind, cost.Kind.ToString());
-
-            if (CostYamlConverter.WriterLookup.TryGetValue(cost.GetType(), out var writer))
-            {
-                writer(emitter, cost);
-            }
-            else
-            {
-                throw new KvasirException($"There is no handler to write <{cost.GetType()}>!");
-            }
-
-            emitter.Emit(new MappingEnd());
+            return DefinedBlob.PayingManaCost.Free;
         }
 
-        private static DefinedBlob.Cost ReadPayingManaCost(IParser parser)
+        var costBuilder = DefinedBlob.PayingManaCost.Builder.Create();
+
+        foreach (var (mana, quantity) in amountLookup)
         {
-            var amountLookup = default(IReadOnlyDictionary<Mana, ushort>);
+            costBuilder.WithAmount(mana, quantity);
+        }
 
-            while (parser.Current?.GetType() != typeof(MappingEnd))
-            {
-                var field = parser.Consume<Scalar>().Value;
+        return costBuilder.Build();
+    }
 
-                if (field == Field.Amount)
+    private static void WritePayingManaCost(IEmitter emitter, DefinedBlob.Cost cost)
+    {
+        var targetCost = (DefinedBlob.PayingManaCost)cost;
+
+        emitter.EmitField(
+            Field.Amount,
+            Enum
+                .GetValues(typeof(Mana))
+                .OfType<Mana>()
+                .Where(mana => mana != Mana.Unknown)
+                .Select(mana => new
                 {
-                    amountLookup = parser.ParseLookup(
-                        mana => (Mana)Enum.Parse(typeof(Mana), mana, true),
-                        ushort.Parse);
-                }
-            }
+                    Mana = mana,
+                    Quantity = targetCost[mana]
+                })
+                .Where(anon => anon.Quantity > 0)
+                .ToDictionary(anon => anon.Mana.ToString(), anon => anon.Quantity.ToString()));
+    }
 
-            if (amountLookup?.Any() != true)
-            {
-                return DefinedBlob.PayingManaCost.Free;
-            }
+    private static class Field
+    {
+        public static readonly string Kind = YamlSerializationExtensions
+            .NamingConvention
+            .Apply(nameof(DefinedBlob.Cost.Kind));
 
-            var costBuilder = DefinedBlob.PayingManaCost.Builder.Create();
-
-            foreach (var (mana, quantity) in amountLookup)
-            {
-                costBuilder.WithAmount(mana, quantity);
-            }
-
-            return costBuilder.Build();
-        }
-
-        private static void WritePayingManaCost(IEmitter emitter, DefinedBlob.Cost cost)
-        {
-            var targetCost = (DefinedBlob.PayingManaCost)cost;
-
-            emitter.EmitField(
-                Field.Amount,
-                Enum
-                    .GetValues(typeof(Mana))
-                    .OfType<Mana>()
-                    .Where(mana => mana != Mana.Unknown)
-                    .Select(mana => new
-                    {
-                        Mana = mana,
-                        Quantity = targetCost[mana]
-                    })
-                    .Where(anon => anon.Quantity > 0)
-                    .ToDictionary(anon => anon.Mana.ToString(), anon => anon.Quantity.ToString()));
-        }
-
-        private static class Field
-        {
-            public static readonly string Kind = YamlSerializationExtensions
-                .NamingConvention
-                .Apply(nameof(DefinedBlob.Cost.Kind));
-
-            public static readonly string Amount = YamlSerializationExtensions
-                .NamingConvention
-                .Apply(nameof(Field.Amount));
-        }
+        public static readonly string Amount = YamlSerializationExtensions
+            .NamingConvention
+            .Apply(nameof(Field.Amount));
     }
 }

@@ -26,163 +26,162 @@
 // <creation_timestamp>Saturday, 17 November 2018 9:54:32 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading;
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
+
+internal sealed class CachingMessageHandler : DelegatingHandler
 {
-    using System;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Reactive.Concurrency;
-    using System.Reactive.Linq;
-    using System.Reactive.Subjects;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
-    using nGratis.Cop.Olympus.Framework;
+    private readonly CompressedStorageManager _sharedStorageManager;
 
-    internal sealed class CachingMessageHandler : DelegatingHandler
+    private readonly CompressedStorageManager _imageStorageManager;
+
+    private readonly IKeyCalculator _keyCalculator;
+
+    private readonly Subject<SavingRequest> _whenEntrySavingRequested;
+
+    private bool _isDisposed;
+
+    public CachingMessageHandler(
+        string name,
+        IStorageManager storageManager,
+        IKeyCalculator keyCalculator,
+        HttpMessageHandler delegatingHandler)
+        : base(delegatingHandler)
     {
-        private readonly CompressedStorageManager _sharedStorageManager;
+        Guard
+            .Require(name, nameof(name))
+            .Is.Not.Null();
 
-        private readonly CompressedStorageManager _imageStorageManager;
+        // TODO: Consider injecting compressed storage managers!
 
-        private readonly IKeyCalculator _keyCalculator;
+        this._sharedStorageManager = new CompressedStorageManager(
+            new DataSpec(name, KvasirMime.Cache),
+            storageManager);
 
-        private readonly Subject<SavingRequest> _whenEntrySavingRequested;
+        this._imageStorageManager = new CompressedStorageManager(
+            new DataSpec($"{name}_Image", KvasirMime.Cache),
+            storageManager);
 
-        private bool _isDisposed;
+        this._keyCalculator = keyCalculator ?? SimpleKeyCalculator.Instance;
+        this._whenEntrySavingRequested = new Subject<SavingRequest>();
 
-        public CachingMessageHandler(
-            string name,
-            IStorageManager storageManager,
-            IKeyCalculator keyCalculator,
-            HttpMessageHandler delegatingHandler)
-            : base(delegatingHandler)
+        this._whenEntrySavingRequested
+            .ObserveOn(ThreadPoolScheduler.Instance)
+            .Subscribe(this.SaveEntry);
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage requestMessage,
+        CancellationToken cancellationToken)
+    {
+        Guard
+            .Require(requestMessage, nameof(requestMessage))
+            .Is.Not.Null();
+
+        var responseMessage = default(HttpResponseMessage);
+
+        var entrySpec = this._keyCalculator.Calculate(requestMessage.RequestUri);
+
+        if (entrySpec == null)
         {
-            Guard
-                .Require(name, nameof(name))
-                .Is.Not.Null();
-
-            // TODO: Consider injecting compressed storage managers!
-
-            this._sharedStorageManager = new CompressedStorageManager(
-                new DataSpec(name, KvasirMime.Cache),
-                storageManager);
-
-            this._imageStorageManager = new CompressedStorageManager(
-                new DataSpec($"{name}_Image", KvasirMime.Cache),
-                storageManager);
-
-            this._keyCalculator = keyCalculator ?? SimpleKeyCalculator.Instance;
-            this._whenEntrySavingRequested = new Subject<SavingRequest>();
-
-            this._whenEntrySavingRequested
-                .ObserveOn(ThreadPoolScheduler.Instance)
-                .Subscribe(this.SaveEntry);
+            throw new KvasirException(
+                $"Entry spec. is not calculated properly for URL [{requestMessage.RequestUri}]. " +
+                $"Calculator: [{this._keyCalculator.GetType().FullName}].");
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(
-            HttpRequestMessage requestMessage,
-            CancellationToken cancellationToken)
+        var storageManager = entrySpec.Mime.IsImage
+            ? this._imageStorageManager
+            : this._sharedStorageManager;
+
+        var foundBlob = default(byte[]);
+
+        if (entrySpec != DataSpec.None)
         {
-            Guard
-                .Require(requestMessage, nameof(requestMessage))
-                .Is.Not.Null();
+            await using var foundStream = storageManager.LoadEntry(entrySpec);
 
-            var responseMessage = default(HttpResponseMessage);
+            foundBlob = foundStream.ReadBlob();
+        }
 
-            var entrySpec = this._keyCalculator.Calculate(requestMessage.RequestUri);
-
-            if (entrySpec == null)
+        if (foundBlob?.Any() == true)
+        {
+            responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                throw new KvasirException(
-                    $"Entry spec. is not calculated properly for URL [{requestMessage.RequestUri}]. " +
-                    $"Calculator: [{this._keyCalculator.GetType().FullName}].");
-            }
+                Content = new ByteArrayContent(foundBlob)
+            };
+        }
+        else
+        {
+            responseMessage = await base.SendAsync(requestMessage, cancellationToken);
 
-            var storageManager = entrySpec.Mime.IsImage
-                ? this._imageStorageManager
-                : this._sharedStorageManager;
-
-            var foundBlob = default(byte[]);
-
-            if (entrySpec != DataSpec.None)
+            if (responseMessage.IsSuccessStatusCode && !this._whenEntrySavingRequested.IsDisposed)
             {
-                await using var foundStream = storageManager.LoadEntry(entrySpec);
-
-                foundBlob = foundStream.ReadBlob();
-            }
-
-            if (foundBlob?.Any() == true)
-            {
-                responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                this._whenEntrySavingRequested.OnNext(new SavingRequest
                 {
-                    Content = new ByteArrayContent(foundBlob)
-                };
+                    EntrySpec = entrySpec,
+                    Blob = await responseMessage.Content.ReadAsByteArrayAsync(cancellationToken)
+                });
             }
-            else
-            {
-                responseMessage = await base.SendAsync(requestMessage, cancellationToken);
-
-                if (responseMessage.IsSuccessStatusCode && !this._whenEntrySavingRequested.IsDisposed)
-                {
-                    this._whenEntrySavingRequested.OnNext(new SavingRequest
-                    {
-                        EntrySpec = entrySpec,
-                        Blob = await responseMessage.Content.ReadAsByteArrayAsync(cancellationToken)
-                    });
-                }
-            }
-
-            return responseMessage;
         }
 
-        protected override void Dispose(bool isDisposing)
+        return responseMessage;
+    }
+
+    protected override void Dispose(bool isDisposing)
+    {
+        if (this._isDisposed)
         {
-            if (this._isDisposed)
-            {
-                return;
-            }
-
-            if (isDisposing)
-            {
-                this._sharedStorageManager.Dispose();
-                this._imageStorageManager.Dispose();
-                this._whenEntrySavingRequested.Dispose();
-            }
-
-            base.Dispose(isDisposing);
-
-            this._isDisposed = true;
+            return;
         }
 
-        private void SaveEntry(SavingRequest request)
+        if (isDisposing)
         {
-            if (this._isDisposed)
-            {
-                return;
-            }
-
-            var cachingPool = request.EntrySpec.Mime.IsImage
-                ? this._imageStorageManager
-                : this._sharedStorageManager;
-
-            if (request.EntrySpec != DataSpec.None)
-            {
-                cachingPool.SaveEntry(
-                    request.EntrySpec,
-                    new MemoryStream(request.Blob),
-                    true);
-            }
+            this._sharedStorageManager.Dispose();
+            this._imageStorageManager.Dispose();
+            this._whenEntrySavingRequested.Dispose();
         }
 
-        private sealed class SavingRequest
+        base.Dispose(isDisposing);
+
+        this._isDisposed = true;
+    }
+
+    private void SaveEntry(SavingRequest request)
+    {
+        if (this._isDisposed)
         {
-            public DataSpec EntrySpec { get; set; }
-
-            public byte[] Blob { get; set; }
+            return;
         }
+
+        var cachingPool = request.EntrySpec.Mime.IsImage
+            ? this._imageStorageManager
+            : this._sharedStorageManager;
+
+        if (request.EntrySpec != DataSpec.None)
+        {
+            cachingPool.SaveEntry(
+                request.EntrySpec,
+                new MemoryStream(request.Blob),
+                true);
+        }
+    }
+
+    private sealed class SavingRequest
+    {
+        public DataSpec EntrySpec { get; set; }
+
+        public byte[] Blob { get; set; }
     }
 }

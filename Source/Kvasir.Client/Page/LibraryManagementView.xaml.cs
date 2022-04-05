@@ -26,13 +26,12 @@
 // <creation_timestamp>Tuesday, 23 October 2018 11:32:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+public partial class LibraryManagementView
 {
-    public partial class LibraryManagementView
+    public LibraryManagementView()
     {
-        public LibraryManagementView()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

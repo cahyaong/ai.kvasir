@@ -26,18 +26,17 @@
 // <creation_timestamp>Sunday, August 16, 2020 1:16:48 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
+namespace nGratis.AI.Kvasir.Contract;
+
+using System.IO;
+
+public interface IImage
 {
-    using System.IO;
+    int Width { get; }
 
-    public interface IImage
-    {
-        int Width { get; }
+    int Height { get; }
 
-        int Height { get; }
+    void LoadData(Stream dataSteam);
 
-        void LoadData(Stream dataSteam);
-
-        Stream SaveData();
-    }
+    Stream SaveData();
 }

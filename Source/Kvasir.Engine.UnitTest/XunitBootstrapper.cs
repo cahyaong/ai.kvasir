@@ -30,19 +30,19 @@
     "nGratis.AI.Kvasir.Engine.UnitTest.XunitBootstrapper",
     "nGratis.AI.Kvasir.Engine.UnitTest")]
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest
-{
-    using nGratis.AI.Kvasir.Framework;
-    using Xunit.Abstractions;
-    using Xunit.Sdk;
+namespace nGratis.AI.Kvasir.Engine.UnitTest;
 
-    public class XunitBootstrapper : XunitTestFramework
+using nGratis.AI.Kvasir.Framework;
+using Xunit.Abstractions;
+using Xunit.Sdk;
+
+public class XunitBootstrapper : XunitTestFramework
+{
+    public XunitBootstrapper(IMessageSink messageSink)
+        : base(messageSink)
     {
-        public XunitBootstrapper(IMessageSink messageSink) : base(messageSink)
-        {
-            TestingBootstrapper
-                .Create()
-                .WithFormatter();
-        }
+        TestingBootstrapper
+            .Create()
+            .WithFormatter();
     }
 }

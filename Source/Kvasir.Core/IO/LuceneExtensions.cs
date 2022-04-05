@@ -28,35 +28,34 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Lucene.Net
+namespace Lucene.Net;
+
+using System;
+using Lucene.Net.Store;
+using nGratis.AI.Kvasir.Core;
+using nGratis.Cop.Olympus.Contract;
+
+internal static partial class LuceneExtensions
 {
-    using System;
-    using Lucene.Net.Store;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Olympus.Contract;
-
-    internal static partial class LuceneExtensions
+    public static Directory CreateLuceneDirectory(this Uri rootFolderUri, IndexKind indexKind)
     {
-        public static Directory CreateLuceneDirectory(this Uri rootFolderUri, IndexKind indexKind)
+        Guard
+            .Require(rootFolderUri, nameof(rootFolderUri))
+            .Is.Not.Null()
+            .Is.Folder()
+            .Is.Exist();
+
+        Guard
+            .Require(indexKind, nameof(indexKind))
+            .Is.Not.Default();
+
+        var indexFolderPath = System.IO.Path.Combine(rootFolderUri.LocalPath, $"Lucene_{indexKind}");
+
+        if (!System.IO.Directory.Exists(indexFolderPath))
         {
-            Guard
-                .Require(rootFolderUri, nameof(rootFolderUri))
-                .Is.Not.Null()
-                .Is.Folder()
-                .Is.Exist();
-
-            Guard
-                .Require(indexKind, nameof(indexKind))
-                .Is.Not.Default();
-
-            var indexFolderPath = System.IO.Path.Combine(rootFolderUri.LocalPath, $"Lucene_{indexKind}");
-
-            if (!System.IO.Directory.Exists(indexFolderPath))
-            {
-                System.IO.Directory.CreateDirectory(indexFolderPath);
-            }
-
-            return FSDirectory.Open(indexFolderPath);
+            System.IO.Directory.CreateDirectory(indexFolderPath);
         }
+
+        return FSDirectory.Open(indexFolderPath);
     }
 }

@@ -26,141 +26,140 @@
 // <creation_timestamp>Monday, 28 January 2019 5:04:00 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
+using nGratis.Cop.Olympus.Contract;
+
+public class MagicEntityFactory : IMagicEntityFactory
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
-    using System.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Core;
-    using nGratis.Cop.Olympus.Contract;
+    private static readonly IReadOnlyDictionary<string, DefinedBlob.Deck> DefinedDeckByCodeLookup =
+        new Dictionary<string, DefinedBlob.Deck>
+        {
+            ["RED_01"] = DefinedBlob.Deck.Builder
+                .Create()
+                .WithCode("RED_01")
+                .WithName("Basic Red Creature")
+                .WithCardAndQuantity("Goblin Bully", "POR", 131, 4)
+                .WithCardAndQuantity("Highland Giant", "POR", 132, 4)
+                .WithCardAndQuantity("Hill Giant", "POR", 133, 4)
+                .WithCardAndQuantity("Mountain", "POR", 208, 8)
+                .Build(),
+            ["WHITE_01"] = DefinedBlob.Deck.Builder
+                .Create()
+                .WithCode("WHITE_01")
+                .WithName("Basic White Creature")
+                .WithCardAndQuantity("Devoted Hero", "POR", 13, 4)
+                .WithCardAndQuantity("Knight Errant", "POR", 20, 4)
+                .WithCardAndQuantity("Border Guard", "POR", 9, 4)
+                .WithCardAndQuantity("Plains", "POR", 196, 8)
+                .Build()
+        };
 
-    public class MagicEntityFactory : IMagicEntityFactory
+    private static readonly IReadOnlyDictionary<CardKind, Func<DefinedBlob.Card, Card>> CardBuilderLookup =
+        new Dictionary<CardKind, Func<DefinedBlob.Card, Card>>
+        {
+            [CardKind.Land] = MagicEntityFactory.CreateLand,
+            [CardKind.Creature] = MagicEntityFactory.CreateCreature
+        };
+
+    private readonly IProcessedMagicRepository _processedRepository;
+
+    public MagicEntityFactory(IProcessedMagicRepository processedRepository)
     {
-        private static readonly IReadOnlyDictionary<string, DefinedBlob.Deck> DefinedDeckByCodeLookup =
-            new Dictionary<string, DefinedBlob.Deck>
-            {
-                ["RED_01"] = DefinedBlob.Deck.Builder
-                    .Create()
-                    .WithCode("RED_01")
-                    .WithName("Basic Red Creature")
-                    .WithCardAndQuantity("Goblin Bully", "POR", 131, 4)
-                    .WithCardAndQuantity("Highland Giant", "POR", 132, 4)
-                    .WithCardAndQuantity("Hill Giant", "POR", 133, 4)
-                    .WithCardAndQuantity("Mountain", "POR", 208, 8)
-                    .Build(),
-                ["WHITE_01"] = DefinedBlob.Deck.Builder
-                    .Create()
-                    .WithCode("WHITE_01")
-                    .WithName("Basic White Creature")
-                    .WithCardAndQuantity("Devoted Hero", "POR", 13, 4)
-                    .WithCardAndQuantity("Knight Errant", "POR", 20, 4)
-                    .WithCardAndQuantity("Border Guard", "POR", 9, 4)
-                    .WithCardAndQuantity("Plains", "POR", 196, 8)
-                    .Build()
-            };
+        Guard
+            .Require(processedRepository, nameof(processedRepository))
+            .Is.Not.Null();
 
-        private static readonly IReadOnlyDictionary<CardKind, Func<DefinedBlob.Card, Card>> CardBuilderLookup =
-            new Dictionary<CardKind, Func<DefinedBlob.Card, Card>>
-            {
-                [CardKind.Land] = MagicEntityFactory.CreateLand,
-                [CardKind.Creature] = MagicEntityFactory.CreateCreature
-            };
+        this._processedRepository = processedRepository;
+    }
 
-        private readonly IProcessedMagicRepository _processedRepository;
+    public Player CreatePlayer(DefinedBlob.Player definedPlayer)
+    {
+        Guard
+            .Require(definedPlayer, nameof(definedPlayer))
+            .Is.Not.Null();
 
-        public MagicEntityFactory(IProcessedMagicRepository processedRepository)
+        if (!MagicEntityFactory.DefinedDeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
         {
-            Guard
-                .Require(processedRepository, nameof(processedRepository))
-                .Is.Not.Null();
-
-            this._processedRepository = processedRepository;
+            throw new KvasirException($"Deck with code [{definedPlayer.DeckCode}] is not defined!");
         }
 
-        public Player CreatePlayer(DefinedBlob.Player definedPlayer)
+        return new Player
         {
-            Guard
-                .Require(definedPlayer, nameof(definedPlayer))
-                .Is.Not.Null();
+            Name = definedPlayer.Name,
+            Deck = this.CreateDeck(definedDeck)
+        };
+    }
 
-            if (!MagicEntityFactory.DefinedDeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
+    public Card CreateCard(DefinedBlob.Card definedCard)
+    {
+        Guard
+            .Require(definedCard, nameof(definedCard))
+            .Is.Not.Null();
+
+        return MagicEntityFactory.CardBuilderLookup.TryGetValue(definedCard.Kind, out var buildCard)
+            ? buildCard(definedCard)
+            : throw new KvasirException(
+                @"Found no card builder for given card kind! " +
+                $"Kind: [{definedCard.Kind}].");
+    }
+
+    private Deck CreateDeck(DefinedBlob.Deck definedDeck)
+    {
+        Guard
+            .Require(definedDeck, nameof(definedDeck))
+            .Is.Not.Null();
+
+        var cards = definedDeck
+            .Entries
+            .Select(definedEntry => new
             {
-                throw new KvasirException($"Deck with code [{definedPlayer.DeckCode}] is not defined!");
-            }
+                DefinedCard = this
+                    ._processedRepository
+                    .LoadCardAsync(definedEntry.SetCode, definedEntry.Number)
+                    .RunSynchronously<DefinedBlob.Card>(),
+                Quantity = definedDeck[definedEntry]
+            })
+            .SelectMany(anon => Enumerable
+                .Range(0, anon.Quantity)
+                .Select(_ => this.CreateCard(anon.DefinedCard)))
+            .ToImmutableArray();
 
-            return new Player
-            {
-                Name = definedPlayer.Name,
-                Deck = this.CreateDeck(definedDeck)
-            };
-        }
-
-        public Card CreateCard(DefinedBlob.Card definedCard)
+        return new Deck
         {
-            Guard
-                .Require(definedCard, nameof(definedCard))
-                .Is.Not.Null();
+            Cards = cards
+        };
+    }
 
-            return MagicEntityFactory.CardBuilderLookup.TryGetValue(definedCard.Kind, out var buildCard)
-                ? buildCard(definedCard)
-                : throw new KvasirException(
-                    @"Found no card builder for given card kind! " +
-                    $"Kind: [{definedCard.Kind}].");
-        }
+    private static Land CreateLand(DefinedBlob.Card definedCard)
+    {
+        Guard
+            .Require(definedCard, nameof(definedCard))
+            .Is.Not.Null();
 
-        private Deck CreateDeck(DefinedBlob.Deck definedDeck)
+        return new Land(definedCard.Name);
+    }
+
+    private static Creature CreateCreature(DefinedBlob.Card definedCard)
+    {
+        Guard
+            .Require(definedCard, nameof(definedCard))
+            .Is.Not.Null();
+
+        Guard
+            .Require(definedCard.Kind, nameof(definedCard.Kind))
+            .Is.EqualTo(CardKind.Creature);
+
+        return new Creature(definedCard.Name)
         {
-            Guard
-                .Require(definedDeck, nameof(definedDeck))
-                .Is.Not.Null();
-
-            var cards = definedDeck
-                .Entries
-                .Select(definedEntry => new
-                {
-                    DefinedCard = this
-                        ._processedRepository
-                        .LoadCardAsync(definedEntry.SetCode, definedEntry.Number)
-                        .RunSynchronously<DefinedBlob.Card>(),
-                    Quantity = definedDeck[definedEntry]
-                })
-                .SelectMany(anon => Enumerable
-                    .Range(0, anon.Quantity)
-                    .Select(_ => this.CreateCard(anon.DefinedCard)))
-                .ToImmutableArray();
-
-            return new Deck
-            {
-                Cards = cards
-            };
-        }
-
-        private static Land CreateLand(DefinedBlob.Card definedCard)
-        {
-            Guard
-                .Require(definedCard, nameof(definedCard))
-                .Is.Not.Null();
-
-            return new Land(definedCard.Name);
-        }
-
-        private static Creature CreateCreature(DefinedBlob.Card definedCard)
-        {
-            Guard
-                .Require(definedCard, nameof(definedCard))
-                .Is.Not.Null();
-
-            Guard
-                .Require(definedCard.Kind, nameof(definedCard.Kind))
-                .Is.EqualTo(CardKind.Creature);
-
-            return new Creature(definedCard.Name)
-            {
-                Power = definedCard.Power,
-                Toughness = definedCard.Toughness
-            };
-        }
+            Power = definedCard.Power,
+            Toughness = definedCard.Toughness
+        };
     }
 }

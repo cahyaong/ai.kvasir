@@ -26,54 +26,53 @@
 // <creation_timestamp>Wednesday, 23 January 2019 11:25:35 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
+namespace nGratis.AI.Kvasir.Engine;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
+public class RandomGenerator : IRandomGenerator
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.Cop.Olympus.Contract;
+    private readonly Random _random;
 
-    public class RandomGenerator : IRandomGenerator
+    public RandomGenerator(int seed)
     {
-        private readonly Random _random;
+        this._random = new Random(seed);
+    }
 
-        public RandomGenerator(int seed)
+    public static RandomGenerator Default { get; } = new(Environment.TickCount);
+
+    public int RollDice(int sideCount)
+    {
+        Guard
+            .Require(sideCount, nameof(sideCount))
+            .Is.GreaterThan(0);
+
+        return this._random.Next(sideCount) + 1;
+    }
+
+    public IEnumerable<int> GenerateShufflingIndexes(int entityCount)
+    {
+        Guard
+            .Require(entityCount, nameof(entityCount))
+            .Is.GreaterThan(0);
+
+        var indexes = Enumerable
+            .Range(0, entityCount)
+            .ToArray();
+
+        // NOTE: This implementation is based on Fisher-Yates algorithm.
+
+        for (var count = indexes.Length - 1; count >= 0; count--)
         {
-            this._random = new Random(seed);
-        }
+            var index = this._random.Next(count);
 
-        public static RandomGenerator Default { get; } = new(Environment.TickCount);
+            yield return (ushort)indexes[index];
 
-        public int RollDice(int sideCount)
-        {
-            Guard
-                .Require(sideCount, nameof(sideCount))
-                .Is.GreaterThan(0);
-
-            return this._random.Next(sideCount) + 1;
-        }
-
-        public IEnumerable<int> GenerateShufflingIndexes(int entityCount)
-        {
-            Guard
-                .Require(entityCount, nameof(entityCount))
-                .Is.GreaterThan(0);
-
-            var indexes = Enumerable
-                .Range(0, entityCount)
-                .ToArray();
-
-            // NOTE: This implementation is based on Fisher-Yates algorithm.
-
-            for (var count = indexes.Length - 1; count >= 0; count--)
-            {
-                var index = this._random.Next(count);
-
-                yield return (ushort)indexes[index];
-
-                indexes[index] = indexes[count];
-            }
+            indexes[index] = indexes[count];
         }
     }
 }

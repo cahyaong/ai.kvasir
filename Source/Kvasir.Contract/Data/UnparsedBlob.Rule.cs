@@ -26,15 +26,14 @@
 // <creation_timestamp>Friday, January 10, 2020 7:54:28 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public static partial class UnparsedBlob
-    {
-        public record Rule
-        {
-            public string Id { get; init; }
+namespace nGratis.AI.Kvasir.Contract;
 
-            public string Text { get; init; }
-        }
+public static partial class UnparsedBlob
+{
+    public record Rule
+    {
+        public string Id { get; init; }
+
+        public string Text { get; init; }
     }
 }

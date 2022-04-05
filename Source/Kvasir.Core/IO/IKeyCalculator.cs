@@ -26,13 +26,12 @@
 // <creation_timestamp>Friday, 21 December 2018 11:38:56 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
-{
-    using System;
-    using nGratis.Cop.Olympus.Contract;
+namespace nGratis.AI.Kvasir.Core;
 
-    public interface IKeyCalculator
-    {
-        DataSpec Calculate(Uri uri);
-    }
+using System;
+using nGratis.Cop.Olympus.Contract;
+
+public interface IKeyCalculator
+{
+    DataSpec Calculate(Uri uri);
 }

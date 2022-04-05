@@ -26,15 +26,14 @@
 // <creation_timestamp>Monday, 14 January 2019 11:43:53 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract
-{
-    public enum AbilityKind
-    {
-        Unknown = 0,
+namespace nGratis.AI.Kvasir.Contract;
 
-        NotSupported,
-        Static,
-        Activated,
-        Triggered
-    }
+public enum AbilityKind
+{
+    Unknown = 0,
+
+    NotSupported,
+    Static,
+    Activated,
+    Triggered
 }

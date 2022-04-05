@@ -28,49 +28,48 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace System.Reflection
+namespace System.Reflection;
+
+using System.Collections.Generic;
+using System.IO;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine;
+using nGratis.AI.Kvasir.Framework;
+using nGratis.Cop.Olympus.Contract;
+using YamlDotNet.Serialization;
+
+public static class AssemblyExtensions
 {
-    using System.Collections.Generic;
-    using System.IO;
-    using nGratis.AI.Kvasir.Contract;
-    using nGratis.AI.Kvasir.Engine;
-    using nGratis.AI.Kvasir.Framework;
-    using nGratis.Cop.Olympus.Contract;
-    using YamlDotNet.Serialization;
-
-    public static class AssemblyExtensions
+    public static Stream FindSessionDataStream(this object _, string name)
     {
-        public static Stream FindSessionDataStream(this object _, string name)
-        {
-            Guard
-                .Require(name, nameof(name))
-                .Is.Not.Empty();
+        Guard
+            .Require(name, nameof(name))
+            .Is.Not.Empty();
 
-            return Assembly
-                .GetExecutingAssembly()
-                .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession") ??
-                throw new KvasirTestingException(@"Session data must be embedded!", $"Name: [{name}].");
-        }
+        return Assembly
+                   .GetExecutingAssembly()
+                   .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession") ??
+               throw new KvasirTestingException(@"Session data must be embedded!", $"Name: [{name}].");
+    }
 
-        public static void LoadCreatureData(this Zone zone, string name)
-        {
-            Guard
-                .Require(zone, nameof(zone))
-                .Is.Not.Null();
+    public static void LoadCreatureData(this Zone zone, string name)
+    {
+        Guard
+            .Require(zone, nameof(zone))
+            .Is.Not.Null();
 
-            Guard
-                .Require(name, nameof(name))
-                .Is.Not.Empty();
+        Guard
+            .Require(name, nameof(name))
+            .Is.Not.Empty();
 
-            using var dataStream = Assembly
-                .GetExecutingAssembly()
-                .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkcard") ??
-                throw new KvasirTestingException(@"Creatures data must be embedded!", $"Name: [{name}].");
+        using var dataStream = Assembly
+                                   .GetExecutingAssembly()
+                                   .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkcard") ??
+                               throw new KvasirTestingException(@"Creatures data must be embedded!", $"Name: [{name}].");
 
-            dataStream
-                .ReadText()
-                .DeserializeFromYaml<List<StubCreature>>()
-                .ForEach(zone.AddCardToTop);
-        }
+        dataStream
+            .ReadText()
+            .DeserializeFromYaml<List<StubCreature>>()
+            .ForEach(zone.AddCardToTop);
     }
 }

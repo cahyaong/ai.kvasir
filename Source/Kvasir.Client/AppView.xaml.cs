@@ -26,13 +26,12 @@
 // <creation_timestamp>Wednesday, 17 October 2018 8:05:56 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Client
+namespace nGratis.AI.Kvasir.Client;
+
+public partial class AppView
 {
-    public partial class AppView
+    public AppView()
     {
-        public AppView()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

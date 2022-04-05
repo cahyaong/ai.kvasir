@@ -26,15 +26,14 @@
 // <creation_timestamp>Friday, October 16, 2020 6:16:52 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Core
+namespace nGratis.AI.Kvasir.Core;
+
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+
+public interface IProcessedMagicRepository
 {
-    using System.Threading.Tasks;
-    using nGratis.AI.Kvasir.Contract;
+    Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number);
 
-    public interface IProcessedMagicRepository
-    {
-        Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number);
-
-        Task SaveCardAsync(DefinedBlob.Card card);
-    }
+    Task SaveCardAsync(DefinedBlob.Card card);
 }

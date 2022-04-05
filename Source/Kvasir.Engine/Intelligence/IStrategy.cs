@@ -26,12 +26,11 @@
 // <creation_timestamp>Tuesday, July 6, 2021 6:47:03 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine
-{
-    public interface IStrategy
-    {
-        AttackingDecision DeclareAttacker(Tabletop tabletop);
+namespace nGratis.AI.Kvasir.Engine;
 
-        BlockingDecision DeclareBlocker(Tabletop tabletop);
-    }
+public interface IStrategy
+{
+    AttackingDecision DeclareAttacker(Tabletop tabletop);
+
+    BlockingDecision DeclareBlocker(Tabletop tabletop);
 }
