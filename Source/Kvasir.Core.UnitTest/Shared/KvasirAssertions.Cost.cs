@@ -40,12 +40,10 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
     internal class CostAssertion : ReferenceTypeAssertions<DefinedBlob.Cost, CostAssertion>
     {
-        public CostAssertion(DefinedBlob.Cost cost)
+        public CostAssertion(DefinedBlob.Cost cost) : base(cost)
         {
             cost
                 .Should().NotBeNull();
-
-            this.Subject = cost;
         }
 
         protected override string Identifier { get; } = "cost";

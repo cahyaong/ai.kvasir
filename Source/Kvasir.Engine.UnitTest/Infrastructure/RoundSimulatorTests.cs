@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicSimulationTests.cs" company="nGratis">
+// <copyright file="RoundSimulatorTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -37,7 +37,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest
     using nGratis.Cop.Olympus.Contract;
     using Xunit;
 
-    public class MagicSimulationTests
+    public class RoundSimulatorTests
     {
         public class SimulateMethod
         {

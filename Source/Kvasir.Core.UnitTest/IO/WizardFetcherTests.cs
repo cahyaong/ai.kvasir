@@ -100,7 +100,7 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
                 fetcher
                     .Awaiting(self => self.FetchCardImageAsync(card))
-                    .Should().Throw<KvasirException>()
+                    .Should().ThrowAsync<KvasirException>()
                     .WithMessage(
                         "Failed to reach WIZARD.com when trying to fetch card image! " +
                         "Card: [[_MOCK_NAME_]]. " +

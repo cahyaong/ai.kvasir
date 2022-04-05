@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayerValueFormatter.cs" company="nGratis">
+// <copyright file="PlayerFormatter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -27,28 +27,22 @@
 // <creation_timestamp>Tuesday, February 11, 2020 7:10:43 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework
+namespace nGratis.AI.Kvasir.Framework;
+
+using FluentAssertions.Formatting;
+using nGratis.AI.Kvasir.Engine;
+using nGratis.Cop.Olympus.Contract;
+
+public class PlayerFormatter : IValueFormatter
 {
-    using System;
-    using System.Text;
-    using FluentAssertions.Formatting;
-    using nGratis.AI.Kvasir.Engine;
+    public bool CanHandle(object value) => value is Player;
 
-    public class PlayerValueFormatter : IValueFormatter
+    public void Format(object value, FormattedObjectGraph graph, FormattingContext context, FormatChild child)
     {
-        public bool CanHandle(object value) => value is Player;
+        var text = value is Player player
+            ? player.Name
+            : Text.Unsupported;
 
-        public string Format(object value, FormattingContext context, FormatChild formatChild)
-        {
-            var separator = context.UseLineBreaks ? Environment.NewLine : string.Empty;
-            var padding = context.UseLineBreaks ? new string('\t', context.Depth) : " ";
-
-            var player = (Player)value;
-
-            return new StringBuilder()
-                .Append($"{separator}{padding}<{player.GetType().FullName}> ")
-                .Append($"with <{nameof(Player.Name)}> = [{player.Name}]")
-                .ToString();
-        }
+        graph.AddFragment(text);
     }
 }

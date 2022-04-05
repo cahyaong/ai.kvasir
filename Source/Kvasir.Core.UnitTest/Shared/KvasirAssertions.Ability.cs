@@ -43,12 +43,10 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
     internal class AbilityAssertion : ReferenceTypeAssertions<DefinedBlob.Ability, AbilityAssertion>
     {
-        public AbilityAssertion(DefinedBlob.Ability ability)
+        public AbilityAssertion(DefinedBlob.Ability ability) : base(ability)
         {
             ability
                 .Should().NotBeNull();
-
-            this.Subject = ability;
         }
 
         protected override string Identifier { get; } = "ability";

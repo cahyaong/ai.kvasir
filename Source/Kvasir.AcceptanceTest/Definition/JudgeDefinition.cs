@@ -43,6 +43,16 @@ namespace nGratis.AI.Kvasir.AcceptanceTest.Definition
     [Binding]
     public sealed class JudgeDefinition
     {
+        static JudgeDefinition()
+        {
+            // NOTE: This is a temporary workaround! We can't use <Xunit.TestFramework> attribute
+            // because SpecFlow is also using it, and it will cause a conflict if we try adding our own one!
+
+            TestingBootstrapper
+                .Create()
+                .WithFormatter();
+        }
+
         private Tabletop _tabletop;
         private Judge _judge;
 

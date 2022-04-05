@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardFormatter.cs" company="nGratis">
+// <copyright file="TestingBootstrapper.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,35 +23,29 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, March 29, 2022 2:47:23 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, April 5, 2022 3:44:55 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Framework;
 
-using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions.Formatting;
-using nGratis.AI.Kvasir.Engine;
-using nGratis.Cop.Olympus.Contract;
 
-public class CardFormatter : IValueFormatter
+public class TestingBootstrapper
 {
-    public bool CanHandle(object value) => value is Card or IEnumerable<Card>;
-
-    public void Format(object value, FormattedObjectGraph graph, FormattingContext context, FormatChild child)
+    private TestingBootstrapper()
     {
-        var text = value switch
-        {
-            Card card => CardFormatter.Format(card),
-            IEnumerable<Card> cards => $"[{string.Join(", ", cards.Select(CardFormatter.Format))}]",
-            _ => Text.Unsupported
-        };
-
-        graph.AddFragment(text);
     }
 
-    private static string Format(Card card)
+    public static TestingBootstrapper Create()
     {
-        return card?.Name ?? Text.Undefined;
+        return new TestingBootstrapper();
+    }
+
+    public TestingBootstrapper WithFormatter()
+    {
+        Formatter.AddFormatter(new CardFormatter());
+        Formatter.AddFormatter(new PlayerFormatter());
+
+        return this;
     }
 }

@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Core.UnitTest
 {
-    using System.Diagnostics.CodeAnalysis;
     using FluentAssertions;
     using FluentAssertions.Execution;
     using FluentAssertions.Primitives;
@@ -36,18 +35,14 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
     public class CardAssertion : ReferenceTypeAssertions<UnparsedBlob.Card, CardAssertion>
     {
-        public CardAssertion(UnparsedBlob.Card card)
+        public CardAssertion(UnparsedBlob.Card card) : base(card)
         {
             card
                 .Should().NotBeNull();
-
-            this.Subject = card;
-            this.Identifier = $"card [{card.Name}]";
         }
 
-        protected override string Identifier { get; }
+        protected override string Identifier { get; } = "card";
 
-        [SuppressMessage("ReSharper", "StringLiteralTypo")]
         public AndConstraint<CardAssertion> HaveValidContent()
         {
             using (new AssertionScope())

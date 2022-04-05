@@ -27,12 +27,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 [assembly: Xunit.TestFramework(
-    "nGratis.AI.Kvasir.Engine.Test.XunitBootstrapper",
-    "nGratis.AI.Kvasir.Engine.Test")]
+    "nGratis.AI.Kvasir.Engine.UnitTest.XunitBootstrapper",
+    "nGratis.AI.Kvasir.Engine.UnitTest")]
 
 namespace nGratis.AI.Kvasir.Engine.UnitTest
 {
-    using FluentAssertions.Formatting;
     using nGratis.AI.Kvasir.Framework;
     using Xunit.Abstractions;
     using Xunit.Sdk;
@@ -41,7 +40,9 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest
     {
         public XunitBootstrapper(IMessageSink messageSink) : base(messageSink)
         {
-            Formatter.AddFormatter(new PlayerValueFormatter());
+            TestingBootstrapper
+                .Create()
+                .WithFormatter();
         }
     }
 }

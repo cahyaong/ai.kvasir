@@ -98,7 +98,7 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
                 fetcher
                     .Awaiting(self => self.FetchCardSetsAsync())
-                    .Should().Throw<KvasirException>()
+                    .Should().ThrowAsync<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch card sets! " +
                         "Status Code: [NotFound].");
@@ -182,7 +182,7 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
                 fetcher
                     .Awaiting(self => self.FetchCardsAsync(cardSet))
-                    .Should().Throw<KvasirException>()
+                    .Should().ThrowAsync<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch cards! " +
                         "Card Set: [[_MOCK_NAME_]]. " +
@@ -314,7 +314,7 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
                 fetcher
                     .Awaiting(self => self.FetchCardImageAsync(card))
-                    .Should().Throw<KvasirException>()
+                    .Should().ThrowAsync<KvasirException>()
                     .WithMessage(
                         "Failed to reach SCRYFALL.com when trying to fetch card image! " +
                         "Card: [[_MOCK_NAME_]]. " +

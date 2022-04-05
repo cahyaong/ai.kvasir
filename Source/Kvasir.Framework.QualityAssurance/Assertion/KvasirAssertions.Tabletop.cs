@@ -36,12 +36,10 @@ namespace nGratis.AI.Kvasir.Framework
 
     public class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAssertion>
     {
-        public TabletopAssertion(Tabletop tabletop)
+        public TabletopAssertion(Tabletop tabletop) : base(tabletop)
         {
             tabletop
                 .Should().NotBeNull();
-
-            this.Subject = tabletop;
         }
 
         protected override string Identifier { get; } = "tabletop";

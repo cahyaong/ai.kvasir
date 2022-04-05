@@ -39,16 +39,14 @@ namespace nGratis.AI.Kvasir.Framework
 
     public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
     {
-        public ZoneAssertion(Zone zone)
+        public ZoneAssertion(Zone zone) : base(zone)
         {
             zone
                 .Should().NotBeNull();
 
             zone
                 .Kind
-                .Should().NotBe(AbilityKind.Unknown);
-
-            this.Subject = zone;
+                .Should().NotBe(ZoneKind.Unknown);
         }
 
         protected override string Identifier => "zone";

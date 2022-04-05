@@ -40,12 +40,10 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
 
     internal class EffectAssertion : ReferenceTypeAssertions<DefinedBlob.Effect, EffectAssertion>
     {
-        public EffectAssertion(DefinedBlob.Effect effect)
+        public EffectAssertion(DefinedBlob.Effect effect) : base(effect)
         {
             effect
                 .Should().NotBeNull();
-
-            this.Subject = effect;
         }
 
         protected override string Identifier { get; } = "effect";

@@ -382,7 +382,7 @@ namespace nGratis.AI.Kvasir.Core.UnitTest
                     processingResult
                         .GetValue<DefinedBlob.Card>()
                         .SubKinds
-                        .Should().BeEquivalentTo(CardSubKind.Merfolk, CardSubKind.Wizard);
+                        .Should().BeEquivalentTo(new[] { CardSubKind.Merfolk, CardSubKind.Wizard });
                 }
             }
 
