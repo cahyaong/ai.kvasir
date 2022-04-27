@@ -53,11 +53,11 @@ public static partial class DefinedBlob
 
     public sealed record ProducingManaEffect : Effect
     {
-        private readonly IDictionary<Mana, ushort> _amountLookup;
+        private readonly IDictionary<Mana, ushort> _amountByManaLookup;
 
         private ProducingManaEffect()
         {
-            this._amountLookup = new Dictionary<Mana, ushort>();
+            this._amountByManaLookup = new Dictionary<Mana, ushort>();
         }
 
         public override EffectKind Kind => EffectKind.ProducingMana;
@@ -70,7 +70,7 @@ public static partial class DefinedBlob
                     .Require(mana, nameof(mana))
                     .Is.Not.Default();
 
-                return this._amountLookup.TryGetValue(mana, out var amount)
+                return this._amountByManaLookup.TryGetValue(mana, out var amount)
                     ? amount
                     : (ushort)0;
             }
@@ -102,12 +102,12 @@ public static partial class DefinedBlob
                     .Require(amount, nameof(amount))
                     .Is.Positive();
 
-                if (!this._producingManaEffect._amountLookup.ContainsKey(mana))
+                if (!this._producingManaEffect._amountByManaLookup.ContainsKey(mana))
                 {
-                    this._producingManaEffect._amountLookup[mana] = 0;
+                    this._producingManaEffect._amountByManaLookup[mana] = 0;
                 }
 
-                this._producingManaEffect._amountLookup[mana] += amount;
+                this._producingManaEffect._amountByManaLookup[mana] += amount;
 
                 return this;
             }

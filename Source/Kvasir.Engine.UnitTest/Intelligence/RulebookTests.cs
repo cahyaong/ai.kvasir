@@ -34,7 +34,6 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 using Xunit;
 
@@ -104,7 +103,11 @@ public class RulebookTests
             var tabletop = new Tabletop
             {
                 ActivePlayer = new Player(),
-                Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+                Battlefield = new Zone
+                {
+                    Kind = ZoneKind.Battlefield,
+                    Visibility = Visibility.Public
+                }
             };
 
             tabletop.Battlefield.AddCardToTop(new Land("[_MOCK_LAND_]")
@@ -207,7 +210,11 @@ public class RulebookTests
                     {
                         Name = "[_MOCK_PLAYER_02_]"
                     },
-                    Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+                    Battlefield = new Zone
+                    {
+                        Kind = ZoneKind.Battlefield,
+                        Visibility = Visibility.Public
+                    }
                 };
 
                 tabletop
@@ -259,10 +266,6 @@ public class RulebookTests
 
             public FindingCreaturesTheory ExpectCreature(params string[] names)
             {
-                Guard
-                    .Require(names, nameof(names))
-                    .Is.Not.Null();
-
                 this.ExpectedCreatureNames = names;
 
                 return this;

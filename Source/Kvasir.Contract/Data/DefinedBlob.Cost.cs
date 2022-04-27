@@ -35,10 +35,12 @@ public static partial class DefinedBlob
 {
     public abstract record Cost
     {
+        public static Cost Unknown => UnknownCost.Instance;
+
         public abstract CostKind Kind { get; }
     }
 
-    public sealed record UnknownCost : Cost
+    internal sealed record UnknownCost : Cost
     {
         private UnknownCost()
         {
@@ -62,11 +64,11 @@ public static partial class DefinedBlob
 
     public sealed record PayingManaCost : Cost
     {
-        private readonly IDictionary<Mana, ushort> _amountLookup;
+        private readonly IDictionary<Mana, ushort> _amountByManaLookup;
 
         private PayingManaCost()
         {
-            this._amountLookup = new Dictionary<Mana, ushort>();
+            this._amountByManaLookup = new Dictionary<Mana, ushort>();
         }
 
         public static PayingManaCost Free { get; } = PayingManaCost.Builder
@@ -83,7 +85,7 @@ public static partial class DefinedBlob
                     .Require(mana, nameof(mana))
                     .Is.Not.Default();
 
-                return this._amountLookup.TryGetValue(mana, out var amount)
+                return this._amountByManaLookup.TryGetValue(mana, out var amount)
                     ? amount
                     : (ushort)0;
             }
@@ -114,12 +116,12 @@ public static partial class DefinedBlob
                     return this;
                 }
 
-                if (!this._payingManaCost._amountLookup.ContainsKey(mana))
+                if (!this._payingManaCost._amountByManaLookup.ContainsKey(mana))
                 {
-                    this._payingManaCost._amountLookup[mana] = 0;
+                    this._payingManaCost._amountByManaLookup[mana] = 0;
                 }
 
-                this._payingManaCost._amountLookup[mana] += amount;
+                this._payingManaCost._amountByManaLookup[mana] += amount;
 
                 return this;
             }

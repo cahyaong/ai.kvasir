@@ -32,18 +32,15 @@ using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using nGratis.AI.Kvasir.Engine;
-using nGratis.Cop.Olympus.Contract;
 
-public class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAssertion>
+public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAssertion>
 {
-    public TabletopAssertion(Tabletop tabletop)
+    public TabletopAssertion(ITabletop tabletop)
         : base(tabletop)
     {
-        tabletop
-            .Should().NotBeNull();
     }
 
-    protected override string Identifier { get; } = "tabletop";
+    protected override string Identifier => "tabletop";
 
     public AndConstraint<TabletopAssertion> HavePlayers()
     {
@@ -63,10 +60,6 @@ public class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAsser
 
     public AndConstraint<TabletopAssertion> HaveCardInBattlefield(Card card)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
         using (new AssertionScope())
         {
             this
@@ -93,10 +86,6 @@ public class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAsser
 
     public AndConstraint<TabletopAssertion> HaveCardInActiveGraveyard(Card card)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
         using (new AssertionScope())
         {
             this
@@ -123,10 +112,6 @@ public class TabletopAssertion : ReferenceTypeAssertions<Tabletop, TabletopAsser
 
     public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(Card card)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
         using (new AssertionScope())
         {
             this

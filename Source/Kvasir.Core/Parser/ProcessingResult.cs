@@ -38,15 +38,11 @@ public sealed class ValidProcessingResult : ProcessingResult
 {
     private readonly object _value;
 
-    private object _childValue;
+    private object? _childValue;
 
     private ValidProcessingResult(object value)
         : base(Enumerable.Empty<string>())
     {
-        Guard
-            .Require(value, nameof(value))
-            .Is.Not.Default();
-
         this._value = value;
     }
 
@@ -112,10 +108,6 @@ public abstract class ProcessingResult
 
     protected ProcessingResult(IEnumerable<string> messages)
     {
-        Guard
-            .Require(messages, nameof(messages))
-            .Is.Not.Null();
-
         this._messages = messages
             .Where(message => !string.IsNullOrEmpty(message))
             .ToList();
@@ -142,10 +134,6 @@ public abstract class ProcessingResult
 
     internal ProcessingResult WithChildResult(ProcessingResult childResult)
     {
-        Guard
-            .Require(childResult, nameof(childResult))
-            .Is.Not.Null();
-
         if (!childResult.IsValid)
         {
             var filteredMessages = childResult
@@ -161,10 +149,6 @@ public abstract class ProcessingResult
 
     internal ProcessingResult BindTo(PropertyInfo propertyInfo)
     {
-        Guard
-            .Require(propertyInfo, nameof(propertyInfo))
-            .Is.Not.Null();
-
         return this.BindToCore(propertyInfo);
     }
 

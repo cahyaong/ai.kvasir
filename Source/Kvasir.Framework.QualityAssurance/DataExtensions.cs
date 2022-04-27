@@ -30,13 +30,11 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Linq;
-using Moq;
 using nGratis.Cop.Olympus.Contract;
 
 public static class DataExtensions
 {
-    public static Creature CreateAttacker(this Tabletop tabletop, string name, int power, int toughness)
+    public static Creature CreateAttacker(this ITabletop tabletop, string name, int power, int toughness)
     {
         Guard
             .Require(power, nameof(power))
@@ -59,7 +57,7 @@ public static class DataExtensions
         return attacker;
     }
 
-    public static Creature CreateBlocker(this Tabletop tabletop, string name, int power, int toughness)
+    public static Creature CreateBlocker(this ITabletop tabletop, string name, int power, int toughness)
     {
         Guard
             .Require(power, nameof(power))
@@ -80,52 +78,5 @@ public static class DataExtensions
         tabletop.Battlefield.AddCardToTop(blocker);
 
         return blocker;
-    }
-
-    public static Player WithAttackingDecision(this Player player, params Creature[] attackers)
-    {
-        Guard
-            .Require(player, nameof(player))
-            .Is.Not.Null();
-
-        Guard
-            .Require(attackers, nameof(attackers))
-            .Is.Not.Empty();
-
-        var attackDecision = new AttackingDecision
-        {
-            Attackers = attackers
-        };
-
-        var mockStrategy = MockBuilder.CreateMock<IStrategy>();
-
-        mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-            .Returns(attackDecision);
-
-        player.Strategy = mockStrategy.Object;
-
-        return player;
-    }
-
-    public static Player WithBlockingDecision(this Player player, params Combat[] combats)
-    {
-        Guard
-            .Require(player, nameof(player))
-            .Is.Not.Null();
-
-        var blockingDecision = combats.Any()
-            ? new BlockingDecision { Combats = combats }
-            : BlockingDecision.None;
-
-        var mockStrategy = MockBuilder.CreateMock<IStrategy>();
-
-        mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-            .Returns(blockingDecision);
-
-        player.Strategy = mockStrategy.Object;
-
-        return player;
     }
 }

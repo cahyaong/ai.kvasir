@@ -40,32 +40,25 @@ public static class MagicRepositoryExtensions
         string name)
     {
         Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
-        Guard
             .Require(name, nameof(name))
             .Is.Not.Empty();
 
         var cardSets = (await unprocessedRepository
-                .GetCardSetsAsync())
+            .GetCardSetsAsync())
             .Where(cardSet => cardSet.Name == name)
             .ToArray();
 
-        if (cardSets.Length <= 0)
+        return cardSets.Length switch
         {
-            throw new KvasirException(
-                @"Failed to find card set! " +
-                $"Name: [{name}].");
-        }
+            <= 0 => throw new KvasirException(
+                "Found no card set!",
+                ("Name", name)),
 
-        if (cardSets.Length > 1)
-        {
-            throw new KvasirException(
-                @"Found more than 1 card set! " +
-                $"Name: [{name}].");
-        }
+            > 1 => throw new KvasirException(
+                "Found more than 1 card set",
+                ("Name", name)),
 
-        return cardSets.Single();
+            _ => cardSets.Single()
+        };
     }
 }

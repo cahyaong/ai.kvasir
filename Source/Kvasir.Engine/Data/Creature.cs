@@ -26,6 +26,8 @@
 // <creation_timestamp>Friday, February 5, 2021 6:39:09 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
+using nGratis.Cop.Olympus.Contract;
+
 namespace nGratis.AI.Kvasir.Engine;
 
 using nGratis.AI.Kvasir.Contract;
@@ -36,6 +38,8 @@ public class Creature : Permanent
         : base(name, CardKind.Creature)
     {
     }
+
+    public static Creature Unknown { get; } = new(DefinedText.Unknown);
 
     public int Power { get; init; }
 

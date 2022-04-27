@@ -30,27 +30,55 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System.Diagnostics;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
 
 // TODO: Use builder pattern to make most properties immutable after creation!
 
 [DebuggerDisplay("<Player> {this.Name}")]
-public class Player
+public class Player : IPlayer
 {
+    public Player()
+    {
+        this.Kind = PlayerKind.Unknown;
+        this.Name = DefinedText.Unknown;
+        this.Deck = Engine.Deck.Unknown;
+        this.Strategy = Engine.Strategy.Unknown;
+        this.Life = 0;
+
+        this.Library = new Zone
+        {
+            Kind = ZoneKind.Library,
+            Visibility = Visibility.Hidden
+        };
+
+        this.Hand = new Zone
+        {
+            Kind = ZoneKind.Hand,
+            Visibility = Visibility.Hidden
+        };
+
+        this.Graveyard = new Zone
+        {
+            Kind = ZoneKind.Graveyard,
+            Visibility = Visibility.Public
+        };
+    }
+
+    public static IPlayer Unknown => UnknownPlayer.Instance;
+
     public PlayerKind Kind { get; init; }
 
     public string Name { get; init; }
 
-    public Deck Deck { get; init; }
+    public IDeck Deck { get; init; }
 
-    public IStrategy Strategy { get; set; }
+    public IStrategy Strategy { get; init; }
+
+    public IZone Library { get; init; }
+
+    public IZone Hand { get; init; }
+
+    public IZone Graveyard { get; init; }
 
     public int Life { get; set; }
-
-    public Zone Library { get; set; }
-
-    public Zone Hand { get; set; }
-
-    public Zone Graveyard { get; set; }
-
-    public Player Opponent { get; set; }
 }

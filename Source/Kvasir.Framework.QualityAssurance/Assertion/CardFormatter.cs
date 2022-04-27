@@ -44,7 +44,7 @@ public class CardFormatter : IValueFormatter
         {
             Card card => CardFormatter.Format(card),
             IEnumerable<Card> cards => $"[{string.Join(", ", cards.Select(CardFormatter.Format))}]",
-            _ => Text.Unsupported
+            _ => DefinedText.Unsupported
         };
 
         graph.AddFragment(text);
@@ -52,6 +52,6 @@ public class CardFormatter : IValueFormatter
 
     private static string Format(Card card)
     {
-        return card?.Name ?? Text.Undefined;
+        return card?.Name ?? DefinedText.Unknown;
     }
 }

@@ -29,6 +29,7 @@
 namespace nGratis.AI.Kvasir.Contract;
 
 using System.Diagnostics;
+using nGratis.Cop.Olympus.Contract;
 
 public static partial class UnparsedBlob
 {
@@ -37,30 +38,30 @@ public static partial class UnparsedBlob
     {
         public int MultiverseId { get; init; }
 
-        public string ScryfallId { get; init; } = Cop.Olympus.Contract.Text.None;
+        public string ScryfallId { get; init; } = DefinedText.Unknown;
 
-        public string ScryfallImageUrl { get; init; } = Cop.Olympus.Contract.Text.None;
+        public string ScryfallImageUrl { get; init; } = DefinedText.Unknown;
 
-        public string SetCode { get; init; }
+        public string SetCode { get; init; } = DefinedText.Unknown;
 
-        public string Name { get; init; }
+        public string Name { get; init; } = DefinedText.Unknown;
 
         public string ManaCost { get; init; } = string.Empty;
 
-        public string Type { get; init; }
+        public string Type { get; init; } = DefinedText.Unknown;
 
-        public string Rarity { get; init; }
+        public string Rarity { get; init; } = DefinedText.Unknown;
 
-        public string Text { get; init; } = string.Empty;
+        public string Text { get; init; } = DefinedText.Unknown;
 
-        public string FlavorText { get; init; } = string.Empty;
+        public string FlavorText { get; init; } = DefinedText.Unknown;
 
         public string Power { get; init; } = string.Empty;
 
         public string Toughness { get; init; } = string.Empty;
 
-        public string Number { get; init; }
+        public string Number { get; init; } = DefinedText.Unknown;
 
-        public string Artist { get; init; }
+        public string Artist { get; init; } = DefinedText.Unknown;
     }
 }

@@ -59,5 +59,6 @@ public class NopFetcher : IMagicFetcher
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 }

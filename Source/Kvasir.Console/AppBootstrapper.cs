@@ -92,10 +92,6 @@ internal static class AutofacExtensions
 {
     public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         containerBuilder
             .Register(_ => new ConsoleLogger("Main"))
             .InstancePerLifetimeScope()
@@ -106,10 +102,6 @@ internal static class AutofacExtensions
 
     public static ContainerBuilder RegisterStorageManager(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         var dataFolderUri = Config.FindDataFolderUri();
 
         containerBuilder
@@ -134,10 +126,6 @@ internal static class AutofacExtensions
 
     public static ContainerBuilder RegisterRepository(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         containerBuilder
             .RegisterType<NopFetcher>()
             .InstancePerLifetimeScope()
@@ -159,10 +147,6 @@ internal static class AutofacExtensions
 
     public static ContainerBuilder RegisterExecution(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         containerBuilder
             .RegisterType<MagicCardProcessor>()
             .InstancePerLifetimeScope()
@@ -178,10 +162,6 @@ internal static class AutofacExtensions
 
     public static ContainerBuilder RegisterSimulator(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         containerBuilder
             .Register(_ => RandomGenerator.Default)
             .InstancePerLifetimeScope()

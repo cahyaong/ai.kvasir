@@ -43,7 +43,7 @@ internal class SimpleKeyCalculator : IKeyCalculator
 
     public DataSpec Calculate(Uri uri)
     {
-        var key = uri?.Segments.LastOrDefault();
+        var key = uri.Segments.LastOrDefault();
 
         if (string.IsNullOrEmpty(key))
         {

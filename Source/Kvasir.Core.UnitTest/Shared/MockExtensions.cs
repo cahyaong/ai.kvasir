@@ -221,7 +221,7 @@ internal static partial class MockExtensions
 
         mockFetcher
             .Setup(mock => mock.FetchCardSetsAsync())
-            .Returns(Task.FromResult<IReadOnlyCollection<UnparsedBlob.CardSet>>(new UnparsedBlob.CardSet[0]))
+            .Returns(Task.FromResult<IReadOnlyCollection<UnparsedBlob.CardSet>>(Array.Empty<UnparsedBlob.CardSet>()))
             .Verifiable();
 
         return mockFetcher;
@@ -263,7 +263,7 @@ internal static partial class MockExtensions
 
         mockFetcher
             .Setup(mock => mock.FetchCardsAsync(It.IsAny<UnparsedBlob.CardSet>()))
-            .Returns(Task.FromResult<IReadOnlyCollection<UnparsedBlob.Card>>(new UnparsedBlob.Card[0]))
+            .Returns(Task.FromResult<IReadOnlyCollection<UnparsedBlob.Card>>(Array.Empty<UnparsedBlob.Card>()))
             .Verifiable();
 
         return mockFetcher;

@@ -34,7 +34,7 @@ using nGratis.Cop.Olympus.Contract;
 public class StubCreature : Creature
 {
     public StubCreature()
-        : base(Text.Undefined)
+        : base(DefinedText.Unknown)
     {
     }
 }

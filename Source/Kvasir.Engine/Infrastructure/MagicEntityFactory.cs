@@ -70,21 +70,16 @@ public class MagicEntityFactory : IMagicEntityFactory
 
     private readonly IProcessedMagicRepository _processedRepository;
 
-    public MagicEntityFactory(IProcessedMagicRepository processedRepository)
-    {
-        Guard
-            .Require(processedRepository, nameof(processedRepository))
-            .Is.Not.Null();
+    private readonly IRandomGenerator _randomGenerator;
 
+    public MagicEntityFactory(IProcessedMagicRepository processedRepository, IRandomGenerator randomGenerator)
+    {
         this._processedRepository = processedRepository;
+        this._randomGenerator = randomGenerator;
     }
 
     public Player CreatePlayer(DefinedBlob.Player definedPlayer)
     {
-        Guard
-            .Require(definedPlayer, nameof(definedPlayer))
-            .Is.Not.Null();
-
         if (!MagicEntityFactory.DefinedDeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
         {
             throw new KvasirException($"Deck with code [{definedPlayer.DeckCode}] is not defined!");
@@ -93,16 +88,13 @@ public class MagicEntityFactory : IMagicEntityFactory
         return new Player
         {
             Name = definedPlayer.Name,
-            Deck = this.CreateDeck(definedDeck)
+            Deck = this.CreateDeck(definedDeck),
+            Strategy = new RandomStrategy(this._randomGenerator)
         };
     }
 
     public Card CreateCard(DefinedBlob.Card definedCard)
     {
-        Guard
-            .Require(definedCard, nameof(definedCard))
-            .Is.Not.Null();
-
         return MagicEntityFactory.CardBuilderLookup.TryGetValue(definedCard.Kind, out var buildCard)
             ? buildCard(definedCard)
             : throw new KvasirException(
@@ -112,10 +104,6 @@ public class MagicEntityFactory : IMagicEntityFactory
 
     private Deck CreateDeck(DefinedBlob.Deck definedDeck)
     {
-        Guard
-            .Require(definedDeck, nameof(definedDeck))
-            .Is.Not.Null();
-
         var cards = definedDeck
             .Entries
             .Select(definedEntry => new
@@ -139,19 +127,11 @@ public class MagicEntityFactory : IMagicEntityFactory
 
     private static Land CreateLand(DefinedBlob.Card definedCard)
     {
-        Guard
-            .Require(definedCard, nameof(definedCard))
-            .Is.Not.Null();
-
         return new Land(definedCard.Name);
     }
 
     private static Creature CreateCreature(DefinedBlob.Card definedCard)
     {
-        Guard
-            .Require(definedCard, nameof(definedCard))
-            .Is.Not.Null();
-
         Guard
             .Require(definedCard.Kind, nameof(definedCard.Kind))
             .Is.EqualTo(CardKind.Creature);

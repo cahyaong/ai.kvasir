@@ -37,14 +37,10 @@ using nGratis.Cop.Olympus.Contract;
 public static class Rulebook
 {
     public static IEnumerable<Creature> FindCreatures(
-        Tabletop tabletop,
+        ITabletop tabletop,
         PlayerModifier playerModifier,
         CreatureModifier creatureModifier)
     {
-        Guard
-            .Require(tabletop, nameof(tabletop))
-            .Is.Not.Null();
-
         Guard
             .Require(playerModifier, nameof(playerModifier))
             .Is.Not.Default();
@@ -81,12 +77,8 @@ public static class Rulebook
         return filteredCreatures.ToImmutableList();
     }
 
-    public static ValidationResult Validate(AttackingDecision attackingDecision)
+    public static ValidationResult Validate(IAttackingDecision attackingDecision)
     {
-        Guard
-            .Require(attackingDecision, nameof(attackingDecision))
-            .Is.Not.Null();
-
         if (attackingDecision == AttackingDecision.None)
         {
             return ValidationResult.Successful;
@@ -110,12 +102,8 @@ public static class Rulebook
         return ValidationResult.Create(reasons);
     }
 
-    public static ValidationResult Validate(BlockingDecision blockingDecision)
+    public static ValidationResult Validate(IBlockingDecision blockingDecision)
     {
-        Guard
-            .Require(blockingDecision, nameof(blockingDecision))
-            .Is.Not.Null();
-
         var reasons = new List<ValidationReason>();
 
         blockingDecision

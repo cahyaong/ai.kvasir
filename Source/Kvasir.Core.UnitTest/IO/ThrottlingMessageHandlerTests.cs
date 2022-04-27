@@ -51,7 +51,7 @@ public class ThrottlingMessageHandlerTests
 
             var throttlingHandler = new ThrottlingMessageHandler(1.Seconds(), stubHandler);
 
-            var responseMessage = default(HttpResponseMessage);
+            var response = default(HttpResponseMessage);
             var stopwatch = new Stopwatch();
 
             // Act.
@@ -60,8 +60,8 @@ public class ThrottlingMessageHandlerTests
             {
                 stopwatch.Start();
 
-                responseMessage = await client.GetAsync("http://www.mock-url.com");
-                responseMessage = await client.GetAsync("http://www.mock-url.com");
+                response = await client.GetAsync("http://www.mock-url.com");
+                response = await client.GetAsync("http://www.mock-url.com");
 
                 stopwatch.Stop();
             }
@@ -72,10 +72,10 @@ public class ThrottlingMessageHandlerTests
                 .Elapsed
                 .Should().BeGreaterOrEqualTo(950.Milliseconds());
 
-            responseMessage
+            response
                 .Should().NotBeNull();
 
-            var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
 
             content
                 .Should().Be("[_MOCK_HTML_CONTENT_]");
@@ -93,7 +93,7 @@ public class ThrottlingMessageHandlerTests
 
             var throttlingHandler = new ThrottlingMessageHandler(1.Minutes(), stubHandler);
 
-            var responseMessage = default(HttpResponseMessage);
+            var response = default(HttpResponseMessage);
             var stopwatch = new Stopwatch();
 
             // Act.
@@ -102,8 +102,8 @@ public class ThrottlingMessageHandlerTests
             {
                 stopwatch.Start();
 
-                responseMessage = await client.GetAsync("http://www.mock-url.com");
-                responseMessage = await client.GetAsync("http://www.another-mock-url.com");
+                response = await client.GetAsync("http://www.mock-url.com");
+                response = await client.GetAsync("http://www.another-mock-url.com");
 
                 stopwatch.Stop();
             }
@@ -114,7 +114,7 @@ public class ThrottlingMessageHandlerTests
                 .Elapsed
                 .Should().BeLessThan(1.Minutes());
 
-            responseMessage
+            response
                 .Should().NotBeNull();
         }
     }

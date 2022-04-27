@@ -29,49 +29,34 @@
 namespace nGratis.AI.Kvasir.Contract;
 
 using System;
+using nGratis.Cop.Olympus.Contract;
 
 public static partial class DefinedBlob
 {
     public record Card
     {
-        public Card()
-        {
-            this.SubKinds = Default.SubKinds;
-            this.Cost = Default.Cost;
-            this.Abilities = Default.Abilities;
-        }
-
         public ushort Number { get; init; }
 
-        public string SetCode { get; init; }
+        public string SetCode { get; init; } = DefinedText.Unknown;
 
         public uint MultiverseId { get; init; }
 
-        public string Name { get; init; }
+        public string Name { get; init; } = DefinedText.Unknown;
 
-        public CardKind Kind { get; init; }
+        public CardKind Kind { get; init; } = CardKind.Unknown;
 
-        public CardSuperKind SuperKind { get; init; }
+        public CardSuperKind SuperKind { get; init; } = CardSuperKind.Unknown;
 
-        public CardSubKind[] SubKinds { get; init; }
+        public CardSubKind[] SubKinds { get; init; } = Array.Empty<CardSubKind>();
 
         public bool IsTribal { get; init; }
 
-        public Cost Cost { get; init; }
+        public Cost Cost { get; init; } = Cost.Unknown;
 
         public ushort Power { get; init; }
 
         public ushort Toughness { get; init; }
 
-        public Ability[] Abilities { get; init; }
-
-        public static class Default
-        {
-            public static readonly CardSubKind[] SubKinds = Array.Empty<CardSubKind>();
-
-            public static readonly Cost Cost = UnknownCost.Instance;
-
-            public static readonly Ability[] Abilities = Array.Empty<Ability>();
-        }
+        public Ability[] Abilities { get; init; } = Array.Empty<Ability>();
     }
 }

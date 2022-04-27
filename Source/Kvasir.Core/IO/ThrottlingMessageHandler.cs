@@ -41,27 +41,23 @@ public class ThrottlingMessageHandler : DelegatingHandler
 {
     private readonly TimeSpan _waitingDuration;
 
-    private readonly ConcurrentDictionary<string, Lazy<ThrottlingInfo>> _deferredInfoLookup;
+    private readonly ConcurrentDictionary<string, Lazy<ThrottlingInfo>> _deferredThrottlingInfoByUrlLookup;
 
     public ThrottlingMessageHandler(TimeSpan waitingDuration, HttpMessageHandler delegatingHandler)
         : base(delegatingHandler)
     {
-        Guard
-            .Require(delegatingHandler, nameof(delegatingHandler))
-            .Is.Not.Null();
-
         this._waitingDuration = waitingDuration > TimeSpan.Zero
             ? waitingDuration
             : Default.WaitingDuration;
 
-        this._deferredInfoLookup = new ConcurrentDictionary<string, Lazy<ThrottlingInfo>>();
+        this._deferredThrottlingInfoByUrlLookup = new ConcurrentDictionary<string, Lazy<ThrottlingInfo>>();
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage requestMessage,
+        HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var hostUrl = requestMessage.RequestUri?.Host;
+        var hostUrl = request.RequestUri?.Host;
 
         if (string.IsNullOrEmpty(hostUrl))
         {
@@ -72,7 +68,7 @@ public class ThrottlingMessageHandler : DelegatingHandler
             hostUrl,
             DateTimeOffset.UtcNow - this._waitingDuration);
 
-        var throttlingInfo = this._deferredInfoLookup
+        var throttlingInfo = this._deferredThrottlingInfoByUrlLookup
             .GetOrAdd(
                 hostUrl,
                 _ => new Lazy<ThrottlingInfo>(CreateThrottlingInfo, LazyThreadSafetyMode.ExecutionAndPublication))
@@ -89,11 +85,11 @@ public class ThrottlingMessageHandler : DelegatingHandler
                 await Task.Delay(this._waitingDuration - elapsedDuration, cancellationToken);
             }
 
-            var responseMessage = await base.SendAsync(requestMessage, cancellationToken);
+            var response = await base.SendAsync(request, cancellationToken);
 
             throttlingInfo.LastExecutionTimestamp = DateTimeOffset.UtcNow;
 
-            return responseMessage;
+            return response;
         }
         finally
         {

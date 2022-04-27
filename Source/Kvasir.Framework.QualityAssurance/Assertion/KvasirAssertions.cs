@@ -32,13 +32,13 @@ using nGratis.AI.Kvasir.Engine;
 
 public static class KvasirAssertions
 {
-    public static ZoneAssertion Must(this Zone zone)
+    public static ZoneAssertion Must(this IZone zone)
     {
-        return new(zone);
+        return new ZoneAssertion(zone);
     }
 
-    public static TabletopAssertion Must(this Tabletop tabletop)
+    public static TabletopAssertion Must(this ITabletop tabletop)
     {
-        return new(tabletop);
+        return new TabletopAssertion(tabletop);
     }
 }

@@ -56,7 +56,8 @@ public class MagicCardProcessorTests
                 Type = "Creature - Elf",
                 ManaCost = "{2}{G}",
                 Power = "4",
-                Toughness = "1"
+                Toughness = "1",
+                Text = string.Empty
             };
 
             var cardProcessor = new MagicCardProcessor();
@@ -86,7 +87,7 @@ public class MagicCardProcessorTests
             processingResult
                 .GetValue<DefinedBlob.Card>()
                 .Cost
-                .Should().NotBe(DefinedBlob.UnknownCost.Instance);
+                .Should().NotBe(DefinedBlob.Cost.Unknown);
         }
 
         [Fact]
@@ -121,7 +122,7 @@ public class MagicCardProcessorTests
             processingResult
                 .GetValue<DefinedBlob.Card>()
                 .Cost
-                .Should().Be(DefinedBlob.UnknownCost.Instance);
+                .Should().Be(DefinedBlob.Cost.Unknown);
         }
 
         [Fact]
@@ -508,7 +509,7 @@ public class MagicCardProcessorTests
             processingResult
                 .GetValue<DefinedBlob.Card>()
                 .Cost
-                .Should().Be(DefinedBlob.UnknownCost.Instance);
+                .Should().Be(DefinedBlob.Cost.Unknown);
         }
 
         [Theory]
@@ -977,7 +978,7 @@ public class MagicCardProcessorTests
             {
                 UnparsedType = unparsedType,
                 UnparsedManaCost = unparsedManaCost,
-                ExpectedCost = DefinedBlob.UnknownCost.Instance,
+                ExpectedCost = DefinedBlob.Cost.Unknown,
                 ExpectedMessage = string.Empty
             };
         }

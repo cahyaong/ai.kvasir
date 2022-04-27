@@ -40,18 +40,14 @@ public class MagicCardProcessor : IMagicCardProcessor
 {
     public ProcessingResult Process(UnparsedBlob.Card unparsedCard)
     {
-        Guard
-            .Require(unparsedCard, nameof(unparsedCard))
-            .Is.Not.Null();
-
         var definedCard = new DefinedBlob.Card
         {
             Name = !string.IsNullOrEmpty(unparsedCard.Name)
                 ? unparsedCard.Name
-                : Text.Undefined,
+                : DefinedText.Unknown,
             SetCode = !string.IsNullOrEmpty(unparsedCard.SetCode)
                 ? unparsedCard.SetCode
-                : Text.Undefined
+                : DefinedText.Unknown
         };
 
         return ValidProcessingResult
@@ -70,10 +66,6 @@ internal static class MagicParserExtensions
 {
     public static ProcessingResult ThenParseNumber(this ProcessingResult processingResult, string unparsedNumber)
     {
-        Guard
-            .Require(processingResult, nameof(processingResult))
-            .Is.Not.Null();
-
         var definedNumber = (ushort)0;
 
         var isValid =
@@ -93,10 +85,6 @@ internal static class MagicParserExtensions
 
     public static ProcessingResult ThenProcessMultiverseId(this ProcessingResult processingResult, int multiverseId)
     {
-        Guard
-            .Require(processingResult, nameof(processingResult))
-            .Is.Not.Null();
-
         if (multiverseId < 0)
         {
             return processingResult.WithMessage("<MultiverseId> Value must be zero or positive.");
@@ -109,10 +97,6 @@ internal static class MagicParserExtensions
 
     public static ProcessingResult ThenParseType(this ProcessingResult processingResult, string unparsedType)
     {
-        Guard
-            .Require(processingResult, nameof(processingResult))
-            .Is.Not.Null();
-
         if (string.IsNullOrEmpty(unparsedType))
         {
             return processingResult.WithMessage("<Kind> Value must not be <null> or empty.");
@@ -139,7 +123,7 @@ internal static class MagicParserExtensions
 
         return processingResult
             .ThenParseKind(kindValue)
-            .ThenParseSuperKind(superKindValue)
+            .ThenParseSuperKind(superKindValue ?? string.Empty)
             .ThenParseSubKinds(subKindValues);
     }
 
@@ -148,10 +132,6 @@ internal static class MagicParserExtensions
         CardKind definedKind,
         string unparsedManaCost)
     {
-        Guard
-            .Require(processingResult, nameof(processingResult))
-            .Is.Not.Null();
-
         if (definedKind == CardKind.Land)
         {
             if (string.IsNullOrEmpty(unparsedManaCost))
@@ -171,7 +151,7 @@ internal static class MagicParserExtensions
 
         var parsingResult = MagicCardParser.ParseCost(unparsedManaCost);
 
-        if (parsingResult.HasError)
+        if (parsingResult.HasError || parsingResult.Value == null)
         {
             return processingResult.WithMessage($"<ManaCost> Value [{unparsedManaCost}] has invalid symbol.");
         }
@@ -237,13 +217,13 @@ internal static class MagicParserExtensions
 
     public static ProcessingResult ThenParseText(this ProcessingResult processingResult, string unparsedText)
     {
-        var definedAbilities = DefinedBlob.Card.Default.Abilities;
+        var definedAbilities = Array.Empty<DefinedBlob.Ability>();
 
         if (!string.IsNullOrEmpty(unparsedText))
         {
             var parsingResult = MagicCardParser.ParseAbility(unparsedText);
 
-            if (!parsingResult.HasError)
+            if (!parsingResult.HasError && parsingResult.Value != null)
             {
                 definedAbilities = new[]
                 {
@@ -278,7 +258,9 @@ internal static class MagicParserExtensions
             .BindToDefinedCard(card => card.Kind);
     }
 
-    private static ProcessingResult ThenParseSuperKind(this ProcessingResult processingResult, string unparsedSuperKind)
+    private static ProcessingResult ThenParseSuperKind(
+        this ProcessingResult processingResult,
+        string unparsedSuperKind)
     {
         var superKindResult = default(ProcessingResult);
 
@@ -307,7 +289,9 @@ internal static class MagicParserExtensions
             .BindToDefinedCard(card => card.SuperKind);
     }
 
-    private static ProcessingResult ThenParseSubKinds(this ProcessingResult processingResult, params string[] unparsedSubKinds)
+    private static ProcessingResult ThenParseSubKinds(
+        this ProcessingResult processingResult,
+        params string[] unparsedSubKinds)
     {
         var definedSubKinds = new List<CardSubKind>();
         var invalidValues = new List<string>();
@@ -347,14 +331,6 @@ internal static class MagicParserExtensions
         this ProcessingResult processingResult,
         Expression<Func<DefinedBlob.Card, object>> bindingExpression)
     {
-        Guard
-            .Require(processingResult, nameof(processingResult))
-            .Is.Not.Null();
-
-        Guard
-            .Require(bindingExpression, nameof(bindingExpression))
-            .Is.Not.Null();
-
         return processingResult.BindTo(bindingExpression.GetPropertyInfo());
     }
 

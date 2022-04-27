@@ -33,7 +33,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Core;
-using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Wpf;
 using nGratis.Cop.Olympus.Wpf.Glue;
 using ReactiveUI;
@@ -53,26 +52,22 @@ public class EngineManagementViewModel : ReactiveScreen
 
     private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
-    private IEnumerable<CardSetViewModel> _cardSetViewModels;
+    private IEnumerable<CardSetViewModel>? _cardSetViewModels;
 
-    private CardSetViewModel _selectedCardSetViewModel;
+    private CardSetViewModel? _selectedCardSetViewModel;
 
     public EngineManagementViewModel(IUnprocessedMagicRepository unprocessedRepository)
     {
-        Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
         this._unprocessedRepository = unprocessedRepository;
     }
 
-    public IEnumerable<CardSetViewModel> CardSetViewModels
+    public IEnumerable<CardSetViewModel>? CardSetViewModels
     {
         get => this._cardSetViewModels;
         private set => this.RaiseAndSetIfChanged(ref this._cardSetViewModels, value);
     }
 
-    public CardSetViewModel SelectedCardSetViewModel
+    public CardSetViewModel? SelectedCardSetViewModel
     {
         get => this._selectedCardSetViewModel;
 
@@ -87,7 +82,7 @@ public class EngineManagementViewModel : ReactiveScreen
     {
         await this.PopulateCardSetsAsync();
 
-        this.SelectedCardSetViewModel = this.CardSetViewModels.FirstOrDefault();
+        this.SelectedCardSetViewModel = this.CardSetViewModels?.FirstOrDefault();
     }
 
     private async Task PopulateCardSetsAsync()

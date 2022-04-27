@@ -49,14 +49,10 @@ public sealed class ParsingResult<TValue> : ParsingResult
     {
     }
 
-    public TValue Value { get; private set; }
+    public TValue? Value { get; private init; }
 
     internal static ParsingResult<TValue> CreateSuccessful(TValue value)
     {
-        Guard
-            .Require(value, nameof(value))
-            .Is.Not.Null();
-
         return new ParsingResult<TValue>
         {
             Value = value
@@ -105,7 +101,6 @@ public sealed class ParsingResult<TValue> : ParsingResult
     internal static ParsingResult<TValue> CreateFailure(params ParsingResult[] parsingResults)
     {
         var messages = parsingResults
-            .Where(result => result != null)
             .SelectMany(result => result.Messages)
             .Distinct()
             .ToArray();

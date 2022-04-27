@@ -32,16 +32,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
-using nGratis.Cop.Olympus.Contract;
 
 public class StubDeck : Deck
 {
     public StubDeck(DefinedBlob.Deck definedDeck)
     {
-        Guard
-            .Require(definedDeck, nameof(definedDeck))
-            .Is.Not.Null();
-
         this.Cards = definedDeck
             .Entries
             .SelectMany(definedEntry => Enumerable

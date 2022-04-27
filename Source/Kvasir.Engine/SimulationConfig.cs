@@ -28,11 +28,18 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
 
 public class SimulationConfig
 {
+    public SimulationConfig()
+    {
+        this.MaxTurnCount = -42;
+        this.DefinedPlayers = Array.Empty<DefinedBlob.Player>();
+    }
+
     public int MaxTurnCount { get; init; }
 
     public IReadOnlyCollection<DefinedBlob.Player> DefinedPlayers { get; init; }

@@ -113,16 +113,8 @@ public class WizardFetcher : MagicHttpFetcherBase
 
         var rules = ruleContent
             .Substring(startingIndex, endingIndex - startingIndex)
-            .Split(
-                new[]
-                {
-                    $"{Environment.NewLine}{Environment.NewLine}",
-                    $"{Environment.NewLine} {Environment.NewLine}"
-                },
-                StringSplitOptions.RemoveEmptyEntries)
-            .Select(token => token
-                .Replace(Environment.NewLine, " ")
-                .Trim())
+            .Split('\r', StringSplitOptions.RemoveEmptyEntries)
+            .Select(token => token.Trim())
             .Select(token => Pattern.Rule.Match(token))
             .Where(match => match.Success)
             .Select(match => new UnparsedBlob.Rule

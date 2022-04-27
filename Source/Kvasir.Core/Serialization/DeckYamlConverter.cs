@@ -65,10 +65,6 @@ public class DeckYamlConverter : IYamlTypeConverter
 
     public object ReadYaml(IParser parser, Type type)
     {
-        Guard
-            .Require(parser, nameof(parser))
-            .Is.Not.Null();
-
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
             throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
@@ -97,13 +93,9 @@ public class DeckYamlConverter : IYamlTypeConverter
         return deckBuilder.Build();
     }
 
-    public void WriteYaml(IEmitter emitter, object value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type)
     {
-        Guard
-            .Require(emitter, nameof(emitter))
-            .Is.Not.Null();
-
-        if (!(value is DefinedBlob.Deck deck))
+        if (value is not DefinedBlob.Deck deck)
         {
             return;
         }

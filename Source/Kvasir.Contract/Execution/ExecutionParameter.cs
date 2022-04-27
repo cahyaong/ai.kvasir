@@ -56,9 +56,7 @@ public class ExecutionParameter
 
         if (!this._entries.TryGetValue(name, out var value))
         {
-            throw new KvasirException(
-                @"Failed to find entry! " +
-                $"Name: [{name}].");
+            throw new KvasirException("Entry is not defined!", ("Name", name));
         }
 
         return (T)Convert.ChangeType(value, typeof(T));
@@ -79,14 +77,11 @@ public class ExecutionParameter
         }
 
         public Builder WithEntry<T>(string name, T value)
+            where T : notnull
         {
             Guard
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
-
-            Guard
-                .Require(value, nameof(value))
-                .Is.Not.Default();
 
             this._executionParameter._entries[name] = value;
 

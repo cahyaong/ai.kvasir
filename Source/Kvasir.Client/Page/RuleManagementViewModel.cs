@@ -45,16 +45,12 @@ public sealed class RuleManagementViewModel : ReactiveScreen, IDisposable
 {
     private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
-    private IDisposableCollection<RuleViewModel> _ruleViewModels;
+    private IDisposableCollection<RuleViewModel>? _ruleViewModels;
 
     private bool _isDisposed;
 
     public RuleManagementViewModel(IUnprocessedMagicRepository unprocessedRepository)
     {
-        Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
         this._unprocessedRepository = unprocessedRepository;
     }
 
@@ -63,7 +59,7 @@ public sealed class RuleManagementViewModel : ReactiveScreen, IDisposable
         this.Dispose(false);
     }
 
-    public IDisposableCollection<RuleViewModel> RuleViewModels
+    public IDisposableCollection<RuleViewModel>? RuleViewModels
     {
         get => this._ruleViewModels;
         private set => this.RaiseAndSetIfChanged(ref this._ruleViewModels, value);
@@ -82,7 +78,7 @@ public sealed class RuleManagementViewModel : ReactiveScreen, IDisposable
     protected override async Task DeactivateCoreAsync(bool isClosed, CancellationToken cancellationToken)
     {
         this.RuleViewModels?.Dispose();
-        this.RuleViewModels = null;
+        this.RuleViewModels = default;
 
         await Task.CompletedTask;
     }
@@ -93,10 +89,6 @@ public sealed class RuleManagementViewModel : ReactiveScreen, IDisposable
 
         public RuleViewModelProvider(IUnprocessedMagicRepository repository)
         {
-            Guard
-                .Require(repository, nameof(repository))
-                .Is.Not.Null();
-
             this._repository = repository;
         }
 

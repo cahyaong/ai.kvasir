@@ -33,22 +33,19 @@ using System.Collections.Generic;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
 
 public class Judge
 {
     private readonly ILogger _logger;
 
-    private readonly IReadOnlyDictionary<Phase, Func<Tabletop, ExecutionResult>> _phaseHandlerLookup;
+    private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _handlerByPhaseLookup;
 
     public Judge(ILogger logger)
     {
-        Guard
-            .Require(logger, nameof(logger))
-            .Is.Not.Null();
-
         this._logger = logger;
 
-        this._phaseHandlerLookup = new Dictionary<Phase, Func<Tabletop, ExecutionResult>>
+        this._handlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
         {
             [Phase.Beginning] = this.ExecuteBeginningPhase,
             [Phase.PrecombatMain] = this.ExecuteMainPhase,
@@ -58,12 +55,10 @@ public class Judge
         };
     }
 
-    public ExecutionResult ExecuteNextTurn(Tabletop tabletop)
-    {
-        Guard
-            .Require(tabletop, nameof(tabletop))
-            .Is.Not.Null();
+    public static Judge Unknown { get; } = new(VoidLogger.Instance);
 
+    public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
+    {
         do
         {
             var executionResult = this.ExecuteNextPhase(tabletop);
@@ -78,15 +73,11 @@ public class Judge
         return ExecutionResult.Successful;
     }
 
-    public ExecutionResult ExecuteNextPhase(Tabletop tabletop)
+    public ExecutionResult ExecuteNextPhase(ITabletop tabletop)
     {
-        Guard
-            .Require(tabletop, nameof(tabletop))
-            .Is.Not.Null();
-
         tabletop.Phase = tabletop.Phase.Next();
 
-        if (!this._phaseHandlerLookup.TryGetValue(tabletop.Phase, out var handlePhase))
+        if (!this._handlerByPhaseLookup.TryGetValue(tabletop.Phase, out var handlePhase))
         {
             throw new KvasirException(
                 "No handler is defined for given phase!",
@@ -96,7 +87,7 @@ public class Judge
         return handlePhase(tabletop);
     }
 
-    private ExecutionResult ExecuteBeginningPhase(Tabletop tabletop)
+    private ExecutionResult ExecuteBeginningPhase(ITabletop tabletop)
     {
         tabletop.TurnId++;
 
@@ -110,14 +101,14 @@ public class Judge
         return ExecutionResult.Successful;
     }
 
-    private ExecutionResult ExecuteMainPhase(Tabletop tabletop)
+    private ExecutionResult ExecuteMainPhase(ITabletop tabletop)
     {
         this._logger.LogDiagnostic(tabletop);
 
         return ExecutionResult.Successful;
     }
 
-    private ExecutionResult ExecuteCombatPhase(Tabletop tabletop)
+    private ExecutionResult ExecuteCombatPhase(ITabletop tabletop)
     {
         this._logger.LogDiagnostic(tabletop);
 
@@ -150,7 +141,7 @@ public class Judge
         return ExecutionResult.Successful;
     }
 
-    private ExecutionResult ExecuteDeclaringAttackerStep(Tabletop tabletop)
+    private ExecutionResult ExecuteDeclaringAttackerStep(ITabletop tabletop)
     {
         // TODO (COULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
 
@@ -167,7 +158,7 @@ public class Judge
         return ExecutionResult.Successful;
     }
 
-    private ExecutionResult ExecuteDeclaringBlockersStep(Tabletop tabletop)
+    private ExecutionResult ExecuteDeclaringBlockersStep(ITabletop tabletop)
     {
         if (tabletop.AttackingDecision == AttackingDecision.None)
         {
@@ -189,21 +180,21 @@ public class Judge
         return ExecutionResult.Successful;
     }
 
-    private ExecutionResult ExecuteResolvingCombatDamageStep(Tabletop tabletop)
+    private ExecutionResult ExecuteResolvingCombatDamageStep(ITabletop tabletop)
     {
         if (tabletop.AttackingDecision == AttackingDecision.None)
         {
             return ExecutionResult.Successful;
         }
 
-        var combatLookup = tabletop
-            .BlockingDecision.Combats?
+        var combatByAttackerLookup = tabletop
+            .BlockingDecision.Combats
             .Where(combat => tabletop.AttackingDecision.Attackers.Contains(combat.Attacker))
-            .ToDictionary(combat => combat.Attacker) ?? new Dictionary<Creature, Combat>();
+            .ToDictionary(combat => combat.Attacker);
 
         foreach (var attacker in tabletop.AttackingDecision.Attackers)
         {
-            if (combatLookup.TryGetValue(attacker, out var matchedCombat))
+            if (combatByAttackerLookup.TryGetValue(attacker, out var matchedCombat))
             {
                 matchedCombat.Attacker.Damage = matchedCombat.Blockers.Sum(blocker => blocker.Power);
 
@@ -223,7 +214,7 @@ public class Judge
             }
         }
 
-        combatLookup
+        combatByAttackerLookup
             .Values
             .Select(combat => combat.Attacker)
             .Where(attacker => attacker.Damage >= attacker.Toughness)
@@ -233,7 +224,7 @@ public class Judge
                 attacker.Damage = 0;
             });
 
-        combatLookup
+        combatByAttackerLookup
             .Values
             .SelectMany(combat => combat.Blockers)
             .Where(blocker => blocker.Damage >= blocker.Toughness)
@@ -246,7 +237,7 @@ public class Judge
         return ExecutionResult.Successful;
     }
 
-    private ExecutionResult ExecuteEndingPhase(Tabletop tabletop)
+    private ExecutionResult ExecuteEndingPhase(ITabletop tabletop)
     {
         this._logger.LogDiagnostic(tabletop);
 

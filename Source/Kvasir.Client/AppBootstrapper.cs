@@ -30,20 +30,25 @@ namespace nGratis.AI.Kvasir.Client;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using Autofac;
 using Autofac.Core;
 using Caliburn.Micro;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 using nGratis.Cop.Olympus.Wpf;
 
+[SuppressMessage(
+    "Interoperability", "CA1416:Validate platform compatibility",
+    Justification = "We support only Windows OS for now!")]
 internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
 {
-    private IContainer _container;
+    private IContainer? _container;
 
     private bool _isDisposed;
 
@@ -86,11 +91,21 @@ internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
 
     protected override object GetInstance(Type type, string key)
     {
+        if (this._container == null)
+        {
+            throw new KvasirException("Container should have been initialized during configuration?!");
+        }
+
         return this._container.Resolve(type);
     }
 
     protected override IEnumerable<object> GetAllInstances(Type type)
     {
+        if (this._container == null)
+        {
+            throw new KvasirException("Container should have been initialized during configuration?!");
+        }
+
         var service = new TypedService(typeof(IEnumerable<>).MakeGenericType(type));
 
         return (object[])this._container.ResolveService(service);
@@ -123,14 +138,13 @@ internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
     }
 }
 
+[SuppressMessage(
+    "Interoperability", "CA1416:Validate platform compatibility",
+    Justification = "We support only Windows OS for now!")]
 internal static class AutofacExtensions
 {
     public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         containerBuilder
             .RegisterType<WindowManager>()
             .As<IWindowManager>();
@@ -141,12 +155,7 @@ internal static class AutofacExtensions
     public static ContainerBuilder RegisterRepository(this ContainerBuilder containerBuilder, Uri dataFolderUri)
     {
         Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
-        Guard
             .Require(dataFolderUri, nameof(dataFolderUri))
-            .Is.Not.Null()
             .Is.Folder()
             .Is.Exist();
 
@@ -180,10 +189,6 @@ internal static class AutofacExtensions
 
     public static ContainerBuilder RegisterViewModels(this ContainerBuilder containerBuilder)
     {
-        Guard
-            .Require(containerBuilder, nameof(containerBuilder))
-            .Is.Not.Null();
-
         containerBuilder
             .RegisterType<AppViewModel>()
             .InstancePerLifetimeScope()

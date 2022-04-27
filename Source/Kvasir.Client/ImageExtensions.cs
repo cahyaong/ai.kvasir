@@ -31,16 +31,11 @@ namespace nGratis.AI.Kvasir.Client;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 public static class ImageExtensions
 {
     public static ImageSource ToImageSource(this IImage image)
     {
-        Guard
-            .Require(image, nameof(image))
-            .Is.Not.Null();
-
         var bitmapImage = new BitmapImage();
 
         bitmapImage.BeginInit();

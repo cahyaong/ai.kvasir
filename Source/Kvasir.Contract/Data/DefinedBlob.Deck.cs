@@ -45,16 +45,9 @@ public static partial class DefinedBlob
 
         public ushort this[Entry entry]
         {
-            get
-            {
-                Guard
-                    .Require(entry, nameof(entry))
-                    .Is.Not.Null();
-
-                return this._quantityByEntryLookup.TryGetValue(entry, out var quantity)
-                    ? quantity
-                    : (ushort)0;
-            }
+            get => this._quantityByEntryLookup.TryGetValue(entry, out var quantity)
+                ? quantity
+                : (ushort)0;
 
             private set => this._quantityByEntryLookup[entry] = value;
         }
@@ -66,9 +59,9 @@ public static partial class DefinedBlob
             private set => this[new Entry(name, cardSetCode, number)] = value;
         }
 
-        public string Code { get; private set; }
+        public string Code { get; private set; } = DefinedText.Unknown;
 
-        public string Name { get; private set; }
+        public string Name { get; private set; } = DefinedText.Unknown;
 
         public IEnumerable<Entry> Entries => this._quantityByEntryLookup.Keys;
 

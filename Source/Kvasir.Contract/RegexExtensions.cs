@@ -39,10 +39,6 @@ public static class RegexExtensions
     public static IEnumerable<string> FindCaptureValues(this Match match, string name)
     {
         Guard
-            .Require(match, nameof(match))
-            .Is.Not.Null();
-
-        Guard
             .Require(name, nameof(name))
             .Is.Not.Empty();
 

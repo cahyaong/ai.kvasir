@@ -34,15 +34,16 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class DataExtensions
 {
-    private static readonly IReadOnlyDictionary<Phase, Phase> NextPhaseLookup = new Dictionary<Phase, Phase>
-    {
-        [Phase.Setup] = Phase.Beginning,
-        [Phase.Beginning] = Phase.PrecombatMain,
-        [Phase.PrecombatMain] = Phase.Combat,
-        [Phase.Combat] = Phase.PostcombatMain,
-        [Phase.PostcombatMain] = Phase.Ending,
-        [Phase.Ending] = Phase.Beginning
-    };
+    private static readonly IReadOnlyDictionary<Phase, Phase> NextPhaseByCurrentPhaseLookup =
+        new Dictionary<Phase, Phase>
+        {
+            [Phase.Setup] = Phase.Beginning,
+            [Phase.Beginning] = Phase.PrecombatMain,
+            [Phase.PrecombatMain] = Phase.Combat,
+            [Phase.Combat] = Phase.PostcombatMain,
+            [Phase.PostcombatMain] = Phase.Ending,
+            [Phase.Ending] = Phase.Beginning
+        };
 
     public static Phase Next(this Phase currentPhase)
     {
@@ -50,7 +51,7 @@ public static class DataExtensions
             .Require(currentPhase, nameof(currentPhase))
             .Is.Not.Default();
 
-        if (!DataExtensions.NextPhaseLookup.TryGetValue(currentPhase, out var nextPhase))
+        if (!DataExtensions.NextPhaseByCurrentPhaseLookup.TryGetValue(currentPhase, out var nextPhase))
         {
             throw new KvasirException(
                 "No lookup entry is defined for next phase!",

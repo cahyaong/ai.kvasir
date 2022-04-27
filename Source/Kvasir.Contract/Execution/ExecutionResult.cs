@@ -28,7 +28,9 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 public class ExecutionResult
@@ -39,7 +41,9 @@ public class ExecutionResult
 
     protected ExecutionResult(params string[] messages)
     {
-        this.Messages = messages;
+        this.Messages = messages
+            .Where(message => !string.IsNullOrEmpty(message))
+            .ToImmutableList();
     }
 
     public static ExecutionResult Successful { get; } = new()
@@ -47,14 +51,18 @@ public class ExecutionResult
         Messages = new List<string>()
     };
 
-    public bool HasError => this.Messages.Any();
+    public bool HasError =>
+        this.Messages.Any() ||
+        this.HasErrorCore();
 
-    public IEnumerable<string> Messages { get; init; }
+    public IEnumerable<string> Messages { get; private init; } = Array.Empty<string>();
 
     public static ExecutionResult Create(params string[] messages)
     {
         return messages?.Any() == true
-            ? new ExecutionResult { Messages = messages }
+            ? new ExecutionResult(messages)
             : ExecutionResult.Successful;
     }
+
+    protected virtual bool HasErrorCore() => false;
 }

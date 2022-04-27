@@ -37,6 +37,10 @@ using nGratis.Cop.Olympus.Contract;
 
 public class MockBuilder : Moq.MockBuilder
 {
+    private MockBuilder()
+    {
+    }
+
     public static UnparsedBlob.CardSet[] CreateUnparsedCardSets(ushort count)
     {
         return Enumerable

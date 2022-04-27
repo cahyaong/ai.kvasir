@@ -32,16 +32,8 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class LoggerExtensions
 {
-    public static void LogDiagnostic(this ILogger logger, Tabletop tabletop)
+    public static void LogDiagnostic(this ILogger logger, ITabletop tabletop)
     {
-        Guard
-            .Require(logger, nameof(logger))
-            .Is.Not.Null();
-
-        Guard
-            .Require(tabletop, nameof(tabletop))
-            .Is.Not.Null();
-
         logger.LogDebug(
             "Processing phase...",
             ("ID", $"{tabletop.TurnId:D4}-{tabletop.Phase}"),

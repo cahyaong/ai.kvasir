@@ -42,10 +42,6 @@ public static class MagicFetcherExtensions
         string cardName)
     {
         Guard
-            .Require(fetcher, nameof(fetcher))
-            .Is.Not.Null();
-
-        Guard
             .Require(cardSetName, nameof(cardSetName))
             .Is.Not.Empty();
 
@@ -68,7 +64,7 @@ public static class MagicFetcherExtensions
         var matchedCard = cards
             .SingleOrDefault(card => card.Name == cardName);
 
-        if (cardName == null)
+        if (matchedCard == null)
         {
             throw new KvasirTestingException($"Card [{cardName}] is missing!");
         }

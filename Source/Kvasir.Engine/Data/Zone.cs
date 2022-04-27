@@ -32,46 +32,35 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 [DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
-public class Zone
+public class Zone : IZone
 {
     private readonly List<Card> _cards;
 
-    public Zone(ZoneKind kind, Visibility visibility)
+    public Zone()
     {
-        Guard
-            .Require(kind, nameof(kind))
-            .Is.Not.Default();
-
-        Guard
-            .Require(visibility, nameof(visibility))
-            .Is.Not.Default();
-
         this._cards = new List<Card>();
 
-        this.Kind = kind;
-        this.Visibility = visibility;
+        this.Kind = ZoneKind.Unknown;
+        this.Visibility = Visibility.Unknown;
     }
 
-    public ZoneKind Kind { get; }
+    public static IZone Unknown => UnknownZone.Instance;
 
-    public Visibility Visibility { get; }
+    public ZoneKind Kind { get; init; }
+
+    public Visibility Visibility { get; init; }
 
     public IEnumerable<Card> Cards => this._cards;
 
     public void AddCardToTop(Card card)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
         if (this._cards.Contains(card))
         {
             throw new KvasirException(
                 "Zone has existing card!",
-                ("Kind", this.Kind),
+                ("Zone Kind", this.Kind),
                 ("Card Name", card.Name),
                 ("Card ID", card.GetHashCode()));
         }
@@ -85,7 +74,7 @@ public class Zone
         {
             throw new KvasirException(
                 "Zone has no more card to remove!",
-                ("Kind", this.Kind));
+                ("Zone Kind", this.Kind));
         }
 
         var card = this._cards.Last();
@@ -94,23 +83,16 @@ public class Zone
         return card;
     }
 
-    public void MoveCardToZone(Card card, Zone zone)
+    public void MoveCardToZone(Card card, IZone zone)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
-        Guard
-            .Require(zone, nameof(zone))
-            .Is.Not.Null();
-
         var matchedIndex = this._cards.IndexOf(card);
 
         if (matchedIndex < 0)
         {
             throw new KvasirException(
                 "Zone does not contain card to move to different zone!",
-                ("Kind", this.Kind),
+                ("Source Kind", this.Kind),
+                ("Target Kind", zone.Kind),
                 ("Card Name", card.Name),
                 ("Card ID", card.GetHashCode()));
         }

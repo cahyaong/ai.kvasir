@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Client;
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +38,6 @@ using System.Windows.Media;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.AI.Kvasir.Core.Parser;
-using nGratis.Cop.Olympus.Contract;
 using ReactiveUI;
 
 public class CardViewModel : ReactiveObject
@@ -48,9 +48,9 @@ public class CardViewModel : ReactiveObject
 
     private readonly IMagicCardProcessor _cardProcessor;
 
-    private ImageSource _originalImage;
+    private ImageSource? _originalImage;
 
-    private DefinedBlob.Card _definedCard;
+    private DefinedBlob.Card? _definedCard;
 
     private IEnumerable _combinedCardKinds;
 
@@ -61,25 +61,15 @@ public class CardViewModel : ReactiveObject
     {
     }
 
-    internal CardViewModel(
+    private CardViewModel(
         UnparsedBlob.Card unparsedCard,
         IUnprocessedMagicRepository unprocessedRepository,
         IMagicCardProcessor cardProcessor)
     {
-        Guard
-            .Require(unparsedCard, nameof(unparsedCard))
-            .Is.Not.Null();
-
-        Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
-        Guard
-            .Require(cardProcessor, nameof(cardProcessor))
-            .Is.Not.Null();
-
         this._unprocessedRepository = unprocessedRepository;
         this._cardProcessor = cardProcessor;
+        this._combinedCardKinds = Array.Empty<object>();
+        this._processingMessages = Array.Empty<string>();
 
         this.UnparsedCard = unparsedCard;
 
@@ -89,13 +79,13 @@ public class CardViewModel : ReactiveObject
 
     public UnparsedBlob.Card UnparsedCard { get; }
 
-    public ImageSource OriginalImage
+    public ImageSource? OriginalImage
     {
         get => this._originalImage;
         private set => this.RaiseAndSetIfChanged(ref this._originalImage, value);
     }
 
-    public DefinedBlob.Card DefinedCard
+    public DefinedBlob.Card? DefinedCard
     {
         get => this._definedCard;
         private set => this.RaiseAndSetIfChanged(ref this._definedCard, value);
@@ -132,36 +122,33 @@ public class CardViewModel : ReactiveObject
         this.CombinedCardKinds = Enumerable.Empty<object>();
         this.ProcessingMessages = Enumerable.Empty<string>();
 
-        if (this.UnparsedCard != null)
+        var processingResult = await Task.Run(() => this._cardProcessor.Process(this.UnparsedCard));
+
+        if (processingResult.IsValid)
         {
-            var processingResult = await Task.Run(() => this._cardProcessor.Process(this.UnparsedCard));
+            this.DefinedCard = processingResult.GetValue<DefinedBlob.Card>();
 
-            if (processingResult.IsValid)
+            var combinedKinds = new List<object>();
+
+            if (this.DefinedCard.IsTribal)
             {
-                this.DefinedCard = processingResult.GetValue<DefinedBlob.Card>();
-
-                var combinedKinds = new List<object>();
-
-                if (this.DefinedCard.IsTribal)
-                {
-                    combinedKinds.Add("Tribal");
-                }
-
-                if (this.DefinedCard.SuperKind != CardSuperKind.None)
-                {
-                    combinedKinds.Add(this.DefinedCard.SuperKind);
-                }
-
-                combinedKinds.Add(this.DefinedCard.Kind);
-                combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
-
-                this.CombinedCardKinds = combinedKinds;
+                combinedKinds.Add("Tribal");
             }
-            else
+
+            if (this.DefinedCard.SuperKind != CardSuperKind.None)
             {
-                // FIXME: Need to distinguish between not-parsed and invalid cards!
-                this.ProcessingMessages = processingResult.Messages;
+                combinedKinds.Add(this.DefinedCard.SuperKind);
             }
+
+            combinedKinds.Add(this.DefinedCard.Kind);
+            combinedKinds.AddRange(this.DefinedCard.SubKinds.Cast<object>());
+
+            this.CombinedCardKinds = combinedKinds;
+        }
+        else
+        {
+            // FIXME: Need to distinguish between not-parsed and invalid cards!
+            this.ProcessingMessages = processingResult.Messages;
         }
     }
 }

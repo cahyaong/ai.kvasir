@@ -121,10 +121,12 @@ public class ScryfallFetcherTests
                 .Select(number => new
                 {
                     EntryKey = $"{theory.CardSetCode}_{number:D2}.json",
-                    TargetUrl = string.Format(
-                        "https://api.scryfall.com/cards/search?q=e%3a{0}&unique=prints&order=name&page={1}",
-                        theory.CardSetCode,
-                        number)
+                    TargetUrl =
+                        @"https://api.scryfall.com/cards/search?" +
+                        $"q=e%3a{theory.CardSetCode}&" +
+                        @"unique=prints&" +
+                        @"order=name&" +
+                        $"page={number}"
                 })
                 .ForEach(anon =>
                 {
@@ -270,7 +272,7 @@ public class ScryfallFetcherTests
 
             var card = new UnparsedBlob.Card
             {
-                ScryfallImageUrl = "mock_image.jpeg"
+                ScryfallImageUrl = "https://img.scryfall.com/cards/border_crop/mock_image.jpeg"
             };
 
             // Act.
@@ -307,7 +309,7 @@ public class ScryfallFetcherTests
             var card = new UnparsedBlob.Card
             {
                 Name = "[_MOCK_NAME_]",
-                ScryfallImageUrl = "mock_image.jpeg"
+                ScryfallImageUrl = "https://img.scryfall.com/cards/border_crop/mock_image.jpeg"
             };
 
             // Act & Assert.

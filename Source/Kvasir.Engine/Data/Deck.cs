@@ -26,11 +26,20 @@
 // <creation_timestamp>Saturday, May 1, 2021 6:33:23 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
+
 namespace nGratis.AI.Kvasir.Engine;
 
 using System.Collections.Generic;
 
-public class Deck
+public class Deck : IDeck
 {
+    public Deck()
+    {
+        this.Cards = Array.Empty<Card>();
+    }
+
+    public static IDeck Unknown => UnknownDeck.Instance;
+
     public IReadOnlyCollection<Card> Cards { get; init; }
 }

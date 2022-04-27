@@ -34,21 +34,21 @@ internal static class KvasirAssertions
 {
     public static CardAssertion Must(this UnparsedBlob.Card card)
     {
-        return new(card);
+        return new CardAssertion(card);
     }
 
     public static CostAssertion Must(this DefinedBlob.Cost cost)
     {
-        return new(cost);
+        return new CostAssertion(cost);
     }
 
     public static EffectAssertion Must(this DefinedBlob.Effect effect)
     {
-        return new(effect);
+        return new EffectAssertion(effect);
     }
 
     public static AbilityAssertion Must(this DefinedBlob.Ability ability)
     {
-        return new(ability);
+        return new AbilityAssertion(ability);
     }
 }

@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Core;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -44,7 +45,7 @@ using nGratis.Cop.Olympus.Contract;
 public class MagicJsonFetcher : MagicHttpFetcherBase
 {
     public MagicJsonFetcher(IStorageManager storageManager)
-        : base("MTGJSON4", storageManager)
+        : base("MTGJSON4", storageManager, SimpleKeyCalculator.Instance)
     {
     }
 
@@ -76,10 +77,11 @@ public class MagicJsonFetcher : MagicHttpFetcherBase
             .SelectNodes("//table//tbody//tr//td")
             .Where(node => node.ChildNodes.Count > 1)
             .Select(MagicJsonFetcher.ConvertToCardSet)
-            .ToArray();
+            .ToImmutableArray();
     }
 
-    protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
+    protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(
+        UnparsedBlob.CardSet cardSet)
     {
         var response = await this.HttpClient.GetAsync(new Uri(Link.LandingUri, $"json/{cardSet.Code}.json"));
 
@@ -104,12 +106,14 @@ public class MagicJsonFetcher : MagicHttpFetcherBase
             .Children()
             .Select(cardToken =>
             {
+                // TODO (COULD): Add logging when getting a <null> card!
+
                 cardToken[nameof(UnparsedBlob.Card.SetCode)] = cardSet.Code;
 
                 return cardToken.ToObject<UnparsedBlob.Card>();
             })
             .Where(card => card != null)
-            .ToArray();
+            .ToImmutableArray();
     }
 
     private static UnparsedBlob.CardSet ConvertToCardSet(HtmlNode rootNode)

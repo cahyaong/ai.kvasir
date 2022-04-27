@@ -116,23 +116,6 @@ public class RoundSimulatorTests
                     .NonactivePlayer.Life
                     .Should().Be(20, "nonactive player should begin with full life");
             }
-
-            using (new AssertionScope())
-            {
-                simulationResult
-                    .Tabletop
-                    .ActivePlayer.Opponent
-                    .Should().Be(
-                        simulationResult.Tabletop.NonactivePlayer,
-                        "active player's opponent should be nonactive player");
-
-                simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Opponent
-                    .Should().Be(
-                        simulationResult.Tabletop.ActivePlayer,
-                        "nonactive player's opponent should be active player");
-            }
         }
 
         [Fact]

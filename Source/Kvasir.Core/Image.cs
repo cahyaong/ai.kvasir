@@ -42,17 +42,20 @@ public static class Image
 
 public class WritableImage : IImage
 {
-    private SixLabors.ImageSharp.Image _image;
+    private SixLabors.ImageSharp.Image? _image;
 
-    public int Width => this._image.Width;
+    public int Width =>
+        this._image?.Width ??
+        0;
 
-    public int Height => this._image.Height;
+    public int Height =>
+        this._image?.Height ??
+        0;
 
     public void LoadData(Stream dataSteam)
     {
         Guard
             .Require(dataSteam, nameof(dataSteam))
-            .Is.Not.Null()
             .Is.Readable();
 
         // TODO: Handle a case when input data contains transparency.
@@ -64,6 +67,11 @@ public class WritableImage : IImage
 
     public Stream SaveData()
     {
+        if (this._image == null)
+        {
+            return new MemoryStream();
+        }
+
         var dataStream = new MemoryStream();
 
         var encoder = this

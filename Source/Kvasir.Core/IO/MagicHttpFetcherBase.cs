@@ -45,10 +45,7 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
 
     private bool _isDisposed;
 
-    protected MagicHttpFetcherBase(
-        string id,
-        IStorageManager storageManager,
-        IKeyCalculator keyCalculator = null)
+    protected MagicHttpFetcherBase(string id, IStorageManager storageManager, IKeyCalculator keyCalculator)
         : this(MagicHttpFetcherBase.CreateMessageHandler(id, storageManager, keyCalculator))
     {
     }
@@ -56,10 +53,7 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
     protected internal MagicHttpFetcherBase(HttpMessageHandler messageHandler)
     {
         this._messageHandler = messageHandler;
-
-        this.HttpClient = messageHandler != null
-            ? new HttpClient(messageHandler)
-            : new HttpClient();
+        this.HttpClient = new HttpClient(messageHandler);
 
         if (!Debugger.IsAttached)
         {
@@ -74,7 +68,8 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
 
     public abstract ExternalResources AvailableResources { get; }
 
-    // TODO: Consider handling <TaskCanceledException> when application is closing while HTTP client is in a middle of making request!
+    // TODO: Consider handling <TaskCanceledException> when application is closing while HTTP client is
+    // in a middle of making request!
 
     protected HttpClient HttpClient { get; }
 
@@ -90,10 +85,6 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
 
     public async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsAsync(UnparsedBlob.CardSet cardSet)
     {
-        Guard
-            .Require(cardSet, nameof(cardSet))
-            .Is.Not.Null();
-
         if (!this.AvailableResources.HasFlag(ExternalResources.Card))
         {
             return await Task.FromException<IReadOnlyCollection<UnparsedBlob.Card>>(new NotSupportedException());
@@ -104,10 +95,6 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
 
     public async Task<IImage> FetchCardImageAsync(UnparsedBlob.Card card)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
         if (!this.AvailableResources.HasFlag(ExternalResources.CardImage))
         {
             return await Task.FromException<IImage>(new NotSupportedException());
@@ -148,11 +135,7 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
 
     protected virtual string CreateUniqueKey(Uri uri)
     {
-        var key =
-            uri?.Segments.Last() ??
-            "_unknown.file";
-
-        return Regex.Replace(key, @"\s+", "_");
+        return Regex.Replace(uri.Segments.Last(), @"\s+", "_");
     }
 
     private static HttpMessageHandler CreateMessageHandler(
@@ -164,18 +147,10 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
             .Require(id, nameof(id))
             .Is.Not.Empty();
 
-        Guard
-            .Require(storageManager, nameof(storageManager))
-            .Is.Not.Null();
-
         var messageHandler = (HttpMessageHandler)new HttpClientHandler();
-        messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(25), messageHandler);
 
-        messageHandler = new CachingMessageHandler(
-            $"Raw_{id}",
-            storageManager,
-            keyCalculator,
-            messageHandler);
+        messageHandler = new ThrottlingMessageHandler(TimeSpan.FromMilliseconds(25), messageHandler);
+        messageHandler = new CachingMessageHandler($"Raw_{id}", storageManager, keyCalculator, messageHandler);
 
         return messageHandler;
     }
@@ -195,8 +170,8 @@ public abstract class MagicHttpFetcherBase : IMagicFetcher
 
         if (isDisposing)
         {
-            this._messageHandler?.Dispose();
-            this.HttpClient?.Dispose();
+            this._messageHandler.Dispose();
+            this.HttpClient.Dispose();
         }
 
         this._isDisposed = true;

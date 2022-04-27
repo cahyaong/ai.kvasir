@@ -1,11 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
@@ -29,5 +27,6 @@
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj" />
     <ProjectReference Include="..\Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj" />
   </ItemGroup>
+  <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Production.targets" />
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

@@ -39,19 +39,8 @@ public class PlayingGameExecution : IExecution
     private readonly IRandomGenerator _randomGenerator;
     private readonly ILogger _logger;
 
-    public PlayingGameExecution(
-        IMagicEntityFactory entityFactory,
-        IRandomGenerator randomGenerator,
-        ILogger logger)
+    public PlayingGameExecution(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, ILogger logger)
     {
-        Guard
-            .Require(entityFactory, nameof(entityFactory))
-            .Is.Not.Null();
-
-        Guard
-            .Require(randomGenerator, nameof(randomGenerator))
-            .Is.Not.Null();
-
         this._entityFactory = entityFactory;
         this._randomGenerator = randomGenerator;
         this._logger = logger;

@@ -56,19 +56,15 @@ internal class AwePayingManaCostViewer : Control
 
     private readonly IThemeManager _themeManager;
 
-    private Panel _contentPanel;
+    private Panel? _contentPanel;
 
     public AwePayingManaCostViewer()
         : this(ThemeManager.Instance)
     {
     }
 
-    internal AwePayingManaCostViewer(IThemeManager themeManager)
+    private AwePayingManaCostViewer(IThemeManager themeManager)
     {
-        Guard
-            .Require(themeManager, nameof(themeManager))
-            .Is.Not.Null();
-
         this._themeManager = themeManager;
     }
 
@@ -89,14 +85,19 @@ internal class AwePayingManaCostViewer : Control
 
     private static void OnPayingManaCostChanged(DependencyObject container, DependencyPropertyChangedEventArgs args)
     {
-        if (!(container is AwePayingManaCostViewer viewer))
+        if (container is not AwePayingManaCostViewer viewer)
         {
             return;
         }
 
+        if (viewer._contentPanel == null)
+        {
+            throw new KvasirException("Content panel should have been initialized on applying template?!");
+        }
+
         viewer._contentPanel.Children.Clear();
 
-        if (!(args.NewValue is DefinedBlob.PayingManaCost payingManaCost))
+        if (args.NewValue is not DefinedBlob.PayingManaCost payingManaCost)
         {
             viewer.AddColorlessShape("?");
 
@@ -118,6 +119,11 @@ internal class AwePayingManaCostViewer : Control
 
     private void AddColorlessShape(string value)
     {
+        if (this._contentPanel == null)
+        {
+            throw new KvasirException("Content panel should have been initialized on applying template?!");
+        }
+
         var primaryBrush = this._themeManager.FindBrush("Cop.Brush.Shade1");
         var secondaryBrush = this._themeManager.FindBrush("Cop.Brush.Shade6");
 
@@ -152,6 +158,11 @@ internal class AwePayingManaCostViewer : Control
         Guard
             .Require(mana, nameof(mana))
             .Is.Not.Default();
+
+        if (this._contentPanel == null)
+        {
+            throw new KvasirException("Content panel should have been initialized on applying template?!");
+        }
 
         var primaryBrush = this._themeManager.FindBrush($"AI.Brush.Mana.{mana}.Primary");
         var secondaryBrush = this._themeManager.FindBrush($"AI.Brush.Mana.{mana}.Secondary");

@@ -33,6 +33,7 @@ namespace Lucene.Net;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using Humanizer;
@@ -43,29 +44,55 @@ using nGratis.Cop.Olympus.Contract;
 
 internal static partial class LuceneExtensions
 {
-    private static readonly ConcurrentDictionary<Type, IndexableTypeInfo> TypeInfoLookup;
+    private static readonly ConcurrentDictionary<Type, IndexableTypeInfo> TypeInfoByTypeLookup;
 
     static LuceneExtensions()
     {
-        LuceneExtensions.TypeInfoLookup = new ConcurrentDictionary<Type, IndexableTypeInfo>();
+        LuceneExtensions.TypeInfoByTypeLookup = new ConcurrentDictionary<Type, IndexableTypeInfo>();
     }
 
     public static Document ToLuceneDocument<TInstance>(this TInstance instance)
         where TInstance : class
     {
-        Guard
-            .Require(instance, nameof(instance))
-            .Is.Not.Null();
-
         var document = new Document();
 
-        var typeInfo = LuceneExtensions.TypeInfoLookup.GetOrAdd(
+        var typeInfo = LuceneExtensions.TypeInfoByTypeLookup.GetOrAdd(
             typeof(TInstance),
             type => new IndexableTypeInfo(type));
 
-        typeInfo
+        var propertyInfos = typeInfo
             .SerializingPropertyInfos
-            .Select(info => info.IndexSerializer.Serialize(info.Name, info.BackingInfo.GetValue(instance)))
+            .Select(info => new
+            {
+                info.Name,
+                Value = info.BackingInfo.GetValue(instance),
+                info.IndexSerializer
+            })
+            .ToImmutableArray();
+
+        var isValid = propertyInfos
+            .All(info => info.Value is not null);
+
+        if (!isValid)
+        {
+            var fieldNames = propertyInfos
+                .Where(info => info.Value is null)
+                .Select(info => info.Name)
+                .OrderBy(name => name)
+                .ToImmutableArray();
+
+            throw new KvasirException(
+                "Instance must have valid fields when converting to Lucene document!",
+                ("Instance Type", instance.GetType().FullName ?? DefinedText.Unknown),
+                ("Field Names", fieldNames.ToPrettifiedText()));
+        }
+
+        propertyInfos
+            .Select(info => info.IndexSerializer.Serialize(
+                info.Name,
+                info.Value ?? throw new KvasirException(
+                    $"Field value is guaranteed not {DefinedText.Null}!",
+                    ("Name", info.Name))))
             .ForEach(field => document.Add(field));
 
         return document;
@@ -74,13 +101,9 @@ internal static partial class LuceneExtensions
     public static TInstance ToInstance<TInstance>(this Document document)
         where TInstance : class, new()
     {
-        Guard
-            .Require(document, nameof(document))
-            .Is.Not.Null();
-
         var instance = new TInstance();
 
-        var typeInfo = LuceneExtensions.TypeInfoLookup.GetOrAdd(
+        var typeInfo = LuceneExtensions.TypeInfoByTypeLookup.GetOrAdd(
             typeof(TInstance),
             type => new IndexableTypeInfo(type));
 
@@ -97,10 +120,6 @@ internal static partial class LuceneExtensions
     {
         public IndexableTypeInfo(Type type)
         {
-            Guard
-                .Require(type, nameof(type))
-                .Is.Not.Null();
-
             var propertyInfos = type
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Select(info => new IndexablePropertyInfo(info))
@@ -122,11 +141,11 @@ internal static partial class LuceneExtensions
 
     private sealed class IndexablePropertyInfo
     {
-        private static readonly IReadOnlyDictionary<Type, IIndexSerializer> SerializerLookup;
+        private static readonly IReadOnlyDictionary<Type, IIndexSerializer> IndexSerializerByTypeLookup;
 
         static IndexablePropertyInfo()
         {
-            IndexablePropertyInfo.SerializerLookup = new Dictionary<Type, IIndexSerializer>
+            IndexablePropertyInfo.IndexSerializerByTypeLookup = new Dictionary<Type, IIndexSerializer>
             {
                 [typeof(string)] = StringSerializer.Instance,
                 [typeof(short)] = ShortSerializer.Instance,
@@ -137,22 +156,23 @@ internal static partial class LuceneExtensions
 
         public IndexablePropertyInfo(PropertyInfo backingInfo)
         {
-            Guard
-                .Require(backingInfo, nameof(backingInfo))
-                .Is.Not.Null();
-
             var hasRegisteredSerializer = IndexablePropertyInfo
-                .SerializerLookup
+                .IndexSerializerByTypeLookup
                 .TryGetValue(backingInfo.PropertyType, out var indexSerializer);
 
             if (!hasRegisteredSerializer)
             {
-                throw new KvasirException($"Type [{backingInfo.PropertyType.FullName}] does not have serializer!");
+                throw new KvasirException(
+                    "Property does not have index serializer!",
+                    ("Type", backingInfo.PropertyType.FullName ?? DefinedText.Unknown));
             }
 
             this.BackingInfo = backingInfo;
-            this.IndexSerializer = indexSerializer;
             this.Name = backingInfo.Name.Kebaberize();
+
+            this.IndexSerializer = indexSerializer ?? throw new KvasirException(
+                "Property must have valid index serializer!",
+                ("Type", backingInfo.PropertyType.FullName ?? DefinedText.Unknown));
         }
 
         public string Name { get; }
@@ -189,7 +209,6 @@ internal static partial class LuceneExtensions
 
             Guard
                 .Require(value, nameof(value))
-                .Is.Not.Null()
                 .Is.OfType(typeof(string));
 
             return new StringField(name, (string)value, Field.Store.YES);
@@ -197,11 +216,7 @@ internal static partial class LuceneExtensions
 
         public object Deserialize(IIndexableField indexableField)
         {
-            Guard
-                .Require(indexableField, nameof(indexableField))
-                .Is.Not.Null();
-
-            return indexableField.GetStringValue() ?? Text.Empty;
+            return indexableField.GetStringValue() ?? DefinedText.Empty;
         }
     }
 
@@ -221,7 +236,6 @@ internal static partial class LuceneExtensions
 
             Guard
                 .Require(value, nameof(value))
-                .Is.Not.Null()
                 .Is.OfType(typeof(short));
 
             return new Int32Field(name, (short)value, Field.Store.YES);
@@ -229,10 +243,6 @@ internal static partial class LuceneExtensions
 
         public object Deserialize(IIndexableField indexableField)
         {
-            Guard
-                .Require(indexableField, nameof(indexableField))
-                .Is.Not.Null();
-
             return (short)(indexableField.GetInt32Value() ?? 0);
         }
     }
@@ -253,7 +263,6 @@ internal static partial class LuceneExtensions
 
             Guard
                 .Require(value, nameof(value))
-                .Is.Not.Null()
                 .Is.OfType(typeof(int));
 
             return new Int32Field(name, (int)value, Field.Store.YES);
@@ -261,10 +270,6 @@ internal static partial class LuceneExtensions
 
         public object Deserialize(IIndexableField indexableField)
         {
-            Guard
-                .Require(indexableField, nameof(indexableField))
-                .Is.Not.Null();
-
             return indexableField.GetInt32Value() ?? 0;
         }
     }
@@ -285,7 +290,6 @@ internal static partial class LuceneExtensions
 
             Guard
                 .Require(value, nameof(value))
-                .Is.Not.Null()
                 .Is.OfType(typeof(DateTime));
 
             return new Int64Field(name, ((DateTime)value).Ticks, Field.Store.YES);
@@ -293,10 +297,6 @@ internal static partial class LuceneExtensions
 
         public object Deserialize(IIndexableField indexableField)
         {
-            Guard
-                .Require(indexableField, nameof(indexableField))
-                .Is.Not.Null();
-
             return new DateTime(indexableField.GetInt64Value() ?? 0, DateTimeKind.Utc);
         }
     }

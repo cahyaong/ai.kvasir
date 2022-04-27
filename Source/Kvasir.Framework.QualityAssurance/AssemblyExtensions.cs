@@ -46,26 +46,36 @@ public static class AssemblyExtensions
             .Require(name, nameof(name))
             .Is.Not.Empty();
 
-        return Assembly
-                   .GetExecutingAssembly()
-                   .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession") ??
-               throw new KvasirTestingException(@"Session data must be embedded!", $"Name: [{name}].");
+        var dataStream = Assembly
+            .GetExecutingAssembly()
+            .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession");
+
+        if (dataStream == null)
+        {
+            throw new KvasirTestingException(
+                "Session data must be embedded!",
+                ("Name", name));
+        }
+
+        return dataStream;
     }
 
-    public static void LoadCreatureData(this Zone zone, string name)
+    public static void LoadCreatureData(this IZone zone, string name)
     {
-        Guard
-            .Require(zone, nameof(zone))
-            .Is.Not.Null();
-
         Guard
             .Require(name, nameof(name))
             .Is.Not.Empty();
 
         using var dataStream = Assembly
-                                   .GetExecutingAssembly()
-                                   .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkcard") ??
-                               throw new KvasirTestingException(@"Creatures data must be embedded!", $"Name: [{name}].");
+            .GetExecutingAssembly()
+            .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkcard");
+
+        if (dataStream == null)
+        {
+            throw new KvasirTestingException(
+                "Creatures data must be embedded!",
+                ("Name", name));
+        }
 
         dataStream
             .ReadText()

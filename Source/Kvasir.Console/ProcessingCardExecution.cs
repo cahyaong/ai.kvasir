@@ -55,22 +55,6 @@ internal class ProcessingCardExecution : IExecution
         IMagicCardProcessor cardProcessor,
         ILogger logger)
     {
-        Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
-        Guard
-            .Require(processedRepository, nameof(processedRepository))
-            .Is.Not.Null();
-
-        Guard
-            .Require(cardProcessor, nameof(cardProcessor))
-            .Is.Not.Null();
-
-        Guard
-            .Require(logger, nameof(logger))
-            .Is.Not.Null();
-
         this._unprocessedRepository = unprocessedRepository;
         this._processedRepository = processedRepository;
         this._cardProcessor = cardProcessor;
@@ -79,10 +63,6 @@ internal class ProcessingCardExecution : IExecution
 
     public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
     {
-        Guard
-            .Require(parameter, nameof(parameter))
-            .Is.Not.Null();
-
         var unparsedCardSet = await this._unprocessedRepository.GetCardSetAsync(parameter.GetValue("CardSet.Name"));
         var unparsedCards = await this._unprocessedRepository.GetCardsAsync(unparsedCardSet);
 
@@ -93,7 +73,7 @@ internal class ProcessingCardExecution : IExecution
         processingResults
             .Where(result => result.IsValid)
             .Select(result => result.GetValue<DefinedBlob.Card>())
-            .ForEach(async card => await this._processedRepository.SaveCardAsync(card));
+            .ForEachAsync(card => this._processedRepository.SaveCardAsync(card));
 
         this._logger.LogInfo("Saved valid cards...");
 
@@ -147,7 +127,7 @@ internal class ProcessingCardExecution : IExecution
 
         public static SummaryPrinter Create(int indentSize)
         {
-            return new(indentSize);
+            return new SummaryPrinter(indentSize);
         }
 
         public SummaryPrinter Indent()
@@ -170,16 +150,12 @@ internal class ProcessingCardExecution : IExecution
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            Guard
-                .Require(statistics, nameof(statistics))
-                .Is.Not.Null();
-
             this._contentWriter.WriteLine();
             this._contentWriter.WriteLine($"Card Set: [{name}]");
 
             foreach (var (key, value) in statistics)
             {
-                this._contentWriter.Write(!string.IsNullOrEmpty(key) ? key : Text.Empty);
+                this._contentWriter.Write(!string.IsNullOrEmpty(key) ? key : DefinedText.Empty);
                 this._contentWriter.WriteLine($": {value}");
             }
 
@@ -190,14 +166,6 @@ internal class ProcessingCardExecution : IExecution
 
         public SummaryPrinter WithInvalidCard(DefinedBlob.Card card, params string[] parsingMessages)
         {
-            Guard
-                .Require(card, nameof(card))
-                .Is.Not.Null();
-
-            Guard
-                .Require(parsingMessages, nameof(parsingMessages))
-                .Is.Not.Null();
-
             this._contentWriter.WriteLine($"#{card.Number}");
             this._contentWriter.WriteLine($"Card: [{card.Name}]");
 
@@ -207,13 +175,14 @@ internal class ProcessingCardExecution : IExecution
                 this.Indent();
 
                 parsingMessages
+                    .Where(message => !string.IsNullOrEmpty(message))
                     .ForEach(message => this._contentWriter.WriteLine($"* {message}"));
 
                 this.Dedent();
             }
             else
             {
-                this._contentWriter.WriteLine($"Messages: {Text.Empty}");
+                this._contentWriter.WriteLine($"Messages: {DefinedText.Empty}");
             }
 
             this._contentWriter.WriteLine();

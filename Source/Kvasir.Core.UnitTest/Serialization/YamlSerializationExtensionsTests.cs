@@ -315,7 +315,7 @@ public sealed class SerializingCostTheory : CopTheory
 
     public static SerializingCostTheory Create()
     {
-        return new();
+        return new SerializingCostTheory();
     }
 
     public SerializingCostTheory WithSerializedBlob(string serializedBlob)
@@ -331,10 +331,6 @@ public sealed class SerializingCostTheory : CopTheory
 
     public SerializingCostTheory WithDeserializedInstance(DefinedBlob.Cost deserializedInstance)
     {
-        Guard
-            .Require(deserializedInstance, nameof(deserializedInstance))
-            .Is.Not.Null();
-
         this.DeserializedInstance = deserializedInstance;
 
         return this;
@@ -349,7 +345,7 @@ public sealed class SerializingEffectTheory : CopTheory
 
     public static SerializingEffectTheory Create()
     {
-        return new();
+        return new SerializingEffectTheory();
     }
 
     public SerializingEffectTheory WithSerializedBlob(string serializedBlob)
@@ -365,10 +361,6 @@ public sealed class SerializingEffectTheory : CopTheory
 
     public SerializingEffectTheory WithDeserializedInstance(DefinedBlob.Effect deserializedInstance)
     {
-        Guard
-            .Require(deserializedInstance, nameof(deserializedInstance))
-            .Is.Not.Null();
-
         this.DeserializedInstance = deserializedInstance;
 
         return this;

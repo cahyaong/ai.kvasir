@@ -61,10 +61,6 @@ public static class YamlSerializationExtensions
     public static string SerializeToYaml<T>(this T value)
         where T : class
     {
-        Guard
-            .Require(value, nameof(value))
-            .Is.Not.Null();
-
         return YamlSerializationExtensions
             .Serializer
             .Serialize(value)
@@ -84,10 +80,6 @@ public static class YamlSerializationExtensions
 
     internal static IEmitter EmitField(this IEmitter emitter, string name, string value)
     {
-        Guard
-            .Require(emitter, nameof(emitter))
-            .Is.Not.Null();
-
         var isValid =
             !string.IsNullOrEmpty(name) &&
             !string.IsNullOrEmpty(value);
@@ -103,10 +95,6 @@ public static class YamlSerializationExtensions
 
     internal static IEmitter EmitField(this IEmitter emitter, string name, params string[] values)
     {
-        Guard
-            .Require(emitter, nameof(emitter))
-            .Is.Not.Null();
-
         values = values
             .Where(value => !string.IsNullOrEmpty(value))
             .ToArray();
@@ -129,18 +117,9 @@ public static class YamlSerializationExtensions
         return emitter;
     }
 
-    internal static IEmitter EmitField(
-        this IEmitter emitter,
-        string name,
-        IReadOnlyDictionary<string, string> lookup)
+    internal static IEmitter EmitField(this IEmitter emitter, string name, IReadOnlyDictionary<string, string> lookup)
     {
-        Guard
-            .Require(emitter, nameof(emitter))
-            .Is.Not.Null();
-
-        var isValid =
-            !string.IsNullOrEmpty(name) &&
-            lookup != null;
+        var isValid = !string.IsNullOrEmpty(name);
 
         if (isValid)
         {
@@ -159,12 +138,8 @@ public static class YamlSerializationExtensions
         return emitter;
     }
 
-    internal static T ParseScalarValue<T>(this IParser parser, Func<string, T> convert = null)
+    internal static T ParseScalarValue<T>(this IParser parser, Func<string, T>? convert = null)
     {
-        Guard
-            .Require(parser, nameof(parser))
-            .Is.Not.Null();
-
         var value = parser
             .Consume<Scalar>()
             .Value;
@@ -174,12 +149,8 @@ public static class YamlSerializationExtensions
             : (T)Convert.ChangeType(value, typeof(T));
     }
 
-    internal static IEnumerable<T> ParseSequentialValues<T>(this IParser parser, Func<string, T> convert = null)
+    internal static IEnumerable<T> ParseSequentialValues<T>(this IParser parser, Func<string, T>? convert = null)
     {
-        Guard
-            .Require(parser, nameof(parser))
-            .Is.Not.Null();
-
         if (parser.Current?.GetType() != typeof(SequenceStart))
         {
             throw new KvasirException($"Parser current token does not begin with <{typeof(SequenceStart)}>!");
@@ -197,13 +168,10 @@ public static class YamlSerializationExtensions
 
     internal static IReadOnlyDictionary<TKey, TValue> ParseLookup<TKey, TValue>(
         this IParser parser,
-        Func<string, TKey> convertKey = null,
-        Func<string, TValue> convertValue = null)
+        Func<string, TKey>? convertKey = null,
+        Func<string, TValue>? convertValue = null)
+        where TKey : notnull
     {
-        Guard
-            .Require(parser, nameof(parser))
-            .Is.Not.Null();
-
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
             throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");

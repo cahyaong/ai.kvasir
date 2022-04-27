@@ -37,20 +37,25 @@ using nGratis.Cop.Olympus.Contract;
 [DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
 public abstract class Card
 {
+    // FIXME: Remove card inheritance!
+
     protected Card(string name, CardKind kind)
     {
+        this.Kind = kind;
+
         this.Name = !string.IsNullOrEmpty(name)
             ? name
-            : throw new KvasirException($"Card name must NOT be {Text.Empty}.");
+            : throw new KvasirException($"Name must not be {DefinedText.Empty}!");
 
-        this.Kind = kind;
+        this.Owner = Player.Unknown;
+        this.Controller = Player.Unknown;
     }
 
     public CardKind Kind { get; init; }
 
     public string Name { get; init; }
 
-    public Player Owner { get; internal set; }
+    public IPlayer Owner { get; internal set; }
 
-    public Player Controller { get; internal set; }
+    public IPlayer Controller { get; internal set; }
 }

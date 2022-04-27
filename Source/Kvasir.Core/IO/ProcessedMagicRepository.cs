@@ -42,10 +42,6 @@ public class ProcessedMagicRepository : IProcessedMagicRepository
 
     public ProcessedMagicRepository(IStorageManager storageManager)
     {
-        Guard
-            .Require(storageManager, nameof(storageManager))
-            .Is.Not.Null();
-
         this._storageManager = storageManager;
     }
 
@@ -81,10 +77,6 @@ public class ProcessedMagicRepository : IProcessedMagicRepository
 
     public async Task SaveCardAsync(DefinedBlob.Card card)
     {
-        Guard
-            .Require(card, nameof(card))
-            .Is.Not.Null();
-
         await using var cardStream = card
             .SerializeToYaml()
             .AsStream();

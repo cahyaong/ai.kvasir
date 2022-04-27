@@ -32,7 +32,6 @@ using System;
 using System.Threading.Tasks;
 using CommandLine;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 public class Program
 {
@@ -50,12 +49,7 @@ public class Program
 
     private static void ProcessCard(ProcessingCardOption option)
     {
-        Guard
-            .Require(option, nameof(option))
-            .Is.Not.Null();
-
         using var appBootstrapper = new AppBootstrapper();
-
         var processingExecution = appBootstrapper.CreateExecution<ProcessingCardExecution>();
 
         var processingParameter = ExecutionParameter.Builder
@@ -69,12 +63,7 @@ public class Program
 
     private static void PlayGame(PlayingGameOption option)
     {
-        Guard
-            .Require(option, nameof(option))
-            .Is.Not.Null();
-
         using var appBootstrapper = new AppBootstrapper();
-
         var playingExecution = appBootstrapper.CreateExecution<PlayingGameExecution>();
 
         Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None))

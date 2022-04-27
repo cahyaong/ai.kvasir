@@ -58,14 +58,21 @@ internal static partial class MockExtensions
             {
                 if (!MockExtensions.DeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
                 {
-                    throw new KvasirTestingException($"Deck code [{definedPlayer.DeckCode}] must be defined!");
+                    throw new KvasirTestingException(
+                        "No lookup entry is defined for deck!",
+                        ("Code", definedPlayer.DeckCode));
                 }
+
+                var mockStrategy = MockBuilder
+                    .CreateMock<IStrategy>()
+                    .WithDefault();
 
                 return new Player
                 {
                     Kind = PlayerKind.Testing,
                     Name = definedPlayer.Name,
-                    Deck = new StubDeck(definedDeck)
+                    Deck = new StubDeck(definedDeck),
+                    Strategy = mockStrategy.Object
                 };
             })
             .Verifiable();

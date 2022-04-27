@@ -73,18 +73,18 @@ public class CachingMessageHandlerTests
 
             // Act.
 
-            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var response = await client.GetAsync("http://www.mock-url.com/mock.html");
 
             // Assert.
 
-            responseMessage
+            response
                 .Should().NotBeNull();
 
-            responseMessage
+            response
                 .StatusCode
                 .Should().Be(HttpStatusCode.OK);
 
-            var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
 
             content
                 .Should().Be("[_MOCK_HTML_CONTENT_]");
@@ -130,18 +130,18 @@ public class CachingMessageHandlerTests
 
             // Act.
 
-            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var response = await client.GetAsync("http://www.mock-url.com/mock.html");
 
             // Assert.
 
-            responseMessage
+            response
                 .Should().NotBeNull();
 
-            responseMessage
+            response
                 .StatusCode
                 .Should().Be(HttpStatusCode.OK);
 
-            var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
 
             content
                 .Should().Be("[_MOCK_HTML_CONTENT_]");
@@ -189,18 +189,18 @@ public class CachingMessageHandlerTests
 
             // Act.
 
-            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var response = await client.GetAsync("http://www.mock-url.com/mock.html");
 
             // Assert.
 
-            responseMessage
+            response
                 .Should().NotBeNull();
 
-            responseMessage
+            response
                 .StatusCode
                 .Should().Be(HttpStatusCode.OK);
 
-            var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
 
             content
                 .Should().Be("[_MOCK_CACHED_HTML_CONTENT_]");
@@ -244,18 +244,18 @@ public class CachingMessageHandlerTests
 
             // Act.
 
-            var responseMessage = await client.GetAsync("http://www.mock-url.com/mock.html");
+            var response = await client.GetAsync("http://www.mock-url.com/mock.html");
 
             // Assert.
 
-            responseMessage
+            response
                 .Should().NotBeNull();
 
-            responseMessage
+            response
                 .StatusCode
                 .Should().Be(HttpStatusCode.NotFound);
 
-            var content = await responseMessage.Content.ReadAsStringAsync();
+            var content = await response.Content.ReadAsStringAsync();
 
             content
                 .Should().Be("[_MOCK_ERROR_CONTENT_]");

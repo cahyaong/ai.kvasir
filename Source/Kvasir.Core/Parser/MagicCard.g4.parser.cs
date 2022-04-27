@@ -40,7 +40,7 @@ using EffectParsingResult = ParsingResult<Contract.DefinedBlob.Effect>;
 
 public partial class MagicCardParser
 {
-    private static readonly IReadOnlyDictionary<string, Mana> ManaLookup = new Dictionary<string, Mana>
+    private static readonly IReadOnlyDictionary<string, Mana> ManaBySymbolLookup = new Dictionary<string, Mana>
     {
         ["{W}"] = Mana.White,
         ["{U}"] = Mana.Blue,
@@ -122,10 +122,6 @@ public partial class MagicCardParser
 
         public override AbilityParsingResult VisitAbility_Bootstrapper(Ability_BootstrapperContext context)
         {
-            Guard
-                .Require(context, nameof(context))
-                .Is.Not.Null();
-
             // TODO: Add support for multiple abilities!
 
             return this.Visit(context.GetChild(0));
@@ -136,13 +132,22 @@ public partial class MagicCardParser
             var costParsingResult = CostVisitor.Instance.VisitCost(context.cost());
             var effectParsingResult = EffectVisitor.Instance.VisitEffect(context.effect());
 
-            var hasInvalidParsingResult =
+            var hasInvalidResult =
                 costParsingResult.HasError ||
                 effectParsingResult.HasError;
 
-            if (hasInvalidParsingResult)
+            if (hasInvalidResult)
             {
                 return AbilityParsingResult.CreateFailure(costParsingResult, effectParsingResult);
+            }
+
+            var hasUnexpectedValue =
+                costParsingResult.Value == null ||
+                effectParsingResult.Value == null;
+
+            if (hasUnexpectedValue)
+            {
+                throw new KvasirException("Found no error during parsing, but parsed value is not valid?");
             }
 
             var ability = new DefinedBlob.Ability
@@ -150,11 +155,11 @@ public partial class MagicCardParser
                 Kind = AbilityKind.Activated,
                 Costs = new[]
                 {
-                    costParsingResult.Value
+                    costParsingResult.Value ?? DefinedBlob.Cost.Unknown
                 },
                 Effects = new[]
                 {
-                    effectParsingResult.Value
+                    effectParsingResult.Value ?? DefinedBlob.Effect.Unknown
                 }
             };
 
@@ -182,10 +187,6 @@ public partial class MagicCardParser
 
         public override CostParsingResult VisitCost_PayingMana(Cost_PayingManaContext context)
         {
-            Guard
-                .Require(context, nameof(context))
-                .Is.Not.Null();
-
             var costBuilder = DefinedBlob.PayingManaCost.Builder.Create();
 
             if (context.SYMBOL_MANA_COLORLESS() != null)
@@ -205,7 +206,7 @@ public partial class MagicCardParser
                     .SYMBOL_MANA_COLOR()
                     .Select(node => node.GetText())
                     .Distinct()
-                    .Where(symbol => !MagicCardParser.ManaLookup.ContainsKey(symbol))
+                    .Where(symbol => !MagicCardParser.ManaBySymbolLookup.ContainsKey(symbol))
                     .ToArray();
 
                 if (invalidSymbols.Any())
@@ -216,7 +217,7 @@ public partial class MagicCardParser
 
                 context
                     .SYMBOL_MANA_COLOR()
-                    .Select(node => MagicCardParser.ManaLookup[node.GetText()])
+                    .Select(node => MagicCardParser.ManaBySymbolLookup[node.GetText()])
                     .GroupBy(mana => mana)
                     .ForEach(grouping => costBuilder.WithAmount(grouping.Key, (ushort)grouping.Count()));
             }
@@ -235,11 +236,7 @@ public partial class MagicCardParser
 
         public override EffectParsingResult VisitEffect_ProducingMana(Effect_ProducingManaContext context)
         {
-            Guard
-                .Require(context, nameof(context))
-                .Is.Not.Null();
-
-            if (!MagicCardParser.ManaLookup.TryGetValue(context.SYMBOL_MANA_COLOR().GetText(), out var mana))
+            if (!MagicCardParser.ManaBySymbolLookup.TryGetValue(context.SYMBOL_MANA_COLOR().GetText(), out var mana))
             {
                 return EffectParsingResult.CreateFailure<Effect_ProducingManaContext>(
                     $"No mapping for value [{context.SYMBOL_MANA_COLOR().GetText()}].");

@@ -119,13 +119,13 @@ internal static partial class MockExtensions
             .Require(mockManager, nameof(mockManager))
             .Is.Not.Null();
 
-        var blobLookup = new Dictionary<DataSpec, byte[]>();
+        var blobBtDataSpecLookup = new Dictionary<DataSpec, byte[]>();
 
         mockManager
             .Setup(mock => mock.SaveEntry(It.IsAny<DataSpec>(), It.IsAny<Stream>(), It.IsAny<bool>()))
             .Callback<DataSpec, Stream, bool>((spec, stream, _) =>
             {
-                blobLookup[spec] = stream.ReadBlob();
+                blobBtDataSpecLookup[spec] = stream.ReadBlob();
 
                 mockManager
                     .Setup(mock => mock.HasEntry(spec))
@@ -138,7 +138,7 @@ internal static partial class MockExtensions
             .Setup(mock => mock.LoadEntry(It.IsAny<DataSpec>()))
             .Returns<DataSpec>(spec =>
             {
-                if (!blobLookup.TryGetValue(spec, out var blob))
+                if (!blobBtDataSpecLookup.TryGetValue(spec, out var blob))
                 {
                     return null;
                 }

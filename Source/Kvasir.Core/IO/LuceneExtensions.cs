@@ -41,7 +41,6 @@ internal static partial class LuceneExtensions
     {
         Guard
             .Require(rootFolderUri, nameof(rootFolderUri))
-            .Is.Not.Null()
             .Is.Folder()
             .Is.Exist();
 

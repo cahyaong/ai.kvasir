@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BlockingDecision.cs" company="nGratis">
+// <copyright file="IStrategy.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,19 +23,40 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 4:39:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, July 6, 2021 6:47:03 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Generic;
+using System;
 
-public class BlockingDecision
+public interface IStrategy
 {
-    public static readonly BlockingDecision None = new()
-    {
-        Combats = new List<Combat>()
-    };
+    IAttackingDecision DeclareAttacker(ITabletop tabletop);
 
-    public IReadOnlyCollection<Combat> Combats { get; init; }
+    IBlockingDecision DeclareBlocker(ITabletop tabletop);
+}
+
+public static class Strategy
+{
+    public static IStrategy Unknown => UnknownStrategy.Instance;
+}
+
+public class UnknownStrategy : IStrategy
+{
+    private UnknownStrategy()
+    {
+    }
+
+    internal static UnknownStrategy Instance { get; } = new();
+
+    public IAttackingDecision DeclareAttacker(ITabletop _)
+    {
+        throw new NotSupportedException("Declaring attacker is not supported!");
+    }
+
+    public IBlockingDecision DeclareBlocker(ITabletop _)
+    {
+        throw new NotImplementedException("Declaring blocker is not supported!");
+    }
 }

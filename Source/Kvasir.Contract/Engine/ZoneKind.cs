@@ -38,8 +38,6 @@ public enum ZoneKind
     Graveyard,
     Stack,
     Exile,
-    Command,
-    Ante,
 
     Stub
 }

@@ -37,10 +37,6 @@ public static class JsonExtensions
     public static string ReadValue(this JToken token, string key)
     {
         Guard
-            .Require(token, nameof(token))
-            .Is.Not.Null();
-
-        Guard
             .Require(key, nameof(key))
             .Is.Not.Empty();
 
@@ -49,12 +45,8 @@ public static class JsonExtensions
             string.Empty;
     }
 
-    public static T ReadValue<T>(this JToken token, string key)
+    public static T? ReadValue<T>(this JToken token, string key)
     {
-        Guard
-            .Require(token, nameof(token))
-            .Is.Not.Null();
-
         Guard
             .Require(key, nameof(key))
             .Is.Not.Empty();

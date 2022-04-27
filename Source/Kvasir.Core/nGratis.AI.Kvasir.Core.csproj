@@ -2,9 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>nGratis.AI.Kvasir.Core</RootNamespace>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
@@ -36,5 +33,6 @@
       <DependentUpon>LuceneExtensions.cs</DependentUpon>
     </Compile>
   </ItemGroup>
+  <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Production.targets" />
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

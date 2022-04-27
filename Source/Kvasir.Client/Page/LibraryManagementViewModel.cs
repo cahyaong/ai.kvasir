@@ -51,18 +51,14 @@ public sealed class LibraryManagementViewModel : ReactiveScreen, IDisposable
 
     private int _cardCount;
 
-    private IDisposableCollection<CardSetViewModel> _cardSetViewModels;
+    private IDisposableCollection<CardSetViewModel>? _cardSetViewModels;
 
-    private CardSetViewModel _selectedCardSetViewModel;
+    private CardSetViewModel? _selectedCardSetViewModel;
 
     private bool _isDisposed;
 
     public LibraryManagementViewModel(IUnprocessedMagicRepository unprocessedRepository)
     {
-        Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
         this._unprocessedRepository = unprocessedRepository;
     }
 
@@ -83,13 +79,13 @@ public sealed class LibraryManagementViewModel : ReactiveScreen, IDisposable
         private set => this.RaiseAndSetIfChanged(ref this._cardCount, value);
     }
 
-    public IDisposableCollection<CardSetViewModel> CardSetViewModels
+    public IDisposableCollection<CardSetViewModel>? CardSetViewModels
     {
         get => this._cardSetViewModels;
         private set => this.RaiseAndSetIfChanged(ref this._cardSetViewModels, value);
     }
 
-    public CardSetViewModel SelectedCardSetViewModel
+    public CardSetViewModel? SelectedCardSetViewModel
     {
         get => this._selectedCardSetViewModel;
 
@@ -156,10 +152,6 @@ public sealed class LibraryManagementViewModel : ReactiveScreen, IDisposable
 
         public CardSetViewModelProvider(IUnprocessedMagicRepository repository)
         {
-            Guard
-                .Require(repository, nameof(repository))
-                .Is.Not.Null();
-
             this._repository = repository;
         }
 

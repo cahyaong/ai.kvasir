@@ -28,12 +28,14 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
+using nGratis.Cop.Olympus.Contract;
+
 public static partial class UnparsedBlob
 {
     public record Rule
     {
-        public string Id { get; init; }
+        public string Id { get; init; } = DefinedText.Unknown;
 
-        public string Text { get; init; }
+        public string Text { get; init; } = DefinedText.Unknown;
     }
 }

@@ -32,5 +32,12 @@ using nGratis.AI.Kvasir.Contract;
 
 public class SimulationResult : ExecutionResult
 {
+    public SimulationResult()
+    {
+        this.Tabletop = Tabletop.Unknown;
+    }
+
+    public static SimulationResult Unknown { get; } = new();
+
     public Tabletop Tabletop { get; init; }
 }

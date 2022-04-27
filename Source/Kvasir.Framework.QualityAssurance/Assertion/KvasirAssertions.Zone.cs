@@ -37,16 +37,12 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 
-public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
+public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
 {
-    public ZoneAssertion(Zone zone)
+    public ZoneAssertion(IZone zone)
         : base(zone)
     {
-        zone
-            .Should().NotBeNull();
-
-        zone
-            .Kind
+        zone.Kind
             .Should().NotBe(ZoneKind.Unknown);
     }
 
@@ -54,8 +50,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeLibrary()
     {
-        this
-            .Subject.Kind
+        this.Subject.Kind
             .Should().Be(ZoneKind.Library, $"{this.Identifier} should be library");
 
         return new AndConstraint<ZoneAssertion>(this);
@@ -63,8 +58,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeHand()
     {
-        this
-            .Subject.Kind
+        this.Subject.Kind
             .Should().Be(ZoneKind.Hand, $"{this.Identifier} should be hand");
 
         return new AndConstraint<ZoneAssertion>(this);
@@ -72,8 +66,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeGraveyard()
     {
-        this
-            .Subject.Kind
+        this.Subject.Kind
             .Should().Be(ZoneKind.Graveyard, $"{this.Identifier} should be graveyard");
 
         return new AndConstraint<ZoneAssertion>(this);
@@ -81,8 +74,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeBattlefield()
     {
-        this
-            .Subject.Kind
+        this.Subject.Kind
             .Should().Be(ZoneKind.Battlefield, $"{this.Identifier} should be battlefield");
 
         return new AndConstraint<ZoneAssertion>(this);
@@ -90,8 +82,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeStack()
     {
-        this
-            .Subject.Kind
+        this.Subject.Kind
             .Should().Be(ZoneKind.Stack, $"{this.Identifier} should be stack");
 
         return new AndConstraint<ZoneAssertion>(this);
@@ -99,35 +90,15 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeExile()
     {
-        this
-            .Subject.Kind
+        this.Subject.Kind
             .Should().Be(ZoneKind.Exile, $"{this.Identifier} should be exile");
-
-        return new AndConstraint<ZoneAssertion>(this);
-    }
-
-    public AndConstraint<ZoneAssertion> BeCommand()
-    {
-        this
-            .Subject.Kind
-            .Should().Be(ZoneKind.Command, $"{this.Identifier} should be command");
-
-        return new AndConstraint<ZoneAssertion>(this);
-    }
-
-    public AndConstraint<ZoneAssertion> BeAnte()
-    {
-        this
-            .Subject.Kind
-            .Should().Be(ZoneKind.Ante, $"{this.Identifier} should be ante");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
 
     public AndConstraint<ZoneAssertion> BePublic()
     {
-        this
-            .Subject.Visibility
+        this.Subject.Visibility
             .Should().Be(Visibility.Public, $"{this.Identifier} should be public");
 
         return new AndConstraint<ZoneAssertion>(this);
@@ -135,22 +106,16 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
 
     public AndConstraint<ZoneAssertion> BeHidden()
     {
-        this
-            .Subject.Visibility
+        this.Subject.Visibility
             .Should().Be(Visibility.Hidden, $"{this.Identifier} should be hidden");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(Deck deck)
+    public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(IDeck deck)
     {
         Guard
-            .Require(deck, nameof(deck))
-            .Is.Not.Null();
-
-        Guard
             .Require(deck.Cards, $"{nameof(deck)}.{nameof(deck.Cards)}")
-            .Is.Not.Null()
             .Is.Not.Empty();
 
         using (new AssertionScope())
@@ -171,7 +136,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
         using (new AssertionScope())
         {
             this
-                .Subject.Cards?
+                .Subject.Cards
                 .GroupBy(card => card.GetHashCode())
                 .Where(grouping => grouping.Count() > 1)
                 .ForEach(grouping => Execute
@@ -188,7 +153,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> HaveCardQuantity(ushort quantity)
     {
         var actualQuantity = this
-            .Subject?.Cards?
+            .Subject?.Cards
             .Count() ?? 0;
 
         Execute
@@ -208,7 +173,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<Zone, ZoneAssertion>
             .Is.Not.Empty();
 
         var actualQuantity = this
-            .Subject?.Cards?
+            .Subject?.Cards
             .Count(card => card.Name == cardName) ?? 0;
 
         Execute

@@ -32,7 +32,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
@@ -63,10 +62,6 @@ public class EffectYamlConverter : IYamlTypeConverter
 
     public object ReadYaml(IParser parser, Type type)
     {
-        Guard
-            .Require(parser, nameof(parser))
-            .Is.Not.Null();
-
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
             throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
@@ -95,13 +90,9 @@ public class EffectYamlConverter : IYamlTypeConverter
         return effect;
     }
 
-    public void WriteYaml(IEmitter emitter, object value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type)
     {
-        Guard
-            .Require(emitter, nameof(emitter))
-            .Is.Not.Null();
-
-        if (!(value is DefinedBlob.Effect effect))
+        if (value is not DefinedBlob.Effect effect)
         {
             return;
         }
@@ -123,7 +114,7 @@ public class EffectYamlConverter : IYamlTypeConverter
 
     private static DefinedBlob.Effect ReadProducingManaEffect(IParser parser)
     {
-        var amountLookup = default(IReadOnlyDictionary<Mana, ushort>);
+        var amountByManaLookup = default(IReadOnlyDictionary<Mana, ushort>);
 
         while (parser.Current?.GetType() != typeof(MappingEnd))
         {
@@ -131,20 +122,20 @@ public class EffectYamlConverter : IYamlTypeConverter
 
             if (field == Field.Amount)
             {
-                amountLookup = parser.ParseLookup(
+                amountByManaLookup = parser.ParseLookup(
                     mana => (Mana)Enum.Parse(typeof(Mana), mana, true),
                     ushort.Parse);
             }
         }
 
-        if (amountLookup?.Any() != true)
+        if (amountByManaLookup?.Any() != true)
         {
             throw new KvasirException("Producing mana effect must have valid non-empty amount!");
         }
 
         var effectBuilder = DefinedBlob.ProducingManaEffect.Builder.Create();
 
-        foreach (var (mana, quantity) in amountLookup)
+        foreach (var (mana, quantity) in amountByManaLookup)
         {
             effectBuilder.WithAmount(mana, quantity);
         }

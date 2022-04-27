@@ -29,17 +29,12 @@
 namespace nGratis.AI.Kvasir.Client;
 
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 using ReactiveUI;
 
 public class RuleViewModel : ReactiveObject
 {
     public RuleViewModel(UnparsedBlob.Rule unparsedRule)
     {
-        Guard
-            .Require(unparsedRule, nameof(unparsedRule))
-            .Is.Not.Null();
-
         this.UnparsedRule = unparsedRule;
     }
 

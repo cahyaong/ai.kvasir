@@ -46,42 +46,23 @@ public class RoundSimulator
 
     private Tabletop _tabletop;
 
-    public RoundSimulator(
-        IMagicEntityFactory entityFactory,
-        IRandomGenerator randomGenerator,
-        ILogger logger)
+    public RoundSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, ILogger logger)
     {
-        Guard
-            .Require(entityFactory, nameof(entityFactory))
-            .Is.Not.Null();
-
-        Guard
-            .Require(randomGenerator, nameof(randomGenerator))
-            .Is.Not.Null();
-
-        Guard
-            .Require(logger, nameof(logger))
-            .Is.Not.Null();
-
         this._entityFactory = entityFactory;
         this._randomGenerator = randomGenerator;
         this._logger = logger;
+
+        this._judge = Judge.Unknown;
+        this._tabletop = Tabletop.Unknown;
     }
 
     public SimulationResult Simulate(SimulationConfig simulationConfig)
     {
-        Guard
-            .Require(simulationConfig, nameof(simulationConfig))
-            .Is.Not.Null();
-
         this
             .SetupTabletop()
             .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
-            .SetupPlayerStrategy(this._tabletop.ActivePlayer)
             .SetupPlayerZones(this._tabletop.ActivePlayer)
-            .SetupPlayerStrategy(this._tabletop.NonactivePlayer)
-            .SetupPlayerZones(this._tabletop.NonactivePlayer)
-            .SetupSharedZones();
+            .SetupPlayerZones(this._tabletop.NonactivePlayer);
 
         while (this._tabletop.TurnId < simulationConfig.MaxTurnCount)
         {
@@ -139,36 +120,12 @@ public class RoundSimulator
         this._tabletop.ActivePlayer.Life = 20;
         this._tabletop.NonactivePlayer.Life = 20;
 
-        this._tabletop.ActivePlayer.Opponent = this._tabletop.NonactivePlayer;
-        this._tabletop.NonactivePlayer.Opponent = this._tabletop.ActivePlayer;
-
         return this;
     }
 
-    private RoundSimulator SetupPlayerStrategy(Player player)
+    private RoundSimulator SetupPlayerZones(IPlayer player)
     {
-        // TODO (SHOULD): Move strategy initialization to <IMagicEntityFactory>!
-
-        player.Strategy = new RandomStrategy(this._randomGenerator);
-
-        return this;
-    }
-
-    private RoundSimulator SetupPlayerZones(Player player)
-    {
-        if (player.Deck == null)
-        {
-            throw new KvasirException(
-                "Player does NOT have valid deck!",
-                ("Player", player.Name));
-        }
-
-        player.Library = new Zone(ZoneKind.Library, Visibility.Hidden);
-        player.Hand = new Zone(ZoneKind.Hand, Visibility.Hidden);
-        player.Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public);
-
-        this
-            ._randomGenerator
+        this._randomGenerator
             .GenerateShufflingIndexes((ushort)player.Deck.Cards.Count)
             .Select(index => player
                 .Deck.Cards
@@ -183,15 +140,6 @@ public class RoundSimulator
             .ForEach(card => player.Hand.AddCardToTop(card));
 
         // TODO: Implement proper `mulligan` for Rx-103.4 sub-rule.
-
-        return this;
-    }
-
-    private RoundSimulator SetupSharedZones()
-    {
-        this._tabletop.Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public);
-        this._tabletop.Stack = new Zone(ZoneKind.Stack, Visibility.Public);
-        this._tabletop.Exile = new Zone(ZoneKind.Exile, Visibility.Public);
 
         return this;
     }

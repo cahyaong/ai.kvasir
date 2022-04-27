@@ -36,21 +36,14 @@ public static partial class DefinedBlob
     {
         public static Ability NotSupported => NotSupportedAbilityDefinition.Instance;
 
-        public virtual AbilityKind Kind { get; init; }
+        public virtual AbilityKind Kind { get; init; } = AbilityKind.Unknown;
 
-        public virtual Cost[] Costs { get; init; } = Default.Costs;
+        public virtual Cost[] Costs { get; init; } = Array.Empty<Cost>();
 
-        public virtual Effect[] Effects { get; init; } = Default.Effects;
-
-        protected static class Default
-        {
-            public static readonly Cost[] Costs = Array.Empty<Cost>();
-
-            public static readonly Effect[] Effects = Array.Empty<Effect>();
-        }
+        public virtual Effect[] Effects { get; init; } = Array.Empty<Effect>();
     }
 
-    internal sealed record NotSupportedAbilityDefinition : Ability
+    private sealed record NotSupportedAbilityDefinition : Ability
     {
         private NotSupportedAbilityDefinition()
         {
@@ -60,8 +53,8 @@ public static partial class DefinedBlob
 
         public override AbilityKind Kind => AbilityKind.NotSupported;
 
-        public override Cost[] Costs => Default.Costs;
+        public override Cost[] Costs => Array.Empty<Cost>();
 
-        public override Effect[] Effects => Default.Effects;
+        public override Effect[] Effects => Array.Empty<Effect>();
     }
 }

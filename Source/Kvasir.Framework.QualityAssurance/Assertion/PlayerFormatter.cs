@@ -41,7 +41,7 @@ public class PlayerFormatter : IValueFormatter
     {
         var text = value is Player player
             ? player.Name
-            : Text.Unsupported;
+            : DefinedText.Unsupported;
 
         graph.AddFragment(text);
     }

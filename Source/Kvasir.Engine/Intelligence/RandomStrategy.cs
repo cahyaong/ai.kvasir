@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 public class RandomStrategy : IStrategy
 {
@@ -40,14 +39,10 @@ public class RandomStrategy : IStrategy
 
     public RandomStrategy(IRandomGenerator randomGenerator)
     {
-        Guard
-            .Require(randomGenerator, nameof(randomGenerator))
-            .Is.Not.Null();
-
         this._randomGenerator = randomGenerator;
     }
 
-    public AttackingDecision DeclareAttacker(Tabletop tabletop)
+    public IAttackingDecision DeclareAttacker(ITabletop tabletop)
     {
         var attackers = Rulebook
             .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
@@ -60,7 +55,7 @@ public class RandomStrategy : IStrategy
         };
     }
 
-    public BlockingDecision DeclareBlocker(Tabletop tabletop)
+    public IBlockingDecision DeclareBlocker(ITabletop tabletop)
     {
         var blockers = Rulebook
             .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)

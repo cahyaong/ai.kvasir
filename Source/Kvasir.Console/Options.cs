@@ -34,7 +34,7 @@ using CommandLine;
 internal class ProcessingCardOption
 {
     [Option("card-set-name", Required = true)]
-    public string CardSetName { get; set; }
+    public string CardSetName { get; set; } = string.Empty;
 }
 
 [Verb("playing-game")]

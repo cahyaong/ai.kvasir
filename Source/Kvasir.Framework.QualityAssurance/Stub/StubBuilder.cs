@@ -33,33 +33,29 @@ using nGratis.AI.Kvasir.Engine;
 
 public static class StubBuilder
 {
-    public static Tabletop CreateDefaultTabletop()
+    public static ITabletop CreateDefaultTabletop(IStrategy attackingStrategy, IStrategy blockingStrategy)
     {
         var activePlayer = new Player
         {
             Name = "[_MOCK_ACTIVE_PLAYER_]",
             Kind = PlayerKind.Testing,
-            Life = 20,
-            Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+            Strategy = attackingStrategy,
+            Life = 20
         };
 
         var nonactivePlayer = new Player
         {
             Name = "[_MOCK_NONACTIVE_PLAYER_]",
             Kind = PlayerKind.Testing,
-            Life = 20,
-            Graveyard = new Zone(ZoneKind.Graveyard, Visibility.Public)
+            Strategy = blockingStrategy,
+            Life = 20
         };
 
-        activePlayer.Opponent = nonactivePlayer;
-        nonactivePlayer.Opponent = activePlayer;
-
-        return new()
+        return new Tabletop
         {
             Phase = Phase.Setup,
             ActivePlayer = activePlayer,
-            NonactivePlayer = nonactivePlayer,
-            Battlefield = new Zone(ZoneKind.Battlefield, Visibility.Public)
+            NonactivePlayer = nonactivePlayer
         };
     }
 }

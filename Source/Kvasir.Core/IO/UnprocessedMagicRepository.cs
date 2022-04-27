@@ -26,6 +26,8 @@
 // <creation_timestamp>Thursday, 25 October 2018 10:50:36 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Collections.Immutable;
+
 namespace nGratis.AI.Kvasir.Core;
 
 using System;
@@ -43,14 +45,10 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
 {
     private readonly IIndexManager _indexManager;
 
-    private readonly IReadOnlyDictionary<ExternalResources, IMagicFetcher> _fetcherLookup;
+    private readonly IReadOnlyDictionary<ExternalResources, IMagicFetcher> _fetcherByExternalResourceLookup;
 
     public UnprocessedMagicRepository(IIndexManager indexManager, params IMagicFetcher[] fetchers)
     {
-        Guard
-            .Require(indexManager, nameof(indexManager))
-            .Is.Not.Null();
-
         Guard
             .Require(fetchers, nameof(fetchers))
             .Is.Not.Empty();
@@ -90,7 +88,7 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
 
             if (duplicatingResources.Any())
             {
-                messageBuilder.Append(" ");
+                messageBuilder.Append(' ');
             }
         }
 
@@ -106,13 +104,13 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
             throw new KvasirException($"One or more external resource(s) are invalid! {messageBuilder}");
         }
 
-        this._fetcherLookup = fetcherGroupings
+        this._fetcherByExternalResourceLookup = fetcherGroupings
             .ToDictionary(grouping => grouping.Key, grouping => grouping.Single());
     }
 
-    public event EventHandler CardSetIndexed;
+    public event EventHandler? CardSetIndexed;
 
-    public event EventHandler CardIndexed;
+    public event EventHandler? CardIndexed;
 
     public async Task<int> GetCardSetCountAsync()
     {
@@ -183,18 +181,14 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
                 .Range(itemIndex, itemCount)
                 .Select(index => indexReader.Document(index))
                 .Select(document => document.ToInstance<UnparsedBlob.CardSet>())
-                .ToArray();
+                .ToImmutableArray();
         });
 
-        return cardSets;
+        return cardSets ?? ImmutableArray.Create<UnparsedBlob.CardSet>();
     }
 
     public async Task<IReadOnlyCollection<UnparsedBlob.Card>> GetCardsAsync(UnparsedBlob.CardSet cardSet)
     {
-        Guard
-            .Require(cardSet, nameof(cardSet))
-            .Is.Not.Null();
-
         var cards = default(IReadOnlyCollection<UnparsedBlob.Card>);
 
         if (this._indexManager.HasIndex(IndexKind.Card))
@@ -217,12 +211,8 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
         if (cards?.Any() != true)
         {
             cards = await this
-                ._fetcherLookup[ExternalResources.Card]
+                ._fetcherByExternalResourceLookup[ExternalResources.Card]
                 .FetchCardsAsync(cardSet);
-
-            Guard
-                .Ensure(cards, nameof(cards))
-                .Is.Not.Null();
 
             await Task.Run(() =>
             {
@@ -230,7 +220,7 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
 
                 var documents = cards
                     .Select(card => card.ToLuceneDocument())
-                    .ToArray();
+                    .ToImmutableArray();
 
                 indexWriter.AddDocuments(documents);
                 indexWriter.Commit();
@@ -246,7 +236,7 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
     public async Task<IImage> GetCardImageAsync(UnparsedBlob.Card card)
     {
         return await this
-            ._fetcherLookup[ExternalResources.CardImage]
+            ._fetcherByExternalResourceLookup[ExternalResources.CardImage]
             .FetchCardImageAsync(card);
     }
 
@@ -280,10 +270,10 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
                 .Range(itemIndex, itemCount)
                 .Select(index => indexReader.Document(index))
                 .Select(document => document.ToInstance<UnparsedBlob.Rule>())
-                .ToArray();
+                .ToImmutableArray();
         });
 
-        return rules;
+        return rules ?? ImmutableArray.Create<UnparsedBlob.Rule>();
     }
 
     private async Task ReindexCardSetsAsync()
@@ -291,7 +281,7 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
         var indexWriter = this._indexManager.FindIndexWriter(IndexKind.CardSet);
 
         var cardSets = await this
-            ._fetcherLookup[ExternalResources.CardSet]
+            ._fetcherByExternalResourceLookup[ExternalResources.CardSet]
             .FetchCardSetsAsync();
 
         var documents = cardSets
@@ -311,7 +301,7 @@ public class UnprocessedMagicRepository : IUnprocessedMagicRepository
         var indexWriter = this._indexManager.FindIndexWriter(IndexKind.Rule);
 
         var rules = await this
-            ._fetcherLookup[ExternalResources.Rule]
+            ._fetcherByExternalResourceLookup[ExternalResources.Rule]
             .FetchRulesAsync();
 
         var documents = rules

@@ -34,6 +34,10 @@ public class ValidationReason
 {
     private ValidationReason()
     {
+        this.Id = -42;
+        this.Cause = DefinedText.Unknown;
+        this.Reference = DefinedText.Unknown;
+        this.Message = DefinedText.Unknown;
     }
 
     public int Id { get; init; }
@@ -50,11 +54,7 @@ public class ValidationReason
             .Require(message, nameof(message))
             .Is.Not.Empty();
 
-        Guard
-            .Require(permanent, nameof(permanent))
-            .Is.Not.Null();
-
-        return new()
+        return new ValidationReason
         {
             Id = permanent.Id,
             Cause = $"Permanent_{permanent.Kind}",

@@ -43,25 +43,21 @@ using nGratis.Cop.Olympus.Contract;
 
 public sealed class IndexManager : IIndexManager
 {
-    private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryLookup;
+    private readonly IReadOnlyDictionary<IndexKind, Directory> _directoryByIndexKindLookup;
 
-    private readonly ConcurrentDictionary<IndexKind, Lazy<IndexWriter>> _deferredWriterLookup;
+    private readonly ConcurrentDictionary<IndexKind, Lazy<IndexWriter>> _deferredIndexWriterByIndexKindLookup;
 
     private bool _isDisposed;
 
     public IndexManager(Uri rootFolderUri)
     {
-        Guard
-            .Require(rootFolderUri, nameof(rootFolderUri))
-            .Is.Not.Null();
-
-        this._directoryLookup = Enum
+        this._directoryByIndexKindLookup = Enum
             .GetValues(typeof(IndexKind))
             .Cast<IndexKind>()
             .Where(indexKind => indexKind != IndexKind.Unknown)
             .ToDictionary(indexKind => indexKind, rootFolderUri.CreateLuceneDirectory);
 
-        this._deferredWriterLookup = new ConcurrentDictionary<IndexKind, Lazy<IndexWriter>>();
+        this._deferredIndexWriterByIndexKindLookup = new ConcurrentDictionary<IndexKind, Lazy<IndexWriter>>();
     }
 
     public bool HasIndex(IndexKind indexKind)
@@ -71,7 +67,7 @@ public sealed class IndexManager : IIndexManager
             .Is.Not.Default();
 
         return
-            this._directoryLookup.TryGetValue(indexKind, out var directory) &&
+            this._directoryByIndexKindLookup.TryGetValue(indexKind, out var directory) &&
             directory.ListAll().Any();
     }
 
@@ -92,7 +88,7 @@ public sealed class IndexManager : IIndexManager
             .Require(indexKind, nameof(indexKind))
             .Is.Not.Default();
 
-        if (!this._directoryLookup.TryGetValue(indexKind, out var directory))
+        if (!this._directoryByIndexKindLookup.TryGetValue(indexKind, out var directory))
         {
             throw new KvasirException($"Lucene directory is not registered for [{indexKind}]!");
         }
@@ -109,7 +105,7 @@ public sealed class IndexManager : IIndexManager
             return new IndexWriter(directory, configuration);
         }
 
-        return this._deferredWriterLookup
+        return this._deferredIndexWriterByIndexKindLookup
             .GetOrAdd(
                 indexKind,
                 _ => new Lazy<IndexWriter>(CreateIndexWriter, LazyThreadSafetyMode.ExecutionAndPublication))
@@ -124,7 +120,7 @@ public sealed class IndexManager : IIndexManager
         }
 
         this
-            ._deferredWriterLookup?
+            ._deferredIndexWriterByIndexKindLookup
             .Values
             .Where(deferredWriter => deferredWriter.IsValueCreated)
             .ForEach(deferredWriter => deferredWriter.Value.Dispose());

@@ -2,8 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
@@ -15,5 +13,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
   </ItemGroup>
+  <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Production.targets" />
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

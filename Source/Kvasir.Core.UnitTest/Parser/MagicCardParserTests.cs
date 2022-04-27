@@ -287,16 +287,12 @@ public class MagicCardParserTests
                 return new ParsingCostTheory
                 {
                     UnparsedCost = unparsedCost,
-                    ExpectedCost = DefinedBlob.UnknownCost.Instance
+                    ExpectedCost = DefinedBlob.Cost.Unknown
                 };
             }
 
             public ParsingCostTheory Expect(DefinedBlob.Cost cost)
             {
-                Guard
-                    .Require(cost, nameof(cost))
-                    .Is.Not.Null();
-
                 this.ExpectedCost = cost;
 
                 return this;

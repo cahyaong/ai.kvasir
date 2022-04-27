@@ -30,22 +30,22 @@ namespace nGratis.AI.Kvasir.Client;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
-using nGratis.Cop.Olympus.Contract;
 using ReactiveUI;
 
 public class CardSetViewModel : ReactiveObject
 {
     private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
-    private IEnumerable<CardViewModel> _cardViewModels;
+    private IEnumerable<CardViewModel>? _cardViewModels;
 
-    private CardViewModel _selectedCardViewModel;
+    private CardViewModel? _selectedCardViewModel;
 
     private int _notParsedCardCount;
 
@@ -55,14 +55,6 @@ public class CardSetViewModel : ReactiveObject
 
     public CardSetViewModel(UnparsedBlob.CardSet unparsedCardSet, IUnprocessedMagicRepository unprocessedRepository)
     {
-        Guard
-            .Require(unparsedCardSet, nameof(unparsedCardSet))
-            .Is.Not.Null();
-
-        Guard
-            .Require(unprocessedRepository, nameof(unprocessedRepository))
-            .Is.Not.Null();
-
         this._unprocessedRepository = unprocessedRepository;
 
         this.UnparsedCardSet = unparsedCardSet;
@@ -74,13 +66,13 @@ public class CardSetViewModel : ReactiveObject
 
     public UnparsedBlob.CardSet UnparsedCardSet { get; }
 
-    public IEnumerable<CardViewModel> CardViewModels
+    public IEnumerable<CardViewModel>? CardViewModels
     {
         get => this._cardViewModels;
         private set => this.RaiseAndSetIfChanged(ref this._cardViewModels, value);
     }
 
-    public CardViewModel SelectedCardViewModel
+    public CardViewModel? SelectedCardViewModel
     {
         get => this._selectedCardViewModel;
 
@@ -160,13 +152,22 @@ public class CardSetViewModel : ReactiveObject
 
     private void UpdateParsingStatistics()
     {
-        var parsedCardViewModels = this
-            .CardViewModels
-            .Where(vm => vm.DefinedCard != null)
-            .ToArray();
+        if (this.CardViewModels != null)
+        {
+            var parsedCardViewModels = this
+                .CardViewModels
+                .Where(vm => vm.DefinedCard != null)
+                .ToImmutableArray();
 
-        this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;
-        this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ProcessingMessages.Any());
-        this.InvalidCardCount = parsedCardViewModels.Length - this.ValidCardCount;
+            this.NotParsedCardCount = this.CardViewModels.Count() - parsedCardViewModels.Length;
+            this.ValidCardCount = parsedCardViewModels.Count(vm => !vm.ProcessingMessages.Any());
+            this.InvalidCardCount = parsedCardViewModels.Length - this.ValidCardCount;
+        }
+        else
+        {
+            this.NotParsedCardCount = 0;
+            this.ValidCardCount = 0;
+            this.InvalidCardCount = 0;
+        }
     }
 }

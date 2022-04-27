@@ -55,7 +55,7 @@ public class AppViewModel : Conductor<IScreen>.Collection.OneActive
                 return new
                 {
                     Screen = screen,
-                    DisplayText = definitionAttribute?.DisplayText ?? Text.Undefined,
+                    DisplayText = definitionAttribute?.DisplayText ?? DefinedText.Unknown,
                     Ordering = definitionAttribute?.Ordering ?? int.MaxValue,
                     TypeName = screen.GetType().Name
                 };

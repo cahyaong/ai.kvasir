@@ -63,7 +63,7 @@ internal sealed class CachingMessageHandler : DelegatingHandler
     {
         Guard
             .Require(name, nameof(name))
-            .Is.Not.Null();
+            .Is.Not.Empty();
 
         // TODO: Consider injecting compressed storage managers!
 
@@ -75,7 +75,7 @@ internal sealed class CachingMessageHandler : DelegatingHandler
             new DataSpec($"{name}_Image", KvasirMime.Cache),
             storageManager);
 
-        this._keyCalculator = keyCalculator ?? SimpleKeyCalculator.Instance;
+        this._keyCalculator = keyCalculator;
         this._whenEntrySavingRequested = new Subject<SavingRequest>();
 
         this._whenEntrySavingRequested
@@ -84,23 +84,14 @@ internal sealed class CachingMessageHandler : DelegatingHandler
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage requestMessage,
+        HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        Guard
-            .Require(requestMessage, nameof(requestMessage))
-            .Is.Not.Null();
+        var response = default(HttpResponseMessage);
 
-        var responseMessage = default(HttpResponseMessage);
-
-        var entrySpec = this._keyCalculator.Calculate(requestMessage.RequestUri);
-
-        if (entrySpec == null)
-        {
-            throw new KvasirException(
-                $"Entry spec. is not calculated properly for URL [{requestMessage.RequestUri}]. " +
-                $"Calculator: [{this._keyCalculator.GetType().FullName}].");
-        }
+        var entrySpec = request.RequestUri != null
+            ? this._keyCalculator.Calculate(request.RequestUri)
+            : throw new KvasirException("Request URI is not defined!");
 
         var storageManager = entrySpec.Mime.IsImage
             ? this._imageStorageManager
@@ -117,26 +108,26 @@ internal sealed class CachingMessageHandler : DelegatingHandler
 
         if (foundBlob?.Any() == true)
         {
-            responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            response = new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new ByteArrayContent(foundBlob)
             };
         }
         else
         {
-            responseMessage = await base.SendAsync(requestMessage, cancellationToken);
+            response = await base.SendAsync(request, cancellationToken);
 
-            if (responseMessage.IsSuccessStatusCode && !this._whenEntrySavingRequested.IsDisposed)
+            if (response.IsSuccessStatusCode && !this._whenEntrySavingRequested.IsDisposed)
             {
                 this._whenEntrySavingRequested.OnNext(new SavingRequest
                 {
                     EntrySpec = entrySpec,
-                    Blob = await responseMessage.Content.ReadAsByteArrayAsync(cancellationToken)
+                    Blob = await response.Content.ReadAsByteArrayAsync(cancellationToken)
                 });
             }
         }
 
-        return responseMessage;
+        return response;
     }
 
     protected override void Dispose(bool isDisposing)
@@ -180,8 +171,8 @@ internal sealed class CachingMessageHandler : DelegatingHandler
 
     private sealed class SavingRequest
     {
-        public DataSpec EntrySpec { get; set; }
+        public DataSpec EntrySpec { get; init; } = DataSpec.None;
 
-        public byte[] Blob { get; set; }
+        public byte[] Blob { get; init; } = Array.Empty<byte>();
     }
 }

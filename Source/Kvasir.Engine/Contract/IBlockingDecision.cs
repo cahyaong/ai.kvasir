@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="AttackingDecision.cs" company="nGratis">
+// <copyright file="IBlockingDecision.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,19 +23,30 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Tuesday, July 6, 2021 7:07:41 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, April 16, 2022 5:39:19 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
 
-public class AttackingDecision
+public interface IBlockingDecision
 {
-    public static readonly AttackingDecision None = new()
-    {
-        Attackers = new List<Creature>()
-    };
+    IReadOnlyCollection<ICombat> Combats { get; init; }
+}
 
-    public IReadOnlyCollection<Creature> Attackers { get; init; }
+public class UnknownBlockingDecision : IBlockingDecision
+{
+    private UnknownBlockingDecision()
+    {
+    }
+
+    internal static IBlockingDecision Instance { get; } = new UnknownBlockingDecision();
+
+    public IReadOnlyCollection<ICombat> Combats
+    {
+        get => Array.Empty<ICombat>();
+        init => throw new NotSupportedException("Setting combats is not allowed!");
+    }
 }

@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Core;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -86,7 +87,7 @@ public class ScryfallFetcher : MagicHttpFetcherBase
                 Name = token.ReadValue("name"),
                 ReleasedTimestamp = token.ReadValue<DateTime>("released_at")
             })
-            .ToArray();
+            .ToImmutableArray();
     }
 
     protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(
@@ -169,9 +170,7 @@ public class ScryfallFetcher : MagicHttpFetcherBase
 
     protected override async Task<IImage> FetchCardImageCoreAsync(UnparsedBlob.Card card)
     {
-        var path = $"cards/border_crop/{card.ScryfallImageUrl}";
-
-        var response = await this.HttpClient.GetAsync(new Uri(Link.ImageUri, path));
+        var response = await this.HttpClient.GetAsync(new Uri(card.ScryfallImageUrl));
 
         if (!response.IsSuccessStatusCode)
         {
@@ -189,10 +188,6 @@ public class ScryfallFetcher : MagicHttpFetcherBase
 
     private static string FindScryfallImageUrl(JToken token)
     {
-        Guard
-            .Require(token, nameof(token))
-            .Is.Not.Null();
-
         var imageUrl = token
             .SelectToken("image_uris")?
             .SelectToken("border_crop")?
@@ -224,14 +219,12 @@ public class ScryfallFetcher : MagicHttpFetcherBase
                 $"URL: [{imageUrl}].");
         }
 
-        return urlMatch.Groups["url"].Value;
+        return imageUrl;
     }
 
     private static class Link
     {
         public static readonly Uri ApiUri = new("https://api.scryfall.com");
-
-        public static readonly Uri ImageUri = new("https://img.scryfall.com/");
     }
 
     private sealed class KeyCalculator : IKeyCalculator

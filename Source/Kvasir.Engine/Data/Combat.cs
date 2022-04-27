@@ -28,10 +28,19 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
 
-public class Combat
+public class Combat : ICombat
 {
+    public Combat()
+    {
+        this.Attacker = Creature.Unknown;
+        this.Blockers = Array.Empty<Creature>();
+    }
+
+    public static ICombat Unknown => UnknownCombat.Instance;
+
     public Creature Attacker { get; init; }
 
     public IReadOnlyCollection<Creature> Blockers { get; init; }

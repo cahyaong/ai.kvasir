@@ -33,12 +33,13 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Moq.AI.Kvasir;
+using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 using TechTalk.SpecFlow;
+using MockBuilder = Moq.AI.Kvasir.MockBuilder;
 
 [Binding]
 public sealed class JudgeDefinition
@@ -53,23 +54,32 @@ public sealed class JudgeDefinition
             .WithFormatter();
     }
 
-    private Tabletop _tabletop;
     private Judge _judge;
+    private ITabletop _tabletop;
 
     private Creature _attacker;
     private List<Creature> _blockers;
 
-    public IEnumerable<Creature> Creatures => Enumerable
-        .Empty<Creature>()
-        .Append(this._attacker)
-        .Append(this._blockers);
+    private Mock<IStrategy> _mockAttackingStrategy;
+    private Mock<IStrategy> _mockBlockingStrategy;
 
     [BeforeScenario(Order = 0)]
     public void ExecutePreScenario()
     {
         var mockLogger = MockBuilder.CreateMock<ILogger>();
 
-        this._tabletop = StubBuilder.CreateDefaultTabletop();
+        this._mockAttackingStrategy = MockBuilder
+            .CreateMock<IStrategy>()
+            .WithDefault();
+
+        this._mockBlockingStrategy = MockBuilder
+            .CreateMock<IStrategy>()
+            .WithDefault();
+
+        this._tabletop = StubBuilder.CreateDefaultTabletop(
+            this._mockAttackingStrategy.Object,
+            this._mockBlockingStrategy.Object);
+
         this._judge = new Judge(mockLogger.Object);
 
         this._attacker = null;
@@ -110,19 +120,11 @@ public sealed class JudgeDefinition
     [When(@"the combat phase is executed")]
     public void WhenCombatPhaseIsExecuted()
     {
-        this._tabletop.ActivePlayer.WithAttackingDecision(this._attacker);
+        this._mockAttackingStrategy.WithAttackingDecision(this._attacker);
 
         if (this._blockers.Any())
         {
-            this._tabletop.NonactivePlayer.WithBlockingDecision(new Combat
-            {
-                Attacker = this._attacker,
-                Blockers = this._blockers
-            });
-        }
-        else
-        {
-            this._tabletop.NonactivePlayer.WithBlockingDecision();
+            this._mockBlockingStrategy.WithBlockingStrategy(this._attacker, this._blockers);
         }
 
         this._judge
@@ -144,7 +146,7 @@ public sealed class JudgeDefinition
     }
 
     [Then(@"the (.+) should have (\d+) life")]
-    public void ThenPlayerShouldHaveLife(Player player, int life)
+    public void ThenPlayerShouldHaveLife(IPlayer player, int life)
     {
         var status = this._tabletop.ActivePlayer == player
             ? "active"
@@ -164,7 +166,7 @@ public sealed class JudgeDefinition
 
         using (new AssertionScope())
         {
-            foreach (var creature in this.Creatures)
+            foreach (var creature in this.FindCreatures())
             {
                 if (zoneKind == ZoneKind.Battlefield)
                 {
@@ -244,12 +246,8 @@ public sealed class JudgeDefinition
     }
 
     [StepArgumentTransformation(@"(active|nonactive) player")]
-    public Player TransformToPlayer(string text)
+    public IPlayer TransformToPlayer(string text)
     {
-        Guard
-            .Require(text, nameof(text))
-            .Is.Not.Null();
-
         return text switch
         {
             "active" => this._tabletop.ActivePlayer,
@@ -260,4 +258,9 @@ public sealed class JudgeDefinition
                 ("Text", text))
         };
     }
+
+    private IEnumerable<Creature> FindCreatures() => Enumerable
+        .Empty<Creature>()
+        .Append(this._attacker)
+        .Append(this._blockers);
 }

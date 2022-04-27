@@ -110,7 +110,7 @@ public class StubMagicHttpFetcher : MagicHttpFetcherBase
         {
             return headers?.Any() == true
                 ? string.Join(" AND ", headers.Select(header => $"({header})"))
-                : Text.Unknown;
+                : DefinedText.Unknown;
         }
 
         if (!isValid)

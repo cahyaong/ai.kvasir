@@ -28,25 +28,59 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-public class Tabletop
+using nGratis.AI.Kvasir.Contract;
+
+public class Tabletop : ITabletop
 {
-    public int TurnId { get; internal set; } = -1;
+    public Tabletop()
+    {
+        this.Battlefield = new Zone
+        {
+            Kind = ZoneKind.Battlefield,
+            Visibility = Visibility.Public
+        };
 
-    public Phase Phase { get; internal set; }
+        this.Stack = new Zone
+        {
+            Kind = ZoneKind.Stack,
+            Visibility = Visibility.Public
+        };
 
-    public Player ActivePlayer { get; internal set; }
+        this.Exile = new Zone
+        {
+            Kind = ZoneKind.Exile,
+            Visibility = Visibility.Public
+        };
 
-    public Player NonactivePlayer { get; internal set; }
+        this.TurnId = -1;
+        this.Phase = Phase.Unknown;
 
-    public Zone Battlefield { get; internal set; }
+        this.ActivePlayer = Player.Unknown;
+        this.NonactivePlayer = Player.Unknown;
 
-    public Zone Stack { get; internal set; }
+        this.AttackingDecision = Engine.AttackingDecision.Unknown;
+        this.BlockingDecision = Engine.BlockingDecision.Unknown;
+    }
 
-    public Zone Exile { get; internal set; }
+    public static Tabletop Unknown { get; } = new();
 
-    public AttackingDecision AttackingDecision { get; internal set; }
+    public IZone Battlefield { get; init; }
 
-    public BlockingDecision BlockingDecision { get; internal set; }
+    public IZone Stack { get; init; }
+
+    public IZone Exile { get; init; }
+
+    public int TurnId { get; set; }
+
+    public Phase Phase { get; set; }
+
+    public IPlayer ActivePlayer { get; set; }
+
+    public IPlayer NonactivePlayer { get; set; }
+
+    public IAttackingDecision AttackingDecision { get; set; }
+
+    public IBlockingDecision BlockingDecision { get; set; }
 
     public bool IsFirstTurn => this.TurnId <= 0;
 }

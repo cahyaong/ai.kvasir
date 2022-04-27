@@ -28,14 +28,16 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
+using nGratis.Cop.Olympus.Contract;
+
 public static partial class DefinedBlob
 {
     public record Player
     {
-        public PlayerKind Kind { get; init; }
+        public PlayerKind Kind { get; init; } = PlayerKind.Unknown;
 
-        public string Name { get; init; }
+        public string Name { get; init; } = DefinedText.Unknown;
 
-        public string DeckCode { get; init; }
+        public string DeckCode { get; init; } = DefinedText.Unknown;
     }
 }

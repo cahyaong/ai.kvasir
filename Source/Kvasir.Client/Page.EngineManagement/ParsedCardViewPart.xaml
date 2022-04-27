@@ -39,7 +39,7 @@
         Header="Cost"
         Kind="Text"
         Mode="Output"
-        Value="{x:Static contract:Text.Unsupported}" />
+        Value="{x:Static contract:DefinedText.Unsupported}" />
       <olympus:AweField
         Grid.Column="1"
         Header="Card Set"

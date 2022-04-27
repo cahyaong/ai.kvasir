@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{2C7AE126
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		Kvasir.Shared\GlobalAssemblyInfo.tt = Kvasir.Shared\GlobalAssemblyInfo.tt
+		Kvasir.Shared\nGratis.AI.Kvasir.Production.targets = Kvasir.Shared\nGratis.AI.Kvasir.Production.targets
+		Kvasir.Shared\nGratis.AI.Kvasir.Testing.targets = Kvasir.Shared\nGratis.AI.Kvasir.Testing.targets
 		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject

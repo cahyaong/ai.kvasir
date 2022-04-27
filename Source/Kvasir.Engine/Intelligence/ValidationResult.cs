@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,12 +36,10 @@ public class ValidationResult
 {
     private ValidationResult()
     {
+        this.Reasons = Array.Empty<ValidationReason>();
     }
 
-    public static ValidationResult Successful { get; } = new()
-    {
-        Reasons = new List<ValidationReason>()
-    };
+    public static ValidationResult Successful { get; } = new();
 
     public bool HasError => this.Reasons.Any();
 

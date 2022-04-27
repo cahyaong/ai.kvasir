@@ -2,9 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
@@ -14,5 +11,6 @@
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
     <ProjectReference Include="..\Kvasir.Framework.QualityAssurance\nGratis.AI.Kvasir.Framework.QualityAssurance.csproj" />
   </ItemGroup>
+  <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Testing.targets" />
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

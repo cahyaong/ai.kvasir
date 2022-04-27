@@ -65,10 +65,6 @@ public class CostYamlConverter : IYamlTypeConverter
 
     public object ReadYaml(IParser parser, Type type)
     {
-        Guard
-            .Require(parser, nameof(parser))
-            .Is.Not.Null();
-
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
             throw new KvasirException($"Parser current token does not begin with <{typeof(MappingStart)}>!");
@@ -97,13 +93,9 @@ public class CostYamlConverter : IYamlTypeConverter
         return cost;
     }
 
-    public void WriteYaml(IEmitter emitter, object value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type type)
     {
-        Guard
-            .Require(emitter, nameof(emitter))
-            .Is.Not.Null();
-
-        if (!(value is DefinedBlob.Cost cost))
+        if (value is not DefinedBlob.Cost cost)
         {
             return;
         }
@@ -125,7 +117,7 @@ public class CostYamlConverter : IYamlTypeConverter
 
     private static DefinedBlob.Cost ReadPayingManaCost(IParser parser)
     {
-        var amountLookup = default(IReadOnlyDictionary<Mana, ushort>);
+        var amountByManaLookup = default(IReadOnlyDictionary<Mana, ushort>);
 
         while (parser.Current?.GetType() != typeof(MappingEnd))
         {
@@ -133,20 +125,20 @@ public class CostYamlConverter : IYamlTypeConverter
 
             if (field == Field.Amount)
             {
-                amountLookup = parser.ParseLookup(
+                amountByManaLookup = parser.ParseLookup(
                     mana => (Mana)Enum.Parse(typeof(Mana), mana, true),
                     ushort.Parse);
             }
         }
 
-        if (amountLookup?.Any() != true)
+        if (amountByManaLookup?.Any() != true)
         {
             return DefinedBlob.PayingManaCost.Free;
         }
 
         var costBuilder = DefinedBlob.PayingManaCost.Builder.Create();
 
-        foreach (var (mana, quantity) in amountLookup)
+        foreach (var (mana, quantity) in amountByManaLookup)
         {
             costBuilder.WithAmount(mana, quantity);
         }

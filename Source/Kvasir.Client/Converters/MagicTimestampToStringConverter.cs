@@ -48,7 +48,7 @@ internal class MagicTimestampToStringConverter : IValueConverter
                     .ToUpperInvariant();
         }
 
-        return Text.Unknown;
+        return DefinedText.Unknown;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

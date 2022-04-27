@@ -2,8 +2,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
@@ -22,5 +20,6 @@
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj" />
   </ItemGroup>
+  <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Production.targets" />
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
