@@ -36,7 +36,7 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class Rulebook
 {
-    public static IEnumerable<Creature> FindCreatures(
+    public static IEnumerable<ICard> FindCreatures(
         ITabletop tabletop,
         PlayerModifier playerModifier,
         CreatureModifier creatureModifier)
@@ -56,25 +56,27 @@ public static class Rulebook
         var filteredCreatures = tabletop
             .Battlefield.Cards
             .Where(card => card.Kind == CardKind.Creature)
-            .OfType<Creature>();
+            .Select(card => card.ToCreature());
 
         filteredCreatures = creatureModifier switch
         {
             CreatureModifier.None => filteredCreatures,
 
             CreatureModifier.CanAttack => filteredCreatures
-                .Where(creature => creature.Controller == player)
+                .Where(creature => creature.Card.Controller == player)
                 .Where(creature => !creature.HasSummoningSickness)
                 .Where(creature => !creature.IsTapped),
 
             CreatureModifier.CanBlock => filteredCreatures
-                .Where(creature => creature.Controller == player)
+                .Where(creature => creature.Card.Controller == player)
                 .Where(creature => !creature.IsTapped),
 
             _ => Enumerable.Empty<Creature>()
         };
 
-        return filteredCreatures.ToImmutableList();
+        return filteredCreatures
+            .Select(creature => creature.Card)
+            .ToImmutableList();
     }
 
     public static ValidationResult Validate(IAttackingDecision attackingDecision)
@@ -86,16 +88,21 @@ public static class Rulebook
 
         var reasons = new List<ValidationReason>();
 
-        foreach (var attacker in attackingDecision.Attackers)
+        var attackingCreatures = attackingDecision
+            .Attackers
+            .Select(attacker => attacker.ToCreature())
+            .ToImmutableArray();
+
+        foreach (var attackingCreature in attackingCreatures)
         {
-            if (attacker.HasSummoningSickness)
+            if (attackingCreature.HasSummoningSickness)
             {
-                reasons.Add(ValidationReason.Create("Attacking creature has summoning sickness!", attacker));
+                reasons.Add(ValidationReason.Create("Attacking creature has summoning sickness!", attackingCreature));
             }
 
-            if (attacker.IsTapped)
+            if (attackingCreature.IsTapped)
             {
-                reasons.Add(ValidationReason.Create("Attacking creature is tapped!", attacker));
+                reasons.Add(ValidationReason.Create("Attacking creature is tapped!", attackingCreature));
             }
         }
 

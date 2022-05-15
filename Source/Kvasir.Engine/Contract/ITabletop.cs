@@ -32,11 +32,11 @@ using System;
 
 public interface ITabletop
 {
-    IZone Battlefield { get; init; }
+    IZone Battlefield { get; }
 
-    IZone Stack { get; init; }
+    IZone Stack { get; }
 
-    IZone Exile { get; init; }
+    IZone Exile { get; }
 
     int TurnId { get; set; }
 
@@ -55,23 +55,11 @@ public interface ITabletop
 
 public class UnknownTabletop : ITabletop
 {
-    public IZone Battlefield
-    {
-        get => Zone.Unknown;
-        init => throw new NotSupportedException("Setting battlefield is not allowed!");
-    }
+    public IZone Battlefield => Zone.Unknown;
 
-    public IZone Stack
-    {
-        get => Zone.Unknown;
-        init => throw new NotSupportedException("Setting stack is not allowed!");
-    }
+    public IZone Stack => Zone.Unknown;
 
-    public IZone Exile
-    {
-        get => Zone.Unknown;
-        init => throw new NotSupportedException("Setting exile is not allowed!");
-    }
+    public IZone Exile => Zone.Unknown;
 
     public int TurnId
     {

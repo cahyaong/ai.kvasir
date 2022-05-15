@@ -329,9 +329,9 @@ internal static class MagicParserExtensions
 
     private static ProcessingResult BindToDefinedCard(
         this ProcessingResult processingResult,
-        Expression<Func<DefinedBlob.Card, object>> bindingExpression)
+        Expression<Func<DefinedBlob.Card, object>> binderExpression)
     {
-        return processingResult.BindTo(bindingExpression.GetPropertyInfo());
+        return processingResult.BindTo(binderExpression.GetPropertyInfo());
     }
 
     private static class Pattern

@@ -34,19 +34,19 @@ using nGratis.Cop.Olympus.Contract;
 
 public interface IPlayer
 {
-    PlayerKind Kind { get; init; }
+    PlayerKind Kind { get; }
 
-    string Name { get; init; }
+    string Name { get; }
 
-    IDeck Deck { get; init; }
+    IDeck Deck { get; }
 
-    IStrategy Strategy { get; init; }
+    IStrategy Strategy { get; }
 
-    IZone Library { get; init; }
+    IZone Library { get; }
 
-    IZone Hand { get; init; }
+    IZone Hand { get; }
 
-    IZone Graveyard { get; init; }
+    IZone Graveyard { get; }
 
     int Life { get; set; }
 }
@@ -59,47 +59,23 @@ public class UnknownPlayer : IPlayer
 
     internal static IPlayer Instance { get; } = new UnknownPlayer();
 
-    public PlayerKind Kind
-    {
-        get => PlayerKind.Unknown;
-        init => throw new NotSupportedException("Setting kind is not allowed!");
-    }
+    public PlayerKind Kind => PlayerKind.Unknown;
 
-    public string Name
-    {
-        get => DefinedText.Unknown;
-        init => throw new NotSupportedException("Setting name is not allowed!");
-    }
+    public string Name => DefinedText.Unknown;
 
-    public IDeck Deck
-    {
-        get => Engine.Deck.Unknown;
-        init => throw new NotSupportedException("Setting deck is not allowed!");
-    }
+    public IDeck Deck => Engine.Deck.Unknown;
 
-    public IStrategy Strategy
-    {
-        get => Engine.Strategy.Unknown;
-        init => throw new NotSupportedException("Setting strategy is not allowed!");
-    }
+    public IStrategy Strategy => Engine.Strategy.Unknown;
 
-    public IZone Library
-    {
-        get => Zone.Unknown;
-        init => throw new NotSupportedException("Setting library is not allowed!");
-    }
+    public IZone Library => Zone.Unknown;
 
-    public IZone Hand
-    {
-        get => Zone.Unknown;
-        init => throw new NotSupportedException("Setting hand is not allowed!");
-    }
+    public IZone Hand => Zone.Unknown;
 
-    public IZone Graveyard
-    {
-        get => Zone.Unknown;
-        init => throw new NotSupportedException("Setting graveyard is not allowed!");
-    }
+    public IZone Graveyard => Zone.Unknown;
 
-    public int Life { get; set; }
+    public int Life
+    {
+        get => -42;
+        set => throw new NotSupportedException("Setting life is not allowed!");
+    }
 }

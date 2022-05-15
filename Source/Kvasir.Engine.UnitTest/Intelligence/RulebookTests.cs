@@ -110,8 +110,10 @@ public class RulebookTests
                 }
             };
 
-            tabletop.Battlefield.AddCardToTop(new Land("[_MOCK_LAND_]")
+            tabletop.Battlefield.AddCardToTop(new Card
             {
+                Kind = CardKind.Land,
+                Name = "[_MOCK_LAND_]",
                 Owner = tabletop.ActivePlayer,
                 Controller = tabletop.ActivePlayer
             });

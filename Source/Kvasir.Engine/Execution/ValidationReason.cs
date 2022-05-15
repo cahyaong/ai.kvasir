@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Creature.cs" company="nGratis">
+// <copyright file="ValidationReason.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,29 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, February 5, 2021 6:39:09 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, November 12, 2021 12:09:03 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
-
-using nGratis.Cop.Olympus.Contract;
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
 
-public class Creature : Permanent
+public class ValidationReason
 {
-    public Creature(string name)
-        : base(name, CardKind.Creature)
+    private ValidationReason()
     {
+        this.Id = -42;
+        this.Cause = DefinedText.Unknown;
+        this.Reference = DefinedText.Unknown;
+        this.Message = DefinedText.Unknown;
     }
 
-    public static Creature Unknown { get; } = new(DefinedText.Unknown);
+    public int Id { get; init; }
 
-    public int Power { get; init; }
+    public string Cause { get; init; }
 
-    public int Toughness { get; init; }
+    public string Reference { get; init; }
 
-    public bool HasSummoningSickness { get; internal set; }
+    public string Message { get; init; }
 
-    public int Damage { get; internal set; }
+    public static ValidationReason Create(string message, Creature creature)
+    {
+        return ValidationReason.Create(message, creature.Card);
+    }
+
+    public static ValidationReason Create(string message, ICard card)
+    {
+        Guard
+            .Require(message, nameof(message))
+            .Is.Not.Empty();
+
+        return new ValidationReason
+        {
+            Id = card.Id,
+            Cause = $"Permanent_{card.Kind}",
+            Reference = card.Name,
+            Message = message
+        };
+    }
 }

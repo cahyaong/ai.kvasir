@@ -54,7 +54,7 @@ public class MagicHttpFetcherBaseTests
 
             // Assert.
 
-            stubFetcher.VerifyRequestHeaders(
+            stubFetcher.VerifyRequestHeader(
                 "Accept: text/html, */*; q=0.8",
                 "Accept-Encoding: deflate",
                 "User-Agent: AI.Kvasir/0.1");

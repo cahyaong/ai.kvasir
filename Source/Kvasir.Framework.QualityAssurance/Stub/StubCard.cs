@@ -33,13 +33,13 @@ using nGratis.AI.Kvasir.Engine;
 
 public class StubCard : Card
 {
-    internal StubCard(int id)
-        : base($"[_STUB_CARD_{id:D2}_]", CardKind.Stub)
+    public StubCard(int id)
     {
     }
 
-    internal StubCard(string name)
-        : base(name, CardKind.Stub)
+    public StubCard(string name)
     {
+        this.Kind = CardKind.Stub;
+        this.Name = name;
     }
 }

@@ -58,7 +58,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInBattlefield(Card card)
+    public AndConstraint<TabletopAssertion> HaveCardInBattlefield(ICard card)
     {
         using (new AssertionScope())
         {
@@ -84,7 +84,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInActiveGraveyard(Card card)
+    public AndConstraint<TabletopAssertion> HaveCardInActiveGraveyard(ICard card)
     {
         using (new AssertionScope())
         {
@@ -110,7 +110,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(Card card)
+    public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(ICard card)
     {
         using (new AssertionScope())
         {

@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 public interface IAttackingDecision
 {
-    IReadOnlyCollection<Creature> Attackers { get; init; }
+    IReadOnlyCollection<ICard> Attackers { get; }
 }
 
 public class UnknownAttackingDecision : IAttackingDecision
@@ -44,9 +44,5 @@ public class UnknownAttackingDecision : IAttackingDecision
 
     internal static IAttackingDecision Instance { get; } = new UnknownAttackingDecision();
 
-    public IReadOnlyCollection<Creature> Attackers
-    {
-        get => Array.Empty<Creature>();
-        init => throw new NotSupportedException("Setting attackers is not allowed!");
-    }
+    public IReadOnlyCollection<ICard> Attackers => Array.Empty<Card>();
 }

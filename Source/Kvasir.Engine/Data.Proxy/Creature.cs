@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationReason.cs" company="nGratis">
+// <copyright file="Creature.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,43 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, November 12, 2021 12:09:03 AM UTC</creation_timestamp>
+// <creation_timestamp>Friday, April 29, 2022 6:34:41 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using nGratis.Cop.Olympus.Contract;
+using System;
 
-public class ValidationReason
+public class Creature
 {
-    private ValidationReason()
+    private readonly Lazy<PermanentPart> _deferredPermanentPart;
+
+    private readonly Lazy<CreaturePart> _deferredCreaturePart;
+
+    public Creature(ICard card)
     {
-        this.Id = -42;
-        this.Cause = DefinedText.Unknown;
-        this.Reference = DefinedText.Unknown;
-        this.Message = DefinedText.Unknown;
+        this._deferredPermanentPart = new Lazy<PermanentPart>(card.FindPart<PermanentPart>, false);
+        this._deferredCreaturePart = new Lazy<CreaturePart>(card.FindPart<CreaturePart>, false);
+
+        this.Card = card;
     }
 
-    public int Id { get; init; }
+    public ICard Card { get; }
 
-    public string Cause { get; init; }
+    public int Power => this._deferredCreaturePart.Value.Power;
 
-    public string Reference { get; init; }
+    public int Toughness => this._deferredCreaturePart.Value.Toughness;
 
-    public string Message { get; init; }
-
-    public static ValidationReason Create(string message, Permanent permanent)
+    public bool HasSummoningSickness
     {
-        Guard
-            .Require(message, nameof(message))
-            .Is.Not.Empty();
+        get => this._deferredCreaturePart.Value.HasSummoningSickness;
+        internal set => this._deferredCreaturePart.Value.HasSummoningSickness = value;
+    }
 
-        return new ValidationReason
-        {
-            Id = permanent.Id,
-            Cause = $"Permanent_{permanent.Kind}",
-            Reference = permanent.Name,
-            Message = message
-        };
+    public bool IsTapped
+    {
+        get => this._deferredPermanentPart.Value.IsTapped;
+        internal set => this._deferredPermanentPart.Value.IsTapped = value;
+    }
+
+    public int Damage
+    {
+        get => this._deferredCreaturePart.Value.Damage;
+        internal set => this._deferredCreaturePart.Value.Damage = value;
     }
 }

@@ -35,6 +35,7 @@ using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;
+using BuildParts = System.Func<Contract.DefinedBlob.Card, System.Collections.Generic.IEnumerable<IPart>>;
 
 public class MagicEntityFactory : IMagicEntityFactory
 {
@@ -61,11 +62,11 @@ public class MagicEntityFactory : IMagicEntityFactory
                 .Build()
         };
 
-    private static readonly IReadOnlyDictionary<CardKind, Func<DefinedBlob.Card, Card>> CardBuilderLookup =
-        new Dictionary<CardKind, Func<DefinedBlob.Card, Card>>
+    private static readonly IReadOnlyDictionary<CardKind, BuildParts> PartsBuilderByCardKindLookup =
+        new Dictionary<CardKind, BuildParts>
         {
-            [CardKind.Land] = MagicEntityFactory.CreateLand,
-            [CardKind.Creature] = MagicEntityFactory.CreateCreature
+            [CardKind.Land] = MagicEntityFactory.CreateLandParts,
+            [CardKind.Creature] = MagicEntityFactory.CreateCreatureParts
         };
 
     private readonly IProcessedMagicRepository _processedRepository;
@@ -78,11 +79,13 @@ public class MagicEntityFactory : IMagicEntityFactory
         this._randomGenerator = randomGenerator;
     }
 
-    public Player CreatePlayer(DefinedBlob.Player definedPlayer)
+    public IPlayer CreatePlayer(DefinedBlob.Player definedPlayer)
     {
         if (!MagicEntityFactory.DefinedDeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
         {
-            throw new KvasirException($"Deck with code [{definedPlayer.DeckCode}] is not defined!");
+            throw new KvasirException(
+                "No deck is defined with given code!",
+                ("Deck Code", definedPlayer.DeckCode));
         }
 
         return new Player
@@ -93,13 +96,25 @@ public class MagicEntityFactory : IMagicEntityFactory
         };
     }
 
-    public Card CreateCard(DefinedBlob.Card definedCard)
+    public ICard CreateCard(DefinedBlob.Card definedCard)
     {
-        return MagicEntityFactory.CardBuilderLookup.TryGetValue(definedCard.Kind, out var buildCard)
-            ? buildCard(definedCard)
-            : throw new KvasirException(
-                @"Found no card builder for given card kind! " +
-                $"Kind: [{definedCard.Kind}].");
+        var card = new Card
+        {
+            Kind = CardKind.Land,
+            Name = definedCard.Name
+        };
+
+        if (!MagicEntityFactory.PartsBuilderByCardKindLookup.TryGetValue(definedCard.Kind, out var buildParts))
+        {
+            throw new KvasirException(
+                "No parts builder is defined for given card kind! " +
+                ("Card Kind", definedCard.Kind));
+        }
+
+        var parts = buildParts(definedCard).ToArray();
+        card.AddParts(parts);
+
+        return card;
     }
 
     private Deck CreateDeck(DefinedBlob.Deck definedDeck)
@@ -125,21 +140,19 @@ public class MagicEntityFactory : IMagicEntityFactory
         };
     }
 
-    private static Land CreateLand(DefinedBlob.Card definedCard)
+    private static IEnumerable<IPart> CreateLandParts(DefinedBlob.Card definedCard)
     {
-        return new Land(definedCard.Name);
+        return Array.Empty<IPart>();
     }
 
-    private static Creature CreateCreature(DefinedBlob.Card definedCard)
+    private static IEnumerable<IPart> CreateCreatureParts(DefinedBlob.Card definedCard)
     {
-        Guard
-            .Require(definedCard.Kind, nameof(definedCard.Kind))
-            .Is.EqualTo(CardKind.Creature);
-
-        return new Creature(definedCard.Name)
+        yield return new CreaturePart
         {
             Power = definedCard.Power,
-            Toughness = definedCard.Toughness
+            Toughness = definedCard.Toughness,
+            HasSummoningSickness = false,
+            Damage = 0
         };
     }
 }

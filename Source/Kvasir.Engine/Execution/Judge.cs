@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
@@ -39,13 +40,13 @@ public class Judge
 {
     private readonly ILogger _logger;
 
-    private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _handlerByPhaseLookup;
+    private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
     public Judge(ILogger logger)
     {
         this._logger = logger;
 
-        this._handlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
+        this._phaseHandlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
         {
             [Phase.Beginning] = this.ExecuteBeginningPhase,
             [Phase.PrecombatMain] = this.ExecuteMainPhase,
@@ -77,7 +78,7 @@ public class Judge
     {
         tabletop.Phase = tabletop.Phase.Next();
 
-        if (!this._handlerByPhaseLookup.TryGetValue(tabletop.Phase, out var handlePhase))
+        if (!this._phaseHandlerByPhaseLookup.TryGetValue(tabletop.Phase, out var handlePhase))
         {
             throw new KvasirException(
                 "No handler is defined for given phase!",
@@ -194,44 +195,50 @@ public class Judge
 
         foreach (var attacker in tabletop.AttackingDecision.Attackers)
         {
-            if (combatByAttackerLookup.TryGetValue(attacker, out var matchedCombat))
+            var attackingCreature = attacker.ToCreature();
+
+            if (combatByAttackerLookup.TryGetValue(attackingCreature.Card, out var matchedCombat))
             {
-                matchedCombat.Attacker.Damage = matchedCombat.Blockers.Sum(blocker => blocker.Power);
-
-                var attackerPower = matchedCombat.Attacker.Power;
-
-                matchedCombat
+                var blockingCreatures = matchedCombat
                     .Blockers
-                    .ForEach(blocker =>
-                    {
-                        blocker.Damage = Math.Min(attackerPower, blocker.Toughness);
-                        attackerPower -= blocker.Damage;
-                    });
+                    .Select(blocker => blocker.ToCreature())
+                    .ToImmutableArray();
+
+                attackingCreature.Damage = blockingCreatures.Sum(blockingCreature => blockingCreature.Power);
+
+                var attackingPower = attackingCreature.Power;
+
+                blockingCreatures.ForEach(blockingCreature =>
+                {
+                    blockingCreature.Damage = Math.Min(attackingPower, blockingCreature.Toughness);
+                    attackingPower -= blockingCreature.Damage;
+                });
             }
             else
             {
-                tabletop.NonactivePlayer.Life -= attacker.Power;
+                tabletop.NonactivePlayer.Life -= attackingCreature.Power;
             }
         }
 
         combatByAttackerLookup
             .Values
-            .Select(combat => combat.Attacker)
-            .Where(attacker => attacker.Damage >= attacker.Toughness)
-            .ForEach(attacker =>
+            .Select(combat => combat.Attacker.ToCreature())
+            .Where(attackingCreature => attackingCreature.Damage >= attackingCreature.Toughness)
+            .ForEach(attackingCreature =>
             {
-                tabletop.Battlefield.MoveCardToZone(attacker, tabletop.ActivePlayer.Graveyard);
-                attacker.Damage = 0;
+                tabletop.Battlefield.MoveCardToZone(attackingCreature.Card, tabletop.ActivePlayer.Graveyard);
+                attackingCreature.Damage = 0;
             });
 
         combatByAttackerLookup
             .Values
             .SelectMany(combat => combat.Blockers)
-            .Where(blocker => blocker.Damage >= blocker.Toughness)
-            .ForEach(blocker =>
+            .Select(blocker => blocker.ToCreature())
+            .Where(blockingCreature => blockingCreature.Damage >= blockingCreature.Toughness)
+            .ForEach(blockingCreature =>
             {
-                tabletop.Battlefield.MoveCardToZone(blocker, tabletop.NonactivePlayer.Graveyard);
-                blocker.Damage = 0;
+                tabletop.Battlefield.MoveCardToZone(blockingCreature.Card, tabletop.NonactivePlayer.Graveyard);
+                blockingCreature.Damage = 0;
             });
 
         return ExecutionResult.Successful;

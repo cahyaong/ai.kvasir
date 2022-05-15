@@ -28,34 +28,77 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-// TODO: Introduce concept of design- and run-time card with sharing basic properties!
-
 [DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
-public abstract class Card
+public class Card : ICard
 {
-    // FIXME: Remove card inheritance!
+    private readonly IDictionary<Type, IPart> _partByTypeLookup;
 
-    protected Card(string name, CardKind kind)
+    internal Card()
     {
-        this.Kind = kind;
+        this._partByTypeLookup = new Dictionary<Type, IPart>();
 
-        this.Name = !string.IsNullOrEmpty(name)
-            ? name
-            : throw new KvasirException($"Name must not be {DefinedText.Empty}!");
-
+        this.Kind = CardKind.Unknown;
+        this.Name = DefinedText.Unknown;
         this.Owner = Player.Unknown;
         this.Controller = Player.Unknown;
     }
+
+    public static ICard Unknown => UnknownCard.Instance;
+
+    public int Id => this.GetHashCode();
 
     public CardKind Kind { get; init; }
 
     public string Name { get; init; }
 
-    public IPlayer Owner { get; internal set; }
+    public IPlayer Owner { get; set; }
 
-    public IPlayer Controller { get; internal set; }
+    public IPlayer Controller { get; set; }
+
+    public void AddParts(params IPart[] parts)
+    {
+        var partByTypeLookup = parts.ToImmutableDictionary(part => part.GetType());
+
+        var existingTypes = this
+            ._partByTypeLookup.Keys
+            .Intersect(partByTypeLookup.Keys)
+            .ToImmutableArray();
+
+        if (existingTypes.Any())
+        {
+            throw new KvasirException(
+                "Component with same type must be defined once!",
+                ("Existing Type(s)", existingTypes.ToPrettifiedText(type => type.Name)));
+        }
+
+        partByTypeLookup.ForEach(this._partByTypeLookup.Add);
+    }
+
+    public void RemoveParts()
+    {
+        this._partByTypeLookup.Clear();
+    }
+
+    public TPart FindPart<TPart>()
+        where TPart : IPart
+    {
+        if (!this._partByTypeLookup.TryGetValue(typeof(TPart), out var part))
+        {
+            throw new KvasirException(
+                "Card does not have target part!",
+                ("Card Name", this.Name),
+                ("Card Kind", this.Kind),
+                ("Part Type", typeof(TPart).FullName ?? DefinedText.Unknown));
+        }
+
+        return (TPart)part;
+    }
 }

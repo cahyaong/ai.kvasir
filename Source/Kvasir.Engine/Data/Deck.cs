@@ -36,10 +36,10 @@ public class Deck : IDeck
 {
     public Deck()
     {
-        this.Cards = Array.Empty<Card>();
+        this.Cards = Array.Empty<ICard>();
     }
 
     public static IDeck Unknown => UnknownDeck.Instance;
 
-    public IReadOnlyCollection<Card> Cards { get; init; }
+    public IReadOnlyCollection<ICard> Cards { get; init; }
 }

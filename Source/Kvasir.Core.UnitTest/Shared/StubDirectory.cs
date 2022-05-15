@@ -48,10 +48,10 @@ internal class StubDirectory : RAMDirectory
 
     public static StubDirectory Create()
     {
-        return new();
+        return new StubDirectory();
     }
 
-    public StubDirectory WithUnparsedCardSets(params UnparsedBlob.CardSet[] cardSets)
+    public StubDirectory WithUnparsedCardSet(params UnparsedBlob.CardSet[] cardSets)
     {
         Guard
             .Require(cardSets, nameof(cardSets))
@@ -75,7 +75,7 @@ internal class StubDirectory : RAMDirectory
         return this;
     }
 
-    public StubDirectory WithUnparsedCards(params UnparsedBlob.Card[] cards)
+    public StubDirectory WithUnparsedCard(params UnparsedBlob.Card[] cards)
     {
         Guard
             .Require(cards, nameof(cards))
@@ -110,7 +110,7 @@ internal class StubDirectory : RAMDirectory
         return this;
     }
 
-    public StubDirectory WithDocuments(params IEnumerable<IIndexableField>[] documents)
+    public StubDirectory WithDocument(params IEnumerable<IIndexableField>[] documents)
     {
         Guard
             .Require(documents, nameof(documents))

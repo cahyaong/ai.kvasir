@@ -88,7 +88,7 @@ internal static partial class MockExtensions
 
                 var stubDirectory = StubDirectory
                     .Create()
-                    .WithDocuments(documents.ToArray());
+                    .WithDocument(documents.ToArray());
 
                 mockManager
                     .Setup(mock => mock.FindIndexReader(indexKind))
@@ -142,7 +142,7 @@ internal static partial class MockExtensions
 
         var stubDirectory = StubDirectory
             .Create()
-            .WithUnparsedCardSets(cardSets);
+            .WithUnparsedCardSet(cardSets);
 
         mockManager
             .Setup(mock => mock.FindIndexReader(IndexKind.CardSet))
@@ -167,7 +167,7 @@ internal static partial class MockExtensions
 
         var stubDirectory = StubDirectory
             .Create()
-            .WithUnparsedCards(cards);
+            .WithUnparsedCard(cards);
 
         mockManager
             .Setup(mock => mock.FindIndexReader(IndexKind.Card))

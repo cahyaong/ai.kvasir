@@ -91,7 +91,7 @@ public class StubMagicHttpFetcher : MagicHttpFetcherBase
         return await Task.FromResult(Image.Empty);
     }
 
-    public void VerifyRequestHeaders(params string[] expectedHeaders)
+    public void VerifyRequestHeader(params string[] expectedHeaders)
     {
         Guard
             .Require(expectedHeaders, nameof(expectedHeaders))

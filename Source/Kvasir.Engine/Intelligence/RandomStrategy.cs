@@ -82,7 +82,7 @@ public class RandomStrategy : IStrategy
             combats.Add(new Combat
             {
                 Attacker = attacker,
-                Blockers = new List<Creature> { blockers[blockerIndex] }
+                Blockers = new List<ICard> { blockers[blockerIndex] }
             });
 
             blockers.RemoveAt(blockerIndex);

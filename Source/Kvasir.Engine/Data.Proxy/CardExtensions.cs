@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IDeck.cs" company="nGratis">
+// <copyright file="CardExtensions.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,22 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, April 16, 2022 5:05:41 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, April 29, 2022 6:46:39 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
-using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
 
-public interface IDeck
+public static class CardExtensions
 {
-    IReadOnlyCollection<ICard> Cards { get; }
-}
-
-public class UnknownDeck : IDeck
-{
-    private UnknownDeck()
+    public static Creature ToCreature(this ICard card)
     {
+        Guard
+            .Require(card.Kind, $"{nameof(card)}.{nameof(ICard.Kind)}")
+            .Is.EqualTo(CardKind.Creature);
+
+        return new Creature(card);
     }
-
-    internal static IDeck Instance { get; } = new UnknownDeck();
-
-    public IReadOnlyCollection<ICard> Cards => Array.Empty<Card>();
 }

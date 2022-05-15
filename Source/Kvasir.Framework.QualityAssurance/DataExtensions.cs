@@ -30,11 +30,12 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
 public static class DataExtensions
 {
-    public static Creature CreateAttacker(this ITabletop tabletop, string name, int power, int toughness)
+    public static ICard CreateAttacker(this ITabletop tabletop, string name, int power, int toughness)
     {
         Guard
             .Require(power, nameof(power))
@@ -44,20 +45,33 @@ public static class DataExtensions
             .Require(toughness, nameof(toughness))
             .Is.GreaterThanOrEqualTo(1);
 
-        var attacker = new Creature(name)
+        var attacker = new Card
         {
-            Power = power,
-            Toughness = toughness,
+            Kind = CardKind.Creature,
+            Name = name,
             Owner = tabletop.ActivePlayer,
             Controller = tabletop.ActivePlayer
         };
+
+        attacker.AddParts(new CreaturePart
+        {
+            Power = power,
+            Toughness = toughness,
+            HasSummoningSickness = false,
+            Damage = 0
+        });
+
+        attacker.AddParts(new PermanentPart
+        {
+            IsTapped = false
+        });
 
         tabletop.Battlefield.AddCardToTop(attacker);
 
         return attacker;
     }
 
-    public static Creature CreateBlocker(this ITabletop tabletop, string name, int power, int toughness)
+    public static ICard CreateBlocker(this ITabletop tabletop, string name, int power, int toughness)
     {
         Guard
             .Require(power, nameof(power))
@@ -67,13 +81,26 @@ public static class DataExtensions
             .Require(toughness, nameof(toughness))
             .Is.GreaterThanOrEqualTo(1);
 
-        var blocker = new Creature(name)
+        var blocker = new Card
         {
-            Power = power,
-            Toughness = toughness,
+            Kind = CardKind.Creature,
+            Name = name,
             Owner = tabletop.NonactivePlayer,
             Controller = tabletop.NonactivePlayer
         };
+
+        blocker.AddParts(new CreaturePart
+        {
+            Power = power,
+            Toughness = toughness,
+            HasSummoningSickness = false,
+            Damage = 0
+        });
+
+        blocker.AddParts(new PermanentPart
+        {
+            IsTapped = false
+        });
 
         tabletop.Battlefield.AddCardToTop(blocker);
 

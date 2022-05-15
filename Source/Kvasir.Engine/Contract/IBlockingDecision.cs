@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 public interface IBlockingDecision
 {
-    IReadOnlyCollection<ICombat> Combats { get; init; }
+    IReadOnlyCollection<ICombat> Combats { get; }
 }
 
 public class UnknownBlockingDecision : IBlockingDecision
@@ -44,9 +44,5 @@ public class UnknownBlockingDecision : IBlockingDecision
 
     internal static IBlockingDecision Instance { get; } = new UnknownBlockingDecision();
 
-    public IReadOnlyCollection<ICombat> Combats
-    {
-        get => Array.Empty<ICombat>();
-        init => throw new NotSupportedException("Setting combats is not allowed!");
-    }
+    public IReadOnlyCollection<ICombat> Combats => Array.Empty<ICombat>();
 }

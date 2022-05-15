@@ -6,7 +6,7 @@ using nGratis.AI.Kvasir.Engine;
 
 public static partial class MockExtensions
 {
-    public static Mock<IStrategy> WithAttackingDecision(this Mock<IStrategy> mockStrategy, Creature attacker)
+    public static Mock<IStrategy> WithAttackingDecision(this Mock<IStrategy> mockStrategy, ICard attacker)
     {
         mockStrategy
             .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
@@ -20,8 +20,8 @@ public static partial class MockExtensions
 
     public static Mock<IStrategy> WithBlockingStrategy(
         this Mock<IStrategy> mockStrategy,
-        Creature attacker,
-        IReadOnlyCollection<Creature> blockers)
+        ICard attacker,
+        IReadOnlyCollection<ICard> blockers)
     {
         var combat = new Combat
         {

@@ -33,9 +33,9 @@ using System.Collections.Generic;
 
 public interface ICombat
 {
-    Creature Attacker { get; init; }
+    ICard Attacker { get; }
 
-    IReadOnlyCollection<Creature> Blockers { get; init; }
+    IReadOnlyCollection<ICard> Blockers { get; }
 }
 
 public class UnknownCombat : ICombat
@@ -46,15 +46,7 @@ public class UnknownCombat : ICombat
 
     internal static ICombat Instance { get; } = new UnknownCombat();
 
-    public Creature Attacker
-    {
-        get => Creature.Unknown;
-        init => throw new NotSupportedException("Setting attacker is not allowed!");
-    }
+    public ICard Attacker => Card.Unknown;
 
-    public IReadOnlyCollection<Creature> Blockers
-    {
-        get => Array.Empty<Creature>();
-        init => throw new NotSupportedException("Setting blockers is not allowed!");
-    }
+    public IReadOnlyCollection<ICard> Blockers => Array.Empty<Card>();
 }

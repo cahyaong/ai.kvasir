@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IDeck.cs" company="nGratis">
+// <copyright file="Class1.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, April 16, 2022 5:05:41 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, April 28, 2022 5:40:58 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
-using System.Collections.Generic;
-
-public interface IDeck
+public class CreaturePart : IPart
 {
-    IReadOnlyCollection<ICard> Cards { get; }
-}
+    public int Power { get; init; }
 
-public class UnknownDeck : IDeck
-{
-    private UnknownDeck()
-    {
-    }
+    public int Toughness { get; init; }
 
-    internal static IDeck Instance { get; } = new UnknownDeck();
+    public bool HasSummoningSickness { get; internal set; }
 
-    public IReadOnlyCollection<ICard> Cards => Array.Empty<Card>();
+    public int Damage { get; internal set; }
 }

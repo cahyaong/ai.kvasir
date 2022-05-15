@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IDeck.cs" company="nGratis">
+// <copyright file="PermanentPart.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,12 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, April 16, 2022 5:05:41 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, April 28, 2022 7:03:26 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
-using System.Collections.Generic;
-
-public interface IDeck
+public class PermanentPart : IPart
 {
-    IReadOnlyCollection<ICard> Cards { get; }
-}
-
-public class UnknownDeck : IDeck
-{
-    private UnknownDeck()
-    {
-    }
-
-    internal static IDeck Instance { get; } = new UnknownDeck();
-
-    public IReadOnlyCollection<ICard> Cards => Array.Empty<Card>();
+    public bool IsTapped { get; set; }
 }

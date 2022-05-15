@@ -32,7 +32,7 @@ using nGratis.AI.Kvasir.Contract;
 
 public interface IMagicEntityFactory
 {
-    Player CreatePlayer(DefinedBlob.Player definedPlayer);
+    IPlayer CreatePlayer(DefinedBlob.Player definedPlayer);
 
-    Card CreateCard(DefinedBlob.Card definedCard);
+    ICard CreateCard(DefinedBlob.Card definedCard);
 }

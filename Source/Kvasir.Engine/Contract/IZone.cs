@@ -34,17 +34,17 @@ using nGratis.AI.Kvasir.Contract;
 
 public interface IZone
 {
-    ZoneKind Kind { get; init; }
+    ZoneKind Kind { get; }
 
-    Visibility Visibility { get; init; }
+    Visibility Visibility { get; }
 
-    IEnumerable<Card> Cards { get; }
+    IEnumerable<ICard> Cards { get; }
 
-    void AddCardToTop(Card card);
+    void AddCardToTop(ICard card);
 
-    Card RemoveCardFromTop();
+    ICard RemoveCardFromTop();
 
-    void MoveCardToZone(Card card, IZone zone);
+    void MoveCardToZone(ICard card, IZone zone);
 }
 
 internal class UnknownZone : IZone
@@ -55,31 +55,23 @@ internal class UnknownZone : IZone
 
     internal static IZone Instance { get; } = new UnknownZone();
 
-    public ZoneKind Kind
-    {
-        get => ZoneKind.Unknown;
-        init => throw new NotSupportedException("Setting kind is not allowed!");
-    }
+    public ZoneKind Kind => ZoneKind.Unknown;
 
-    public Visibility Visibility
-    {
-        get => Visibility.Unknown;
-        init => throw new NotSupportedException("Setting visibility is not allowed!");
-    }
+    public Visibility Visibility => Visibility.Unknown;
 
-    public IEnumerable<Card> Cards => Array.Empty<Card>();
+    public IEnumerable<ICard> Cards => Array.Empty<Card>();
 
-    public void AddCardToTop(Card card)
+    public void AddCardToTop(ICard card)
     {
         throw new NotSupportedException("Adding card to top is not allowed!");
     }
 
-    public Card RemoveCardFromTop()
+    public ICard RemoveCardFromTop()
     {
         throw new NotSupportedException("Removing card from top is not allowed!");
     }
 
-    public void MoveCardToZone(Card card, IZone zone)
+    public void MoveCardToZone(ICard card, IZone zone)
     {
         throw new NotSupportedException("Moving card to zone is not allowed!");
     }

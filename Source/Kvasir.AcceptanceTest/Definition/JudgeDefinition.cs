@@ -57,8 +57,8 @@ public sealed class JudgeDefinition
     private Judge _judge;
     private ITabletop _tabletop;
 
-    private Creature _attacker;
-    private List<Creature> _blockers;
+    private ICard _attacker;
+    private List<ICard> _blockers;
 
     private Mock<IStrategy> _mockAttackingStrategy;
     private Mock<IStrategy> _mockBlockingStrategy;
@@ -83,7 +83,7 @@ public sealed class JudgeDefinition
         this._judge = new Judge(mockLogger.Object);
 
         this._attacker = null;
-        this._blockers = new List<Creature>();
+        this._blockers = new List<ICard>();
     }
 
     [Given(@"the attacker has power (\d+) and toughness (\d+)")]
@@ -181,7 +181,7 @@ public sealed class JudgeDefinition
                 }
 
                 creature
-                    .Damage
+                    .FindPart<CreaturePart>().Damage
                     .Should().Be(damage, $"because creature [{creature.Name}] should have correct damage");
             }
         }
@@ -207,7 +207,7 @@ public sealed class JudgeDefinition
                     .Must().HaveCardInActiveGraveyard(this._attacker);
             }
 
-            this._attacker.Damage
+            this._attacker.FindPart<CreaturePart>().Damage
                 .Should().Be(damage, $"because attacker [{this._attacker.Name}] should have correct damage");
         }
     }
@@ -240,7 +240,7 @@ public sealed class JudgeDefinition
                     ("Zone Kind", zoneKind));
             }
 
-            blocker.Damage
+            blocker.FindPart<CreaturePart>().Damage
                 .Should().Be(damage, $"because blocker [{blocker.Name}] should have correct damage");
         }
     }
@@ -259,8 +259,8 @@ public sealed class JudgeDefinition
         };
     }
 
-    private IEnumerable<Creature> FindCreatures() => Enumerable
-        .Empty<Creature>()
+    private IEnumerable<ICard> FindCreatures() => Enumerable
+        .Empty<ICard>()
         .Append(this._attacker)
         .Append(this._blockers);
 }

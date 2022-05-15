@@ -36,11 +36,11 @@ using nGratis.AI.Kvasir.Contract;
 [DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
 public class Zone : IZone
 {
-    private readonly List<Card> _cards;
+    private readonly List<ICard> _cards;
 
     public Zone()
     {
-        this._cards = new List<Card>();
+        this._cards = new List<ICard>();
 
         this.Kind = ZoneKind.Unknown;
         this.Visibility = Visibility.Unknown;
@@ -52,9 +52,9 @@ public class Zone : IZone
 
     public Visibility Visibility { get; init; }
 
-    public IEnumerable<Card> Cards => this._cards;
+    public IEnumerable<ICard> Cards => this._cards;
 
-    public void AddCardToTop(Card card)
+    public void AddCardToTop(ICard card)
     {
         if (this._cards.Contains(card))
         {
@@ -68,7 +68,7 @@ public class Zone : IZone
         this._cards.Add(card);
     }
 
-    public Card RemoveCardFromTop()
+    public ICard RemoveCardFromTop()
     {
         if (this._cards.Count <= 0)
         {
@@ -83,7 +83,7 @@ public class Zone : IZone
         return card;
     }
 
-    public void MoveCardToZone(Card card, IZone zone)
+    public void MoveCardToZone(ICard card, IZone zone)
     {
         var matchedIndex = this._cards.IndexOf(card);
 

@@ -32,6 +32,7 @@ namespace System.Reflection;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
@@ -80,6 +81,7 @@ public static class AssemblyExtensions
         dataStream
             .ReadText()
             .DeserializeFromYaml<List<StubCreature>>()
+            .Select(creature => creature.ToCard())
             .ForEach(zone.AddCardToTop);
     }
 }

@@ -28,13 +28,44 @@
 
 namespace nGratis.AI.Kvasir.Framework;
 
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 
-public class StubCreature : Creature
+public class StubCreature
 {
     public StubCreature()
-        : base(DefinedText.Unknown)
     {
+        this.Name = DefinedText.Unknown;
+    }
+
+    public string Name { get; init; }
+
+    public bool HasSummoningSickness { get; init; }
+
+    public bool IsTapped { get; init; }
+
+    public ICard ToCard()
+    {
+        var card = new Card
+        {
+            Kind = CardKind.Creature,
+            Name = this.Name
+        };
+
+        card.AddParts(new CreaturePart
+        {
+            Power = 1,
+            Toughness = 1,
+            HasSummoningSickness = this.HasSummoningSickness,
+            Damage = 0
+        });
+
+        card.AddParts(new PermanentPart
+        {
+            IsTapped = this.IsTapped
+        });
+
+        return card;
     }
 }
