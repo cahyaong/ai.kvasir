@@ -64,11 +64,11 @@ public class Tabletop : ITabletop
 
     public static Tabletop Unknown { get; } = new();
 
-    public IZone Battlefield { get; init; }
+    public IZone Battlefield { get; }
 
-    public IZone Stack { get; init; }
+    public IZone Stack { get; }
 
-    public IZone Exile { get; init; }
+    public IZone Exile { get; }
 
     public int TurnId { get; set; }
 

@@ -40,6 +40,8 @@ public interface IStrategy
 public static class Strategy
 {
     public static IStrategy Unknown => UnknownStrategy.Instance;
+
+    public static IStrategy Noop = NoopStrategy.Instance;
 }
 
 public class UnknownStrategy : IStrategy
@@ -58,5 +60,24 @@ public class UnknownStrategy : IStrategy
     public IBlockingDecision DeclareBlocker(ITabletop _)
     {
         throw new NotImplementedException("Declaring blocker is not supported!");
+    }
+}
+
+public class NoopStrategy : IStrategy
+{
+    private NoopStrategy()
+    {
+    }
+
+    internal static NoopStrategy Instance { get; } = new();
+
+    public IAttackingDecision DeclareAttacker(ITabletop tabletop)
+    {
+        return AttackingDecision.None;
+    }
+
+    public IBlockingDecision DeclareBlocker(ITabletop tabletop)
+    {
+        return BlockingDecision.None;
     }
 }

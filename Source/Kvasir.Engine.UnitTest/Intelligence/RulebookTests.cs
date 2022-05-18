@@ -39,7 +39,7 @@ using Xunit;
 
 public class RulebookTests
 {
-    public class FindCreaturesMethod
+    public class FindCreatureCardsMethod
     {
         [Theory]
         [MemberData(nameof(TestData.FindingCreaturesControlledByActivePlayerTheories), MemberType = typeof(TestData))]
@@ -51,7 +51,7 @@ public class RulebookTests
             // Act.
 
             var creatures = Rulebook
-                .FindCreatures(theory.Tabletop, PlayerModifier.Active, theory.CreatureModifier)
+                .FindCreatureCards(theory.Tabletop, PlayerModifier.Active, theory.CreatureModifier)
                 .ToImmutableList();
 
             // Assert.
@@ -79,7 +79,7 @@ public class RulebookTests
             // Act.
 
             var creatures = Rulebook
-                .FindCreatures(theory.Tabletop, PlayerModifier.Nonactive, theory.CreatureModifier)
+                .FindCreatureCards(theory.Tabletop, PlayerModifier.Nonactive, theory.CreatureModifier)
                 .ToImmutableList();
 
             // Assert.
@@ -102,12 +102,7 @@ public class RulebookTests
 
             var tabletop = new Tabletop
             {
-                ActivePlayer = new Player(),
-                Battlefield = new Zone
-                {
-                    Kind = ZoneKind.Battlefield,
-                    Visibility = Visibility.Public
-                }
+                ActivePlayer = new Player()
             };
 
             tabletop.Battlefield.AddCardToTop(new Card
@@ -121,7 +116,7 @@ public class RulebookTests
             // Act.
 
             var creatures = Rulebook
-                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+                .FindCreatureCards(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
                 .ToImmutableList();
 
             // Assert.
@@ -211,11 +206,6 @@ public class RulebookTests
                     NonactivePlayer = new Player
                     {
                         Name = "[_MOCK_PLAYER_02_]"
-                    },
-                    Battlefield = new Zone
-                    {
-                        Kind = ZoneKind.Battlefield,
-                        Visibility = Visibility.Public
                     }
                 };
 

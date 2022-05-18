@@ -33,11 +33,16 @@ using nGratis.AI.Kvasir.Engine;
 
 public static class StubBuilder
 {
+    public static ITabletop CreateDefaultTabletop()
+    {
+        return StubBuilder.CreateDefaultTabletop(Strategy.Noop, Strategy.Noop);
+    }
+
     public static ITabletop CreateDefaultTabletop(IStrategy attackingStrategy, IStrategy blockingStrategy)
     {
         var activePlayer = new Player
         {
-            Name = "[_MOCK_ACTIVE_PLAYER_]",
+            Name = "[_MOCK_PLAYER__ACTIVE_]",
             Kind = PlayerKind.Testing,
             Strategy = attackingStrategy,
             Life = 20
@@ -45,7 +50,7 @@ public static class StubBuilder
 
         var nonactivePlayer = new Player
         {
-            Name = "[_MOCK_NONACTIVE_PLAYER_]",
+            Name = "[_MOCK_PLAYER__NONACTIVE_]",
             Kind = PlayerKind.Testing,
             Strategy = blockingStrategy,
             Life = 20
@@ -53,9 +58,59 @@ public static class StubBuilder
 
         return new Tabletop
         {
-            Phase = Phase.Setup,
+            TurnId = 0,
+            Phase = Phase.Beginning,
             ActivePlayer = activePlayer,
             NonactivePlayer = nonactivePlayer
         };
+    }
+
+    public static IPlayer CreateDefaultPlayer(string name)
+    {
+        return StubBuilder.CreateDefaultPlayer(name, Strategy.Noop);
+    }
+
+    public static IPlayer CreateDefaultPlayer(string name, IStrategy strategy)
+    {
+        return new Player
+        {
+            Name = name,
+            Kind = PlayerKind.Testing,
+            Strategy = strategy,
+            Life = 20
+        };
+    }
+
+    public static ITabletop AddDefaultCreatureToBattlefield(
+        this ITabletop tabletop,
+        string name,
+        IPlayer owner,
+        IPlayer controller,
+        bool isTapped)
+    {
+        var card = new StubCard(name)
+        {
+            Name = name,
+            Kind = CardKind.Creature,
+            Owner = owner,
+            Controller = controller,
+        };
+
+        card.AddParts(new CreaturePart
+        {
+            Power = 1,
+            Toughness = 1,
+            HasSummoningSickness = false,
+            Damage = 0
+        });
+
+        card.AddParts(new PermanentPart
+        {
+            IsTapped = isTapped
+        });
+
+        tabletop.Battlefield.AddCardToTop(card);
+
+        return tabletop;
     }
 }

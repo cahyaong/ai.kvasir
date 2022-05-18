@@ -92,29 +92,29 @@ public class RoundSimulatorTests
             if (simulationResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
             {
                 simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Name
-                    .Should().Be("[_MOCK_PLAYER_02_]", "nonactive player should be different from active player");
+                    .Tabletop.NonactivePlayer.Name
+                    .Should().Be(
+                        "[_MOCK_PLAYER_02_]",
+                        "because nonactive player should be different from active player");
             }
             else
             {
                 simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Name
-                    .Should().Be("[_MOCK_PLAYER_01_]", "nonactive player should be different from active player");
+                    .Tabletop.NonactivePlayer.Name
+                    .Should().Be(
+                        "[_MOCK_PLAYER_01_]",
+                        "because nonactive player should be different from active player");
             }
 
             using (new AssertionScope())
             {
                 simulationResult
-                    .Tabletop
-                    .ActivePlayer.Life
-                    .Should().Be(20, "active player should begin with full life");
+                    .Tabletop.ActivePlayer.Life
+                    .Should().Be(20, "because active player should begin with full life");
 
                 simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Life
-                    .Should().Be(20, "nonactive player should begin with full life");
+                    .Tabletop.NonactivePlayer.Life
+                    .Should().Be(20, "because nonactive player should begin with full life");
             }
         }
 
@@ -173,9 +173,8 @@ public class RoundSimulatorTests
                     .ActivePlayer.Deck;
 
                 simulationResult
-                    .Tabletop
-                    .ActivePlayer.Library
-                    .Must().NotBeNull("active player should have library")
+                    .Tabletop.ActivePlayer.Library
+                    .Must().NotBeNull("because active player should have library")
                     .And.BeLibrary()
                     .And.BeHidden()
                     .And.HaveCardQuantity((ushort)(activeDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
@@ -187,9 +186,8 @@ public class RoundSimulatorTests
                     .NonactivePlayer.Deck;
 
                 simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Library
-                    .Must().NotBeNull("nonactive player should have library")
+                    .Tabletop.NonactivePlayer.Library
+                    .Must().NotBeNull("because nonactive player should have library")
                     .And.BeLibrary()
                     .And.BeHidden()
                     .And.HaveCardQuantity((ushort)(nonactiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
@@ -249,9 +247,8 @@ public class RoundSimulatorTests
             using (new AssertionScope())
             {
                 simulationResult
-                    .Tabletop
-                    .ActivePlayer.Hand
-                    .Must().NotBeNull("active player should have hand")
+                    .Tabletop.ActivePlayer.Hand
+                    .Must().NotBeNull("because active player should have hand")
                     .And.BeHand()
                     .And.BeHidden()
                     .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
@@ -259,9 +256,8 @@ public class RoundSimulatorTests
                     .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
 
                 simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Hand
-                    .Must().NotBeNull("nonactive player should have hand")
+                    .Tabletop.NonactivePlayer.Hand
+                    .Must().NotBeNull("because nonactive player should have hand")
                     .And.BeHand()
                     .And.BeHidden()
                     .And.HaveCardQuantity(MagicConstant.Hand.MaxCardCount)
@@ -321,17 +317,15 @@ public class RoundSimulatorTests
             using (new AssertionScope())
             {
                 simulationResult
-                    .Tabletop
-                    .ActivePlayer.Graveyard
-                    .Must().NotBeNull("active player should have hand")
+                    .Tabletop.ActivePlayer.Graveyard
+                    .Must().NotBeNull("because active player should have hand")
                     .And.BeGraveyard()
                     .And.BePublic()
                     .And.HaveCardQuantity(0);
 
                 simulationResult
-                    .Tabletop
-                    .NonactivePlayer.Graveyard
-                    .Must().NotBeNull("nonactive player should have hand")
+                    .Tabletop.NonactivePlayer.Graveyard
+                    .Must().NotBeNull("because nonactive player should have hand")
                     .And.BeGraveyard()
                     .And.BePublic()
                     .And.HaveCardQuantity(0);
@@ -389,22 +383,19 @@ public class RoundSimulatorTests
             using (new AssertionScope())
             {
                 simulationResult
-                    .Tabletop
-                    .Battlefield
+                    .Tabletop.Battlefield
                     .Must().BeBattlefield()
                     .And.BePublic()
                     .And.HaveCardQuantity(0);
 
                 simulationResult
-                    .Tabletop
-                    .Stack
+                    .Tabletop.Stack
                     .Must().BeStack()
                     .And.BePublic()
                     .And.HaveCardQuantity(0);
 
                 simulationResult
-                    .Tabletop
-                    .Exile
+                    .Tabletop.Exile
                     .Must().BeExile()
                     .And.BePublic()
                     .And.HaveCardQuantity(0);

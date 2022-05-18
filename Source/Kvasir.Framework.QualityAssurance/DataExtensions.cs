@@ -35,61 +35,43 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class DataExtensions
 {
-    public static ICard CreateAttacker(this ITabletop tabletop, string name, int power, int toughness)
+    public static ICard CreateActiveCreature(this ITabletop tabletop, string name, int power, int toughness)
     {
-        Guard
-            .Require(power, nameof(power))
-            .Is.GreaterThanOrEqualTo(1);
+        var creature = tabletop.CreateCreature(name, power, toughness);
 
-        Guard
-            .Require(toughness, nameof(toughness))
-            .Is.GreaterThanOrEqualTo(1);
+        creature.Owner = tabletop.ActivePlayer;
+        creature.Controller = tabletop.ActivePlayer;
 
-        var attacker = new Card
-        {
-            Kind = CardKind.Creature,
-            Name = name,
-            Owner = tabletop.ActivePlayer,
-            Controller = tabletop.ActivePlayer
-        };
-
-        attacker.AddParts(new CreaturePart
-        {
-            Power = power,
-            Toughness = toughness,
-            HasSummoningSickness = false,
-            Damage = 0
-        });
-
-        attacker.AddParts(new PermanentPart
-        {
-            IsTapped = false
-        });
-
-        tabletop.Battlefield.AddCardToTop(attacker);
-
-        return attacker;
+        return creature;
     }
 
-    public static ICard CreateBlocker(this ITabletop tabletop, string name, int power, int toughness)
+    public static ICard CreateNonactiveCreature(this ITabletop tabletop, string name, int power, int toughness)
+    {
+        var creature = tabletop.CreateCreature(name, power, toughness);
+
+        creature.Owner = tabletop.NonactivePlayer;
+        creature.Controller = tabletop.NonactivePlayer;
+
+        return creature;
+    }
+
+    private static ICard CreateCreature(this ITabletop tabletop, string name, int power, int toughness)
     {
         Guard
             .Require(power, nameof(power))
-            .Is.GreaterThanOrEqualTo(1);
+            .Is.GreaterThanOrEqualTo(0);
 
         Guard
             .Require(toughness, nameof(toughness))
             .Is.GreaterThanOrEqualTo(1);
 
-        var blocker = new Card
+        var creature = new Card
         {
             Kind = CardKind.Creature,
-            Name = name,
-            Owner = tabletop.NonactivePlayer,
-            Controller = tabletop.NonactivePlayer
+            Name = name
         };
 
-        blocker.AddParts(new CreaturePart
+        creature.AddParts(new CreaturePart
         {
             Power = power,
             Toughness = toughness,
@@ -97,13 +79,13 @@ public static class DataExtensions
             Damage = 0
         });
 
-        blocker.AddParts(new PermanentPart
+        creature.AddParts(new PermanentPart
         {
             IsTapped = false
         });
 
-        tabletop.Battlefield.AddCardToTop(blocker);
+        tabletop.Battlefield.AddCardToTop(creature);
 
-        return blocker;
+        return creature;
     }
 }

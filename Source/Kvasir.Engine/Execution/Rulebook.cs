@@ -36,7 +36,7 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class Rulebook
 {
-    public static IEnumerable<ICard> FindCreatures(
+    public static IEnumerable<ICard> FindCreatureCards(
         ITabletop tabletop,
         PlayerModifier playerModifier,
         CreatureModifier creatureModifier)
@@ -56,7 +56,7 @@ public static class Rulebook
         var filteredCreatures = tabletop
             .Battlefield.Cards
             .Where(card => card.Kind == CardKind.Creature)
-            .Select(card => card.ToCreature());
+            .Select(card => card.ToProxyCreature());
 
         filteredCreatures = creatureModifier switch
         {
@@ -90,7 +90,7 @@ public static class Rulebook
 
         var attackingCreatures = attackingDecision
             .Attackers
-            .Select(attacker => attacker.ToCreature())
+            .Select(attacker => attacker.ToProxyCreature())
             .ToImmutableArray();
 
         foreach (var attackingCreature in attackingCreatures)

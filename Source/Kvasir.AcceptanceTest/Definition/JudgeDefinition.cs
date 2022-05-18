@@ -39,7 +39,6 @@ using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 using TechTalk.SpecFlow;
-using MockBuilder = Moq.AI.Kvasir.MockBuilder;
 
 [Binding]
 public sealed class JudgeDefinition
@@ -89,14 +88,14 @@ public sealed class JudgeDefinition
     [Given(@"the attacker has power (\d+) and toughness (\d+)")]
     public void GivenAttackerHasPowerAndToughness(int power, int toughness)
     {
-        this._attacker = this._tabletop.CreateAttacker("[_MOCK_ATTACKER_]", power, toughness);
+        this._attacker = this._tabletop.CreateActiveCreature("[_MOCK_ATTACKER_]", power, toughness);
     }
 
     [Given(@"the blocker has power (\d+) and toughness (\d+)")]
     public void GivenBlockerHasPowerAndToughness(int power, int toughness)
     {
         var index = 0;
-        var blocker = this._tabletop.CreateBlocker($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
+        var blocker = this._tabletop.CreateNonactiveCreature($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
 
         this._blockers.Insert(index, blocker);
     }
@@ -112,7 +111,7 @@ public sealed class JudgeDefinition
             .Ensure(index, nameof(index))
             .Is.GreaterThanOrEqualTo(0);
 
-        var blocker = this._tabletop.CreateBlocker($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
+        var blocker = this._tabletop.CreateNonactiveCreature($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
 
         this._blockers.Insert(index, blocker);
     }
@@ -124,7 +123,7 @@ public sealed class JudgeDefinition
 
         if (this._blockers.Any())
         {
-            this._mockBlockingStrategy.WithBlockingStrategy(this._attacker, this._blockers);
+            this._mockBlockingStrategy.WithBlockingDecision(this._attacker, this._blockers);
         }
 
         this._judge

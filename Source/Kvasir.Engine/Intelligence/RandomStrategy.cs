@@ -45,7 +45,7 @@ public class RandomStrategy : IStrategy
     public IAttackingDecision DeclareAttacker(ITabletop tabletop)
     {
         var attackers = Rulebook
-            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+            .FindCreatureCards(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
             .Where(_ => this._randomGenerator.RollDice(20) <= 10)
             .ToImmutableList();
 
@@ -58,7 +58,7 @@ public class RandomStrategy : IStrategy
     public IBlockingDecision DeclareBlocker(ITabletop tabletop)
     {
         var blockers = Rulebook
-            .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
+            .FindCreatureCards(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
             .ToList();
 
         var combats = new List<Combat>();

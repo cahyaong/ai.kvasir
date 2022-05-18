@@ -97,6 +97,18 @@ public class Judge
             (tabletop.ActivePlayer, tabletop.NonactivePlayer) = (tabletop.NonactivePlayer, tabletop.ActivePlayer);
         }
 
+        // RX-502.3 — Third, the active player determines which permanents they control will untap. Then they untap
+        // them all simultaneously.This turn-based action doesn’t use the stack. Normally, all of a player’s
+        // permanents untap, but effects can keep one or more of a player’s permanents from untapping.
+
+        // TODO (SHOULD): Implement untap action for other permanent types besides creature!
+
+        Rulebook
+            .FindCreatureCards(tabletop, PlayerModifier.Active, CreatureModifier.None)
+            .Where(card => card.Controller == tabletop.ActivePlayer)
+            .Select(card => card.ToProxyCreature())
+            .ForEach(creature => creature.IsTapped = false);
+
         this._logger.LogDiagnostic(tabletop);
 
         return ExecutionResult.Successful;
@@ -125,18 +137,31 @@ public class Judge
             return executionResult;
         }
 
-        executionResult = this.ExecuteDeclaringBlockersStep(tabletop);
+        // RX-508.1f — The active player taps the chosen creatures. Tapping a creature when it’s declared as an
+        // attacker isn’t a cost; attacking simply causes creatures to become tapped.
 
-        if (executionResult.HasError)
+        tabletop
+            .AttackingDecision.Attackers
+            .ForEach(attacker => attacker.ToProxyCreature().IsTapped = true);
+
+        // RX-508.8 — If no creatures are declared as attackers or put onto the battlefield attacking, skip the declare
+        // blockers and combat damage steps.
+
+        if (tabletop.AttackingDecision != AttackingDecision.None)
         {
-            return executionResult;
-        }
+            executionResult = this.ExecuteDeclaringBlockersStep(tabletop);
 
-        executionResult = this.ExecuteResolvingCombatDamageStep(tabletop);
+            if (executionResult.HasError)
+            {
+                return executionResult;
+            }
 
-        if (executionResult.HasError)
-        {
-            return executionResult;
+            executionResult = this.ExecuteResolvingCombatDamageStep(tabletop);
+
+            if (executionResult.HasError)
+            {
+                return executionResult;
+            }
         }
 
         return ExecutionResult.Successful;
@@ -195,13 +220,13 @@ public class Judge
 
         foreach (var attacker in tabletop.AttackingDecision.Attackers)
         {
-            var attackingCreature = attacker.ToCreature();
+            var attackingCreature = attacker.ToProxyCreature();
 
             if (combatByAttackerLookup.TryGetValue(attackingCreature.Card, out var matchedCombat))
             {
                 var blockingCreatures = matchedCombat
                     .Blockers
-                    .Select(blocker => blocker.ToCreature())
+                    .Select(blocker => blocker.ToProxyCreature())
                     .ToImmutableArray();
 
                 attackingCreature.Damage = blockingCreatures.Sum(blockingCreature => blockingCreature.Power);
@@ -222,7 +247,7 @@ public class Judge
 
         combatByAttackerLookup
             .Values
-            .Select(combat => combat.Attacker.ToCreature())
+            .Select(combat => combat.Attacker.ToProxyCreature())
             .Where(attackingCreature => attackingCreature.Damage >= attackingCreature.Toughness)
             .ForEach(attackingCreature =>
             {
@@ -233,7 +258,7 @@ public class Judge
         combatByAttackerLookup
             .Values
             .SelectMany(combat => combat.Blockers)
-            .Select(blocker => blocker.ToCreature())
+            .Select(blocker => blocker.ToProxyCreature())
             .Where(blockingCreature => blockingCreature.Damage >= blockingCreature.Toughness)
             .ForEach(blockingCreature =>
             {

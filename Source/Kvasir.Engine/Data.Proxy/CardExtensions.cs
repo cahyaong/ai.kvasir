@@ -33,7 +33,7 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class CardExtensions
 {
-    public static Creature ToCreature(this ICard card)
+    public static Creature ToProxyCreature(this ICard card)
     {
         Guard
             .Require(card.Kind, $"{nameof(card)}.{nameof(ICard.Kind)}")

@@ -51,7 +51,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeLibrary()
     {
         this.Subject.Kind
-            .Should().Be(ZoneKind.Library, $"{this.Identifier} should be library");
+            .Should().Be(ZoneKind.Library, $"because {this.Identifier} should be library");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -59,7 +59,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeHand()
     {
         this.Subject.Kind
-            .Should().Be(ZoneKind.Hand, $"{this.Identifier} should be hand");
+            .Should().Be(ZoneKind.Hand, $"because {this.Identifier} should be hand");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -67,7 +67,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeGraveyard()
     {
         this.Subject.Kind
-            .Should().Be(ZoneKind.Graveyard, $"{this.Identifier} should be graveyard");
+            .Should().Be(ZoneKind.Graveyard, $"because {this.Identifier} should be graveyard");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -75,7 +75,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeBattlefield()
     {
         this.Subject.Kind
-            .Should().Be(ZoneKind.Battlefield, $"{this.Identifier} should be battlefield");
+            .Should().Be(ZoneKind.Battlefield, $"because {this.Identifier} should be battlefield");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -83,7 +83,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeStack()
     {
         this.Subject.Kind
-            .Should().Be(ZoneKind.Stack, $"{this.Identifier} should be stack");
+            .Should().Be(ZoneKind.Stack, $"because {this.Identifier} should be stack");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -91,7 +91,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeExile()
     {
         this.Subject.Kind
-            .Should().Be(ZoneKind.Exile, $"{this.Identifier} should be exile");
+            .Should().Be(ZoneKind.Exile, $"because {this.Identifier} should be exile");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -99,7 +99,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BePublic()
     {
         this.Subject.Visibility
-            .Should().Be(Visibility.Public, $"{this.Identifier} should be public");
+            .Should().Be(Visibility.Public, $"because {this.Identifier} should be public");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -107,7 +107,7 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeHidden()
     {
         this.Subject.Visibility
-            .Should().Be(Visibility.Hidden, $"{this.Identifier} should be hidden");
+            .Should().Be(Visibility.Hidden, $"because {this.Identifier} should be hidden");
 
         return new AndConstraint<ZoneAssertion>(this);
     }
@@ -115,16 +115,17 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
     public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(IDeck deck)
     {
         Guard
-            .Require(deck.Cards, $"{nameof(deck)}.{nameof(deck.Cards)}")
+            .Require(deck.Cards, $"because {nameof(deck)}.{nameof(deck.Cards)}")
             .Is.Not.Empty();
 
         using (new AssertionScope())
         {
             foreach (var card in this.Subject.Cards)
             {
-                deck
-                    .Cards
-                    .Should().ContainEquivalentOf(card, $"{this.Identifier} should contain card defined by deck");
+                deck.Cards
+                    .Should().ContainEquivalentOf(
+                        card,
+                        $"because {this.Identifier} should contain card defined by deck");
             }
         }
 
