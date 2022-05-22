@@ -39,7 +39,7 @@ using Xunit;
 
 public class RulebookTests
 {
-    public class FindCreatureCardsMethod
+    public class FindCreaturesMethod
     {
         [Theory]
         [MemberData(nameof(TestData.FindingCreaturesControlledByActivePlayerTheories), MemberType = typeof(TestData))]
@@ -51,7 +51,7 @@ public class RulebookTests
             // Act.
 
             var creatures = Rulebook
-                .FindCreatureCards(theory.Tabletop, PlayerModifier.Active, theory.CreatureModifier)
+                .FindCreatures(theory.Tabletop, PlayerModifier.Active, theory.CreatureModifier)
                 .ToImmutableList();
 
             // Assert.
@@ -63,7 +63,7 @@ public class RulebookTests
                     "because query should return correct count of filtered creatures");
 
             creatures
-                .Select(creature => creature.Name)
+                .Select(creature => creature.Card.Name)
                 .Should().Contain(theory.ExpectedCreatureNames, "because query should find correct creature");
         }
 
@@ -79,7 +79,7 @@ public class RulebookTests
             // Act.
 
             var creatures = Rulebook
-                .FindCreatureCards(theory.Tabletop, PlayerModifier.Nonactive, theory.CreatureModifier)
+                .FindCreatures(theory.Tabletop, PlayerModifier.Nonactive, theory.CreatureModifier)
                 .ToImmutableList();
 
             // Assert.
@@ -91,7 +91,7 @@ public class RulebookTests
                     "because query should return correct count of filtered creatures");
 
             creatures
-                .Select(creature => creature.Name)
+                .Select(creature => creature.Card.Name)
                 .Should().Contain(theory.ExpectedCreatureNames, "because query should find correct creature");
         }
 
@@ -116,7 +116,7 @@ public class RulebookTests
             // Act.
 
             var creatures = Rulebook
-                .FindCreatureCards(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
                 .ToImmutableList();
 
             // Assert.

@@ -104,9 +104,8 @@ public class Judge
         // TODO (SHOULD): Implement untap action for other permanent types besides creature!
 
         Rulebook
-            .FindCreatureCards(tabletop, PlayerModifier.Active, CreatureModifier.None)
-            .Where(card => card.Controller == tabletop.ActivePlayer)
-            .Select(card => card.ToProxyCreature())
+            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
+            .Where(creature => creature.Card.Controller == tabletop.ActivePlayer)
             .ForEach(creature => creature.IsTapped = false);
 
         this._logger.LogDiagnostic(tabletop);
@@ -141,7 +140,7 @@ public class Judge
         // attacker isn’t a cost; attacking simply causes creatures to become tapped.
 
         tabletop
-            .AttackingDecision.Attackers
+            .AttackingDecision.AttackingCards
             .ForEach(attacker => attacker.ToProxyCreature().IsTapped = true);
 
         // RX-508.8 — If no creatures are declared as attackers or put onto the battlefield attacking, skip the declare
@@ -215,17 +214,17 @@ public class Judge
 
         var combatByAttackerLookup = tabletop
             .BlockingDecision.Combats
-            .Where(combat => tabletop.AttackingDecision.Attackers.Contains(combat.Attacker))
-            .ToDictionary(combat => combat.Attacker);
+            .Where(combat => tabletop.AttackingDecision.AttackingCards.Contains(combat.AttackingCard))
+            .ToDictionary(combat => combat.AttackingCard);
 
-        foreach (var attacker in tabletop.AttackingDecision.Attackers)
+        foreach (var attacker in tabletop.AttackingDecision.AttackingCards)
         {
             var attackingCreature = attacker.ToProxyCreature();
 
             if (combatByAttackerLookup.TryGetValue(attackingCreature.Card, out var matchedCombat))
             {
                 var blockingCreatures = matchedCombat
-                    .Blockers
+                    .BlockingCards
                     .Select(blocker => blocker.ToProxyCreature())
                     .ToImmutableArray();
 
@@ -247,7 +246,7 @@ public class Judge
 
         combatByAttackerLookup
             .Values
-            .Select(combat => combat.Attacker.ToProxyCreature())
+            .Select(combat => combat.AttackingCard.ToProxyCreature())
             .Where(attackingCreature => attackingCreature.Damage >= attackingCreature.Toughness)
             .ForEach(attackingCreature =>
             {
@@ -257,7 +256,7 @@ public class Judge
 
         combatByAttackerLookup
             .Values
-            .SelectMany(combat => combat.Blockers)
+            .SelectMany(combat => combat.BlockingCards)
             .Select(blocker => blocker.ToProxyCreature())
             .Where(blockingCreature => blockingCreature.Damage >= blockingCreature.Toughness)
             .ForEach(blockingCreature =>

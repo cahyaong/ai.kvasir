@@ -33,7 +33,7 @@ using System.Collections.Generic;
 
 public interface IAttackingDecision
 {
-    IReadOnlyCollection<ICard> Attackers { get; }
+    IReadOnlyCollection<ICard> AttackingCards { get; }
 }
 
 public class UnknownAttackingDecision : IAttackingDecision
@@ -44,5 +44,5 @@ public class UnknownAttackingDecision : IAttackingDecision
 
     internal static IAttackingDecision Instance { get; } = new UnknownAttackingDecision();
 
-    public IReadOnlyCollection<ICard> Attackers => Array.Empty<Card>();
+    public IReadOnlyCollection<ICard> AttackingCards => Array.Empty<Card>();
 }

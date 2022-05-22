@@ -44,28 +44,30 @@ public class RandomStrategy : IStrategy
 
     public IAttackingDecision DeclareAttacker(ITabletop tabletop)
     {
-        var attackers = Rulebook
-            .FindCreatureCards(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+        var attackingCards = Rulebook
+            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
             .Where(_ => this._randomGenerator.RollDice(20) <= 10)
+            .Select(creature => creature.Card)
             .ToImmutableList();
 
         return new AttackingDecision
         {
-            Attackers = attackers
+            AttackingCards = attackingCards
         };
     }
 
     public IBlockingDecision DeclareBlocker(ITabletop tabletop)
     {
-        var blockers = Rulebook
-            .FindCreatureCards(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
+        var blockingCards = Rulebook
+            .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
+            .Select(creature => creature.Card)
             .ToList();
 
         var combats = new List<Combat>();
 
-        foreach (var attacker in tabletop.AttackingDecision.Attackers)
+        foreach (var attackingCard in tabletop.AttackingDecision.AttackingCards)
         {
-            if (!blockers.Any())
+            if (!blockingCards.Any())
             {
                 break;
             }
@@ -77,15 +79,15 @@ public class RandomStrategy : IStrategy
                 continue;
             }
 
-            var blockerIndex = this._randomGenerator.RollDice(blockers.Count) - 1;
+            var blockingIndex = this._randomGenerator.RollDice(blockingCards.Count) - 1;
 
             combats.Add(new Combat
             {
-                Attacker = attacker,
-                Blockers = new List<ICard> { blockers[blockerIndex] }
+                AttackingCard = attackingCard,
+                BlockingCards = new[] { blockingCards[blockingIndex] }
             });
 
-            blockers.RemoveAt(blockerIndex);
+            blockingCards.RemoveAt(blockingIndex);
         }
 
         return new BlockingDecision

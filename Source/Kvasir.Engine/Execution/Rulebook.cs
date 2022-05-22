@@ -36,7 +36,7 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class Rulebook
 {
-    public static IEnumerable<ICard> FindCreatureCards(
+    public static IEnumerable<Creature> FindCreatures(
         ITabletop tabletop,
         PlayerModifier playerModifier,
         CreatureModifier creatureModifier)
@@ -74,9 +74,7 @@ public static class Rulebook
             _ => Enumerable.Empty<Creature>()
         };
 
-        return filteredCreatures
-            .Select(creature => creature.Card)
-            .ToImmutableList();
+        return filteredCreatures.ToImmutableList();
     }
 
     public static ValidationResult Validate(IAttackingDecision attackingDecision)
@@ -89,8 +87,8 @@ public static class Rulebook
         var reasons = new List<ValidationReason>();
 
         var attackingCreatures = attackingDecision
-            .Attackers
-            .Select(attacker => attacker.ToProxyCreature())
+            .AttackingCards
+            .Select(card => card.ToProxyCreature())
             .ToImmutableArray();
 
         foreach (var attackingCreature in attackingCreatures)
@@ -115,8 +113,8 @@ public static class Rulebook
 
         blockingDecision
             .Combats
-            .SelectMany(combat => combat.Blockers)
-            .GroupBy(blocker => blocker.Id)
+            .SelectMany(combat => combat.BlockingCards)
+            .GroupBy(card => card.Id)
             .Where(grouping => grouping.Count() > 1)
             .ForEach(grouping => reasons.Add(ValidationReason.Create(
                 "Blocking creature is assigned to multiple attackers!",

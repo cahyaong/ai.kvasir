@@ -8,13 +8,13 @@ public static partial class MockExtensions
 {
     public static Mock<IStrategy> WithAttackingDecision(
         this Mock<IStrategy> mockStrategy,
-        params ICard[] attackers)
+        params ICard[] attackingCards)
     {
         mockStrategy
             .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
             .Returns(new AttackingDecision
             {
-                Attackers = attackers
+                AttackingCards = attackingCards
             });
 
         return mockStrategy;
@@ -22,13 +22,13 @@ public static partial class MockExtensions
 
     public static Mock<IStrategy> WithBlockingDecision(
         this Mock<IStrategy> mockStrategy,
-        ICard attacker,
-        IReadOnlyCollection<ICard> blockers)
+        ICard attackingCard,
+        IReadOnlyCollection<ICard> blockingCards)
     {
         var combat = new Combat
         {
-            Attacker = attacker,
-            Blockers = blockers
+            AttackingCard = attackingCard,
+            BlockingCards = blockingCards
         };
 
         mockStrategy

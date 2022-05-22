@@ -35,12 +35,12 @@ public class AttackingDecision : IAttackingDecision
 {
     public AttackingDecision()
     {
-        this.Attackers = Array.Empty<ICard>();
+        this.AttackingCards = Array.Empty<ICard>();
     }
 
     public static IAttackingDecision Unknown => UnknownAttackingDecision.Instance;
 
     public static IAttackingDecision None { get; } = new AttackingDecision();
 
-    public IReadOnlyCollection<ICard> Attackers { get; init; }
+    public IReadOnlyCollection<ICard> AttackingCards { get; init; }
 }
