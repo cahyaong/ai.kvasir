@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Player.cs" company="nGratis">
+// <copyright file="RoundSimulatorTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,65 +23,65 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, 23 January 2019 11:14:15 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, June 2, 2022 5:13:56 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine;
+namespace nGratis.AI.Kvasir.IntegrationTest;
 
-using System.Diagnostics;
+using FluentAssertions;
+using Moq;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine;
+using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
+using Xunit;
 
-// TODO: Use builder pattern to make most properties immutable after creation!
-
-[DebuggerDisplay("<Player> {this.Name}")]
-public class Player : IPlayer
+public class RoundSimulatorTests
 {
-    public Player()
+    [Fact]
+    public void WhenGettingValidConfig_ShouldSimulateUntilCompletion()
     {
-        this.Kind = PlayerKind.Unknown;
-        this.Name = DefinedText.Unknown;
-        this.Deck = Engine.Deck.Unknown;
-        this.Strategy = Engine.Strategy.Unknown;
+        // Arrange.
 
-        this.Library = new Zone<ICard>
+        var mockLogger = MockBuilder.CreateMock<ILogger>();
+        var stubProcessedRepository = new StubProcessedMagicRepository();
+
+        var randomGenerator = new RandomGenerator(42);
+        var entityFactory = new MagicEntityFactory(stubProcessedRepository, randomGenerator);
+        var roundSimulator = new RoundSimulator(entityFactory, randomGenerator, mockLogger.Object);
+
+        var definedPlayers = new[]
         {
-            Kind = ZoneKind.Library,
-            Visibility = Visibility.Hidden
+            new DefinedBlob.Player
+            {
+                Name = "[_MOCK_PLAYER__RED_]",
+                DeckCode = "RED_01"
+            },
+            new DefinedBlob.Player
+            {
+                Name = "[_MOCK_PLAYER_WHITE_]",
+                DeckCode = "WHITE_01"
+            }
         };
 
-        this.Hand = new Zone<ICard>
+        var simulationConfig = new SimulationConfig
         {
-            Kind = ZoneKind.Hand,
-            Visibility = Visibility.Hidden
+            MaxTurnCount = 50,
+            DefinedPlayers = definedPlayers
         };
 
-        this.Graveyard = new Zone<ICard>
-        {
-            Kind = ZoneKind.Graveyard,
-            Visibility = Visibility.Public
-        };
+        // Act.
 
-        this.Life = 0;
+        var executionResult = roundSimulator.Simulate(simulationConfig);
+
+        // Assert.
+
+        executionResult
+            .HasError
+            .Should().BeFalse();
+
+        executionResult
+            .Tabletop.TurnId
+            .Should().Be(49);
     }
-
-    public static IPlayer Unknown => UnknownPlayer.Instance;
-
-    public static IPlayer None => NonePlayer.Instance;
-
-    public PlayerKind Kind { get; init; }
-
-    public string Name { get; init; }
-
-    public IDeck Deck { get; init; }
-
-    public IStrategy Strategy { get; init; }
-
-    public IZone<ICard> Library { get; }
-
-    public IZone<ICard> Hand { get; }
-
-    public IZone<ICard> Graveyard { get; }
-
-    public int Life { get; set; }
 }

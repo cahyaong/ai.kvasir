@@ -32,13 +32,9 @@ using System;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-public interface ICard
+public interface ICard : IDiagnostic
 {
-    int Id { get; }
-
     CardKind Kind { get; }
-
-    string Name { get; }
 
     IPlayer Owner { get; set; }
 
@@ -59,11 +55,11 @@ public class UnknownCard : ICard
 
     internal static ICard Instance { get; } = new UnknownCard();
 
-    public int Id => 0;
-
-    public CardKind Kind => CardKind.Unknown;
+    public int Id => -42;
 
     public string Name => DefinedText.Unknown;
+
+    public CardKind Kind => CardKind.Unknown;
 
     public IPlayer Owner
     {

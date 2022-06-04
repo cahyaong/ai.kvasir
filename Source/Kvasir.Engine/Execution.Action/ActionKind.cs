@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="ActionKind.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,30 +23,14 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, April 22, 2022 2:53:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, June 1, 2022 12:39:49 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+namespace nGratis.AI.Kvasir.Engine;
 
-using Moq;
-using nGratis.AI.Kvasir.Engine;
-
-public static partial class MockExtensions
+public enum ActionKind
 {
-    public static Mock<IStrategy> WithDefault(this Mock<IStrategy> mockStrategy)
-    {
-        mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-            .Returns(AttackingDecision.None);
+    Unknown = 0,
 
-        mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-            .Returns(BlockingDecision.None);
-
-        mockStrategy
-            .Setup(mock => mock.PerformAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Passing);
-
-        return mockStrategy;
-    }
+    Passing
 }

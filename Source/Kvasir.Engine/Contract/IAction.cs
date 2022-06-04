@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="IAction.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,30 +23,46 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, April 22, 2022 2:53:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, June 1, 2022 12:30:36 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+namespace nGratis.AI.Kvasir.Engine;
 
-using Moq;
-using nGratis.AI.Kvasir.Engine;
+using nGratis.Cop.Olympus.Contract;
 
-public static partial class MockExtensions
+public interface IAction : IDiagnostic
 {
-    public static Mock<IStrategy> WithDefault(this Mock<IStrategy> mockStrategy)
+    ActionKind Kind { get; }
+
+    IPlayer Owner { get; }
+
+    bool IsLegal(ITabletop tabletop);
+
+    void Resolve(ITabletop tabletop);
+}
+
+internal class UnknownAction : IAction
+{
+    private UnknownAction()
     {
-        mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-            .Returns(AttackingDecision.None);
+    }
 
-        mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-            .Returns(BlockingDecision.None);
+    public static IAction Instance { get; } = new UnknownAction();
 
-        mockStrategy
-            .Setup(mock => mock.PerformAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Passing);
+    public int Id => -42;
 
-        return mockStrategy;
+    public string Name => DefinedText.Unknown;
+
+    public ActionKind Kind => ActionKind.Unknown;
+
+    public IPlayer Owner => Player.Unknown;
+
+    public bool IsLegal(ITabletop tabletop)
+    {
+        return false;
+    }
+
+    public void Resolve(ITabletop tabletop)
+    {
     }
 }

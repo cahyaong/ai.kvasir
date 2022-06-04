@@ -49,6 +49,7 @@ public static class YamlSerializationExtensions
         .WithTypeConverter(CostYamlConverter.Instance)
         .WithTypeConverter(EffectYamlConverter.Instance)
         .WithTypeConverter(DeckYamlConverter.Instance)
+        .DisableAliases()
         .Build();
 
     private static readonly IDeserializer Deserializer = new DeserializerBuilder()

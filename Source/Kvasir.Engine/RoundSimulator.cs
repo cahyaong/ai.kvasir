@@ -64,7 +64,7 @@ public class RoundSimulator
             .SetupPlayerZones(this._tabletop.ActivePlayer)
             .SetupPlayerZones(this._tabletop.NonactivePlayer);
 
-        while (this._tabletop.TurnId < simulationConfig.MaxTurnCount)
+        while (this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1)
         {
             this._judge.ExecuteNextTurn(this._tabletop);
         }
@@ -132,12 +132,12 @@ public class RoundSimulator
                 .Skip(index)
                 .Take(1)
                 .Single())
-            .ForEach(card => player.Library.AddCardToTop(card));
+            .ForEach(card => player.Library.AddToTop(card));
 
         Enumerable
             .Range(0, MagicConstant.Hand.MaxCardCount)
-            .Select(_ => player.Library.RemoveCardFromTop())
-            .ForEach(card => player.Hand.AddCardToTop(card));
+            .Select(_ => player.Library.FindFromTop())
+            .ForEach(card => player.Library.MoveToZone(card, player.Hand));
 
         // TODO: Implement proper `mulligan` for Rx-103.4 sub-rule.
 

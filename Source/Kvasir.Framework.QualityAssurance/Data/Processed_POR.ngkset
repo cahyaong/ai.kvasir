@@ -1,0 +1,872 @@
+﻿- number: 9
+  set-code: POR
+  multiverse-id: 4377
+  name: Border Guard
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Human
+  - Soldier
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 2
+      white: 1
+  power: 1
+  toughness: 4
+  abilities: []
+- number: 13
+  set-code: POR
+  multiverse-id: 4381
+  name: Devoted Hero
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Elf
+  - Soldier
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      white: 1
+  power: 1
+  toughness: 2
+  abilities: []
+- number: 16
+  set-code: POR
+  multiverse-id: 4384
+  name: Foot Soldiers
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Human
+  - Soldier
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 3
+      white: 1
+  power: 2
+  toughness: 4
+  abilities: []
+- number: 20
+  set-code: POR
+  multiverse-id: 4388
+  name: Knight Errant
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Human
+  - Knight
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 1
+      white: 1
+  power: 2
+  toughness: 2
+  abilities: []
+- number: 22
+  set-code: POR
+  multiverse-id: 4390
+  name: Regal Unicorn
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Unicorn
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 2
+      white: 1
+  power: 2
+  toughness: 3
+  abilities: []
+- number: 49
+  set-code: POR
+  multiverse-id: 4256
+  name: Coral Eel
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Fish
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 1
+      blue: 1
+  power: 2
+  toughness: 1
+  abilities: []
+- number: 56
+  set-code: POR
+  multiverse-id: 4263
+  name: Giant Octopus
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Octopus
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 3
+      blue: 1
+  power: 3
+  toughness: 3
+  abilities: []
+- number: 57
+  set-code: POR
+  multiverse-id: 4264
+  name: Horned Turtle
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Turtle
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 2
+      blue: 1
+  power: 1
+  toughness: 4
+  abilities: []
+- number: 60
+  set-code: POR
+  multiverse-id: 4267
+  name: Merfolk of the Pearl Trident
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Merfolk
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      blue: 1
+  power: 1
+  toughness: 1
+  abilities: []
+- number: 102
+  set-code: POR
+  multiverse-id: 4231
+  name: Muck Rats
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Rat
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      black: 1
+  power: 1
+  toughness: 1
+  abilities: []
+- number: 105
+  set-code: POR
+  multiverse-id: 4234
+  name: Python
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Snake
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 1
+      black: 2
+  power: 3
+  toughness: 2
+  abilities: []
+- number: 110
+  set-code: POR
+  multiverse-id: 4239
+  name: Skeletal Crocodile
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Crocodile
+  - Skeleton
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 3
+      black: 1
+  power: 5
+  toughness: 1
+  abilities: []
+- number: 111
+  set-code: POR
+  multiverse-id: 4240
+  name: Skeletal Snake
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Snake
+  - Skeleton
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 1
+      black: 1
+  power: 2
+  toughness: 1
+  abilities: []
+- number: 131
+  set-code: POR
+  multiverse-id: 4342
+  name: Goblin Bully
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Goblin
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 1
+      red: 1
+  power: 2
+  toughness: 1
+  abilities: []
+- number: 132
+  set-code: POR
+  multiverse-id: 4343
+  name: Highland Giant
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Giant
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 2
+      red: 2
+  power: 3
+  toughness: 4
+  abilities: []
+- number: 133
+  set-code: POR
+  multiverse-id: 4344
+  name: Hill Giant
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Giant
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 3
+      red: 1
+  power: 3
+  toughness: 3
+  abilities: []
+- number: 139
+  set-code: POR
+  multiverse-id: 4350
+  name: Lizard Warrior
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Lizard
+  - Warrior
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 3
+      red: 1
+  power: 4
+  toughness: 2
+  abilities: []
+- number: 140
+  set-code: POR
+  multiverse-id: 4351
+  name: Minotaur Warrior
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Minotaur
+  - Warrior
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 2
+      red: 1
+  power: 2
+  toughness: 3
+  abilities: []
+- number: 168
+  set-code: POR
+  multiverse-id: 4299
+  name: Gorilla Warrior
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Ape
+  - Warrior
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 2
+      green: 1
+  power: 3
+  toughness: 2
+  abilities: []
+- number: 169
+  set-code: POR
+  multiverse-id: 4300
+  name: Grizzly Bears
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Bear
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 1
+      green: 1
+  power: 2
+  toughness: 2
+  abilities: []
+- number: 180
+  set-code: POR
+  multiverse-id: 9845
+  name: Panther Warriors
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Cat
+  - Warrior
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 4
+      green: 1
+  power: 6
+  toughness: 3
+  abilities: []
+- number: 183
+  set-code: POR
+  multiverse-id: 4315
+  name: Redwood Treefolk
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Treefolk
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 4
+      green: 1
+  power: 3
+  toughness: 6
+  abilities: []
+- number: 184
+  set-code: POR
+  multiverse-id: 4316
+  name: Rowan Treefolk
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Treefolk
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 3
+      green: 1
+  power: 3
+  toughness: 4
+  abilities: []
+- number: 185
+  set-code: POR
+  multiverse-id: 4317
+  name: Spined Wurm
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Wurm
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 4
+      green: 1
+  power: 5
+  toughness: 4
+  abilities: []
+- number: 192
+  set-code: POR
+  multiverse-id: 4324
+  name: Whiptail Wurm
+  kind: Creature
+  super-kind: None
+  sub-kinds:
+  - Wurm
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount:
+      colorless: 6
+      green: 1
+  power: 8
+  toughness: 5
+  abilities: []
+- number: 196
+  set-code: POR
+  multiverse-id: 4425
+  name: Plains
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Plains
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        white: 1
+- number: 197
+  set-code: POR
+  multiverse-id: 4428
+  name: Plains
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Plains
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        white: 1
+- number: 198
+  set-code: POR
+  multiverse-id: 4426
+  name: Plains
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Plains
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        white: 1
+- number: 199
+  set-code: POR
+  multiverse-id: 4427
+  name: Plains
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Plains
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        white: 1
+- number: 200
+  set-code: POR
+  multiverse-id: 4422
+  name: Island
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Island
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        blue: 1
+- number: 201
+  set-code: POR
+  multiverse-id: 4424
+  name: Island
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Island
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        blue: 1
+- number: 202
+  set-code: POR
+  multiverse-id: 4423
+  name: Island
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Island
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        blue: 1
+- number: 203
+  set-code: POR
+  multiverse-id: 4421
+  name: Island
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Island
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        blue: 1
+- number: 204
+  set-code: POR
+  multiverse-id: 4412
+  name: Swamp
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Swamp
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        black: 1
+- number: 205
+  set-code: POR
+  multiverse-id: 4409
+  name: Swamp
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Swamp
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        black: 1
+- number: 206
+  set-code: POR
+  multiverse-id: 4411
+  name: Swamp
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Swamp
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        black: 1
+- number: 207
+  set-code: POR
+  multiverse-id: 4410
+  name: Swamp
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Swamp
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        black: 1
+- number: 208
+  set-code: POR
+  multiverse-id: 4419
+  name: Mountain
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Mountain
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        red: 1
+- number: 209
+  set-code: POR
+  multiverse-id: 4418
+  name: Mountain
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Mountain
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        red: 1
+- number: 210
+  set-code: POR
+  multiverse-id: 4420
+  name: Mountain
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Mountain
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        red: 1
+- number: 211
+  set-code: POR
+  multiverse-id: 4417
+  name: Mountain
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Mountain
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        red: 1
+- number: 212
+  set-code: POR
+  multiverse-id: 4413
+  name: Forest
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Forest
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        green: 1
+- number: 213
+  set-code: POR
+  multiverse-id: 4415
+  name: Forest
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Forest
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        green: 1
+- number: 214
+  set-code: POR
+  multiverse-id: 4414
+  name: Forest
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Forest
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        green: 1
+- number: 215
+  set-code: POR
+  multiverse-id: 4416
+  name: Forest
+  kind: Land
+  super-kind: Basic
+  sub-kinds:
+  - Forest
+  is-tribal: false
+  cost:
+    kind: PayingMana
+    amount: {}
+  power: 0
+  toughness: 0
+  abilities:
+  - kind: Activated
+    costs:
+    - kind: Tapping
+    effects:
+    - kind: ProducingMana
+      amount:
+        green: 1

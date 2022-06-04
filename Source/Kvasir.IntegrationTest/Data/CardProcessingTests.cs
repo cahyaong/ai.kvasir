@@ -68,7 +68,7 @@ public class CardProcessingTests
         var parsedCard = processingResult.GetValue<DefinedBlob.Card>();
 
         parsedCard
-            .Should().NotBeNull("because we parse card");
+            .Should().NotBeNull("because we can parse card");
 
         // TODO: Add another assertion for mana cost!
 

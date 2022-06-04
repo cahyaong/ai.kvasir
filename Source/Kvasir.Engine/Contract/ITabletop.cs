@@ -32,11 +32,11 @@ using System;
 
 public interface ITabletop
 {
-    IZone Battlefield { get; }
+    IZone<ICard> Battlefield { get; }
 
-    IZone Stack { get; }
+    IZone<IAction> Stack { get; }
 
-    IZone Exile { get; }
+    IZone<ICard> Exile { get; }
 
     int TurnId { get; set; }
 
@@ -45,6 +45,8 @@ public interface ITabletop
     IPlayer ActivePlayer { get; set; }
 
     IPlayer NonactivePlayer { get; set; }
+
+    IPlayer PrioritizedPlayer { get; set; }
 
     IAttackingDecision AttackingDecision { get; set; }
 
@@ -55,11 +57,11 @@ public interface ITabletop
 
 public class UnknownTabletop : ITabletop
 {
-    public IZone Battlefield => Zone.Unknown;
+    public IZone<ICard> Battlefield => Zone<ICard>.Unknown;
 
-    public IZone Stack => Zone.Unknown;
+    public IZone<IAction> Stack => Zone<IAction>.Unknown;
 
-    public IZone Exile => Zone.Unknown;
+    public IZone<ICard> Exile => Zone<ICard>.Unknown;
 
     public int TurnId
     {
@@ -83,6 +85,12 @@ public class UnknownTabletop : ITabletop
     {
         get => Player.Unknown;
         set => throw new NotSupportedException("Setting nonactive player is not allowed!");
+    }
+
+    public IPlayer PrioritizedPlayer
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting prioritized player is not allowed!");
     }
 
     public IAttackingDecision AttackingDecision

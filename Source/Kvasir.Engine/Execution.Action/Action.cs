@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="Action.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,30 +23,33 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, April 22, 2022 2:53:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, June 1, 2022 12:37:45 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+namespace nGratis.AI.Kvasir.Engine;
 
-using Moq;
-using nGratis.AI.Kvasir.Engine;
+using nGratis.Cop.Olympus.Contract;
 
-public static partial class MockExtensions
+public abstract class Action : IAction
 {
-    public static Mock<IStrategy> WithDefault(this Mock<IStrategy> mockStrategy)
+    protected Action()
     {
-        mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-            .Returns(AttackingDecision.None);
-
-        mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-            .Returns(BlockingDecision.None);
-
-        mockStrategy
-            .Setup(mock => mock.PerformAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Passing);
-
-        return mockStrategy;
+        this.Owner = Player.Unknown;
     }
+
+    public static IAction Unknown => UnknownAction.Instance;
+
+    public static IAction Passing => PassingAction.Instance;
+
+    public int Id => this.GetHashCode();
+
+    public string Name => DefinedText.Default;
+
+    public abstract ActionKind Kind { get; }
+
+    public IPlayer Owner { get; init; }
+
+    public abstract bool IsLegal(ITabletop tabletop);
+
+    public abstract void Resolve(ITabletop tabletop);
 }

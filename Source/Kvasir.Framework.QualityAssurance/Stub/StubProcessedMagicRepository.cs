@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="StubProcessedMagicRepository.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,30 +23,52 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, April 22, 2022 2:53:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, June 2, 2022 5:47:33 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Framework;
 
-using Moq;
-using nGratis.AI.Kvasir.Engine;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Reflection;
+using System.Threading.Tasks;
+using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Core;
 
-public static partial class MockExtensions
+public class StubProcessedMagicRepository : IProcessedMagicRepository
 {
-    public static Mock<IStrategy> WithDefault(this Mock<IStrategy> mockStrategy)
+    private static readonly string SupportedSetCode = "POR";
+
+    private readonly IReadOnlyDictionary<ushort, DefinedBlob.Card> _cardByNumberLookup;
+
+    public StubProcessedMagicRepository()
     {
-        mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-            .Returns(AttackingDecision.None);
+        this._cardByNumberLookup = $"Processed_{StubProcessedMagicRepository.SupportedSetCode}"
+            .FetchProcessedCards()
+            .ToImmutableDictionary(card => card.Number);
+    }
 
-        mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-            .Returns(BlockingDecision.None);
+    public async Task<DefinedBlob.Card> LoadCardAsync(string setCode, ushort number)
+    {
+        if (setCode != StubProcessedMagicRepository.SupportedSetCode)
+        {
+            throw new KvasirTestingException(
+                "Set code other than 'POR' is not supported!",
+                ("Set Code", setCode));
+        }
 
-        mockStrategy
-            .Setup(mock => mock.PerformAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Passing);
+        if (!this._cardByNumberLookup.TryGetValue(number, out var card))
+        {
+            throw new KvasirTestingException(
+                "There is no card with given number!",
+                ("Number", number));
+        }
 
-        return mockStrategy;
+        return await Task.FromResult(card);
+    }
+
+    public async Task SaveCardAsync(DefinedBlob.Card card)
+    {
+        await Task.CompletedTask;
     }
 }

@@ -84,7 +84,7 @@ public static class DataExtensions
             IsTapped = false
         });
 
-        tabletop.Battlefield.AddCardToTop(creature);
+        tabletop.Battlefield.AddToTop(creature);
 
         return creature;
     }

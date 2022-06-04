@@ -95,4 +95,9 @@ public class RandomStrategy : IStrategy
             Combats = combats
         };
     }
+
+    public IAction PerformAction(ITabletop tabletop)
+    {
+        return Action.Passing;
+    }
 }

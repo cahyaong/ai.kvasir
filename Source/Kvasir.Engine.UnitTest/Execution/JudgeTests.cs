@@ -119,7 +119,8 @@ public class JudgeTests
             using var _ = new AssertionScope();
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
                 {
@@ -168,7 +169,8 @@ public class JudgeTests
             using var _ = new AssertionScope();
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("01") || card.Name.Contains("11"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -179,7 +181,8 @@ public class JudgeTests
                 });
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("02") || card.Name.Contains("12"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -235,7 +238,8 @@ public class JudgeTests
             using var _ = new AssertionScope();
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("MOCK_ATTACKER"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -286,7 +290,8 @@ public class JudgeTests
             using var _ = new AssertionScope();
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("MOCK_TAPPED"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -297,7 +302,8 @@ public class JudgeTests
                 });
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("MOCK_UNTAPPED"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -350,7 +356,8 @@ public class JudgeTests
             using var _ = new AssertionScope();
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("MOCK_BLOCKER"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -401,7 +408,8 @@ public class JudgeTests
             using var _ = new AssertionScope();
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("MOCK_TAPPED"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>
@@ -412,7 +420,8 @@ public class JudgeTests
                 });
 
             tabletop
-                .Battlefield.Cards
+                .Battlefield
+                .FindAll()
                 .Where(card => card.Name.Contains("MOCK_UNTAPPED"))
                 .Select(card => card.ToProxyCreature())
                 .ForEach(creature =>

@@ -34,19 +34,19 @@ public class Tabletop : ITabletop
 {
     public Tabletop()
     {
-        this.Battlefield = new Zone
+        this.Battlefield = new Zone<ICard>
         {
             Kind = ZoneKind.Battlefield,
             Visibility = Visibility.Public
         };
 
-        this.Stack = new Zone
+        this.Stack = new Zone<IAction>
         {
             Kind = ZoneKind.Stack,
             Visibility = Visibility.Public
         };
 
-        this.Exile = new Zone
+        this.Exile = new Zone<ICard>
         {
             Kind = ZoneKind.Exile,
             Visibility = Visibility.Public
@@ -57,6 +57,7 @@ public class Tabletop : ITabletop
 
         this.ActivePlayer = Player.Unknown;
         this.NonactivePlayer = Player.Unknown;
+        this.PrioritizedPlayer = Player.Unknown;
 
         this.AttackingDecision = Engine.AttackingDecision.Unknown;
         this.BlockingDecision = Engine.BlockingDecision.Unknown;
@@ -64,11 +65,11 @@ public class Tabletop : ITabletop
 
     public static Tabletop Unknown { get; } = new();
 
-    public IZone Battlefield { get; }
+    public IZone<ICard> Battlefield { get; }
 
-    public IZone Stack { get; }
+    public IZone<IAction> Stack { get; }
 
-    public IZone Exile { get; }
+    public IZone<ICard> Exile { get; }
 
     public int TurnId { get; set; }
 
@@ -77,6 +78,8 @@ public class Tabletop : ITabletop
     public IPlayer ActivePlayer { get; set; }
 
     public IPlayer NonactivePlayer { get; set; }
+
+    public IPlayer PrioritizedPlayer { get; set; }
 
     public IAttackingDecision AttackingDecision { get; set; }
 

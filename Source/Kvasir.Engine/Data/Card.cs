@@ -36,7 +36,7 @@ using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-[DebuggerDisplay("<Card> {this.Name} ({this.GetHashCode()})")]
+[DebuggerDisplay("<Card> {this.Name} ({this.Id})")]
 public class Card : ICard
 {
     private readonly IDictionary<Type, IPart> _partByTypeLookup;
@@ -45,8 +45,8 @@ public class Card : ICard
     {
         this._partByTypeLookup = new Dictionary<Type, IPart>();
 
-        this.Kind = CardKind.Unknown;
         this.Name = DefinedText.Unknown;
+        this.Kind = CardKind.Unknown;
         this.Owner = Player.Unknown;
         this.Controller = Player.Unknown;
     }
@@ -55,9 +55,9 @@ public class Card : ICard
 
     public int Id => this.GetHashCode();
 
-    public CardKind Kind { get; init; }
-
     public string Name { get; init; }
+
+    public CardKind Kind { get; init; }
 
     public IPlayer Owner { get; set; }
 

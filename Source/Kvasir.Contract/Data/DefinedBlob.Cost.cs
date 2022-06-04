@@ -46,7 +46,7 @@ public static partial class DefinedBlob
         {
         }
 
-        public static UnknownCost Instance { get; } = new();
+        internal static UnknownCost Instance { get; } = new();
 
         public override CostKind Kind => CostKind.Unknown;
     }

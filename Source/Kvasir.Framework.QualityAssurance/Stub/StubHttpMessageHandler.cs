@@ -94,7 +94,7 @@ public class StubHttpMessageHandler : HttpMessageHandler
             .Require(name, nameof(name))
             .Is.Not.Empty();
 
-        using (var sessionStream = this.FindSessionDataStream(name))
+        using (var sessionStream = name.FetchSessionStream())
         using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
         {
             sessionArchive
@@ -150,7 +150,7 @@ public class StubHttpMessageHandler : HttpMessageHandler
             throw new KvasirTestingException($"Target URL [{targetUri}] must be registered exactly once!");
         }
 
-        using (var sessionStream = this.FindSessionDataStream(name))
+        using (var sessionStream = name.FetchSessionStream())
         using (var sessionArchive = new ZipArchive(sessionStream, ZipArchiveMode.Read))
         {
             if (string.IsNullOrEmpty(entryKey))

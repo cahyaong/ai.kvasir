@@ -54,7 +54,8 @@ public static class Rulebook
             : tabletop.NonactivePlayer;
 
         var filteredCreatures = tabletop
-            .Battlefield.Cards
+            .Battlefield
+            .FindAll()
             .Where(card => card.Kind == CardKind.Creature)
             .Select(card => card.ToProxyCreature());
 

@@ -109,7 +109,7 @@ public static class StubBuilder
             IsTapped = isTapped
         });
 
-        tabletop.Battlefield.AddCardToTop(card);
+        tabletop.Battlefield.AddToTop(card);
 
         return tabletop;
     }

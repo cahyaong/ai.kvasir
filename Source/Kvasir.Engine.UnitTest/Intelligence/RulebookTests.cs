@@ -105,7 +105,7 @@ public class RulebookTests
                 ActivePlayer = new Player()
             };
 
-            tabletop.Battlefield.AddCardToTop(new Card
+            tabletop.Battlefield.AddToTop(new Card
             {
                 Kind = CardKind.Land,
                 Name = "[_MOCK_LAND_]",
@@ -209,9 +209,9 @@ public class RulebookTests
                     }
                 };
 
-                tabletop
-                    .Battlefield
-                    .LoadCreatureData("Theory_FindingCreatures");
+                "Theory_FindingCreatures"
+                    .FetchCreatures()
+                    .ForEach(creature => tabletop.Battlefield.AddToTop(creature.ToCard()));
 
                 return new FindingCreaturesTheory
                 {
@@ -223,7 +223,8 @@ public class RulebookTests
             public FindingCreaturesTheory WithActivePlayerAsOwnerAndController()
             {
                 this.Tabletop
-                    .Battlefield.Cards
+                    .Battlefield
+                    .FindAll()
                     .ForEach(card =>
                     {
                         card.Owner = this.Tabletop.ActivePlayer;
@@ -236,7 +237,8 @@ public class RulebookTests
             public FindingCreaturesTheory WithNonactivePlayerAsOwnerAndController()
             {
                 this.Tabletop
-                    .Battlefield.Cards
+                    .Battlefield
+                    .FindAll()
                     .ForEach(card =>
                     {
                         card.Owner = this.Tabletop.NonactivePlayer;
@@ -249,7 +251,8 @@ public class RulebookTests
             public FindingCreaturesTheory ExpectAllCreatures()
             {
                 this.ExpectedCreatureNames = this
-                    .Tabletop.Battlefield.Cards
+                    .Tabletop.Battlefield
+                    .FindAll()
                     .Select(card => card.Name)
                     .Distinct();
 

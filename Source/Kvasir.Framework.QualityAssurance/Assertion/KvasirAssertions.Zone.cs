@@ -37,9 +37,10 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 
-public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
+public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, ZoneAssertion<TEntity>>
+    where TEntity : IDiagnostic
 {
-    public ZoneAssertion(IZone zone)
+    public ZoneAssertion(IZone<TEntity> zone)
         : base(zone)
     {
         zone.Kind
@@ -48,79 +49,88 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
 
     protected override string Identifier => "zone";
 
-    public AndConstraint<ZoneAssertion> BeLibrary()
+    public AndConstraint<ZoneAssertion<TEntity>> BeLibrary()
     {
         this.Subject.Kind
             .Should().Be(ZoneKind.Library, $"because {this.Identifier} should be library");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeHand()
+    public AndConstraint<ZoneAssertion<TEntity>> BeHand()
     {
         this.Subject.Kind
             .Should().Be(ZoneKind.Hand, $"because {this.Identifier} should be hand");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeGraveyard()
+    public AndConstraint<ZoneAssertion<TEntity>> BeGraveyard()
     {
         this.Subject.Kind
             .Should().Be(ZoneKind.Graveyard, $"because {this.Identifier} should be graveyard");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeBattlefield()
+    public AndConstraint<ZoneAssertion<TEntity>> BeBattlefield()
     {
         this.Subject.Kind
             .Should().Be(ZoneKind.Battlefield, $"because {this.Identifier} should be battlefield");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeStack()
+    public AndConstraint<ZoneAssertion<TEntity>> BeStack()
     {
         this.Subject.Kind
             .Should().Be(ZoneKind.Stack, $"because {this.Identifier} should be stack");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeExile()
+    public AndConstraint<ZoneAssertion<TEntity>> BeExile()
     {
         this.Subject.Kind
             .Should().Be(ZoneKind.Exile, $"because {this.Identifier} should be exile");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BePublic()
+    public AndConstraint<ZoneAssertion<TEntity>> BePublic()
     {
         this.Subject.Visibility
             .Should().Be(Visibility.Public, $"because {this.Identifier} should be public");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeHidden()
+    public AndConstraint<ZoneAssertion<TEntity>> BeHidden()
     {
         this.Subject.Visibility
             .Should().Be(Visibility.Hidden, $"because {this.Identifier} should be hidden");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> BeSubsetOfConstructedDeck(IDeck deck)
+    public AndConstraint<ZoneAssertion<TEntity>> BeSubsetOfConstructedDeck(IDeck deck)
     {
+        Guard
+            .Require(typeof(TEntity), nameof(TEntity))
+            .Is.EqualTo(typeof(ICard));
+
         Guard
             .Require(deck.Cards, $"because {nameof(deck)}.{nameof(deck.Cards)}")
             .Is.Not.Empty();
 
         using (new AssertionScope())
         {
-            foreach (var card in this.Subject.Cards)
+            var cards = this
+                .Subject
+                .FindAll()
+                .OfType<ICard>();
+
+            foreach (var card in cards)
             {
                 deck.Cards
                     .Should().ContainEquivalentOf(
@@ -129,15 +139,20 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
             }
         }
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> HaveUniqueCardInstance()
+    public AndConstraint<ZoneAssertion<TEntity>> HaveUniqueCardInstance()
     {
+        Guard
+            .Require(typeof(TEntity), nameof(TEntity))
+            .Is.EqualTo(typeof(ICard));
+
         using (new AssertionScope())
         {
-            this
-                .Subject.Cards
+            this.Subject
+                .FindAll()
+                .OfType<ICard>()
                 .GroupBy(card => card.GetHashCode())
                 .Where(grouping => grouping.Count() > 1)
                 .ForEach(grouping => Execute
@@ -148,42 +163,45 @@ public class ZoneAssertion : ReferenceTypeAssertions<IZone, ZoneAssertion>
                         $"with ID [{grouping.First().GetHashCode()}]."));
         }
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> HaveCardQuantity(ushort quantity)
+    public AndConstraint<ZoneAssertion<TEntity>> HaveQuantity(ushort quantity)
     {
-        var actualQuantity = this
-            .Subject?.Cards
-            .Count() ?? 0;
+        var actualQuantity = this.Subject.Quantity;
 
         Execute
             .Assertion
             .ForCondition(actualQuantity == quantity)
             .FailWith(
-                $"Expected {this.Identifier} to have {quantity} cards, " +
+                $"Expected {this.Identifier} to have {quantity} entities, " +
                 $"but found {actualQuantity}.");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 
-    public AndConstraint<ZoneAssertion> HaveCardQuantity(string cardName, ushort quantity)
+    public AndConstraint<ZoneAssertion<TEntity>> HaveQuantity(string name, ushort quantity)
     {
         Guard
-            .Require(cardName, nameof(cardName))
+            .Require(typeof(TEntity), nameof(TEntity))
+            .Is.EqualTo(typeof(ICard));
+
+        Guard
+            .Require(name, nameof(name))
             .Is.Not.Empty();
 
         var actualQuantity = this
-            .Subject?.Cards
-            .Count(card => card.Name == cardName) ?? 0;
+            .Subject
+            .FindAll()
+            .Count(card => card.Name == name);
 
         Execute
             .Assertion
             .ForCondition(actualQuantity == quantity)
             .FailWith(
-                $"Expected {this.Identifier} to have {quantity} [{cardName}] cards, " +
+                $"Expected {this.Identifier} to have {quantity} [{name}] entities, " +
                 $"but found {actualQuantity}.");
 
-        return new AndConstraint<ZoneAssertion>(this);
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }
 }

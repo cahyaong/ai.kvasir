@@ -31,17 +31,16 @@
 namespace System.Reflection;
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 using YamlDotNet.Serialization;
 
 public static class AssemblyExtensions
 {
-    public static Stream FindSessionDataStream(this object _, string name)
+    public static Stream FetchSessionStream(this string name)
     {
         Guard
             .Require(name, nameof(name))
@@ -61,7 +60,7 @@ public static class AssemblyExtensions
         return dataStream;
     }
 
-    public static void LoadCreatureData(this IZone zone, string name)
+    public static IEnumerable<StubCreature> FetchCreatures(this string name)
     {
         Guard
             .Require(name, nameof(name))
@@ -78,10 +77,32 @@ public static class AssemblyExtensions
                 ("Name", name));
         }
 
-        dataStream
+        return dataStream
             .ReadText()
             .DeserializeFromYaml<List<StubCreature>>()
-            .Select(creature => creature.ToCard())
-            .ForEach(zone.AddCardToTop);
+            .ToImmutableArray();
+    }
+
+    public static IEnumerable<DefinedBlob.Card> FetchProcessedCards(this string name)
+    {
+        Guard
+            .Require(name, nameof(name))
+            .Is.Not.Empty();
+
+        using var dataStream = Assembly
+            .GetExecutingAssembly()
+            .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkset");
+
+        if (dataStream == null)
+        {
+            throw new KvasirTestingException(
+                "Cards data must be embedded!",
+                ("Name", name));
+        }
+
+        return dataStream
+            .ReadText()
+            .DeserializeFromYaml<List<DefinedBlob.Card>>()
+            .ToImmutableArray();
     }
 }

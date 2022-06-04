@@ -42,16 +42,16 @@ public interface IPlayer
 
     IStrategy Strategy { get; }
 
-    IZone Library { get; }
+    IZone<ICard> Library { get; }
 
-    IZone Hand { get; }
+    IZone<ICard> Hand { get; }
 
-    IZone Graveyard { get; }
+    IZone<ICard> Graveyard { get; }
 
     int Life { get; set; }
 }
 
-public class UnknownPlayer : IPlayer
+public sealed class UnknownPlayer : IPlayer
 {
     private UnknownPlayer()
     {
@@ -67,11 +67,40 @@ public class UnknownPlayer : IPlayer
 
     public IStrategy Strategy => Engine.Strategy.Unknown;
 
-    public IZone Library => Zone.Unknown;
+    public IZone<ICard> Library => Zone<ICard>.Unknown;
 
-    public IZone Hand => Zone.Unknown;
+    public IZone<ICard> Hand => Zone<ICard>.Unknown;
 
-    public IZone Graveyard => Zone.Unknown;
+    public IZone<ICard> Graveyard => Zone<ICard>.Unknown;
+
+    public int Life
+    {
+        get => -42;
+        set => throw new NotSupportedException("Setting life is not allowed!");
+    }
+}
+
+internal sealed class NonePlayer : IPlayer
+{
+    private NonePlayer()
+    {
+    }
+
+    internal static IPlayer Instance { get; } = new NonePlayer();
+
+    public PlayerKind Kind => PlayerKind.None;
+
+    public string Name => DefinedText.None;
+
+    public IDeck Deck => Engine.Deck.Unknown;
+
+    public IStrategy Strategy => Engine.Strategy.Unknown;
+
+    public IZone<ICard> Library => Zone<ICard>.Unknown;
+
+    public IZone<ICard> Hand => Zone<ICard>.Unknown;
+
+    public IZone<ICard> Graveyard => Zone<ICard>.Unknown;
 
     public int Life
     {

@@ -33,71 +33,91 @@ using System.Diagnostics;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
-[DebuggerDisplay("<Zone> {this.Kind}, {this._cards.Count} cards")]
-public class Zone : IZone
+[DebuggerDisplay("<Zone> {this.Kind}, {this._entities.Count} entities")]
+public class Zone<TEntity> : IZone<TEntity>
+    where TEntity : IDiagnostic
 {
-    private readonly List<ICard> _cards;
+    private readonly List<TEntity> _entities;
 
     public Zone()
     {
-        this._cards = new List<ICard>();
+        this._entities = new List<TEntity>();
 
         this.Kind = ZoneKind.Unknown;
         this.Visibility = Visibility.Unknown;
     }
 
-    public static IZone Unknown => UnknownZone.Instance;
+    public static IZone<TEntity> Unknown => UnknownZone<TEntity>.Instance;
 
     public ZoneKind Kind { get; init; }
 
     public Visibility Visibility { get; init; }
 
-    public IEnumerable<ICard> Cards => this._cards;
+    public int Quantity => this._entities.Count;
 
-    public void AddCardToTop(ICard card)
+    public void AddToTop(TEntity entity)
     {
-        if (this._cards.Contains(card))
+        if (this._entities.Contains(entity))
         {
             throw new KvasirException(
-                "Zone has existing card!",
+                "Zone has existing entity!",
                 ("Zone Kind", this.Kind),
-                ("Card Name", card.Name),
-                ("Card ID", card.GetHashCode()));
+                ("Entity ID", entity.Id),
+                ("Entity Name", entity.Name));
         }
 
-        this._cards.Add(card);
+        this._entities.Add(entity);
     }
 
-    public ICard RemoveCardFromTop()
+    public TEntity FindFromTop()
     {
-        if (this._cards.Count <= 0)
+        if (this._entities.Count <= 0)
         {
             throw new KvasirException(
-                "Zone has no more card to remove!",
+                "Zone has no more entity to find!",
                 ("Zone Kind", this.Kind));
         }
 
-        var card = this._cards.Last();
-        this._cards.RemoveAt(this._cards.Count - 1);
-
-        return card;
+        return this._entities.Last();
     }
 
-    public void MoveCardToZone(ICard card, IZone zone)
+    public void RemoveFromTop()
     {
-        var matchedIndex = this._cards.IndexOf(card);
+        if (this._entities.Count <= 0)
+        {
+            throw new KvasirException(
+                "Zone has no more entity to remove!",
+                ("Zone Kind", this.Kind));
+        }
+
+        this._entities.RemoveAt(this._entities.Count - 1);
+    }
+
+    public IEnumerable<TEntity> FindAll()
+    {
+        return this._entities;
+    }
+
+    public void RemoveAll()
+    {
+        this._entities.Clear();
+    }
+
+    public void MoveToZone(TEntity entity, IZone<TEntity> zone)
+    {
+        var matchedIndex = this._entities.IndexOf(entity);
 
         if (matchedIndex < 0)
         {
             throw new KvasirException(
-                "Zone does not contain card to move to different zone!",
+                "Zone does not contain entity to move to different zone!",
                 ("Source Kind", this.Kind),
                 ("Target Kind", zone.Kind),
-                ("Card Name", card.Name),
-                ("Card ID", card.GetHashCode()));
+                ("Entity ID", entity.Id),
+                ("Entity Name", entity.Name));
         }
 
-        this._cards.RemoveAt(matchedIndex);
-        zone.AddCardToTop(card);
+        this._entities.RemoveAt(matchedIndex);
+        zone.AddToTop(entity);
     }
 }

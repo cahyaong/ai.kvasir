@@ -30,6 +30,14 @@ namespace nGratis.AI.Kvasir.Engine;
 
 public class CreaturePart : IPart
 {
+    internal CreaturePart()
+    {
+        this.Power = -42;
+        this.Toughness = -42;
+        this.HasSummoningSickness = false;
+        this.Damage = -42;
+    }
+
     public int Power { get; init; }
 
     public int Toughness { get; init; }

@@ -63,19 +63,19 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         using (new AssertionScope())
         {
             this
-                .Subject.Battlefield.Cards
+                .Subject.Battlefield.FindAll()
                 .Should().Contain(
                     card,
                     $"{this.Identifier} should have card [{card.Name}] in battlefield");
 
             this
-                .Subject.ActivePlayer.Graveyard.Cards
+                .Subject.ActivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
                     card,
                     $"{this.Identifier} should not have card [{card.Name}] in active graveyard");
 
             this
-                .Subject.NonactivePlayer.Graveyard.Cards
+                .Subject.NonactivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
                     card,
                     $"{this.Identifier} should not have card [{card.Name}] in nonactive graveyard");
@@ -89,19 +89,19 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         using (new AssertionScope())
         {
             this
-                .Subject.Battlefield.Cards
+                .Subject.Battlefield.FindAll()
                 .Should().NotContain(
                     card,
                     $"{this.Identifier} should not have card [{card.Name}] in battlefield");
 
             this
-                .Subject.ActivePlayer.Graveyard.Cards
+                .Subject.ActivePlayer.Graveyard.FindAll()
                 .Should().Contain(
                     card,
                     $"{this.Identifier} should have card [{card.Name}] in active graveyard");
 
             this
-                .Subject.NonactivePlayer.Graveyard.Cards
+                .Subject.NonactivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
                     card,
                     $"{this.Identifier} should not have card [{card.Name}] in nonactive graveyard");
@@ -115,19 +115,19 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         using (new AssertionScope())
         {
             this
-                .Subject.Battlefield.Cards
+                .Subject.Battlefield.FindAll()
                 .Should().NotContain(
                     card,
                     $"{this.Identifier} should not have card [{card.Name}] in battlefield");
 
             this
-                .Subject.ActivePlayer.Graveyard.Cards
+                .Subject.ActivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
                     card,
                     $"{this.Identifier} should not have card [{card.Name}] in active graveyard");
 
             this
-                .Subject.NonactivePlayer.Graveyard.Cards
+                .Subject.NonactivePlayer.Graveyard.FindAll()
                 .Should().Contain(
                     card,
                     $"{this.Identifier} should have card [{card.Name}] in nonactive graveyard");

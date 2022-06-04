@@ -32,9 +32,10 @@ using nGratis.AI.Kvasir.Engine;
 
 public static class KvasirAssertions
 {
-    public static ZoneAssertion Must(this IZone zone)
+    public static ZoneAssertion<TEntity> Must<TEntity>(this IZone<TEntity> zone)
+        where TEntity : IDiagnostic
     {
-        return new ZoneAssertion(zone);
+        return new ZoneAssertion<TEntity>(zone);
     }
 
     public static TabletopAssertion Must(this ITabletop tabletop)

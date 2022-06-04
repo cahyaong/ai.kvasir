@@ -32,16 +32,20 @@ using System;
 
 public interface IStrategy
 {
+    // TODO (MUST): Pass in different tabletop view based on related player!
+
     IAttackingDecision DeclareAttacker(ITabletop tabletop);
 
     IBlockingDecision DeclareBlocker(ITabletop tabletop);
+
+    IAction PerformAction(ITabletop tabletop);
 }
 
 public static class Strategy
 {
     public static IStrategy Unknown => UnknownStrategy.Instance;
 
-    public static IStrategy Noop = NoopStrategy.Instance;
+    public static IStrategy Noop => NoopStrategy.Instance;
 }
 
 public class UnknownStrategy : IStrategy
@@ -59,7 +63,12 @@ public class UnknownStrategy : IStrategy
 
     public IBlockingDecision DeclareBlocker(ITabletop _)
     {
-        throw new NotImplementedException("Declaring blocker is not supported!");
+        throw new NotSupportedException("Declaring blocker is not supported!");
+    }
+
+    public IAction PerformAction(ITabletop tabletop)
+    {
+        throw new NotSupportedException("Performing action is not supported!");
     }
 }
 
@@ -79,5 +88,10 @@ public class NoopStrategy : IStrategy
     public IBlockingDecision DeclareBlocker(ITabletop tabletop)
     {
         return BlockingDecision.None;
+    }
+
+    public IAction PerformAction(ITabletop tabletop)
+    {
+        return Action.Passing;
     }
 }

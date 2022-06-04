@@ -85,6 +85,10 @@ public class Judge
                 ("Phase", tabletop.Phase));
         }
 
+        // RX-117.3a — The active player receives priority at the beginning of most steps and phases,...
+
+        tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
+
         return handlePhase(tabletop);
     }
 
@@ -96,6 +100,10 @@ public class Judge
         {
             (tabletop.ActivePlayer, tabletop.NonactivePlayer) = (tabletop.NonactivePlayer, tabletop.ActivePlayer);
         }
+
+        // RX-117.3a — ...No player receives priority during the untap step...
+
+        tabletop.PrioritizedPlayer = Player.None;
 
         // RX-502.3 — Third, the active player determines which permanents they control will untap. Then they untap
         // them all simultaneously.This turn-based action doesn’t use the stack. Normally, all of a player’s
@@ -116,6 +124,49 @@ public class Judge
     private ExecutionResult ExecuteMainPhase(ITabletop tabletop)
     {
         this._logger.LogDiagnostic(tabletop);
+
+        var executionResult = this.ExecutePerformingActionStep(tabletop);
+
+        if (executionResult.HasError)
+        {
+            return executionResult;
+        }
+
+        // RX-117.3d — ...Then the next player in turn order receives priority.
+
+        tabletop.PrioritizedPlayer = tabletop.NonactivePlayer;
+        executionResult = this.ExecutePerformingActionStep(tabletop);
+
+        if (executionResult.HasError)
+        {
+            return executionResult;
+        }
+
+        // RX-117.4 — If all players pass in succession (that is, if all players pass without taking any actions in
+        // between passing), the spell or ability on top of the stack resolves or, if the stack is empty, the phase or
+        // step ends.
+
+        return ExecutionResult.Successful;
+    }
+
+    private ExecutionResult ExecutePerformingActionStep(ITabletop tabletop)
+    {
+        var action = tabletop
+            .PrioritizedPlayer.Strategy
+            .PerformAction(tabletop);
+
+        // RX-117.3d — If a player has priority and chooses not to take any actions, that player passes...
+
+        var hasPassed =
+            tabletop.Stack.IsEmpty &&
+            action.Kind == ActionKind.Passing;
+
+        if (hasPassed)
+        {
+            return ExecutionResult.Successful;
+        }
+
+        // TODO (MUST): Implement action looping for both players!
 
         return ExecutionResult.Successful;
     }
@@ -168,7 +219,7 @@ public class Judge
 
     private ExecutionResult ExecuteDeclaringAttackerStep(ITabletop tabletop)
     {
-        // TODO (COULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
+        // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
 
         var attackingDecision = tabletop
             .ActivePlayer.Strategy
@@ -190,7 +241,7 @@ public class Judge
             return ExecutionResult.Successful;
         }
 
-        // TODO (COULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
+        // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
 
         var blockingDecision = tabletop
             .NonactivePlayer.Strategy
@@ -250,7 +301,7 @@ public class Judge
             .Where(attackingCreature => attackingCreature.Damage >= attackingCreature.Toughness)
             .ForEach(attackingCreature =>
             {
-                tabletop.Battlefield.MoveCardToZone(attackingCreature.Card, tabletop.ActivePlayer.Graveyard);
+                tabletop.Battlefield.MoveToZone(attackingCreature.Card, tabletop.ActivePlayer.Graveyard);
                 attackingCreature.Damage = 0;
             });
 
@@ -261,7 +312,7 @@ public class Judge
             .Where(blockingCreature => blockingCreature.Damage >= blockingCreature.Toughness)
             .ForEach(blockingCreature =>
             {
-                tabletop.Battlefield.MoveCardToZone(blockingCreature.Card, tabletop.NonactivePlayer.Graveyard);
+                tabletop.Battlefield.MoveToZone(blockingCreature.Card, tabletop.NonactivePlayer.Graveyard);
                 blockingCreature.Damage = 0;
             });
 
@@ -271,6 +322,9 @@ public class Judge
     private ExecutionResult ExecuteEndingPhase(ITabletop tabletop)
     {
         this._logger.LogDiagnostic(tabletop);
+
+        // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see RX-514.3).
+        tabletop.PrioritizedPlayer = Player.None;
 
         return ExecutionResult.Successful;
     }

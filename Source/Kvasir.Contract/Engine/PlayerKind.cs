@@ -32,6 +32,8 @@ public enum PlayerKind
 {
     Unknown = 0,
 
+    None,
+
     AI,
     Human,
     Testing

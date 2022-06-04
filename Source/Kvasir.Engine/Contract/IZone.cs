@@ -32,47 +32,70 @@ using System;
 using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
 
-public interface IZone
+public interface IZone<TEntity>
 {
     ZoneKind Kind { get; }
 
     Visibility Visibility { get; }
 
-    IEnumerable<ICard> Cards { get; }
+    int Quantity { get; }
 
-    void AddCardToTop(ICard card);
+    bool IsEmpty => this.Quantity <= 0;
 
-    ICard RemoveCardFromTop();
+    void AddToTop(TEntity entity);
 
-    void MoveCardToZone(ICard card, IZone zone);
+    TEntity FindFromTop();
+
+    void RemoveFromTop();
+
+    IEnumerable<TEntity> FindAll();
+
+    void RemoveAll();
+
+    void MoveToZone(TEntity entity, IZone<TEntity> zone);
 }
 
-internal class UnknownZone : IZone
+internal class UnknownZone<TEntity> : IZone<TEntity>
 {
     private UnknownZone()
     {
     }
 
-    internal static IZone Instance { get; } = new UnknownZone();
+    internal static IZone<TEntity> Instance { get; } = new UnknownZone<TEntity>();
 
     public ZoneKind Kind => ZoneKind.Unknown;
 
     public Visibility Visibility => Visibility.Unknown;
 
-    public IEnumerable<ICard> Cards => Array.Empty<Card>();
+    public int Quantity => -42;
 
-    public void AddCardToTop(ICard card)
+    public void AddToTop(TEntity _)
     {
-        throw new NotSupportedException("Adding card to top is not allowed!");
+        throw new NotSupportedException("Adding entity to top is not allowed!");
     }
 
-    public ICard RemoveCardFromTop()
+    public TEntity FindFromTop()
     {
-        throw new NotSupportedException("Removing card from top is not allowed!");
+        throw new NotSupportedException("Finding entity from top is not allowed!");
     }
 
-    public void MoveCardToZone(ICard card, IZone zone)
+    public void RemoveFromTop()
     {
-        throw new NotSupportedException("Moving card to zone is not allowed!");
+        throw new NotSupportedException("Removing entity from top is not allowed!");
+    }
+
+    public IEnumerable<TEntity> FindAll()
+    {
+        throw new NotSupportedException("Finding all entities is not allowed!");
+    }
+
+    public void RemoveAll()
+    {
+        throw new NotImplementedException("Removing all entities is not allowed!");
+    }
+
+    public void MoveToZone(TEntity _, IZone<TEntity> __)
+    {
+        throw new NotSupportedException("Moving entity to zone is not allowed!");
     }
 }
