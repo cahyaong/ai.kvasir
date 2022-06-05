@@ -28,6 +28,7 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -103,7 +104,7 @@ public class Zone<TEntity> : IZone<TEntity>
         this._entities.Clear();
     }
 
-    public void MoveToZone(TEntity entity, IZone<TEntity> zone)
+    public void MoveToZone<TOtherEntity>(TEntity entity, IZone<TOtherEntity> zone, Func<TEntity, TOtherEntity> convert)
     {
         var matchedIndex = this._entities.IndexOf(entity);
 
@@ -117,7 +118,7 @@ public class Zone<TEntity> : IZone<TEntity>
                 ("Entity Name", entity.Name));
         }
 
+        zone.AddToTop(convert(entity));
         this._entities.RemoveAt(matchedIndex);
-        zone.AddToTop(entity);
     }
 }

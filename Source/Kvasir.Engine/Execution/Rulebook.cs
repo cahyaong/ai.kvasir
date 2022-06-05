@@ -56,21 +56,21 @@ public static class Rulebook
         var filteredCreatures = tabletop
             .Battlefield
             .FindAll()
-            .Where(card => card.Kind == CardKind.Creature)
-            .Select(card => card.ToProxyCreature());
+            .Where(permanent => permanent.Card.Kind == CardKind.Creature)
+            .Select(permanent => permanent.ToProxyCreature());
 
         filteredCreatures = creatureModifier switch
         {
             CreatureModifier.None => filteredCreatures,
 
             CreatureModifier.CanAttack => filteredCreatures
-                .Where(creature => creature.Card.Controller == player)
-                .Where(creature => !creature.HasSummoningSickness)
-                .Where(creature => !creature.IsTapped),
+                .Where(creature => creature.Permanent.Controller == player)
+                .Where(creature => !creature.Permanent.IsTapped)
+                .Where(creature => !creature.HasSummoningSickness),
 
             CreatureModifier.CanBlock => filteredCreatures
-                .Where(creature => creature.Card.Controller == player)
-                .Where(creature => !creature.IsTapped),
+                .Where(creature => creature.Permanent.Controller == player)
+                .Where(creature => !creature.Permanent.IsTapped),
 
             _ => Enumerable.Empty<Creature>()
         };
@@ -88,7 +88,7 @@ public static class Rulebook
         var reasons = new List<ValidationReason>();
 
         var attackingCreatures = attackingDecision
-            .AttackingCards
+            .AttackingPermanents
             .Select(card => card.ToProxyCreature())
             .ToImmutableArray();
 
@@ -99,7 +99,7 @@ public static class Rulebook
                 reasons.Add(ValidationReason.Create("Attacking creature has summoning sickness!", attackingCreature));
             }
 
-            if (attackingCreature.IsTapped)
+            if (attackingCreature.Permanent.IsTapped)
             {
                 reasons.Add(ValidationReason.Create("Attacking creature is tapped!", attackingCreature));
             }
@@ -114,7 +114,7 @@ public static class Rulebook
 
         blockingDecision
             .Combats
-            .SelectMany(combat => combat.BlockingCards)
+            .SelectMany(combat => combat.BlockingPermanents)
             .GroupBy(card => card.Id)
             .Where(grouping => grouping.Count() > 1)
             .ForEach(grouping => reasons.Add(ValidationReason.Create(

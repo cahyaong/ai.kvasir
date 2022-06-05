@@ -38,7 +38,7 @@ public class PassingAction : Action
 
     public override ActionKind Kind => ActionKind.Passing;
 
-    public override bool IsLegal(ITabletop _)
+    public override bool CanResolve(ITabletop _)
     {
         return true;
     }

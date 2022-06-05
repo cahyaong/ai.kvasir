@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PermanentPart.cs" company="nGratis">
+// <copyright file="ICost.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,12 +23,20 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 28, 2022 7:03:26 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 4, 2022 6:30:05 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-public class PermanentPart : IPart
+public interface ICost
 {
-    public bool IsTapped { get; set; }
+}
+
+public class UnknownCost : ICost
+{
+    private UnknownCost()
+    {
+    }
+
+    internal static UnknownCost Instance { get; } = new();
 }

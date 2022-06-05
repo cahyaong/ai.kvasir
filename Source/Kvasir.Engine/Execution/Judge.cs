@@ -113,8 +113,8 @@ public class Judge
 
         Rulebook
             .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
-            .Where(creature => creature.Card.Controller == tabletop.ActivePlayer)
-            .ForEach(creature => creature.IsTapped = false);
+            .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
+            .ForEach(creature => creature.Permanent.IsTapped = false);
 
         this._logger.LogDiagnostic(tabletop);
 
@@ -191,8 +191,8 @@ public class Judge
         // attacker isn’t a cost; attacking simply causes creatures to become tapped.
 
         tabletop
-            .AttackingDecision.AttackingCards
-            .ForEach(attacker => attacker.ToProxyCreature().IsTapped = true);
+            .AttackingDecision.AttackingPermanents
+            .ForEach(attacker => attacker.IsTapped = true);
 
         // RX-508.8 — If no creatures are declared as attackers or put onto the battlefield attacking, skip the declare
         // blockers and combat damage steps.
@@ -263,19 +263,19 @@ public class Judge
             return ExecutionResult.Successful;
         }
 
-        var combatByAttackerLookup = tabletop
+        var combatByAttackingPermanentLookup = tabletop
             .BlockingDecision.Combats
-            .Where(combat => tabletop.AttackingDecision.AttackingCards.Contains(combat.AttackingCard))
-            .ToDictionary(combat => combat.AttackingCard);
+            .Where(combat => tabletop.AttackingDecision.AttackingPermanents.Contains(combat.AttackingPermanent))
+            .ToDictionary(combat => combat.AttackingPermanent);
 
-        foreach (var attacker in tabletop.AttackingDecision.AttackingCards)
+        foreach (var attackingPermanent in tabletop.AttackingDecision.AttackingPermanents)
         {
-            var attackingCreature = attacker.ToProxyCreature();
+            var attackingCreature = attackingPermanent.ToProxyCreature();
 
-            if (combatByAttackerLookup.TryGetValue(attackingCreature.Card, out var matchedCombat))
+            if (combatByAttackingPermanentLookup.TryGetValue(attackingPermanent, out var matchedCombat))
             {
                 var blockingCreatures = matchedCombat
-                    .BlockingCards
+                    .BlockingPermanents
                     .Select(blocker => blocker.ToProxyCreature())
                     .ToImmutableArray();
 
@@ -295,24 +295,32 @@ public class Judge
             }
         }
 
-        combatByAttackerLookup
+        combatByAttackingPermanentLookup
             .Values
-            .Select(combat => combat.AttackingCard.ToProxyCreature())
+            .Select(combat => combat.AttackingPermanent.ToProxyCreature())
             .Where(attackingCreature => attackingCreature.Damage >= attackingCreature.Toughness)
             .ForEach(attackingCreature =>
             {
-                tabletop.Battlefield.MoveToZone(attackingCreature.Card, tabletop.ActivePlayer.Graveyard);
+                tabletop.Battlefield.MoveToZone(
+                    attackingCreature.Permanent,
+                    tabletop.ActivePlayer.Graveyard,
+                    permanent => permanent.Card);
+
                 attackingCreature.Damage = 0;
             });
 
-        combatByAttackerLookup
+        combatByAttackingPermanentLookup
             .Values
-            .SelectMany(combat => combat.BlockingCards)
+            .SelectMany(combat => combat.BlockingPermanents)
             .Select(blocker => blocker.ToProxyCreature())
             .Where(blockingCreature => blockingCreature.Damage >= blockingCreature.Toughness)
             .ForEach(blockingCreature =>
             {
-                tabletop.Battlefield.MoveToZone(blockingCreature.Card, tabletop.NonactivePlayer.Graveyard);
+                tabletop.Battlefield.MoveToZone(
+                    blockingCreature.Permanent,
+                    tabletop.NonactivePlayer.Graveyard,
+                    permanent => permanent.Card);
+
                 blockingCreature.Damage = 0;
             });
 

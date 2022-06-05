@@ -26,7 +26,7 @@
 // <creation_timestamp>Wednesday, December 8, 2021 6:05:38 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.AcceptanceTest.Definition;
+namespace nGratis.AI.Kvasir.AcceptanceTest;
 
 using System;
 using System.Collections.Generic;
@@ -56,8 +56,8 @@ public sealed class JudgeDefinition
     private Judge _judge;
     private ITabletop _tabletop;
 
-    private ICard _attacker;
-    private List<ICard> _blockers;
+    private IPermanent _attackingPermanent;
+    private List<IPermanent> _blockingPermanents;
 
     private Mock<IStrategy> _mockAttackingStrategy;
     private Mock<IStrategy> _mockBlockingStrategy;
@@ -81,23 +81,31 @@ public sealed class JudgeDefinition
 
         this._judge = new Judge(mockLogger.Object);
 
-        this._attacker = null;
-        this._blockers = new List<ICard>();
+        this._attackingPermanent = Permanent.Unknown;
+        this._blockingPermanents = new List<IPermanent>();
     }
 
     [Given(@"the attacker has power (\d+) and toughness (\d+)")]
     public void GivenAttackerHasPowerAndToughness(int power, int toughness)
     {
-        this._attacker = this._tabletop.CreateActiveCreature("[_MOCK_ATTACKER_]", power, toughness);
+        this._attackingPermanent = this
+            ._tabletop
+            .CreateActiveCreaturePermanent("[_MOCK_ATTACKER_]", power, toughness);
+
+        this._tabletop.Battlefield.AddToTop(this._attackingPermanent);
     }
 
     [Given(@"the blocker has power (\d+) and toughness (\d+)")]
     public void GivenBlockerHasPowerAndToughness(int power, int toughness)
     {
         var index = 0;
-        var blocker = this._tabletop.CreateNonactiveCreature($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
 
-        this._blockers.Insert(index, blocker);
+        var blockingPermanent = this
+            ._tabletop
+            .CreateNonactiveCreaturePermanent($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
+
+        this._blockingPermanents.Insert(index, blockingPermanent);
+        this._tabletop.Battlefield.AddToTop(blockingPermanent);
     }
 
     [Given(@"the (\w+) blocker has power (\d+) and toughness (\d+)")]
@@ -111,19 +119,21 @@ public sealed class JudgeDefinition
             .Ensure(index, nameof(index))
             .Is.GreaterThanOrEqualTo(0);
 
-        var blocker = this._tabletop.CreateNonactiveCreature($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
+        var blockingPermanent = this
+            ._tabletop
+            .CreateNonactiveCreaturePermanent($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
 
-        this._blockers.Insert(index, blocker);
+        this._blockingPermanents.Insert(index, blockingPermanent);
     }
 
     [When(@"the combat phase is executed")]
     public void WhenCombatPhaseIsExecuted()
     {
-        this._mockAttackingStrategy.WithAttackingDecision(this._attacker);
+        this._mockAttackingStrategy.WithAttackingDecision(this._attackingPermanent);
 
-        if (this._blockers.Any())
+        if (this._blockingPermanents.Any())
         {
-            this._mockBlockingStrategy.WithBlockingDecision(this._attacker, this._blockers);
+            this._mockBlockingStrategy.WithBlockingDecision(this._attackingPermanent, this._blockingPermanents);
         }
 
         this._judge
@@ -165,12 +175,12 @@ public sealed class JudgeDefinition
 
         using (new AssertionScope())
         {
-            foreach (var creature in this.FindCreatures())
+            foreach (var permanent in this.FindCreaturePermanents())
             {
                 if (zoneKind == ZoneKind.Battlefield)
                 {
                     this._tabletop
-                        .Must().HaveCardInBattlefield(creature);
+                        .Must().HavePermanentInBattlefield(permanent);
                 }
                 else
                 {
@@ -179,9 +189,9 @@ public sealed class JudgeDefinition
                         ("Zone Kind", zoneKind));
                 }
 
-                creature
+                permanent
                     .FindPart<CreaturePart>().Damage
-                    .Should().Be(damage, $"because creature [{creature.Name}] should have correct damage");
+                    .Should().Be(damage, $"because creature [{permanent.Name}] should have correct damage");
             }
         }
     }
@@ -198,16 +208,16 @@ public sealed class JudgeDefinition
             if (zoneKind == ZoneKind.Battlefield)
             {
                 this._tabletop
-                    .Must().HaveCardInBattlefield(this._attacker);
+                    .Must().HavePermanentInBattlefield(this._attackingPermanent);
             }
             else if (zoneKind == ZoneKind.Graveyard)
             {
                 this._tabletop
-                    .Must().HaveCardInActiveGraveyard(this._attacker);
+                    .Must().HaveCardInActiveGraveyard(this._attackingPermanent);
             }
 
-            this._attacker.FindPart<CreaturePart>().Damage
-                .Should().Be(damage, $"because attacker [{this._attacker.Name}] should have correct damage");
+            this._attackingPermanent.FindPart<CreaturePart>().Damage
+                .Should().Be(damage, $"because attacker [{this._attackingPermanent.Name}] should have correct damage");
         }
     }
 
@@ -218,14 +228,14 @@ public sealed class JudgeDefinition
             .Require(zoneKind, nameof(zoneKind))
             .Is.Not.Default();
 
-        var blocker = this._blockers[0];
+        var blocker = this._blockingPermanents[0];
 
         using (new AssertionScope())
         {
             if (zoneKind == ZoneKind.Battlefield)
             {
                 this._tabletop
-                    .Must().HaveCardInBattlefield(blocker);
+                    .Must().HavePermanentInBattlefield(blocker);
             }
             else if (zoneKind == ZoneKind.Graveyard)
             {
@@ -258,8 +268,8 @@ public sealed class JudgeDefinition
         };
     }
 
-    private IEnumerable<ICard> FindCreatures() => Enumerable
-        .Empty<ICard>()
-        .Append(this._attacker)
-        .Append(this._blockers);
+    private IEnumerable<IPermanent> FindCreaturePermanents() => Enumerable
+        .Empty<IPermanent>()
+        .Append(this._attackingPermanent)
+        .Append(this._blockingPermanents);
 }

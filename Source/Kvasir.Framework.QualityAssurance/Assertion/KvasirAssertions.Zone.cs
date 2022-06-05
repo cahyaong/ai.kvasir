@@ -184,7 +184,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
     {
         Guard
             .Require(typeof(TEntity), nameof(TEntity))
-            .Is.EqualTo(typeof(ICard));
+            .Is.EqualTo(typeof(IDiagnostic));
 
         Guard
             .Require(name, nameof(name))
@@ -193,7 +193,8 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
         var actualQuantity = this
             .Subject
             .FindAll()
-            .Count(card => card.Name == name);
+            .OfType<IDiagnostic>()
+            .Count(diagnostic => diagnostic.Name == name);
 
         Execute
             .Assertion

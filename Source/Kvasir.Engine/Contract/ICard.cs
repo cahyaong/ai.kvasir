@@ -23,12 +23,13 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, April 28, 2022 4:03:54 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 4, 2022 6:27:26 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
+using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
@@ -36,15 +37,17 @@ public interface ICard : IDiagnostic
 {
     CardKind Kind { get; }
 
-    IPlayer Owner { get; set; }
+    CardSuperKind SuperKind { get; }
 
-    IPlayer Controller { get; set; }
+    IReadOnlyCollection<CardSubKind> SubKinds { get; }
 
-    void AddParts(params IPart[] parts);
+    ICost Cost { get; }
 
-    void RemoveParts();
+    int Power { get; }
 
-    TPart FindPart<TPart>() where TPart : IPart;
+    int Toughness { get; }
+
+    IReadOnlyCollection<IAbility> Abilities { get; }
 }
 
 public class UnknownCard : ICard
@@ -53,7 +56,7 @@ public class UnknownCard : ICard
     {
     }
 
-    internal static ICard Instance { get; } = new UnknownCard();
+    internal static UnknownCard Instance { get; } = new();
 
     public int Id => -42;
 
@@ -61,29 +64,15 @@ public class UnknownCard : ICard
 
     public CardKind Kind => CardKind.Unknown;
 
-    public IPlayer Owner
-    {
-        get => Player.Unknown;
-        set => throw new NotSupportedException("Setting owner is not allowed!");
-    }
+    public CardSuperKind SuperKind => CardSuperKind.Unknown;
 
-    public IPlayer Controller
-    {
-        get => Player.Unknown;
-        set => throw new NotSupportedException("Setting controller is not allowed!");
-    }
+    public IReadOnlyCollection<CardSubKind> SubKinds => Array.Empty<CardSubKind>();
 
-    public void AddParts(params IPart[] parts)
-    {
-    }
+    public ICost Cost => Engine.Cost.Unknown;
 
-    public void RemoveParts()
-    {
-    }
+    public int Power => -42;
 
-    public TPart FindPart<TPart>()
-        where TPart : IPart
-    {
-        throw new NotSupportedException("Finding part is not allowed!");
-    }
+    public int Toughness => -42;
+
+    public IReadOnlyCollection<IAbility> Abilities => Array.Empty<IAbility>();
 }

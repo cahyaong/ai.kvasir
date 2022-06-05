@@ -41,7 +41,10 @@ public class StubDeck : Deck
             .Entries
             .SelectMany(definedEntry => Enumerable
                 .Range(0, definedDeck[definedEntry])
-                .Select(_ => new StubCard(definedEntry.Name)))
+                .Select(_ => new Card
+                {
+                    Name = definedEntry.Name
+                }))
             .ToImmutableArray();
     }
 }

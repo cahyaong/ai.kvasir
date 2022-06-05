@@ -32,7 +32,7 @@ using System;
 
 public interface ITabletop
 {
-    IZone<ICard> Battlefield { get; }
+    IZone<IPermanent> Battlefield { get; }
 
     IZone<IAction> Stack { get; }
 
@@ -57,7 +57,13 @@ public interface ITabletop
 
 public class UnknownTabletop : ITabletop
 {
-    public IZone<ICard> Battlefield => Zone<ICard>.Unknown;
+    private UnknownTabletop()
+    {
+    }
+
+    internal static UnknownTabletop Instance { get; } = new();
+
+    public IZone<IPermanent> Battlefield => Zone<IPermanent>.Unknown;
 
     public IZone<IAction> Stack => Zone<IAction>.Unknown;
 

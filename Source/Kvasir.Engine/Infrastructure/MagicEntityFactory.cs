@@ -28,14 +28,12 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;
-using BuildParts = System.Func<Contract.DefinedBlob.Card, System.Collections.Generic.IEnumerable<IPart>>;
 
 public class MagicEntityFactory : IMagicEntityFactory
 {
@@ -60,13 +58,6 @@ public class MagicEntityFactory : IMagicEntityFactory
                 .WithCardAndQuantity("Border Guard", "POR", 9, 4)
                 .WithCardAndQuantity("Plains", "POR", 196, 8)
                 .Build()
-        };
-
-    private static readonly IReadOnlyDictionary<CardKind, BuildParts> PartsBuilderByCardKindLookup =
-        new Dictionary<CardKind, BuildParts>
-        {
-            [CardKind.Land] = MagicEntityFactory.CreateLandParts,
-            [CardKind.Creature] = MagicEntityFactory.CreateCreatureParts
         };
 
     private readonly IProcessedMagicRepository _processedRepository;
@@ -96,28 +87,7 @@ public class MagicEntityFactory : IMagicEntityFactory
         };
     }
 
-    public ICard CreateCard(DefinedBlob.Card definedCard)
-    {
-        var card = new Card
-        {
-            Kind = CardKind.Land,
-            Name = definedCard.Name
-        };
-
-        if (!MagicEntityFactory.PartsBuilderByCardKindLookup.TryGetValue(definedCard.Kind, out var buildParts))
-        {
-            throw new KvasirException(
-                "No parts builder is defined for given card kind! " +
-                ("Card Kind", definedCard.Kind));
-        }
-
-        var parts = buildParts(definedCard).ToArray();
-        card.AddParts(parts);
-
-        return card;
-    }
-
-    private Deck CreateDeck(DefinedBlob.Deck definedDeck)
+    private IDeck CreateDeck(DefinedBlob.Deck definedDeck)
     {
         var cards = definedDeck
             .Entries
@@ -140,19 +110,16 @@ public class MagicEntityFactory : IMagicEntityFactory
         };
     }
 
-    private static IEnumerable<IPart> CreateLandParts(DefinedBlob.Card definedCard)
+    private ICard CreateCard(DefinedBlob.Card definedCard)
     {
-        return Array.Empty<IPart>();
-    }
-
-    private static IEnumerable<IPart> CreateCreatureParts(DefinedBlob.Card definedCard)
-    {
-        yield return new CreaturePart
+        return new Card
         {
+            Name = definedCard.Name,
+            Kind = definedCard.Kind,
+            SuperKind = definedCard.SuperKind,
+            SubKinds = definedCard.SubKinds,
             Power = definedCard.Power,
-            Toughness = definedCard.Toughness,
-            HasSummoningSickness = false,
-            Damage = 0
+            Toughness = definedCard.Toughness
         };
     }
 }

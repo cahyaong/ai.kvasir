@@ -43,7 +43,7 @@ public class TestingBootstrapper
 
     public TestingBootstrapper WithFormatter()
     {
-        Formatter.AddFormatter(new CardFormatter());
+        Formatter.AddFormatter(new PermanentFormatter());
         Formatter.AddFormatter(new PlayerFormatter());
 
         return this;

@@ -33,9 +33,9 @@ using System.Collections.Generic;
 
 public interface ICombat
 {
-    ICard AttackingCard { get; }
+    IPermanent AttackingPermanent { get; }
 
-    IReadOnlyCollection<ICard> BlockingCards { get; }
+    IReadOnlyCollection<IPermanent> BlockingPermanents { get; }
 }
 
 public class UnknownCombat : ICombat
@@ -44,9 +44,9 @@ public class UnknownCombat : ICombat
     {
     }
 
-    internal static ICombat Instance { get; } = new UnknownCombat();
+    internal static UnknownCombat Instance { get; } = new();
 
-    public ICard AttackingCard => Card.Unknown;
+    public IPermanent AttackingPermanent => Permanent.Unknown;
 
-    public IReadOnlyCollection<ICard> BlockingCards => Array.Empty<Card>();
+    public IReadOnlyCollection<IPermanent> BlockingPermanents => Array.Empty<Permanent>();
 }

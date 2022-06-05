@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IAttackingDecision.cs" company="nGratis">
+// <copyright file="Cost.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,26 +23,12 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, April 16, 2022 5:34:49 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 4, 2022 6:43:33 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
-using System.Collections.Generic;
-
-public interface IAttackingDecision
+public class Cost : ICost
 {
-    IReadOnlyCollection<IPermanent> AttackingPermanents { get; }
-}
-
-public class UnknownAttackingDecision : IAttackingDecision
-{
-    private UnknownAttackingDecision()
-    {
-    }
-
-    internal static UnknownAttackingDecision Instance { get; } = new();
-
-    public IReadOnlyCollection<IPermanent> AttackingPermanents => Array.Empty<Permanent>();
+    public static ICost Unknown => UnknownCost.Instance;
 }

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StubCard.cs" company="nGratis">
+// <copyright file="IAbility.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,23 +23,11 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, May 1, 2021 7:37:25 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 4, 2022 6:31:01 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+namespace nGratis.AI.Kvasir.Engine;
 
-using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine;
-
-public class StubCard : Card
+public interface IAbility
 {
-    public StubCard(int id)
-    {
-    }
-
-    public StubCard(string name)
-    {
-        this.Kind = CardKind.Stub;
-        this.Name = name;
-    }
 }

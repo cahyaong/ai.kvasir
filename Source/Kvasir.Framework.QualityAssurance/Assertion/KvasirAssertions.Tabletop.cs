@@ -58,79 +58,79 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInBattlefield(ICard card)
+    public AndConstraint<TabletopAssertion> HavePermanentInBattlefield(IPermanent permanent)
     {
         using (new AssertionScope())
         {
             this
                 .Subject.Battlefield.FindAll()
                 .Should().Contain(
-                    card,
-                    $"{this.Identifier} should have card [{card.Name}] in battlefield");
+                    permanent,
+                    $"{this.Identifier} should have card [{permanent.Name}] in battlefield");
 
             this
                 .Subject.ActivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
-                    card,
-                    $"{this.Identifier} should not have card [{card.Name}] in active graveyard");
+                    permanent.Card,
+                    $"{this.Identifier} should not have card [{permanent.Name}] in active graveyard");
 
             this
                 .Subject.NonactivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
-                    card,
-                    $"{this.Identifier} should not have card [{card.Name}] in nonactive graveyard");
+                    permanent.Card,
+                    $"{this.Identifier} should not have card [{permanent.Name}] in nonactive graveyard");
         }
 
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInActiveGraveyard(ICard card)
+    public AndConstraint<TabletopAssertion> HaveCardInActiveGraveyard(IPermanent permanent)
     {
         using (new AssertionScope())
         {
             this
                 .Subject.Battlefield.FindAll()
                 .Should().NotContain(
-                    card,
-                    $"{this.Identifier} should not have card [{card.Name}] in battlefield");
+                    permanent,
+                    $"{this.Identifier} should not have card [{permanent.Name}] in battlefield");
 
             this
                 .Subject.ActivePlayer.Graveyard.FindAll()
                 .Should().Contain(
-                    card,
-                    $"{this.Identifier} should have card [{card.Name}] in active graveyard");
+                    permanent.Card,
+                    $"{this.Identifier} should have card [{permanent.Name}] in active graveyard");
 
             this
                 .Subject.NonactivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
-                    card,
-                    $"{this.Identifier} should not have card [{card.Name}] in nonactive graveyard");
+                    permanent.Card,
+                    $"{this.Identifier} should not have card [{permanent.Name}] in nonactive graveyard");
         }
 
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(ICard card)
+    public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(IPermanent permanent)
     {
         using (new AssertionScope())
         {
             this
                 .Subject.Battlefield.FindAll()
                 .Should().NotContain(
-                    card,
-                    $"{this.Identifier} should not have card [{card.Name}] in battlefield");
+                    permanent,
+                    $"{this.Identifier} should not have card [{permanent.Name}] in battlefield");
 
             this
                 .Subject.ActivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
-                    card,
-                    $"{this.Identifier} should not have card [{card.Name}] in active graveyard");
+                    permanent.Card,
+                    $"{this.Identifier} should not have card [{permanent.Name}] in active graveyard");
 
             this
                 .Subject.NonactivePlayer.Graveyard.FindAll()
                 .Should().Contain(
-                    card,
-                    $"{this.Identifier} should have card [{card.Name}] in nonactive graveyard");
+                    permanent.Card,
+                    $"{this.Identifier} should have card [{permanent.Name}] in nonactive graveyard");
         }
 
         return new AndConstraint<TabletopAssertion>(this);

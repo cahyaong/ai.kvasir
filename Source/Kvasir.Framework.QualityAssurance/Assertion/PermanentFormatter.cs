@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CardFormatter.cs" company="nGratis">
+// <copyright file="PermanentFormatter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -28,30 +28,30 @@
 
 namespace nGratis.AI.Kvasir.Framework;
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions.Formatting;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 
-public class CardFormatter : IValueFormatter
+public class PermanentFormatter : IValueFormatter
 {
-    public bool CanHandle(object value) => value is Card or IEnumerable<Card>;
+    public bool CanHandle(object value) => value is Permanent or IEnumerable<Permanent>;
 
     public void Format(object value, FormattedObjectGraph graph, FormattingContext context, FormatChild child)
     {
         var text = value switch
         {
-            Card card => CardFormatter.Format(card),
-            IEnumerable<Card> cards => $"[{string.Join(", ", cards.Select(CardFormatter.Format))}]",
+            Permanent permanent => PermanentFormatter.Format(permanent),
+            IEnumerable<Permanent> permanents => $"[{permanents.ToPrettifiedText(PermanentFormatter.Format)}]",
             _ => DefinedText.Unsupported
         };
 
         graph.AddFragment(text);
     }
 
-    private static string Format(Card card)
+    private static string Format(Permanent permanent)
     {
-        return card?.Name ?? DefinedText.Unknown;
+        return permanent?.Name ?? DefinedText.Unknown;
     }
 }

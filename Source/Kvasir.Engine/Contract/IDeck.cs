@@ -42,7 +42,7 @@ public class UnknownDeck : IDeck
     {
     }
 
-    internal static IDeck Instance { get; } = new UnknownDeck();
+    internal static UnknownDeck Instance { get; } = new();
 
-    public IReadOnlyCollection<ICard> Cards => Array.Empty<Card>();
+    public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
 }

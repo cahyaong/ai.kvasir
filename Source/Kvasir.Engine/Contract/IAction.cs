@@ -36,7 +36,7 @@ public interface IAction : IDiagnostic
 
     IPlayer Owner { get; }
 
-    bool IsLegal(ITabletop tabletop);
+    bool CanResolve(ITabletop tabletop);
 
     void Resolve(ITabletop tabletop);
 }
@@ -47,7 +47,7 @@ internal class UnknownAction : IAction
     {
     }
 
-    public static IAction Instance { get; } = new UnknownAction();
+    public static UnknownAction Instance { get; } = new();
 
     public int Id => -42;
 
@@ -57,7 +57,7 @@ internal class UnknownAction : IAction
 
     public IPlayer Owner => Player.Unknown;
 
-    public bool IsLegal(ITabletop tabletop)
+    public bool CanResolve(ITabletop tabletop)
     {
         return false;
     }

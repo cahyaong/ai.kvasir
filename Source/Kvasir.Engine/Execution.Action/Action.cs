@@ -49,7 +49,7 @@ public abstract class Action : IAction
 
     public IPlayer Owner { get; init; }
 
-    public abstract bool IsLegal(ITabletop tabletop);
+    public abstract bool CanResolve(ITabletop tabletop);
 
     public abstract void Resolve(ITabletop tabletop);
 }

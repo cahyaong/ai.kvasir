@@ -34,7 +34,7 @@ public class Tabletop : ITabletop
 {
     public Tabletop()
     {
-        this.Battlefield = new Zone<ICard>
+        this.Battlefield = new Zone<IPermanent>
         {
             Kind = ZoneKind.Battlefield,
             Visibility = Visibility.Public
@@ -63,9 +63,9 @@ public class Tabletop : ITabletop
         this.BlockingDecision = Engine.BlockingDecision.Unknown;
     }
 
-    public static Tabletop Unknown { get; } = new();
+    public static ITabletop Unknown => UnknownTabletop.Instance;
 
-    public IZone<ICard> Battlefield { get; }
+    public IZone<IPermanent> Battlefield { get; }
 
     public IZone<IAction> Stack { get; }
 

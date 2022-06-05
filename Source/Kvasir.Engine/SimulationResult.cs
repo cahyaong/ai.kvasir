@@ -34,10 +34,10 @@ public class SimulationResult : ExecutionResult
 {
     public SimulationResult()
     {
-        this.Tabletop = Tabletop.Unknown;
+        this.Tabletop = Engine.Tabletop.Unknown;
     }
 
     public static SimulationResult Unknown { get; } = new();
 
-    public Tabletop Tabletop { get; init; }
+    public ITabletop Tabletop { get; init; }
 }

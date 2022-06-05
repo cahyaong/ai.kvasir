@@ -33,12 +33,14 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class CardExtensions
 {
-    public static Creature ToProxyCreature(this ICard card)
+    public static Creature ToProxyCreature(this IPermanent permanent)
     {
+        // TODO (COULD): Add `NameOf<...>` helper class to create field text with full namespace!
+
         Guard
-            .Require(card.Kind, $"{nameof(card)}.{nameof(ICard.Kind)}")
+            .Require(permanent.Card.Kind, $"{nameof(permanent)}.{nameof(IPermanent.Card.Kind)}")
             .Is.EqualTo(CardKind.Creature);
 
-        return new Creature(card);
+        return new Creature(permanent);
     }
 }

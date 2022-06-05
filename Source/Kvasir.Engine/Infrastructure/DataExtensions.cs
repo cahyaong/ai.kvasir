@@ -28,9 +28,13 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+
+using BuildParts = System.Func<ICard, System.Collections.Generic.IEnumerable<IPart>>;
 
 public static class DataExtensions
 {
@@ -43,6 +47,13 @@ public static class DataExtensions
             [Phase.Combat] = Phase.PostcombatMain,
             [Phase.PostcombatMain] = Phase.Ending,
             [Phase.Ending] = Phase.Beginning
+        };
+
+    private static readonly IReadOnlyDictionary<CardKind, BuildParts> PartsBuilderByCardKindLookup =
+        new Dictionary<CardKind, BuildParts>
+        {
+            [CardKind.Land] = DataExtensions.CreateLandParts,
+            [CardKind.Creature] = DataExtensions.CreateCreatureParts
         };
 
     public static Phase Next(this Phase currentPhase)
@@ -59,5 +70,42 @@ public static class DataExtensions
         }
 
         return nextPhase;
+    }
+
+    public static IPermanent AsPermanent(this ICard card)
+    {
+        var permanent = new Permanent
+        {
+            Card = card,
+            IsTapped = false
+        };
+
+        if (!DataExtensions.PartsBuilderByCardKindLookup.TryGetValue(card.Kind, out var buildParts))
+        {
+            throw new KvasirException(
+                "No parts builder is defined for given card kind! " +
+                ("Card Kind", card.Kind));
+        }
+
+        var parts = buildParts(card).ToArray();
+        permanent.AddPart(parts);
+
+        return permanent;
+    }
+
+    private static IEnumerable<IPart> CreateLandParts(ICard _)
+    {
+        return Array.Empty<IPart>();
+    }
+
+    private static IEnumerable<IPart> CreateCreatureParts(ICard card)
+    {
+        yield return new CreaturePart
+        {
+            Power = card.Power,
+            Toughness = card.Toughness,
+            HasSummoningSickness = false,
+            Damage = 0
+        };
     }
 }

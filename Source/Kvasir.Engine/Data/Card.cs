@@ -23,32 +23,30 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, 24 January 2019 9:57:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 4, 2022 6:27:52 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
 [DebuggerDisplay("<Card> {this.Name} ({this.Id})")]
 public class Card : ICard
 {
-    private readonly IDictionary<Type, IPart> _partByTypeLookup;
-
-    internal Card()
+    public Card()
     {
-        this._partByTypeLookup = new Dictionary<Type, IPart>();
-
         this.Name = DefinedText.Unknown;
         this.Kind = CardKind.Unknown;
-        this.Owner = Player.Unknown;
-        this.Controller = Player.Unknown;
+        this.SuperKind = CardSuperKind.Unknown;
+        this.SubKinds = Array.Empty<CardSubKind>();
+        this.Cost = UnknownCost.Instance;
+        this.Power = -42;
+        this.Toughness = -42;
+        this.Abilities = Array.Empty<IAbility>();
     }
 
     public static ICard Unknown => UnknownCard.Instance;
@@ -59,46 +57,15 @@ public class Card : ICard
 
     public CardKind Kind { get; init; }
 
-    public IPlayer Owner { get; set; }
+    public CardSuperKind SuperKind { get; init; }
 
-    public IPlayer Controller { get; set; }
+    public IReadOnlyCollection<CardSubKind> SubKinds { get; init; }
 
-    public void AddParts(params IPart[] parts)
-    {
-        var partByTypeLookup = parts.ToImmutableDictionary(part => part.GetType());
+    public ICost Cost { get; init; }
 
-        var existingTypes = this
-            ._partByTypeLookup.Keys
-            .Intersect(partByTypeLookup.Keys)
-            .ToImmutableArray();
+    public int Power { get; init; }
 
-        if (existingTypes.Any())
-        {
-            throw new KvasirException(
-                "Component with same type must be defined once!",
-                ("Existing Type(s)", existingTypes.ToPrettifiedText(type => type.Name)));
-        }
+    public int Toughness { get; init; }
 
-        partByTypeLookup.ForEach(this._partByTypeLookup.Add);
-    }
-
-    public void RemoveParts()
-    {
-        this._partByTypeLookup.Clear();
-    }
-
-    public TPart FindPart<TPart>()
-        where TPart : IPart
-    {
-        if (!this._partByTypeLookup.TryGetValue(typeof(TPart), out var part))
-        {
-            throw new KvasirException(
-                "Card does not have target part!",
-                ("Card Name", this.Name),
-                ("Card Kind", this.Kind),
-                ("Part Type", typeof(TPart).FullName ?? DefinedText.Unknown));
-        }
-
-        return (TPart)part;
-    }
+    public IReadOnlyCollection<IAbility> Abilities { get; init; }
 }

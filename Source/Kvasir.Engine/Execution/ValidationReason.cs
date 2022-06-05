@@ -50,10 +50,10 @@ public class ValidationReason
 
     public static ValidationReason Create(string message, Creature creature)
     {
-        return ValidationReason.Create(message, creature.Card);
+        return ValidationReason.Create(message, creature.Permanent);
     }
 
-    public static ValidationReason Create(string message, ICard card)
+    public static ValidationReason Create(string message, IPermanent permanent)
     {
         Guard
             .Require(message, nameof(message))
@@ -61,9 +61,9 @@ public class ValidationReason
 
         return new ValidationReason
         {
-            Id = card.Id,
-            Cause = $"Permanent_{card.Kind}",
-            Reference = card.Name,
+            Id = permanent.Id,
+            Cause = $"Permanent_{permanent.Card.Kind}",
+            Reference = permanent.Name,
             Message = message
         };
     }

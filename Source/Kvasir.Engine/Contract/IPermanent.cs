@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Creature.cs" company="nGratis">
+// <copyright file="IPermanent.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,39 +23,76 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, April 29, 2022 6:34:41 PM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, April 28, 2022 4:03:54 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
+using nGratis.Cop.Olympus.Contract;
 
-public class Creature
+public interface IPermanent : IDiagnostic
 {
-    private readonly Lazy<CreaturePart> _deferredCreaturePart;
+    ICard Card { get; }
 
-    public Creature(IPermanent permanent)
+    IPlayer Owner { get; set; }
+
+    IPlayer Controller { get; set; }
+
+    public bool IsTapped { get; set; }
+
+    void AddPart(params IPart[] parts);
+
+    void RemoveParts();
+
+    TPart FindPart<TPart>() where TPart : IPart;
+}
+
+public class UnknownPermanent : IPermanent
+{
+    private UnknownPermanent()
     {
-        this._deferredCreaturePart = new Lazy<CreaturePart>(permanent.FindPart<CreaturePart>, false);
-
-        this.Permanent = permanent;
     }
 
-    public IPermanent Permanent { get; }
+    internal static UnknownPermanent Instance { get; } = new();
 
-    public int Power => this._deferredCreaturePart.Value.Power;
+    public int Id => -42;
 
-    public int Toughness => this._deferredCreaturePart.Value.Toughness;
+    public string Name => DefinedText.Unknown;
 
-    public bool HasSummoningSickness
+    public ICard Card => Engine.Card.Unknown;
+
+    public IPlayer Owner
     {
-        get => this._deferredCreaturePart.Value.HasSummoningSickness;
-        internal set => this._deferredCreaturePart.Value.HasSummoningSickness = value;
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting owner is not allowed!");
     }
 
-    public int Damage
+    public IPlayer Controller
     {
-        get => this._deferredCreaturePart.Value.Damage;
-        internal set => this._deferredCreaturePart.Value.Damage = value;
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting controller is not allowed!");
+    }
+
+    public bool IsTapped
+    {
+        get => false;
+        set => throw new NotSupportedException("Setting is tapped is not allowed!");
+    }
+
+    public void AddPart(params IPart[] parts)
+    {
+        throw new NotSupportedException("Adding part is not allowed!");
+    }
+
+    public void RemoveParts()
+    {
+        throw new NotSupportedException("Removing parts is not allowed!");
+    }
+
+    public TPart FindPart<TPart>()
+        where TPart : IPart
+    {
+        throw new NotSupportedException("Finding part is not allowed!");
     }
 }

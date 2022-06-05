@@ -42,7 +42,7 @@ public class UnknownBlockingDecision : IBlockingDecision
     {
     }
 
-    internal static IBlockingDecision Instance { get; } = new UnknownBlockingDecision();
+    internal static UnknownBlockingDecision Instance { get; } = new();
 
     public IReadOnlyCollection<ICombat> Combats => Array.Empty<ICombat>();
 }

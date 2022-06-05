@@ -44,7 +44,7 @@ public class RoundSimulator
 
     private Judge _judge;
 
-    private Tabletop _tabletop;
+    private ITabletop _tabletop;
 
     public RoundSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, ILogger logger)
     {

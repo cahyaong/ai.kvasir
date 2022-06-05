@@ -63,7 +63,7 @@ public class RulebookTests
                     "because query should return correct count of filtered creatures");
 
             creatures
-                .Select(creature => creature.Card.Name)
+                .Select(creature => creature.Permanent.Name)
                 .Should().Contain(theory.ExpectedCreatureNames, "because query should find correct creature");
         }
 
@@ -91,7 +91,7 @@ public class RulebookTests
                     "because query should return correct count of filtered creatures");
 
             creatures
-                .Select(creature => creature.Card.Name)
+                .Select(creature => creature.Permanent.Name)
                 .Should().Contain(theory.ExpectedCreatureNames, "because query should find correct creature");
         }
 
@@ -105,10 +105,13 @@ public class RulebookTests
                 ActivePlayer = new Player()
             };
 
-            tabletop.Battlefield.AddToTop(new Card
+            tabletop.Battlefield.AddToTop(new Permanent
             {
-                Kind = CardKind.Land,
-                Name = "[_MOCK_LAND_]",
+                Card = new Card
+                {
+                    Name = "[_MOCK_LAND_]",
+                    Kind = CardKind.Land
+                },
                 Owner = tabletop.ActivePlayer,
                 Controller = tabletop.ActivePlayer
             });
@@ -211,7 +214,7 @@ public class RulebookTests
 
                 "Theory_FindingCreatures"
                     .FetchCreatures()
-                    .ForEach(creature => tabletop.Battlefield.AddToTop(creature.ToCard()));
+                    .ForEach(creature => tabletop.Battlefield.AddToTop(creature.AsPermanent()));
 
                 return new FindingCreaturesTheory
                 {

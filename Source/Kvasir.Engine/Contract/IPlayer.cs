@@ -57,7 +57,7 @@ public sealed class UnknownPlayer : IPlayer
     {
     }
 
-    internal static IPlayer Instance { get; } = new UnknownPlayer();
+    internal static UnknownPlayer Instance { get; } = new();
 
     public PlayerKind Kind => PlayerKind.Unknown;
 
@@ -86,7 +86,7 @@ internal sealed class NonePlayer : IPlayer
     {
     }
 
-    internal static IPlayer Instance { get; } = new NonePlayer();
+    internal static NonePlayer Instance { get; } = new();
 
     public PlayerKind Kind => PlayerKind.None;
 

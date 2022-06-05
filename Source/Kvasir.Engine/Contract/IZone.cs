@@ -52,7 +52,12 @@ public interface IZone<TEntity>
 
     void RemoveAll();
 
-    void MoveToZone(TEntity entity, IZone<TEntity> zone);
+    void MoveToZone<TOtherEntity>(TEntity entity, IZone<TOtherEntity> zone, Func<TEntity, TOtherEntity> convert);
+
+    void MoveToZone(TEntity entity, IZone<TEntity> zone)
+    {
+        this.MoveToZone(entity, zone, _ => entity);
+    }
 }
 
 internal class UnknownZone<TEntity> : IZone<TEntity>
@@ -61,7 +66,7 @@ internal class UnknownZone<TEntity> : IZone<TEntity>
     {
     }
 
-    internal static IZone<TEntity> Instance { get; } = new UnknownZone<TEntity>();
+    internal static UnknownZone<TEntity> Instance { get; } = new();
 
     public ZoneKind Kind => ZoneKind.Unknown;
 
@@ -94,7 +99,7 @@ internal class UnknownZone<TEntity> : IZone<TEntity>
         throw new NotImplementedException("Removing all entities is not allowed!");
     }
 
-    public void MoveToZone(TEntity _, IZone<TEntity> __)
+    public void MoveToZone<TOtherEntity>(TEntity _, IZone<TOtherEntity> __, Func<TEntity, TOtherEntity> ___)
     {
         throw new NotSupportedException("Moving entity to zone is not allowed!");
     }

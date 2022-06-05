@@ -32,11 +32,15 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 
+// NOTE: This <StubCreature> class will be used to represent the mocking data in `*.ngkcard` file!
+
 public class StubCreature
 {
     public StubCreature()
     {
         this.Name = DefinedText.Unknown;
+        this.HasSummoningSickness = false;
+        this.IsTapped = false;
     }
 
     public string Name { get; init; }
@@ -45,27 +49,22 @@ public class StubCreature
 
     public bool IsTapped { get; init; }
 
-    public ICard ToCard()
+    public IPermanent AsPermanent()
     {
         var card = new Card
         {
+            Name = this.Name,
             Kind = CardKind.Creature,
-            Name = this.Name
+            Power = 1,
+            Toughness = 1
         };
 
-        card.AddParts(new CreaturePart
-        {
-            Power = 1,
-            Toughness = 1,
-            HasSummoningSickness = this.HasSummoningSickness,
-            Damage = 0
-        });
+        var permanent = card.AsPermanent();
+        permanent.IsTapped = IsTapped;
 
-        card.AddParts(new PermanentPart
-        {
-            IsTapped = this.IsTapped
-        });
+        var creature = permanent.ToProxyCreature();
+        creature.HasSummoningSickness = this.HasSummoningSickness;
 
-        return card;
+        return permanent;
     }
 }

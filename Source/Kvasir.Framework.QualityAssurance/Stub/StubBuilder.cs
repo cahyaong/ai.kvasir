@@ -81,36 +81,59 @@ public static class StubBuilder
         };
     }
 
-    public static ITabletop AddDefaultCreatureToBattlefield(
-        this ITabletop tabletop,
+    public static IZone<IPermanent> AddDefaultCreaturePermanent(
+        this IZone<IPermanent> zone,
         string name,
         IPlayer owner,
         IPlayer controller,
         bool isTapped)
     {
-        var card = new StubCard(name)
+        var permanent = StubBuilder.CreateCreaturePermanent(name, 1, 1);
+        permanent.Owner = owner;
+        permanent.Controller = controller;
+        permanent.IsTapped = isTapped;
+
+        zone.AddToTop(permanent);
+
+        return zone;
+    }
+
+    public static IPermanent CreateActiveCreaturePermanent(
+        this ITabletop tabletop,
+        string name,
+        int power,
+        int toughness)
+    {
+        var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
+        permanent.Owner = tabletop.ActivePlayer;
+        permanent.Controller = tabletop.ActivePlayer;
+
+        return permanent;
+    }
+
+    public static IPermanent CreateNonactiveCreaturePermanent(
+        this ITabletop tabletop,
+        string name,
+        int power,
+        int toughness)
+    {
+        var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
+        permanent.Owner = tabletop.NonactivePlayer;
+        permanent.Controller = tabletop.NonactivePlayer;
+
+        return permanent;
+    }
+
+    private static IPermanent CreateCreaturePermanent(string name, int power, int toughness)
+    {
+        var card = new Card
         {
             Name = name,
             Kind = CardKind.Creature,
-            Owner = owner,
-            Controller = controller,
+            Power = power,
+            Toughness = toughness
         };
 
-        card.AddParts(new CreaturePart
-        {
-            Power = 1,
-            Toughness = 1,
-            HasSummoningSickness = false,
-            Damage = 0
-        });
-
-        card.AddParts(new PermanentPart
-        {
-            IsTapped = isTapped
-        });
-
-        tabletop.Battlefield.AddToTop(card);
-
-        return tabletop;
+        return card.AsPermanent();
     }
 }

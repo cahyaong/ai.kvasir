@@ -99,10 +99,11 @@ public class JudgeTests
             };
 
             tabletop
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_01_]", secondPlayer, secondPlayer, false)
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_02_]", secondPlayer, secondPlayer, true)
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_11_]", firstPlayer, secondPlayer, false)
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_12_]", firstPlayer, secondPlayer, true);
+                .Battlefield
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_01_]", secondPlayer, secondPlayer, false)
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_02_]", secondPlayer, secondPlayer, true)
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_11_]", firstPlayer, secondPlayer, false)
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_12_]", firstPlayer, secondPlayer, true);
 
             var judge = new Judge(mockLogger.Object);
 
@@ -121,12 +122,12 @@ public class JudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Select(card => card.ToProxyCreature())
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeFalse($"because creature [{creature.Card.Name}] should be untapped");
+                        .Permanent.IsTapped
+                        .Should().BeFalse($"because creature [{creature.Permanent.Name}] should be untapped");
                 });
         }
 
@@ -149,10 +150,11 @@ public class JudgeTests
             };
 
             tabletop
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_01_]", firstPlayer, firstPlayer, false)
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_02_]", firstPlayer, firstPlayer, true)
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_11_]", secondPlayer, firstPlayer, false)
-                .AddDefaultCreatureToBattlefield("[_MOCK_CREATURE_12_]", secondPlayer, firstPlayer, true);
+                .Battlefield
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_01_]", firstPlayer, firstPlayer, false)
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_02_]", firstPlayer, firstPlayer, true)
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_11_]", secondPlayer, firstPlayer, false)
+                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_12_]", secondPlayer, firstPlayer, true);
 
             var judge = new Judge(mockLogger.Object);
 
@@ -171,25 +173,25 @@ public class JudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("01") || card.Name.Contains("11"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("01") || permanent.Name.Contains("11"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeFalse($"because creature [{creature.Card.Name}] should be keep status");
+                        .Permanent.IsTapped
+                        .Should().BeFalse($"because creature [{creature.Permanent.Name}] should be keep status");
                 });
 
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("02") || card.Name.Contains("12"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("02") || permanent.Name.Contains("12"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeTrue($"because creature [{creature.Card.Name}] should be keep status");
+                        .Permanent.IsTapped
+                        .Should().BeTrue($"because creature [{creature.Permanent.Name}] should be keep status");
                 });
         }
     }
@@ -211,17 +213,23 @@ public class JudgeTests
 
             tabletop.Phase = Phase.PrecombatMain;
 
-            var attackers = new[]
+            var attackingPermanents = new[]
             {
-                tabletop.CreateActiveCreature("[_MOCK_ATTACKER_01_]", 1, 1),
-                tabletop.CreateActiveCreature("[_MOCK_ATTACKER_02_]", 2, 2),
-                tabletop.CreateActiveCreature("[_MOCK_ATTACKER_02_]", 3, 3)
+                tabletop.CreateActiveCreaturePermanent("[_MOCK_ATTACKER_01_]", 1, 1),
+                tabletop.CreateActiveCreaturePermanent("[_MOCK_ATTACKER_02_]", 2, 2),
+                tabletop.CreateActiveCreaturePermanent("[_MOCK_ATTACKER_03_]", 3, 3)
             };
 
-            var blocker = tabletop.CreateNonactiveCreature("[_MOCK_BLOCKER_]", 0, 5);
+            var blockingPermanent = tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_]", 0, 5);
 
-            mockAttackingStrategy.WithAttackingDecision(attackers);
-            mockBlockingStrategy.WithBlockingDecision(attackers.First(), new[] { blocker });
+            mockAttackingStrategy.WithAttackingDecision(attackingPermanents);
+            mockBlockingStrategy.WithBlockingDecision(attackingPermanents.First(), new[] { blockingPermanent });
+
+            Enumerable
+                .Empty<IPermanent>()
+                .Append(attackingPermanents)
+                .Append(blockingPermanent)
+                .ForEach(tabletop.Battlefield.AddToTop);
 
             var judge = new Judge(mockLogger.Object);
 
@@ -240,13 +248,13 @@ public class JudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("MOCK_ATTACKER"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("MOCK_ATTACKER"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeTrue($"because attacking creature [{creature.Card.Name}] should be tapped");
+                        .Permanent.IsTapped
+                        .Should().BeTrue($"because attacking creature [{creature.Permanent.Name}] should be tapped");
                 });
         }
 
@@ -260,20 +268,24 @@ public class JudgeTests
             var tabletop = StubBuilder.CreateDefaultTabletop();
             tabletop.Phase = Phase.PrecombatMain;
 
-            Enumerable
-                .Range(1, 3)
-                .ForEach(value =>
-                {
-                    tabletop
-                        .CreateActiveCreature($"[_MOCK_TAPPED_{value}_]", value, value)
-                        .ToProxyCreature()
-                        .IsTapped = true;
+            for (var value = 1; value <= 3; value++)
+            {
+                var tappedPermanent = tabletop.CreateActiveCreaturePermanent(
+                    $"[_MOCK_TAPPED_{value}_]",
+                    value,
+                    value);
 
-                    tabletop
-                        .CreateActiveCreature($"[_MOCK_UNTAPPED_{value}_]", value, value)
-                        .ToProxyCreature()
-                        .IsTapped = false;
-                });
+                tappedPermanent.IsTapped = true;
+                tabletop.Battlefield.AddToTop(tappedPermanent);
+
+                var untappedPermanent = tabletop.CreateActiveCreaturePermanent(
+                    $"[_MOCK_UNTAPPED_{value}_]",
+                    value,
+                    value);
+
+                untappedPermanent.IsTapped = false;
+                tabletop.Battlefield.AddToTop(untappedPermanent);
+            }
 
             var judge = new Judge(mockLogger.Object);
 
@@ -292,25 +304,25 @@ public class JudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("MOCK_TAPPED"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("MOCK_TAPPED"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeTrue($"because tapped creature [{creature.Card.Name}] should keep status");
+                        .Permanent.IsTapped
+                        .Should().BeTrue($"because tapped creature [{creature.Permanent.Name}] should keep status");
                 });
 
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("MOCK_UNTAPPED"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("MOCK_UNTAPPED"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeFalse($"because untapped creature [{creature.Card.Name}] should keep status");
+                        .Permanent.IsTapped
+                        .Should().BeFalse($"because untapped creature [{creature.Permanent.Name}] should keep status");
                 });
         }
 
@@ -329,17 +341,23 @@ public class JudgeTests
 
             tabletop.Phase = Phase.PrecombatMain;
 
-            var attacker = tabletop.CreateActiveCreature("[_MOCK_ATTACKER_]", 1, 1);
+            var attackingPermanent = tabletop.CreateActiveCreaturePermanent("[_MOCK_ATTACKER_]", 1, 1);
 
-            var blockers = new[]
+            var blockingPermanents = new[]
             {
-                tabletop.CreateNonactiveCreature("[_MOCK_BLOCKER_01_]", 0, 11),
-                tabletop.CreateNonactiveCreature("[_MOCK_BLOCKER_02_]", 0, 12),
-                tabletop.CreateNonactiveCreature("[_MOCK_BLOCKER_02_]", 0, 13)
+                tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_01_]", 0, 11),
+                tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_02_]", 0, 12),
+                tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_02_]", 0, 13)
             };
 
-            mockAttackingStrategy.WithAttackingDecision(attacker);
-            mockBlockingStrategy.WithBlockingDecision(attacker, blockers);
+            mockAttackingStrategy.WithAttackingDecision(attackingPermanent);
+            mockBlockingStrategy.WithBlockingDecision(attackingPermanent, blockingPermanents);
+
+            Enumerable
+                .Empty<IPermanent>()
+                .Append(attackingPermanent)
+                .Append(blockingPermanents)
+                .ForEach(tabletop.Battlefield.AddToTop);
 
             var judge = new Judge(mockLogger.Object);
 
@@ -358,13 +376,13 @@ public class JudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("MOCK_BLOCKER"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("MOCK_BLOCKER"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeFalse($"because blocking creature [{creature.Card.Name}] should not be tapped");
+                        .Permanent.IsTapped
+                        .Should().BeFalse($"because blocking creature [{creature.Permanent.Name}] should not be tapped");
                 });
         }
 
@@ -378,20 +396,24 @@ public class JudgeTests
             var tabletop = StubBuilder.CreateDefaultTabletop(Strategy.Noop, Strategy.Noop);
             tabletop.Phase = Phase.PrecombatMain;
 
-            Enumerable
-                .Range(1, 3)
-                .ForEach(value =>
-                {
-                    tabletop
-                        .CreateNonactiveCreature($"[_MOCK_TAPPED_{value}_]", value, value)
-                        .ToProxyCreature()
-                        .IsTapped = true;
+            for (var value = 1; value <= 3; value++)
+            {
+                var tappedPermanent = tabletop.CreateNonactiveCreaturePermanent(
+                    $"[_MOCK_TAPPED_{value}_]",
+                    value,
+                    value);
 
-                    tabletop
-                        .CreateNonactiveCreature($"[_MOCK_UNTAPPED_{value}_]", value, value)
-                        .ToProxyCreature()
-                        .IsTapped = false;
-                });
+                tappedPermanent.IsTapped = true;
+                tabletop.Battlefield.AddToTop(tappedPermanent);
+
+                var untappedPermanent = tabletop.CreateNonactiveCreaturePermanent(
+                    $"[_MOCK_UNTAPPED_{value}_]",
+                    value,
+                    value);
+
+                untappedPermanent.IsTapped = false;
+                tabletop.Battlefield.AddToTop(untappedPermanent);
+            }
 
             var judge = new Judge(mockLogger.Object);
 
@@ -410,25 +432,25 @@ public class JudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("MOCK_TAPPED"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("MOCK_TAPPED"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeTrue($"because tapped creature [{creature.Card.Name}] should keep status");
+                        .Permanent.IsTapped
+                        .Should().BeTrue($"because tapped creature [{creature.Permanent.Name}] should keep status");
                 });
 
             tabletop
                 .Battlefield
                 .FindAll()
-                .Where(card => card.Name.Contains("MOCK_UNTAPPED"))
-                .Select(card => card.ToProxyCreature())
+                .Where(permanent => permanent.Name.Contains("MOCK_UNTAPPED"))
+                .Select(permanent => permanent.ToProxyCreature())
                 .ForEach(creature =>
                 {
                     creature
-                        .IsTapped
-                        .Should().BeFalse($"because untapped creature [{creature.Card.Name}] should keep status");
+                        .Permanent.IsTapped
+                        .Should().BeFalse($"because untapped creature [{creature.Permanent.Name}] should keep status");
                 });
         }
     }

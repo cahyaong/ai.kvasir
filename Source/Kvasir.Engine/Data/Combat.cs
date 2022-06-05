@@ -35,13 +35,13 @@ public class Combat : ICombat
 {
     public Combat()
     {
-        this.AttackingCard = Card.Unknown;
-        this.BlockingCards = Array.Empty<ICard>();
+        this.AttackingPermanent = Permanent.Unknown;
+        this.BlockingPermanents = Array.Empty<IPermanent>();
     }
 
     public static ICombat Unknown => UnknownCombat.Instance;
 
-    public ICard AttackingCard { get; init; }
+    public IPermanent AttackingPermanent { get; init; }
 
-    public IReadOnlyCollection<ICard> BlockingCards { get; init; }
+    public IReadOnlyCollection<IPermanent> BlockingPermanents { get; init; }
 }
