@@ -92,6 +92,6 @@ public class NoopStrategy : IStrategy
 
     public IAction PerformAction(ITabletop tabletop)
     {
-        return Action.Passing;
+        return Action.Pass();
     }
 }

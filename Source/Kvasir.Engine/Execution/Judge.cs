@@ -155,6 +155,8 @@ public class Judge
             .PrioritizedPlayer.Strategy
             .PerformAction(tabletop);
 
+        action.Owner = tabletop.PrioritizedPlayer;
+
         // RX-117.3d — If a player has priority and chooses not to take any actions, that player passes...
 
         var hasPassed =

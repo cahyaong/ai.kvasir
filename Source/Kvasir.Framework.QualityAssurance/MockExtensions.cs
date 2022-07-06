@@ -45,7 +45,7 @@ public static partial class MockExtensions
 
         mockStrategy
             .Setup(mock => mock.PerformAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Passing);
+            .Returns(Action.Pass);
 
         return mockStrategy;
     }

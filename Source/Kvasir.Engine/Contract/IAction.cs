@@ -28,17 +28,14 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using nGratis.Cop.Olympus.Contract;
 
 public interface IAction : IDiagnostic
 {
     ActionKind Kind { get; }
 
-    IPlayer Owner { get; }
-
-    bool CanResolve(ITabletop tabletop);
-
-    void Resolve(ITabletop tabletop);
+    IPlayer Owner { get; set; }
 }
 
 internal class UnknownAction : IAction
@@ -47,7 +44,7 @@ internal class UnknownAction : IAction
     {
     }
 
-    public static UnknownAction Instance { get; } = new();
+    internal static UnknownAction Instance { get; } = new();
 
     public int Id => -42;
 
@@ -55,14 +52,9 @@ internal class UnknownAction : IAction
 
     public ActionKind Kind => ActionKind.Unknown;
 
-    public IPlayer Owner => Player.Unknown;
-
-    public bool CanResolve(ITabletop tabletop)
+    public IPlayer Owner
     {
-        return false;
-    }
-
-    public void Resolve(ITabletop tabletop)
-    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting owner is not supported!");
     }
 }

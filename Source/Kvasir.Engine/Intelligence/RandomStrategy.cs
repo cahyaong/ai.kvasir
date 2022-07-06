@@ -98,6 +98,6 @@ public class RandomStrategy : IStrategy
 
     public IAction PerformAction(ITabletop tabletop)
     {
-        return Action.Passing;
+        return Action.Pass();
     }
 }

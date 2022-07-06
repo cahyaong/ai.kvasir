@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PassingAction.cs" company="nGratis">
+// <copyright file="Action.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,27 +23,36 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, June 1, 2022 1:00:21 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, June 1, 2022 12:37:45 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-public class PassingAction : Action
+using nGratis.Cop.Olympus.Contract;
+
+public class Action : IAction
 {
-    private PassingAction()
+    private Action()
     {
+        this.Kind = ActionKind.Unknown;
+        this.Owner = Player.Unknown;
     }
 
-    public static IAction Instance { get; } = new PassingAction();
+    public static IAction Unknown => UnknownAction.Instance;
 
-    public override ActionKind Kind => ActionKind.Passing;
+    public int Id => this.GetHashCode();
 
-    public override bool CanResolve(ITabletop _)
+    public string Name => DefinedText.Default;
+
+    public ActionKind Kind { get; init; }
+
+    public IPlayer Owner { get; set; }
+
+    public static IAction Pass()
     {
-        return true;
-    }
-
-    public override void Resolve(ITabletop _)
-    {
+        return new Action
+        {
+            Kind = ActionKind.Passing
+        };
     }
 }
