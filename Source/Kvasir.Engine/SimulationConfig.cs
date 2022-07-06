@@ -37,10 +37,13 @@ public class SimulationConfig
     public SimulationConfig()
     {
         this.MaxTurnCount = -42;
+        this.ShouldTerminateOnIllegalAction = true;
         this.DefinedPlayers = Array.Empty<DefinedBlob.Player>();
     }
 
     public int MaxTurnCount { get; init; }
+
+    public bool ShouldTerminateOnIllegalAction { get; init; }
 
     public IReadOnlyCollection<DefinedBlob.Player> DefinedPlayers { get; init; }
 }

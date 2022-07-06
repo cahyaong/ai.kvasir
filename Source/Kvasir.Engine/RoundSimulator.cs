@@ -59,7 +59,7 @@ public class RoundSimulator
     public SimulationResult Simulate(SimulationConfig simulationConfig)
     {
         this
-            .SetupTabletop()
+            .SetupTabletop(simulationConfig.ShouldTerminateOnIllegalAction)
             .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
             .SetupPlayerZones(this._tabletop.ActivePlayer)
             .SetupPlayerZones(this._tabletop.NonactivePlayer);
@@ -75,9 +75,9 @@ public class RoundSimulator
         };
     }
 
-    private RoundSimulator SetupTabletop()
+    private RoundSimulator SetupTabletop(bool shouldTerminateOnIllegalAction)
     {
-        this._judge = new Judge(this._logger);
+        this._judge = new Judge(shouldTerminateOnIllegalAction, this._logger);
 
         this._tabletop = new Tabletop
         {

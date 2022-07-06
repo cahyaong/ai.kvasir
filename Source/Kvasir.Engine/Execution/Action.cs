@@ -44,7 +44,7 @@ public class Action : IAction
 
     public string Name => DefinedText.Default;
 
-    public ActionKind Kind { get; init; }
+    public ActionKind Kind { get; private init; }
 
     public IPlayer Owner { get; set; }
 

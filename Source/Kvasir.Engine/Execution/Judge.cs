@@ -38,12 +38,20 @@ using nGratis.Cop.Olympus.Framework;
 
 public class Judge
 {
+    private readonly bool _shouldTerminateOnIllegalAction;
+
     private readonly ILogger _logger;
 
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
     public Judge(ILogger logger)
+        : this(true, logger)
     {
+    }
+
+    public Judge(bool shouldTerminateOnIllegalAction, ILogger logger)
+    {
+        this._shouldTerminateOnIllegalAction = shouldTerminateOnIllegalAction;
         this._logger = logger;
 
         this._phaseHandlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
@@ -125,6 +133,7 @@ public class Judge
     {
         this._logger.LogDiagnostic(tabletop);
 
+        tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
         var executionResult = this.ExecutePerformingActionStep(tabletop);
 
         if (executionResult.HasError)

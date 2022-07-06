@@ -67,6 +67,7 @@ public class PlayingGameExecution : IExecution
         var simulationConfig = new SimulationConfig
         {
             MaxTurnCount = 10,
+            ShouldTerminateOnIllegalAction = true,
             DefinedPlayers = definedPlayers
         };
 
