@@ -106,7 +106,7 @@ public class Judge
 
         if (!tabletop.IsFirstTurn)
         {
-            (tabletop.ActivePlayer, tabletop.NonactivePlayer) = (tabletop.NonactivePlayer, tabletop.ActivePlayer);
+            (tabletop.ActivePlayer, tabletop.NonActivePlayer) = (tabletop.NonActivePlayer, tabletop.ActivePlayer);
         }
 
         // RX-117.3a — ...No player receives priority during the untap step...
@@ -114,13 +114,13 @@ public class Judge
         tabletop.PrioritizedPlayer = Player.None;
 
         // RX-502.3 — Third, the active player determines which permanents they control will untap. Then they untap
-        // them all simultaneously.This turn-based action doesn’t use the stack. Normally, all of a player’s
+        // them all simultaneously. This turn-based action doesn’t use the stack. Normally, all of a player’s
         // permanents untap, but effects can keep one or more of a player’s permanents from untapping.
 
         // TODO (SHOULD): Implement untap action for other permanent types besides creature!
 
-        Rulebook
-            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
+        tabletop
+            .FindCreatures(PlayerModifier.Active, CreatureModifier.None)
             .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
             .ForEach(creature => creature.Permanent.IsTapped = false);
 
@@ -141,9 +141,11 @@ public class Judge
             return executionResult;
         }
 
-        // RX-117.3d — ...Then the next player in turn order receives priority.
+        // RX-117.3d — If a player has priority and chooses not to take any actions, that player passes. If any mana is
+        // in that player’s mana pool, they announce what mana is there. Then the next player in turn order
+        // receives priority.
 
-        tabletop.PrioritizedPlayer = tabletop.NonactivePlayer;
+        tabletop.PrioritizedPlayer = tabletop.NonActivePlayer;
         executionResult = this.ExecutePerformingActionStep(tabletop);
 
         if (executionResult.HasError)
@@ -152,33 +154,68 @@ public class Judge
         }
 
         // RX-117.4 — If all players pass in succession (that is, if all players pass without taking any actions in
-        // between passing), the spell or ability on top of the stack resolves or, if the stack is empty, the phase or
-        // step ends.
+        // between passing), ..., if the stack is empty, the phase or step ends.
 
         return ExecutionResult.Successful;
     }
 
     private ExecutionResult ExecutePerformingActionStep(ITabletop tabletop)
     {
-        var action = tabletop
-            .PrioritizedPlayer.Strategy
-            .PerformAction(tabletop);
+        var shouldEndStep = false;
 
-        action.Owner = tabletop.PrioritizedPlayer;
+        var nonPrioritizedPlayer = tabletop.PrioritizedPlayer == tabletop.ActivePlayer
+            ? tabletop.NonActivePlayer
+            : tabletop.ActivePlayer;
+
+        while (!shouldEndStep)
+        {
+            var shouldResolveStack = false;
+            var actionIndex = 0;
+
+            while (!shouldResolveStack)
+            {
+                var selectedPlayer = actionIndex % 2 == 0
+                    ? tabletop.PrioritizedPlayer
+                    : nonPrioritizedPlayer;
+
+                var performedAction = selectedPlayer == tabletop.ActivePlayer
+                    ? selectedPlayer.Strategy.PerformActiveAction(tabletop)
+                    : selectedPlayer.Strategy.PerformNonActiveAction(tabletop);
+
+                performedAction.Owner = selectedPlayer;
+
+                if (tabletop.ShouldResolveSpecialAction(performedAction))
+                {
+                    tabletop.ResolveSpecialAction(performedAction);
+                }
+                else
+                {
+                    tabletop.Stack.AddToTop(performedAction);
+                    shouldResolveStack = tabletop.ShouldResolveStack();
+
+                    if (shouldResolveStack)
+                    {
+                        tabletop.ResolveStack();
+                        shouldEndStep = !tabletop.IsActionPerformed;
+                    }
+                    else
+                    {
+                        actionIndex++;
+                    }
+                }
+            }
+        }
 
         // RX-117.3d — If a player has priority and chooses not to take any actions, that player passes...
 
-        var hasPassed =
-            tabletop.Stack.IsEmpty &&
-            action.Kind == ActionKind.Passing;
+        // RX-405.5 — ...If the stack is empty when all players pass, the current step or phase ends and the next
+        // begins.
 
-        if (hasPassed)
-        {
-            return ExecutionResult.Successful;
-        }
+        return ExecutionResult.Successful;
+    }
 
-        // TODO (MUST): Implement action looping for both players!
-
+    private ExecutionResult ExecuteResolvingStackStep(ITabletop tabletop)
+    {
         return ExecutionResult.Successful;
     }
 
@@ -236,7 +273,7 @@ public class Judge
             .ActivePlayer.Strategy
             .DeclareAttacker(tabletop);
 
-        var validationResult = Rulebook.Validate(attackingDecision);
+        var validationResult = attackingDecision.Validate();
 
         tabletop.AttackingDecision = !validationResult.HasError
             ? attackingDecision
@@ -255,10 +292,10 @@ public class Judge
         // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
 
         var blockingDecision = tabletop
-            .NonactivePlayer.Strategy
+            .NonActivePlayer.Strategy
             .DeclareBlocker(tabletop);
 
-        var validationResult = Rulebook.Validate(blockingDecision);
+        var validationResult = blockingDecision.Validate();
 
         tabletop.BlockingDecision = !validationResult.HasError
             ? blockingDecision
@@ -302,7 +339,7 @@ public class Judge
             }
             else
             {
-                tabletop.NonactivePlayer.Life -= attackingCreature.Power;
+                tabletop.NonActivePlayer.Life -= attackingCreature.Power;
             }
         }
 
@@ -329,7 +366,7 @@ public class Judge
             {
                 tabletop.Battlefield.MoveToZone(
                     blockingCreature.Permanent,
-                    tabletop.NonactivePlayer.Graveyard,
+                    tabletop.NonActivePlayer.Graveyard,
                     permanent => permanent.Card);
 
                 blockingCreature.Damage = 0;
@@ -342,7 +379,8 @@ public class Judge
     {
         this._logger.LogDiagnostic(tabletop);
 
-        // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see RX-514.3).
+        // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).
+
         tabletop.PrioritizedPlayer = Player.None;
 
         return ExecutionResult.Successful;

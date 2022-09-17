@@ -35,6 +35,7 @@ public class Action : IAction
     private Action()
     {
         this.Kind = ActionKind.Unknown;
+        this.Source = ActionSource.Unknown;
         this.Owner = Player.Unknown;
     }
 
@@ -46,13 +47,28 @@ public class Action : IAction
 
     public ActionKind Kind { get; private init; }
 
+    public IActionSource Source { get; private init; }
+
     public IPlayer Owner { get; set; }
 
     public static IAction Pass()
     {
         return new Action
         {
-            Kind = ActionKind.Passing
+            Kind = ActionKind.Passing,
+            Source = ActionSource.None
+        };
+    }
+
+    public static IAction PlayLand(ICard card)
+    {
+        return new Action
+        {
+            Kind = ActionKind.PlayingLand,
+            Source = new ActionSource
+            {
+                Card = card
+            }
         };
     }
 }

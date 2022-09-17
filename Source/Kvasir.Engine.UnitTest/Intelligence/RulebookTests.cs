@@ -50,8 +50,9 @@ public class RulebookTests
 
             // Act.
 
-            var creatures = Rulebook
-                .FindCreatures(theory.Tabletop, PlayerModifier.Active, theory.CreatureModifier)
+            var creatures = theory
+                .Tabletop
+                .FindCreatures(PlayerModifier.Active, theory.CreatureModifier)
                 .ToImmutableList();
 
             // Assert.
@@ -69,17 +70,18 @@ public class RulebookTests
 
         [Theory]
         [MemberData(
-            nameof(TestData.FindingCreaturesControlledByNonactivePlayerTheories),
+            nameof(TestData.FindingCreaturesControlledByNonActivePlayerTheories),
             MemberType = typeof(TestData))]
-        public void WhenGettingCreaturesControlledByNonactivePlayer_ShouldReturnFilteredCreatures(
+        public void WhenGettingCreaturesControlledByNonActivePlayer_ShouldReturnFilteredCreatures(
             FindingCreaturesTheory theory)
         {
             // Arrange.
 
             // Act.
 
-            var creatures = Rulebook
-                .FindCreatures(theory.Tabletop, PlayerModifier.Nonactive, theory.CreatureModifier)
+            var creatures = theory
+                .Tabletop
+                .FindCreatures(PlayerModifier.NonActive, theory.CreatureModifier)
                 .ToImmutableList();
 
             // Assert.
@@ -118,8 +120,8 @@ public class RulebookTests
 
             // Act.
 
-            var creatures = Rulebook
-                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+            var creatures = tabletop
+                .FindCreatures(PlayerModifier.Active, CreatureModifier.CanAttack)
                 .ToImmutableList();
 
             // Assert.
@@ -158,27 +160,27 @@ public class RulebookTests
                 }
             }
 
-            public static IEnumerable<object[]> FindingCreaturesControlledByNonactivePlayerTheories
+            public static IEnumerable<object[]> FindingCreaturesControlledByNonActivePlayerTheories
             {
                 get
                 {
                     yield return FindingCreaturesTheory
                         .Create(CreatureModifier.None)
-                        .WithNonactivePlayerAsOwnerAndController()
+                        .WithNonActivePlayerAsOwnerAndController()
                         .ExpectAllCreatures()
                         .WithLabel(1, "Finding creatures controlled by nonactive player with 'None' modifier")
                         .ToXunitTheory();
 
                     yield return FindingCreaturesTheory
                         .Create(CreatureModifier.CanAttack)
-                        .WithNonactivePlayerAsOwnerAndController()
+                        .WithNonActivePlayerAsOwnerAndController()
                         .ExpectCreature("[_MOCK_CREATURE_001_]")
                         .WithLabel(2, "Finding creatures controlled by nonactive player with 'Can Attack' modifier")
                         .ToXunitTheory();
 
                     yield return FindingCreaturesTheory
                         .Create(CreatureModifier.CanBlock)
-                        .WithNonactivePlayerAsOwnerAndController()
+                        .WithNonActivePlayerAsOwnerAndController()
                         .ExpectCreature("[_MOCK_CREATURE_001_]", "[_MOCK_CREATURE_003_]")
                         .WithLabel(3, "Finding creatures controlled by nonactive player with 'Can Block' modifier")
                         .ToXunitTheory();
@@ -206,7 +208,7 @@ public class RulebookTests
                     {
                         Name = "[_MOCK_PLAYER_01_]"
                     },
-                    NonactivePlayer = new Player
+                    NonActivePlayer = new Player
                     {
                         Name = "[_MOCK_PLAYER_02_]"
                     }
@@ -237,15 +239,15 @@ public class RulebookTests
                 return this;
             }
 
-            public FindingCreaturesTheory WithNonactivePlayerAsOwnerAndController()
+            public FindingCreaturesTheory WithNonActivePlayerAsOwnerAndController()
             {
                 this.Tabletop
                     .Battlefield
                     .FindAll()
                     .ForEach(card =>
                     {
-                        card.Owner = this.Tabletop.NonactivePlayer;
-                        card.Controller = this.Tabletop.NonactivePlayer;
+                        card.Owner = this.Tabletop.NonActivePlayer;
+                        card.Controller = this.Tabletop.NonActivePlayer;
                     });
 
                 return this;

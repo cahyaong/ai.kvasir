@@ -32,5 +32,6 @@ public enum ActionKind
 {
     Unknown = 0,
 
-    Passing
+    Passing,
+    PlayingLand
 }

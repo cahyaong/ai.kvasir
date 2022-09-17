@@ -44,7 +44,7 @@ public interface ITabletop
 
     IPlayer ActivePlayer { get; set; }
 
-    IPlayer NonactivePlayer { get; set; }
+    IPlayer NonActivePlayer { get; set; }
 
     IPlayer PrioritizedPlayer { get; set; }
 
@@ -53,6 +53,8 @@ public interface ITabletop
     IBlockingDecision BlockingDecision { get; set; }
 
     bool IsFirstTurn { get; }
+
+    bool IsActionPerformed { get; set; }
 }
 
 public class UnknownTabletop : ITabletop
@@ -87,7 +89,7 @@ public class UnknownTabletop : ITabletop
         set => throw new NotSupportedException("Setting active player is not allowed!");
     }
 
-    public IPlayer NonactivePlayer
+    public IPlayer NonActivePlayer
     {
         get => Player.Unknown;
         set => throw new NotSupportedException("Setting nonactive player is not allowed!");
@@ -112,4 +114,6 @@ public class UnknownTabletop : ITabletop
     }
 
     public bool IsFirstTurn => true;
+
+    public bool IsActionPerformed { get; set; }
 }

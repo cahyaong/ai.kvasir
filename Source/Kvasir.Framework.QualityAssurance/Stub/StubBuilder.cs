@@ -61,7 +61,7 @@ public static class StubBuilder
             TurnId = 0,
             Phase = Phase.Beginning,
             ActivePlayer = activePlayer,
-            NonactivePlayer = nonactivePlayer
+            NonActivePlayer = nonactivePlayer
         };
     }
 
@@ -111,15 +111,15 @@ public static class StubBuilder
         return permanent;
     }
 
-    public static IPermanent CreateNonactiveCreaturePermanent(
+    public static IPermanent CreateNonActiveCreaturePermanent(
         this ITabletop tabletop,
         string name,
         int power,
         int toughness)
     {
         var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
-        permanent.Owner = tabletop.NonactivePlayer;
-        permanent.Controller = tabletop.NonactivePlayer;
+        permanent.Owner = tabletop.NonActivePlayer;
+        permanent.Controller = tabletop.NonActivePlayer;
 
         return permanent;
     }

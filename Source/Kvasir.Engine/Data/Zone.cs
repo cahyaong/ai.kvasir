@@ -33,8 +33,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
 
-[DebuggerDisplay("<Zone> {this.Kind}, {this._entities.Count} entities")]
+[DebuggerDisplay("<Zone> {this.Kind}, {this.Quantity} entities")]
 public class Zone<TEntity> : IZone<TEntity>
     where TEntity : IDiagnostic
 {
@@ -72,7 +73,7 @@ public class Zone<TEntity> : IZone<TEntity>
 
     public TEntity FindFromTop()
     {
-        if (this._entities.Count <= 0)
+        if (this.Quantity <= 0)
         {
             throw new KvasirException(
                 "Zone has no more entity to find!",
@@ -84,14 +85,50 @@ public class Zone<TEntity> : IZone<TEntity>
 
     public void RemoveFromTop()
     {
-        if (this._entities.Count <= 0)
+        if (this.Quantity <= 0)
         {
             throw new KvasirException(
                 "Zone has no more entity to remove!",
                 ("Zone Kind", this.Kind));
         }
 
-        this._entities.RemoveAt(this._entities.Count - 1);
+        this._entities.RemoveAt(this.Quantity - 1);
+    }
+
+    public void RemoveManyFromTop(int count)
+    {
+        Guard
+            .Require(count, nameof(count))
+            .Is.GreaterThan(0);
+
+        if (count > this.Quantity)
+        {
+            throw new KvasirException(
+                "Zone has not enough entities to remove many!",
+                ("Zone Kind", this.Kind),
+                ("Quantity", this.Quantity),
+                ("Removing Count", count));
+        }
+
+        this._entities.RemoveRange(this.Quantity - count, count);
+    }
+
+    public IEnumerable<TEntity> FindManyFromTop(int count)
+    {
+        Guard
+            .Require(count, nameof(count))
+            .Is.GreaterThan(0);
+
+        if (count > this.Quantity)
+        {
+            throw new KvasirException(
+                "Zone has not enough entities to find many!",
+                ("Zone Kind", this.Kind),
+                ("Quantity", this.Quantity),
+                ("Finding Count", count));
+        }
+
+        return this._entities.Skip(this.Quantity - count);
     }
 
     public IEnumerable<TEntity> FindAll()

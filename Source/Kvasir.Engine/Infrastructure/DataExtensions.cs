@@ -72,6 +72,15 @@ public static class DataExtensions
         return nextPhase;
     }
 
+    public static IPermanent AsPermanent(this ICard card, IPlayer player)
+    {
+        var permanent = card.AsPermanent();
+        permanent.Owner = player;
+        permanent.Controller = player;
+
+        return permanent;
+    }
+
     public static IPermanent AsPermanent(this ICard card)
     {
         var permanent = new Permanent

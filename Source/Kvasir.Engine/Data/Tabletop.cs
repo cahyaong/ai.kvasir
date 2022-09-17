@@ -56,7 +56,7 @@ public class Tabletop : ITabletop
         this.Phase = Phase.Unknown;
 
         this.ActivePlayer = Player.Unknown;
-        this.NonactivePlayer = Player.Unknown;
+        this.NonActivePlayer = Player.Unknown;
         this.PrioritizedPlayer = Player.Unknown;
 
         this.AttackingDecision = Engine.AttackingDecision.Unknown;
@@ -77,7 +77,7 @@ public class Tabletop : ITabletop
 
     public IPlayer ActivePlayer { get; set; }
 
-    public IPlayer NonactivePlayer { get; set; }
+    public IPlayer NonActivePlayer { get; set; }
 
     public IPlayer PrioritizedPlayer { get; set; }
 
@@ -86,4 +86,6 @@ public class Tabletop : ITabletop
     public IBlockingDecision BlockingDecision { get; set; }
 
     public bool IsFirstTurn => this.TurnId <= 0;
+
+    public bool IsActionPerformed { get; set; }
 }

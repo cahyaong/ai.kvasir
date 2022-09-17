@@ -51,7 +51,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
                 .Should().NotBeNull($"{this.Identifier} should have active player");
 
             this
-                .Subject.NonactivePlayer
+                .Subject.NonActivePlayer
                 .Should().NotBeNull($"{this.Identifier} should have nonactive player");
         }
 
@@ -75,7 +75,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
                     $"{this.Identifier} should not have card [{permanent.Name}] in active graveyard");
 
             this
-                .Subject.NonactivePlayer.Graveyard.FindAll()
+                .Subject.NonActivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
                     permanent.Card,
                     $"{this.Identifier} should not have card [{permanent.Name}] in nonactive graveyard");
@@ -101,7 +101,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
                     $"{this.Identifier} should have card [{permanent.Name}] in active graveyard");
 
             this
-                .Subject.NonactivePlayer.Graveyard.FindAll()
+                .Subject.NonActivePlayer.Graveyard.FindAll()
                 .Should().NotContain(
                     permanent.Card,
                     $"{this.Identifier} should not have card [{permanent.Name}] in nonactive graveyard");
@@ -110,7 +110,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
         return new AndConstraint<TabletopAssertion>(this);
     }
 
-    public AndConstraint<TabletopAssertion> HaveCardInNonactiveGraveyard(IPermanent permanent)
+    public AndConstraint<TabletopAssertion> HaveCardInNonActiveGraveyard(IPermanent permanent)
     {
         using (new AssertionScope())
         {
@@ -127,7 +127,7 @@ public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAsse
                     $"{this.Identifier} should not have card [{permanent.Name}] in active graveyard");
 
             this
-                .Subject.NonactivePlayer.Graveyard.FindAll()
+                .Subject.NonActivePlayer.Graveyard.FindAll()
                 .Should().Contain(
                     permanent.Card,
                     $"{this.Identifier} should have card [{permanent.Name}] in nonactive graveyard");

@@ -92,7 +92,7 @@ public class RoundSimulatorTests
             if (simulationResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
             {
                 simulationResult
-                    .Tabletop.NonactivePlayer.Name
+                    .Tabletop.NonActivePlayer.Name
                     .Should().Be(
                         "[_MOCK_PLAYER_02_]",
                         "because nonactive player should be different from active player");
@@ -100,7 +100,7 @@ public class RoundSimulatorTests
             else
             {
                 simulationResult
-                    .Tabletop.NonactivePlayer.Name
+                    .Tabletop.NonActivePlayer.Name
                     .Should().Be(
                         "[_MOCK_PLAYER_01_]",
                         "because nonactive player should be different from active player");
@@ -113,7 +113,7 @@ public class RoundSimulatorTests
                     .Should().Be(20, "because active player should begin with full life");
 
                 simulationResult
-                    .Tabletop.NonactivePlayer.Life
+                    .Tabletop.NonActivePlayer.Life
                     .Should().Be(20, "because nonactive player should begin with full life");
             }
         }
@@ -183,10 +183,10 @@ public class RoundSimulatorTests
 
                 var nonactiveDeck = simulationResult
                     .Tabletop
-                    .NonactivePlayer.Deck;
+                    .NonActivePlayer.Deck;
 
                 simulationResult
-                    .Tabletop.NonactivePlayer.Library
+                    .Tabletop.NonActivePlayer.Library
                     .Must().NotBeNull("because nonactive player should have library")
                     .And.BeLibrary()
                     .And.BeHidden()
@@ -256,13 +256,13 @@ public class RoundSimulatorTests
                     .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
 
                 simulationResult
-                    .Tabletop.NonactivePlayer.Hand
+                    .Tabletop.NonActivePlayer.Hand
                     .Must().NotBeNull("because nonactive player should have hand")
                     .And.BeHand()
                     .And.BeHidden()
                     .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
                     .And.HaveUniqueCardInstance()
-                    .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonactivePlayer.Deck);
+                    .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonActivePlayer.Deck);
             }
         }
 
@@ -324,7 +324,7 @@ public class RoundSimulatorTests
                     .And.HaveQuantity(0);
 
                 simulationResult
-                    .Tabletop.NonactivePlayer.Graveyard
+                    .Tabletop.NonActivePlayer.Graveyard
                     .Must().NotBeNull("because nonactive player should have hand")
                     .And.BeGraveyard()
                     .And.BePublic()

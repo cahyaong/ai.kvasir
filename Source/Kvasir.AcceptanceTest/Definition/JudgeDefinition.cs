@@ -102,7 +102,7 @@ public sealed class JudgeDefinition
 
         var blockingPermanent = this
             ._tabletop
-            .CreateNonactiveCreaturePermanent($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
+            .CreateNonActiveCreaturePermanent($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
 
         this._blockingPermanents.Insert(index, blockingPermanent);
         this._tabletop.Battlefield.AddToTop(blockingPermanent);
@@ -121,7 +121,7 @@ public sealed class JudgeDefinition
 
         var blockingPermanent = this
             ._tabletop
-            .CreateNonactiveCreaturePermanent($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
+            .CreateNonActiveCreaturePermanent($"[_MOCK_BLOCKER_{index:D2}_]", power, toughness);
 
         this._blockingPermanents.Insert(index, blockingPermanent);
     }
@@ -150,7 +150,7 @@ public sealed class JudgeDefinition
             .Should().Be(life, "because active player should have correct life");
 
         this._tabletop
-            .NonactivePlayer.Life
+            .NonActivePlayer.Life
             .Should().Be(life, "because nonactive player should have correct life");
     }
 
@@ -240,7 +240,7 @@ public sealed class JudgeDefinition
             else if (zoneKind == ZoneKind.Graveyard)
             {
                 this._tabletop
-                    .Must().HaveCardInNonactiveGraveyard(blocker);
+                    .Must().HaveCardInNonActiveGraveyard(blocker);
             }
             else
             {
@@ -260,7 +260,7 @@ public sealed class JudgeDefinition
         return text switch
         {
             "active" => this._tabletop.ActivePlayer,
-            "nonactive" => this._tabletop.NonactivePlayer,
+            "nonactive" => this._tabletop.NonActivePlayer,
 
             _ => throw new KvasirTestingException(
                 "Player should be 'active' or 'nonactive'!",

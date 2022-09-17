@@ -56,7 +56,7 @@ public class JudgeTests
                 TurnId = 0,
                 Phase = Phase.Ending,
                 ActivePlayer = firstPlayer,
-                NonactivePlayer = secondPlayer
+                NonActivePlayer = secondPlayer
             };
 
             var judge = new Judge(mockLogger.Object);
@@ -76,7 +76,7 @@ public class JudgeTests
                 .Should().Be(secondPlayer, "because second player should be active");
 
             tabletop
-                .NonactivePlayer
+                .NonActivePlayer
                 .Should().Be(firstPlayer, "because first player should be nonactive");
         }
 
@@ -95,7 +95,7 @@ public class JudgeTests
                 TurnId = 0,
                 Phase = Phase.Ending,
                 ActivePlayer = firstPlayer,
-                NonactivePlayer = secondPlayer
+                NonActivePlayer = secondPlayer
             };
 
             tabletop
@@ -132,7 +132,7 @@ public class JudgeTests
         }
 
         [Fact]
-        public void WhenEnteringUntapStep_ShouldKeepStatusForCreatureControlledByNonactivePlayer()
+        public void WhenEnteringUntapStep_ShouldKeepStatusForCreatureControlledByNonActivePlayer()
         {
             // Arrange.
 
@@ -146,7 +146,7 @@ public class JudgeTests
                 TurnId = 0,
                 Phase = Phase.Ending,
                 ActivePlayer = firstPlayer,
-                NonactivePlayer = secondPlayer
+                NonActivePlayer = secondPlayer
             };
 
             tabletop
@@ -220,7 +220,7 @@ public class JudgeTests
                 tabletop.CreateActiveCreaturePermanent("[_MOCK_ATTACKER_03_]", 3, 3)
             };
 
-            var blockingPermanent = tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_]", 0, 5);
+            var blockingPermanent = tabletop.CreateNonActiveCreaturePermanent("[_MOCK_BLOCKER_]", 0, 5);
 
             mockAttackingStrategy.WithAttackingDecision(attackingPermanents);
             mockBlockingStrategy.WithBlockingDecision(attackingPermanents.First(), new[] { blockingPermanent });
@@ -345,9 +345,9 @@ public class JudgeTests
 
             var blockingPermanents = new[]
             {
-                tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_01_]", 0, 11),
-                tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_02_]", 0, 12),
-                tabletop.CreateNonactiveCreaturePermanent("[_MOCK_BLOCKER_02_]", 0, 13)
+                tabletop.CreateNonActiveCreaturePermanent("[_MOCK_BLOCKER_01_]", 0, 11),
+                tabletop.CreateNonActiveCreaturePermanent("[_MOCK_BLOCKER_02_]", 0, 12),
+                tabletop.CreateNonActiveCreaturePermanent("[_MOCK_BLOCKER_02_]", 0, 13)
             };
 
             mockAttackingStrategy.WithAttackingDecision(attackingPermanent);
@@ -398,7 +398,7 @@ public class JudgeTests
 
             for (var value = 1; value <= 3; value++)
             {
-                var tappedPermanent = tabletop.CreateNonactiveCreaturePermanent(
+                var tappedPermanent = tabletop.CreateNonActiveCreaturePermanent(
                     $"[_MOCK_TAPPED_{value}_]",
                     value,
                     value);
@@ -406,7 +406,7 @@ public class JudgeTests
                 tappedPermanent.IsTapped = true;
                 tabletop.Battlefield.AddToTop(tappedPermanent);
 
-                var untappedPermanent = tabletop.CreateNonactiveCreaturePermanent(
+                var untappedPermanent = tabletop.CreateNonActiveCreaturePermanent(
                     $"[_MOCK_UNTAPPED_{value}_]",
                     value,
                     value);

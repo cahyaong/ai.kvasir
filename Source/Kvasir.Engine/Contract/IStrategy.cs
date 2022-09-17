@@ -38,7 +38,9 @@ public interface IStrategy
 
     IBlockingDecision DeclareBlocker(ITabletop tabletop);
 
-    IAction PerformAction(ITabletop tabletop);
+    IAction PerformActiveAction(ITabletop tabletop);
+
+    IAction PerformNonActiveAction(ITabletop tabletop);
 }
 
 public static class Strategy
@@ -66,9 +68,14 @@ public class UnknownStrategy : IStrategy
         throw new NotSupportedException("Declaring blocker is not supported!");
     }
 
-    public IAction PerformAction(ITabletop tabletop)
+    public IAction PerformActiveAction(ITabletop _)
     {
-        throw new NotSupportedException("Performing action is not supported!");
+        throw new NotSupportedException("Performing active action is not supported!");
+    }
+
+    public IAction PerformNonActiveAction(ITabletop _)
+    {
+        throw new NotSupportedException("Performing non-active action is not supported!");
     }
 }
 
@@ -80,17 +87,22 @@ public class NoopStrategy : IStrategy
 
     internal static NoopStrategy Instance { get; } = new();
 
-    public IAttackingDecision DeclareAttacker(ITabletop tabletop)
+    public IAttackingDecision DeclareAttacker(ITabletop _)
     {
         return AttackingDecision.None;
     }
 
-    public IBlockingDecision DeclareBlocker(ITabletop tabletop)
+    public IBlockingDecision DeclareBlocker(ITabletop _)
     {
         return BlockingDecision.None;
     }
 
-    public IAction PerformAction(ITabletop tabletop)
+    public IAction PerformActiveAction(ITabletop _)
+    {
+        return Action.Pass();
+    }
+
+    public IAction PerformNonActiveAction(ITabletop _)
     {
         return Action.Pass();
     }

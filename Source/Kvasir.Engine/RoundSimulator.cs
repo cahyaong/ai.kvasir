@@ -62,7 +62,7 @@ public class RoundSimulator
             .SetupTabletop(simulationConfig.ShouldTerminateOnIllegalAction)
             .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
             .SetupPlayerZones(this._tabletop.ActivePlayer)
-            .SetupPlayerZones(this._tabletop.NonactivePlayer);
+            .SetupPlayerZones(this._tabletop.NonActivePlayer);
 
         while (this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1)
         {
@@ -109,16 +109,16 @@ public class RoundSimulator
         if (firstValue > secondValue)
         {
             this._tabletop.ActivePlayer = firstPlayer;
-            this._tabletop.NonactivePlayer = secondPlayer;
+            this._tabletop.NonActivePlayer = secondPlayer;
         }
         else
         {
             this._tabletop.ActivePlayer = secondPlayer;
-            this._tabletop.NonactivePlayer = firstPlayer;
+            this._tabletop.NonActivePlayer = firstPlayer;
         }
 
         this._tabletop.ActivePlayer.Life = 20;
-        this._tabletop.NonactivePlayer.Life = 20;
+        this._tabletop.NonActivePlayer.Life = 20;
 
         return this;
     }
@@ -139,7 +139,7 @@ public class RoundSimulator
             .Select(_ => player.Library.FindFromTop())
             .ForEach(card => player.Library.MoveToZone(card, player.Hand));
 
-        // TODO: Implement proper `mulligan` for Rx-103.4 sub-rule.
+        // TODO (SHOULD): Implement proper `mulligan` for sub-rule 103.4!
 
         return this;
     }

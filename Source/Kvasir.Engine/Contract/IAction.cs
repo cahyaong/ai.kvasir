@@ -35,6 +35,8 @@ public interface IAction : IDiagnostic
 {
     ActionKind Kind { get; }
 
+    IActionSource Source { get; }
+
     IPlayer Owner { get; set; }
 }
 
@@ -51,6 +53,8 @@ internal class UnknownAction : IAction
     public string Name => DefinedText.Unknown;
 
     public ActionKind Kind => ActionKind.Unknown;
+
+    public IActionSource Source => ActionSource.Unknown;
 
     public IPlayer Owner
     {

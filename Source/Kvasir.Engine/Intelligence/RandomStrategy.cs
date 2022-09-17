@@ -44,8 +44,8 @@ public class RandomStrategy : IStrategy
 
     public IAttackingDecision DeclareAttacker(ITabletop tabletop)
     {
-        var attackingPermanents = Rulebook
-            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
+        var attackingPermanents = tabletop
+            .FindCreatures(PlayerModifier.Active, CreatureModifier.CanAttack)
             .Where(_ => this._randomGenerator.RollDice(20) <= 10)
             .Select(creature => creature.Permanent)
             .ToImmutableList();
@@ -58,8 +58,8 @@ public class RandomStrategy : IStrategy
 
     public IBlockingDecision DeclareBlocker(ITabletop tabletop)
     {
-        var blockingPermanents = Rulebook
-            .FindCreatures(tabletop, PlayerModifier.Nonactive, CreatureModifier.CanBlock)
+        var blockingPermanents = tabletop
+            .FindCreatures(PlayerModifier.NonActive, CreatureModifier.CanBlock)
             .Select(creature => creature.Permanent)
             .ToList();
 
@@ -96,7 +96,27 @@ public class RandomStrategy : IStrategy
         };
     }
 
-    public IAction PerformAction(ITabletop tabletop)
+    public IAction PerformActiveAction(ITabletop tabletop)
+    {
+        var legalActions = tabletop
+            .FindLegalActions(PlayerModifier.Active)
+            .ToImmutableArray();
+
+        if (!legalActions.Any())
+        {
+            return Action.Pass();
+        }
+
+        var playingLandActions = legalActions
+            .Where(action => action.Kind == ActionKind.PlayingLand)
+            .ToImmutableArray();
+
+        return playingLandActions.Any()
+            ? playingLandActions.First()
+            : legalActions[this._randomGenerator.RollDice(legalActions.Length)];
+    }
+
+    public IAction PerformNonActiveAction(ITabletop tabletop)
     {
         return Action.Pass();
     }

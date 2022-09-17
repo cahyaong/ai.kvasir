@@ -48,6 +48,10 @@ public interface IZone<TEntity>
 
     void RemoveFromTop();
 
+    void RemoveManyFromTop(int count);
+
+    IEnumerable<TEntity> FindManyFromTop(int count);
+
     IEnumerable<TEntity> FindAll();
 
     void RemoveAll();
@@ -87,6 +91,16 @@ internal class UnknownZone<TEntity> : IZone<TEntity>
     public void RemoveFromTop()
     {
         throw new NotSupportedException("Removing entity from top is not allowed!");
+    }
+
+    public void RemoveManyFromTop(int count)
+    {
+        throw new NotSupportedException("Removing many entities from top is not allowed!");
+    }
+
+    public IEnumerable<TEntity> FindManyFromTop(int count)
+    {
+        throw new NotSupportedException("Finding many entities from top is not allowed!");
     }
 
     public IEnumerable<TEntity> FindAll()

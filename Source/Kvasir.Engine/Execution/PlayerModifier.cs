@@ -33,5 +33,5 @@ public enum PlayerModifier
     Unknown = 0,
 
     Active = 1,
-    Nonactive = 2
+    NonActive = 2
 }

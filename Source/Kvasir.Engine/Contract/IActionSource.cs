@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="IActionSource.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,34 +23,36 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, April 22, 2022 2:53:41 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, July 6, 2022 6:09:23 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+namespace nGratis.AI.Kvasir.Engine;
 
-using Moq;
-using nGratis.AI.Kvasir.Engine;
-
-public static partial class MockExtensions
+public interface IActionSource
 {
-    public static Mock<IStrategy> WithDefault(this Mock<IStrategy> mockStrategy)
+    ICard Card { get; }
+
+    // TODO (SHOULD): Implement ability as another kind of action source!
+}
+
+internal class UnknownActionSource : IActionSource
+{
+    private UnknownActionSource()
     {
-        mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
-            .Returns(AttackingDecision.None);
-
-        mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
-            .Returns(BlockingDecision.None);
-
-        mockStrategy
-            .Setup(mock => mock.PerformActiveAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Pass);
-
-        mockStrategy
-            .Setup(mock => mock.PerformNonActiveAction(Arg.IsAny<Tabletop>()))
-            .Returns(Action.Pass);
-
-        return mockStrategy;
     }
+
+    internal static UnknownActionSource Instance { get; } = new();
+
+    public ICard Card => Engine.Card.Unknown;
+}
+
+internal class NoneActionSource : IActionSource
+{
+    private NoneActionSource()
+    {
+    }
+
+    internal static NoneActionSource Instance { get; } = new();
+
+    public ICard Card => Engine.Card.Unknown;
 }
