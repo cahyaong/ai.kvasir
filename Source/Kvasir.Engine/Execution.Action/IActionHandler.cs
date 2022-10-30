@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationResult.cs" company="nGratis">
+// <copyright file="IActionHandler.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,36 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, September 18, 2022 12:28:27 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-public class ValidationResult
+public interface IActionHandler
 {
-    private ValidationResult()
-    {
-        this.Reasons = Array.Empty<ValidationReason>();
-    }
+    ActionKind Kind { get; }
 
-    public static ValidationResult Successful { get; } = new();
+    bool IsSpecialAction { get; }
 
-    public bool HasError => this.Reasons.Any();
+    ValidationResult Validate(ITabletop tabletop, IAction action);
 
-    public IEnumerable<ValidationReason> Reasons { get; init; }
-
-    public IEnumerable<string> Messages => this
-        .Reasons
-        .Select(reason => reason.Message);
-
-    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
-    {
-        return reasons.Any()
-            ? new ValidationResult { Reasons = reasons }
-            : ValidationResult.Successful;
-    }
+    void Resolve(ITabletop tabletop, IAction action);
 }

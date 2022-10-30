@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -96,40 +95,6 @@ public static class TabletopExtensions
         }
 
         return legalActions;
-    }
-
-    public static ValidationResult Validate(this ITabletop tabletop, IAction action)
-    {
-        throw new NotImplementedException();
-    }
-
-    internal static bool ShouldResolveSpecialAction(this ITabletop _, IAction action)
-    {
-        return action.Kind == ActionKind.PlayingLand;
-    }
-
-    internal static void ResolveSpecialAction(this ITabletop tabletop, IAction action)
-    {
-        // RX-116.2a — Playing a land is a special action. To play a land, a player puts that land onto the battlefield
-        // from the zone it was in (usually that player’s hand). By default, a player can take this action
-        // only once during each of their turns. A player can take this action any time they have priority
-        // and the stack is empty during a main phase of their turn. See rule 305, “Lands.”.
-
-        // RX-505.5b — During either main phase, the active player may play one land card from their hand if the
-        // stack is empty, if the player has priority, and if they haven’t played a land this turn(unless an
-        // effect states the player may play additional lands).This action doesn’t use the stack. Neither the
-        // land nor the action of playing the land is a spell or ability, so it can’t be countered, and players
-        // can’t respond to it with instants or activated abilities. (See rule 305, “Lands.”).
-
-        // TODO (MUST): Implement validation before playing land!
-
-        if (action.Kind == ActionKind.PlayingLand)
-        {
-            action.Owner.Hand.MoveToZone(
-                action.Source.Card,
-                tabletop.Battlefield,
-                card => card.AsPermanent(action.Owner));
-        }
     }
 
     internal static bool ShouldResolveStack(this ITabletop tabletop)

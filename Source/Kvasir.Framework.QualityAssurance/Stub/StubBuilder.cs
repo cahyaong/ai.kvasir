@@ -31,40 +31,8 @@ namespace nGratis.AI.Kvasir.Framework;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 
-public static class StubBuilder
+public static partial class StubBuilder
 {
-    public static ITabletop CreateDefaultTabletop()
-    {
-        return StubBuilder.CreateDefaultTabletop(Strategy.Noop, Strategy.Noop);
-    }
-
-    public static ITabletop CreateDefaultTabletop(IStrategy attackingStrategy, IStrategy blockingStrategy)
-    {
-        var activePlayer = new Player
-        {
-            Name = "[_MOCK_PLAYER__ACTIVE_]",
-            Kind = PlayerKind.Testing,
-            Strategy = attackingStrategy,
-            Life = 20
-        };
-
-        var nonactivePlayer = new Player
-        {
-            Name = "[_MOCK_PLAYER__NONACTIVE_]",
-            Kind = PlayerKind.Testing,
-            Strategy = blockingStrategy,
-            Life = 20
-        };
-
-        return new Tabletop
-        {
-            TurnId = 0,
-            Phase = Phase.Beginning,
-            ActivePlayer = activePlayer,
-            NonActivePlayer = nonactivePlayer
-        };
-    }
-
     public static IPlayer CreateDefaultPlayer(string name)
     {
         return StubBuilder.CreateDefaultPlayer(name, Strategy.Noop);
@@ -78,6 +46,15 @@ public static class StubBuilder
             Kind = PlayerKind.Testing,
             Strategy = strategy,
             Life = 20
+        };
+    }
+
+    public static ICard CreateLandCard(string name)
+    {
+        return new Card
+        {
+            Name = name,
+            Kind = CardKind.Land
         };
     }
 
@@ -122,6 +99,20 @@ public static class StubBuilder
         permanent.Controller = tabletop.NonActivePlayer;
 
         return permanent;
+    }
+
+    public static IAction CreateStubAction(string name, IPlayer owner)
+    {
+        var card = new Card
+        {
+            Name = name,
+            Kind = CardKind.Stub
+        };
+
+        var action = Action.PlayStub(card);
+        action.Owner = owner;
+
+        return action;
     }
 
     private static IPermanent CreateCreaturePermanent(string name, int power, int toughness)

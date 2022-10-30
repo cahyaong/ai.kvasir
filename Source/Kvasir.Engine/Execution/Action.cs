@@ -71,4 +71,16 @@ public class Action : IAction
             }
         };
     }
+
+    internal static IAction PlayStub(ICard card)
+    {
+        return new Action
+        {
+            Kind = ActionKind.PlayingStub,
+            Source = new ActionSource
+            {
+                Card = card
+            }
+        };
+    }
 }

@@ -88,4 +88,6 @@ public class Tabletop : ITabletop
     public bool IsFirstTurn => this.TurnId <= 0;
 
     public bool IsActionPerformed { get; set; }
+
+    public int PlayedLandCount { get; set; }
 }

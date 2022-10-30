@@ -32,6 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
@@ -43,6 +44,8 @@ public class Judge
     private readonly ILogger _logger;
 
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
+
+    private readonly IReadOnlyDictionary<ActionKind, IActionHandler> _actionHandlerByActionKindLookup;
 
     public Judge(ILogger logger)
         : this(true, logger)
@@ -62,6 +65,15 @@ public class Judge
             [Phase.PostcombatMain] = this.ExecuteMainPhase,
             [Phase.Ending] = this.ExecuteEndingPhase
         };
+
+        this._actionHandlerByActionKindLookup = Assembly
+            .GetExecutingAssembly()
+            .GetTypes()
+            .Where(type => !type.IsInterface)
+            .Where(type => type.IsAssignableTo(typeof(IActionHandler)))
+            .Select(Activator.CreateInstance)
+            .Cast<IActionHandler>()
+            .ToImmutableDictionary(handler => handler.Kind);
     }
 
     public static Judge Unknown { get; } = new(VoidLogger.Instance);
@@ -184,9 +196,16 @@ public class Judge
 
                 performedAction.Owner = selectedPlayer;
 
-                if (tabletop.ShouldResolveSpecialAction(performedAction))
+                if (!this._actionHandlerByActionKindLookup.TryGetValue(performedAction.Kind, out var actionHandler))
                 {
-                    tabletop.ResolveSpecialAction(performedAction);
+                    throw new KvasirException(
+                        "Action has no handler associated to it!",
+                        ("Action Kind", performedAction.Kind));
+                }
+
+                if (actionHandler.IsSpecialAction)
+                {
+                    actionHandler.Resolve(tabletop, performedAction);
                 }
                 else
                 {
@@ -211,11 +230,6 @@ public class Judge
         // RX-405.5 — ...If the stack is empty when all players pass, the current step or phase ends and the next
         // begins.
 
-        return ExecutionResult.Successful;
-    }
-
-    private ExecutionResult ExecuteResolvingStackStep(ITabletop tabletop)
-    {
         return ExecutionResult.Successful;
     }
 
@@ -382,6 +396,7 @@ public class Judge
         // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).
 
         tabletop.PrioritizedPlayer = Player.None;
+        tabletop.PlayedLandCount = 0;
 
         return ExecutionResult.Successful;
     }

@@ -28,6 +28,8 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using nGratis.Cop.Olympus.Contract;
 
 public class ValidationReason
@@ -37,6 +39,7 @@ public class ValidationReason
         this.Id = -42;
         this.Cause = DefinedText.Unknown;
         this.Reference = DefinedText.Unknown;
+        this.RuleIds = ImmutableList<string>.Empty;
         this.Message = DefinedText.Unknown;
     }
 
@@ -46,14 +49,16 @@ public class ValidationReason
 
     public string Reference { get; init; }
 
+    public IEnumerable<string> RuleIds { get; init; }
+
     public string Message { get; init; }
 
-    public static ValidationReason Create(string message, Creature creature)
+    public static ValidationReason Create(string message, IEnumerable<string> ruleIds, Creature creature)
     {
-        return ValidationReason.Create(message, creature.Permanent);
+        return ValidationReason.Create(message, ruleIds, creature.Permanent);
     }
 
-    public static ValidationReason Create(string message, IPermanent permanent)
+    public static ValidationReason Create(string message, IEnumerable<string> ruleIds, IPermanent permanent)
     {
         Guard
             .Require(message, nameof(message))
@@ -64,6 +69,23 @@ public class ValidationReason
             Id = permanent.Id,
             Cause = $"Permanent_{permanent.Card.Kind}",
             Reference = permanent.Name,
+            RuleIds = ruleIds,
+            Message = message
+        };
+    }
+
+    public static ValidationReason Create(string message, IEnumerable<string> ruleIds, IAction action)
+    {
+        Guard
+            .Require(message, nameof(message))
+            .Is.Not.Empty();
+
+        return new ValidationReason
+        {
+            Id = action.Id,
+            Cause = $"Action_{action.Kind}",
+            Reference = action.Source.Card.Name,
+            RuleIds = ruleIds,
             Message = message
         };
     }

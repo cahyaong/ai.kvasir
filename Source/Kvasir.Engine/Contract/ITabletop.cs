@@ -55,6 +55,8 @@ public interface ITabletop
     bool IsFirstTurn { get; }
 
     bool IsActionPerformed { get; set; }
+
+    int PlayedLandCount { get; set; }
 }
 
 public class UnknownTabletop : ITabletop
@@ -115,5 +117,15 @@ public class UnknownTabletop : ITabletop
 
     public bool IsFirstTurn => true;
 
-    public bool IsActionPerformed { get; set; }
+    public bool IsActionPerformed
+    {
+        get => false;
+        set => throw new NotSupportedException("Setting action performed flag is not allowed!");
+    }
+
+    public int PlayedLandCount
+    {
+        get => 0;
+        set => throw new NotSupportedException("Setting played land count is not allowed!");
+    }
 }
