@@ -40,6 +40,8 @@ using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 using Xunit;
 
+// TODO (SHOULD): Add integration test that uses the actual Scryfall API!
+
 public class ScryfallFetcherTests
 {
     public class FetchCardSetsAsyncMethod

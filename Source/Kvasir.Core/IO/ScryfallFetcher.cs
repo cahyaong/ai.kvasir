@@ -257,7 +257,7 @@ public class ScryfallFetcher : MagicHttpFetcherBase
             if (urlMatch.Success)
             {
                 return new DataSpec(
-                    $"{urlMatch.Groups["salt"].Value}_{urlMatch.Groups["url"].Value.CalculateMd5Hash()}",
+                    $"{urlMatch.Groups["salt"].Value}_{urlMatch.Groups["file"].Value.CalculateMd5Hash()}",
                     Mime.Jpeg);
             }
 
@@ -272,7 +272,7 @@ public class ScryfallFetcher : MagicHttpFetcherBase
             RegexOptions.Compiled);
 
         public static readonly Regex CardImageUrl = new(
-            @"/(scryfall\-)?cards/border_crop/(?<url>[a-z0-9/]+/[a-z0-9\-%]+\.jpg\?(?<salt>\d+))",
+            @"(/cards\.scryfall\.io)?/border_crop/(?<file>[a-z0-9/]+/[a-z0-9\-%]+\.jpg\?(?<salt>\d+))",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
     }
 }
