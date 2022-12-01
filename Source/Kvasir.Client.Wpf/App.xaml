@@ -1,0 +1,22 @@
+﻿<Application
+  x:Class="nGratis.AI.Kvasir.Client.Wpf.App"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:client="clr-namespace:nGratis.AI.Kvasir.Client.Wpf"
+  xmlns:olympus="http://schemas.ngratis.com/2014/olympus">
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary>
+          <client:AppBootstrapper x:Key="Bootstrapper" />
+        </ResourceDictionary>
+        <olympus:SharedResourceDictionary Source="/nGratis.Cop.Olympus.Wpf;component/Cop.Converter.xaml" />
+        <olympus:SharedResourceDictionary Source="/nGratis.Cop.Olympus.Wpf.Theme;component/Cop.Theme.Dark.xaml" />
+        <olympus:SharedResourceDictionary Source="/nGratis.AI.Kvasir.Client.Wpf;component/Theme/AI.Theme.Generic.xaml" />
+        <ResourceDictionary>
+          <client:MagicTimestampToStringConverter x:Key="Kvasir.Converter.MagicTimestampToStringConverter" />
+        </ResourceDictionary>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+</Application>
