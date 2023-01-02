@@ -28,11 +28,15 @@
 
 namespace nGratis.AI.Kvasir.Framework;
 
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
+using JetBrains.Annotations;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
@@ -155,12 +159,19 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
                 .OfType<ICard>()
                 .GroupBy(card => card.GetHashCode())
                 .Where(grouping => grouping.Count() > 1)
-                .ForEach(grouping => Execute
+                .Select(grouping => new
+                {
+                    Id = grouping.First().GetHashCode(),
+                    grouping.First().Name,
+                    Count = grouping.Count(),
+                    Unit = "card".ToCorrectPluralization(grouping.Count()),
+                })
+                .ForEach(anon => Execute
                     .Assertion
                     .FailWith(
                         $"Expected {this.Identifier} to have unique card instance, " +
-                        $"but found {grouping.Count()} [{grouping.First().Name}] cards " +
-                        $"with ID [{grouping.First().GetHashCode()}]."));
+                        $"but found {anon.Count} [{anon.Name}] {anon.Unit} " +
+                        $"with ID [{anon.Id}]."));
         }
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
@@ -174,7 +185,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(actualQuantity == quantity)
             .FailWith(
-                $"Expected {this.Identifier} to have {quantity} entities, " +
+                $"Expected {this.Identifier} to have {quantity} {"entity".ToCorrectPluralization(quantity)}, " +
                 $"but found {actualQuantity}.");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
@@ -184,7 +195,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
     {
         Guard
             .Require(typeof(TEntity), nameof(TEntity))
-            .Is.EqualTo(typeof(IDiagnostic));
+            .Is.AssignableTo(typeof(IDiagnostic));
 
         Guard
             .Require(name, nameof(name))
@@ -200,8 +211,91 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(actualQuantity == quantity)
             .FailWith(
-                $"Expected {this.Identifier} to have {quantity} [{name}] entities, " +
+                $"Expected {this.Identifier} to have {quantity} [{name}] {"entity".ToCorrectPluralization(quantity)}, " +
                 $"but found {actualQuantity}.");
+
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
+    }
+
+    public AndConstraint<ZoneAssertion<TEntity>> Contain(params string[] names)
+    {
+        Guard
+            .Require(typeof(TEntity), nameof(TEntity))
+            .Is.AssignableTo(typeof(IDiagnostic));
+
+        Guard
+            .Require(names, nameof(names))
+            .Is.Not.Empty();
+
+        var actualNames = this
+            .Subject
+            .FindAll()
+            .OfType<IDiagnostic>()
+            .Select(diagnostic => diagnostic.Name)
+            .ToImmutableList();
+
+        Execute
+            .Assertion
+            .ForCondition(names.All(name => actualNames.Contains(name)))
+            .FailWith(
+                $"Expected {this.Identifier} to contain ({names.ToPrettifiedText()}), " +
+                $"but found ({actualNames.ToPrettifiedText()})");
+
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
+    }
+
+    public AndConstraint<ZoneAssertion<TEntity>> NotContain(params string[] names)
+    {
+        Guard
+            .Require(typeof(TEntity), nameof(TEntity))
+            .Is.AssignableTo(typeof(IDiagnostic));
+
+        Guard
+            .Require(names, nameof(names))
+            .Is.Not.Empty();
+
+        var actualNames = this
+            .Subject
+            .FindAll()
+            .OfType<IDiagnostic>()
+            .Select(diagnostic => diagnostic.Name)
+            .ToImmutableList();
+
+        Execute
+            .Assertion
+            .ForCondition(names.All(name => !actualNames.Contains(name)))
+            .FailWith(
+                $"Expected {this.Identifier} to not contain ({names.ToPrettifiedText()}), " +
+                $"but found ({actualNames.ToPrettifiedText()})");
+
+        return new AndConstraint<ZoneAssertion<TEntity>>(this);
+    }
+
+    public AndConstraint<ZoneAssertion<TEntity>> ContainMatching([RegexPattern] string pattern)
+    {
+        Guard
+            .Require(typeof(TEntity), nameof(TEntity))
+            .Is.AssignableTo(typeof(IDiagnostic));
+
+        Guard
+            .Require(pattern, nameof(pattern))
+            .Is.Not.Empty();
+
+        var actualNames = this
+            .Subject
+            .FindAll()
+            .OfType<IDiagnostic>()
+            .Select(diagnostic => diagnostic.Name)
+            .ToImmutableList();
+
+        var regex = new Regex(pattern);
+
+        Execute
+            .Assertion
+            .ForCondition(actualNames.All(name => regex.IsMatch(name)))
+            .FailWith(
+                $"Expected {this.Identifier} to contain pattern [{pattern}], " +
+                $"but found ({actualNames.ToPrettifiedText()})");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
     }

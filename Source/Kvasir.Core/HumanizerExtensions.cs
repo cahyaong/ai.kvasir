@@ -55,4 +55,11 @@ public static class HumanizerExtensions
 
         return value;
     }
+
+    public static string ToCorrectPluralization(this string text, int quantity)
+    {
+        return quantity <= 1
+            ? text.Singularize(false, true)
+            : text.Pluralize(false);
+    }
 }

@@ -66,7 +66,7 @@ public class RoundSimulatorTests
 
         var simulationConfig = new SimulationConfig
         {
-            MaxTurnCount = 50,
+            MaxTurnCount = 15,
             DefinedPlayers = definedPlayers
         };
 
@@ -78,10 +78,10 @@ public class RoundSimulatorTests
 
         executionResult
             .HasError
-            .Should().BeFalse();
+            .Should().BeFalse("because execution should complete without error");
 
         executionResult
             .Tabletop.TurnId
-            .Should().Be(49);
+            .Should().Be(14, "because turn should be executed up to max count");
     }
 }

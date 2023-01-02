@@ -47,7 +47,7 @@ public class RandomGeneratorTests
             // Act.
 
             var shufflingIndexes = randomGenerator
-                .GenerateShufflingIndexes(60)?
+                .GenerateShufflingIndexes(60)
                 .ToArray();
 
             // Assert.

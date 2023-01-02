@@ -78,7 +78,7 @@ public class Permanent : IPermanent
         {
             throw new KvasirException(
                 "Component with same type must be defined once!",
-                ("Existing Type(s)", existingTypes.ToPrettifiedText(type => type.Name)));
+                ("Existing Type(s)", $"({existingTypes.ToPrettifiedText(type => type.Name)})"));
         }
 
         partByTypeLookup.ForEach(this._partByTypeLookup.Add);

@@ -28,6 +28,8 @@
 
 namespace nGratis.AI.Kvasir.Framework;
 
+using System.Collections.Generic;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 
@@ -56,6 +58,21 @@ public static partial class StubBuilder
             Name = name,
             Kind = CardKind.Land
         };
+    }
+
+    public static IZone<ICard> AddStubCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
+    {
+        Enumerable
+            .Range(startingIndex, count)
+            .Select(index => new Card
+            {
+                Name = $"[_MOCK_STUB__{nameInfix}_{index:D2}_]",
+                Kind = CardKind.Stub,
+            })
+            .OrderByDescending(card => card.Name)
+            .ForEach(zone.AddToTop);
+
+        return zone;
     }
 
     public static IZone<IPermanent> AddDefaultCreaturePermanent(

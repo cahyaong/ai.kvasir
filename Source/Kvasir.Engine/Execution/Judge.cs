@@ -119,24 +119,34 @@ public class Judge
         if (!tabletop.IsFirstTurn)
         {
             (tabletop.ActivePlayer, tabletop.NonActivePlayer) = (tabletop.NonActivePlayer, tabletop.ActivePlayer);
+
+            // RX-117.3a — ...No player receives priority during the untap step...
+
+            tabletop.PrioritizedPlayer = Player.None;
+
+            // RX-502.3 — Third, the active player determines which permanents they control will untap. Then they untap
+            // them all simultaneously. This turn-based action doesn’t use the stack. Normally, all of a player’s
+            // permanents untap, but effects can keep one or more of a player’s permanents from untapping.
+
+            // TODO (SHOULD): Implement untap action for other permanent types besides creature!
+
+            tabletop
+                .FindCreatures(PlayerModifier.Active, CreatureModifier.None)
+                .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
+                .ForEach(creature => creature.Permanent.IsTapped = false);
+
+            this._logger.LogDiagnostic(tabletop);
+
+            // RX-504.1 — First, the active player draws a card. This turn-based action doesn’t use the stack.
+
+            tabletop.ActivePlayer.Library.MoveToZone(
+                tabletop.ActivePlayer.Library.FindFromTop(),
+                tabletop.ActivePlayer.Hand);
         }
 
-        // RX-117.3a — ...No player receives priority during the untap step...
+        // RX-504.2 — Second, the active player gets priority. (See RX-117, “Timing and Priority”).
 
-        tabletop.PrioritizedPlayer = Player.None;
-
-        // RX-502.3 — Third, the active player determines which permanents they control will untap. Then they untap
-        // them all simultaneously. This turn-based action doesn’t use the stack. Normally, all of a player’s
-        // permanents untap, but effects can keep one or more of a player’s permanents from untapping.
-
-        // TODO (SHOULD): Implement untap action for other permanent types besides creature!
-
-        tabletop
-            .FindCreatures(PlayerModifier.Active, CreatureModifier.None)
-            .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
-            .ForEach(creature => creature.Permanent.IsTapped = false);
-
-        this._logger.LogDiagnostic(tabletop);
+        tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
 
         return ExecutionResult.Successful;
     }

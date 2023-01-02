@@ -43,7 +43,7 @@ public class PermanentFormatter : IValueFormatter
         var text = value switch
         {
             Permanent permanent => PermanentFormatter.Format(permanent),
-            IEnumerable<Permanent> permanents => $"[{permanents.ToPrettifiedText(PermanentFormatter.Format)}]",
+            IEnumerable<Permanent> permanents => $"({permanents.ToPrettifiedText(PermanentFormatter.Format)})",
             _ => DefinedText.Unsupported
         };
 

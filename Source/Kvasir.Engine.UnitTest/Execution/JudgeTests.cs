@@ -26,7 +26,7 @@
 // <creation_timestamp>Sunday, May 15, 2022 7:00:13 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine.UnitTest.Execution;
+namespace nGratis.AI.Kvasir.Engine.UnitTest;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -48,8 +48,8 @@ public class JudgeTests
 
             var mockLogger = MockBuilder.CreateMock<ILogger>();
 
-            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER_ALPHA_]");
-            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER_OMEGA_]");
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
 
             var tabletop = new Tabletop
             {
@@ -58,6 +58,8 @@ public class JudgeTests
                 ActivePlayer = firstPlayer,
                 NonActivePlayer = secondPlayer
             };
+
+            tabletop.WithDefaultLibrary();
 
             var judge = new Judge(mockLogger.Object);
 
@@ -69,7 +71,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             tabletop
                 .ActivePlayer
@@ -87,8 +89,8 @@ public class JudgeTests
 
             var mockLogger = MockBuilder.CreateMock<ILogger>();
 
-            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER_ALPHA_]");
-            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER_OMEGA_]");
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
 
             var tabletop = new Tabletop
             {
@@ -97,6 +99,8 @@ public class JudgeTests
                 ActivePlayer = firstPlayer,
                 NonActivePlayer = secondPlayer
             };
+
+            tabletop.WithDefaultLibrary();
 
             tabletop
                 .Battlefield
@@ -115,7 +119,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             using var _ = new AssertionScope();
 
@@ -138,8 +142,8 @@ public class JudgeTests
 
             var mockLogger = MockBuilder.CreateMock<ILogger>();
 
-            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER_ALPHA_]");
-            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER_OMEGA_]");
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
 
             var tabletop = new Tabletop
             {
@@ -148,6 +152,8 @@ public class JudgeTests
                 ActivePlayer = firstPlayer,
                 NonActivePlayer = secondPlayer
             };
+
+            tabletop.WithDefaultLibrary();
 
             tabletop
                 .Battlefield
@@ -166,7 +172,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             using var _ = new AssertionScope();
 
@@ -194,12 +200,127 @@ public class JudgeTests
                         .Should().BeTrue($"because creature [{creature.Permanent.Name}] should be keep status");
                 });
         }
+
+        [Fact]
+        public void WhenEnteringDrawStepOnSecondTurn_ShouldDrawOneCardForActivePlayer()
+        {
+            // Arrange.
+
+            var mockLogger = MockBuilder.CreateMock<ILogger>();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                TurnId = 0,
+                Phase = Phase.Ending,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
+            firstPlayer.Hand.AddStubCard("ALPHA", 10, 1);
+
+            secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
+            secondPlayer.Hand.AddStubCard("OMEGA", 10, 3);
+
+            var judge = new Judge(mockLogger.Object);
+
+            // Act.
+
+            var executionResult = judge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .HasError
+                .Should().BeFalse("because execution should complete without error");
+
+            tabletop
+                .ActivePlayer.Library
+                .Must().HaveQuantity(9)
+                .And.NotContain("[_MOCK_STUB__OMEGA_00_]");
+
+            tabletop
+                .ActivePlayer.Hand
+                .Must().HaveQuantity(4)
+                .And.Contain(
+                    "[_MOCK_STUB__OMEGA_10_]", "[_MOCK_STUB__OMEGA_11_]", "[_MOCK_STUB__OMEGA_12_]",
+                    "[_MOCK_STUB__OMEGA_00_]");
+
+            tabletop
+                .NonActivePlayer.Library
+                .Must().HaveQuantity(5)
+                .And.ContainMatching("\\[_MOCK_STUB__ALPHA_0[0-4]_\\]");
+
+            tabletop
+                .NonActivePlayer.Hand
+                .Must().HaveQuantity(1)
+                .And.Contain("[_MOCK_STUB__ALPHA_10_]");
+        }
+
+        [Fact]
+        public void WhenEnteringDrawStepOnFirstTurn_ShouldNotDrawCardForActivePlayer()
+        {
+            // Arrange.
+
+            var mockLogger = MockBuilder.CreateMock<ILogger>();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                Phase = Phase.Setup,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
+            firstPlayer.Hand.AddStubCard("ALPHA", 10, 1);
+
+            secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
+            secondPlayer.Hand.AddStubCard("OMEGA", 10, 3);
+
+            var judge = new Judge(mockLogger.Object);
+
+            // Act.
+
+            var executionResult = judge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .HasError
+                .Should().BeFalse("because execution should complete without error");
+
+            tabletop
+                .ActivePlayer.Library
+                .Must().HaveQuantity(5)
+                .And.ContainMatching("\\[_MOCK_STUB__ALPHA_0[0-4]_\\]");
+
+            tabletop
+                .ActivePlayer.Hand
+                .Must().HaveQuantity(1)
+                .And.Contain("[_MOCK_STUB__ALPHA_10_]");
+
+            tabletop
+                .NonActivePlayer.Library
+                .Must().HaveQuantity(10)
+                .And.ContainMatching("\\[_MOCK_STUB__OMEGA_0[0-9]_\\]");
+
+            tabletop
+                .NonActivePlayer.Hand
+                .Must().HaveQuantity(3)
+                .And.ContainMatching("\\[_MOCK_STUB__OMEGA_1[0-2]_\\]");
+        }
     }
 
     public class ExecuteNextPhaseMethod_Combat
     {
         [Fact]
-        public void WhenDeclaringAttacker_ShouldTapAttackingCreature()
+        public void WhenEnteringDeclareAttackerStep_ShouldTapAttackingCreature()
         {
             // Arrange.
 
@@ -241,7 +362,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             using var _ = new AssertionScope();
 
@@ -259,7 +380,7 @@ public class JudgeTests
         }
 
         [Fact]
-        public void WhenDeclaringAttacker_ShouldKeepStatusForNotAttackingCreature()
+        public void WhenEnteringDeclareAttackerStep_ShouldKeepStatusForNotAttackingCreature()
         {
             // Arrange.
 
@@ -297,7 +418,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             using var _ = new AssertionScope();
 
@@ -327,7 +448,7 @@ public class JudgeTests
         }
 
         [Fact]
-        public void WhenDeclaringBlocker_ShouldNotTapBlockingCreature()
+        public void WhenEnteringDeclareBlockerStep_ShouldNotTapBlockingCreature()
         {
             // Arrange.
 
@@ -369,7 +490,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             using var _ = new AssertionScope();
 
@@ -387,7 +508,7 @@ public class JudgeTests
         }
 
         [Fact]
-        public void WhenDeclaringBlocker_ShouldKeepStatusForNotBlockingCreature()
+        public void WhenEnteringDeclareBlockerStep_ShouldKeepStatusForNotBlockingCreature()
         {
             // Arrange.
 
@@ -425,7 +546,7 @@ public class JudgeTests
 
             executionResult
                 .HasError
-                .Should().BeFalse();
+                .Should().BeFalse("because execution should complete without error");
 
             using var _ = new AssertionScope();
 

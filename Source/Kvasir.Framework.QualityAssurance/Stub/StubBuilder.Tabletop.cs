@@ -68,6 +68,29 @@ public static partial class StubBuilder
         };
     }
 
+    public static ITabletop WithDefaultLibrary(this ITabletop tabletop)
+    {
+        Enumerable
+            .Range(0, 10)
+            .Select(index => new Card
+            {
+                Name = $"[_MOCK_STUB__ACTIVE_{index:D2}_]",
+                Kind = CardKind.Stub
+            })
+            .ForEach(card => tabletop.ActivePlayer.Library.AddToTop(card));
+
+        Enumerable
+            .Range(0, 10)
+            .Select(index => new Card
+            {
+                Name = $"[_MOCK_STUB__NONACTIVE_{index:D2}_]",
+                Kind = CardKind.Stub
+            })
+            .ForEach(card => tabletop.NonActivePlayer.Library.AddToTop(card));
+
+        return tabletop;
+    }
+
     public static ITabletop WithLandCardInHand(this ITabletop tabletop, PlayerModifier playerModifier, int count)
     {
         Guard
@@ -81,21 +104,21 @@ public static partial class StubBuilder
         if (playerModifier == PlayerModifier.Active)
         {
             Enumerable
-                .Range(0, count)
+                .Range(1, count)
                 .ForEach(index =>
                 {
                     tabletop.ActivePlayer.Hand
-                        .AddToTop(StubBuilder.CreateLandCard($"[_MOCK_LAND_1{index + 1:D}_]"));
+                        .AddToTop(StubBuilder.CreateLandCard($"[_MOCK_LAND__ACTIVE_1{index + 1:D}_]"));
                 });
         }
         else if (playerModifier == PlayerModifier.NonActive)
         {
             Enumerable
-                .Range(0, count)
+                .Range(1, count)
                 .ForEach(index =>
                 {
                     tabletop.NonActivePlayer.Hand
-                        .AddToTop(StubBuilder.CreateLandCard($"[_MOCK_LAND_1{index + 1:D}_]"));
+                        .AddToTop(StubBuilder.CreateLandCard($"[_MOCK_LAND__NONACTIVE_2{index + 1:D}_]"));
                 });
         }
 

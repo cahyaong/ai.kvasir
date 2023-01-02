@@ -212,7 +212,7 @@ public partial class MagicCardParser
                 if (invalidSymbols.Any())
                 {
                     return CostParsingResult.CreateFailure<Cost_PayingManaContext>(
-                        $"No mapping for value {invalidSymbols.ToPrettifiedText()}.");
+                        $"No mapping for value ({invalidSymbols.ToPrettifiedText()}).");
                 }
 
                 context

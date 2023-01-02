@@ -26,8 +26,6 @@
 // <creation_timestamp>Saturday, September 17, 2022 6:51:55 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-
-
 namespace nGratis.AI.Kvasir.Engine.UnitTest;
 
 using FluentAssertions;

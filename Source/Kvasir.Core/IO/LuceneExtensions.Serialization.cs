@@ -84,7 +84,7 @@ internal static partial class LuceneExtensions
             throw new KvasirException(
                 "Instance must have valid fields when converting to Lucene document!",
                 ("Instance Type", instance.GetType().FullName ?? DefinedText.Unknown),
-                ("Field Names", fieldNames.ToPrettifiedText()));
+                ("Field Names", $"({fieldNames.ToPrettifiedText()})"));
         }
 
         propertyInfos

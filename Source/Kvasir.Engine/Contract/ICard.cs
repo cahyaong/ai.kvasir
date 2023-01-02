@@ -35,6 +35,8 @@ using nGratis.Cop.Olympus.Contract;
 
 public interface ICard : IDiagnostic
 {
+    // TODO (SHOULD): Implement the concept of owner and controller!
+
     CardKind Kind { get; }
 
     CardSuperKind SuperKind { get; }
