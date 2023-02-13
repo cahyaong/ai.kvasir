@@ -45,7 +45,7 @@ public class PlayingLandHandler : IActionHandler
         // only once during each of their turns. A player can take this action any time they have priority
         // and the stack is empty during a main phase of their turn. See rule 305, “Lands.”.
 
-        // RX-505.5b — During either main phase, the active player may play one land card from their hand if the
+        // RX-505.6b — During either main phase, the active player may play one land card from their hand if the
         // stack is empty, if the player has priority, and if they haven’t played a land this turn (unless an
         // effect states the player may play additional lands)...
 
@@ -53,7 +53,7 @@ public class PlayingLandHandler : IActionHandler
         {
             reasons.Add(ValidationReason.Create(
                 "Stack is not empty when playing a land!",
-                new[] { "116.2a", "505.5b" },
+                new[] { "116.2a", "505.6b" },
                 action));
         }
 
@@ -61,15 +61,14 @@ public class PlayingLandHandler : IActionHandler
         {
             reasons.Add(ValidationReason.Create(
                 "Non-active player is playing a land!",
-                new[] { "505.5b" },
+                new[] { "505.6b" },
                 action));
         }
-
-        if (tabletop.PlayedLandCount >= 1)
+        else if (tabletop.PlayedLandCount >= 1)
         {
             reasons.Add(ValidationReason.Create(
                 "Active player had played a land this turn!",
-                new[] { "116.2a", "505.5b" },
+                new[] { "116.2a", "505.6b" },
                 action));
         }
 

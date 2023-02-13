@@ -317,6 +317,70 @@ public class JudgeTests
         }
     }
 
+    public class ExecuteNextPhase_Main
+    {
+        [Fact]
+        public void WhenPlayingSecondLand_ShouldFailValidation()
+        {
+            // Arrange.
+
+            var mockLogger = MockBuilder.CreateMock<ILogger>();
+
+            var mockFirstStrategy = MockBuilder
+                .CreateMock<IStrategy>()
+                .WithPerformingPrioritizedAction(tabletop => !tabletop.ActivePlayer.Hand.IsEmpty
+                    ? Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop())
+                    : Action.Pass())
+                .WithPerformingNonPrioritizedAction(_ => Action.Pass());
+
+            var mockSecondStrategy = MockBuilder
+                .CreateMock<IStrategy>()
+                .WithPerformingDefaultAction();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]", mockFirstStrategy.Object);
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]", mockSecondStrategy.Object);
+
+            var tabletop = new Tabletop
+            {
+                Phase = Phase.Beginning,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            firstPlayer.Hand.AddLandCard("ALPHA", 0, 3);
+
+            var judge = new Judge(mockLogger.Object);
+
+            // Act.
+
+            var executionResult = judge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .HasError
+                .Should().BeTrue("because execution should complete with error");
+
+            executionResult
+                .Messages
+                .Should().HaveCount(1)
+                .And.Contain(
+                    "Active player had played a land this turn! " +
+                    "Cause: [Action_PlayingLand]. " +
+                    "Reference: [[_MOCK_LAND__ALPHA_01_]].");
+
+            tabletop
+                .Battlefield
+                .Must().HaveQuantity(1)
+                .And.Contain("[_MOCK_LAND__ALPHA_00_]");
+
+            tabletop
+                .ActivePlayer.Hand
+                .Must().HaveQuantity(2)
+                .And.ContainMatching("\\[_MOCK_LAND__ALPHA_0[1-2]_\\]");
+        }
+    }
+
     public class ExecuteNextPhaseMethod_Combat
     {
         [Fact]

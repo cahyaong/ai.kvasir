@@ -80,18 +80,15 @@ public class Judge
 
     public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
     {
+        var executionResults = new List<ExecutionResult>();
+
         do
         {
-            var executionResult = this.ExecuteNextPhase(tabletop);
-
-            if (executionResult.HasError)
-            {
-                return executionResult;
-            }
+            executionResults.Add(this.ExecuteNextPhase(tabletop));
         }
         while (tabletop.Phase != Phase.Ending);
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.Create(executionResults);
     }
 
     public ExecutionResult ExecuteNextPhase(ITabletop tabletop)
@@ -155,30 +152,22 @@ public class Judge
     {
         this._logger.LogDiagnostic(tabletop);
 
-        tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
-        var executionResult = this.ExecutePerformingActionStep(tabletop);
+        var executionResults = new List<ExecutionResult>();
 
-        if (executionResult.HasError)
-        {
-            return executionResult;
-        }
+        tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
+        executionResults.Add(this.ExecutePerformingActionStep(tabletop));
 
         // RX-117.3d — If a player has priority and chooses not to take any actions, that player passes. If any mana is
         // in that player’s mana pool, they announce what mana is there. Then the next player in turn order
         // receives priority.
 
         tabletop.PrioritizedPlayer = tabletop.NonActivePlayer;
-        executionResult = this.ExecutePerformingActionStep(tabletop);
-
-        if (executionResult.HasError)
-        {
-            return executionResult;
-        }
+        executionResults.Add(this.ExecutePerformingActionStep(tabletop));
 
         // RX-117.4 — If all players pass in succession (that is, if all players pass without taking any actions in
         // between passing), ..., if the stack is empty, the phase or step ends.
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.Create(executionResults);
     }
 
     private ExecutionResult ExecutePerformingActionStep(ITabletop tabletop)
@@ -189,6 +178,8 @@ public class Judge
             ? tabletop.NonActivePlayer
             : tabletop.ActivePlayer;
 
+        var validationResult = ValidationResult.Successful;
+
         while (!shouldEndStep)
         {
             var shouldResolveStack = false;
@@ -196,13 +187,15 @@ public class Judge
 
             while (!shouldResolveStack)
             {
-                var selectedPlayer = actionIndex % 2 == 0
+                var isPrioritizedAction = actionIndex % 2 == 0;
+
+                var selectedPlayer = isPrioritizedAction
                     ? tabletop.PrioritizedPlayer
                     : nonPrioritizedPlayer;
 
-                var performedAction = selectedPlayer == tabletop.ActivePlayer
-                    ? selectedPlayer.Strategy.PerformActiveAction(tabletop)
-                    : selectedPlayer.Strategy.PerformNonActiveAction(tabletop);
+                var performedAction = isPrioritizedAction
+                    ? selectedPlayer.Strategy.PerformPrioritizedAction(tabletop)
+                    : selectedPlayer.Strategy.PerformNonPrioritizedAction(tabletop);
 
                 performedAction.Owner = selectedPlayer;
 
@@ -213,23 +206,33 @@ public class Judge
                         ("Action Kind", performedAction.Kind));
                 }
 
-                if (actionHandler.IsSpecialAction)
+                validationResult = actionHandler.Validate(tabletop, performedAction);
+
+                if (validationResult.HasError)
                 {
-                    actionHandler.Resolve(tabletop, performedAction);
+                    shouldResolveStack = true;
+                    shouldEndStep = true;
                 }
                 else
                 {
-                    tabletop.Stack.AddToTop(performedAction);
-                    shouldResolveStack = tabletop.ShouldResolveStack();
-
-                    if (shouldResolveStack)
+                    if (actionHandler.IsSpecialAction)
                     {
-                        tabletop.ResolveStack();
-                        shouldEndStep = !tabletop.IsActionPerformed;
+                        actionHandler.Resolve(tabletop, performedAction);
                     }
                     else
                     {
-                        actionIndex++;
+                        tabletop.Stack.AddToTop(performedAction);
+                        shouldResolveStack = tabletop.ShouldResolveStack();
+
+                        if (shouldResolveStack)
+                        {
+                            tabletop.ResolveStack();
+                            shouldEndStep = !tabletop.IsActionPerformed;
+                        }
+                        else
+                        {
+                            actionIndex++;
+                        }
                     }
                 }
             }
@@ -240,7 +243,7 @@ public class Judge
         // RX-405.5 — ...If the stack is empty when all players pass, the current step or phase ends and the next
         // begins.
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.Create(validationResult.Messages);
     }
 
     private ExecutionResult ExecuteCombatPhase(ITabletop tabletop)
@@ -299,6 +302,8 @@ public class Judge
 
         var validationResult = attackingDecision.Validate();
 
+        // TODO (SHOULD): Remove all invalid attacking creatures, and continue with the valid ones!
+
         tabletop.AttackingDecision = !validationResult.HasError
             ? attackingDecision
             : AttackingDecision.None;
@@ -320,6 +325,8 @@ public class Judge
             .DeclareBlocker(tabletop);
 
         var validationResult = blockingDecision.Validate();
+
+        // TODO (SHOULD): Remove all invalid blocking creatures, and continue with the valid ones!
 
         tabletop.BlockingDecision = !validationResult.HasError
             ? blockingDecision

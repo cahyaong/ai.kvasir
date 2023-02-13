@@ -64,15 +64,19 @@ public class RoundSimulator
             .SetupPlayerZones(this._tabletop.ActivePlayer)
             .SetupPlayerZones(this._tabletop.NonActivePlayer);
 
+        var executionResults = new List<ExecutionResult>();
+
         while (this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1)
         {
-            this._judge.ExecuteNextTurn(this._tabletop);
+            executionResults.Add(this._judge.ExecuteNextTurn(this._tabletop));
         }
 
-        return new SimulationResult
-        {
-            Tabletop = this._tabletop
-        };
+        return SimulationResult.Create(
+            this._tabletop,
+            executionResults
+                .SelectMany(result => result.Messages)
+                .ToImmutableArray()
+        );
     }
 
     private RoundSimulator SetupTabletop(bool shouldTerminateOnIllegalAction)

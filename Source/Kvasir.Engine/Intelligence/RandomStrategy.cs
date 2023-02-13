@@ -96,7 +96,7 @@ public class RandomStrategy : IStrategy
         };
     }
 
-    public IAction PerformActiveAction(ITabletop tabletop)
+    public IAction PerformPrioritizedAction(ITabletop tabletop)
     {
         var legalActions = tabletop
             .FindLegalActions(PlayerModifier.Active)
@@ -116,7 +116,7 @@ public class RandomStrategy : IStrategy
             : legalActions[this._randomGenerator.RollDice(legalActions.Length)];
     }
 
-    public IAction PerformNonActiveAction(ITabletop tabletop)
+    public IAction PerformNonPrioritizedAction(ITabletop tabletop)
     {
         return Action.Pass();
     }

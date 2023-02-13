@@ -60,6 +60,17 @@ public static partial class StubBuilder
         };
     }
 
+    public static IZone<ICard> AddLandCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
+    {
+        Enumerable
+            .Range(startingIndex, count)
+            .Select(index => StubBuilder.CreateLandCard($"[_MOCK_LAND__{nameInfix}_{index:D2}_]"))
+            .OrderByDescending(card => card.Name)
+            .ForEach(zone.AddToTop);
+
+        return zone;
+    }
+
     public static IZone<ICard> AddStubCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
     {
         Enumerable

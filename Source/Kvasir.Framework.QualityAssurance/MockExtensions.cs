@@ -44,11 +44,11 @@ public static partial class MockExtensions
             .Returns(BlockingDecision.None);
 
         mockStrategy
-            .Setup(mock => mock.PerformActiveAction(Arg.IsAny<Tabletop>()))
+            .Setup(mock => mock.PerformPrioritizedAction(Arg.IsAny<Tabletop>()))
             .Returns(Action.Pass);
 
         mockStrategy
-            .Setup(mock => mock.PerformNonActiveAction(Arg.IsAny<Tabletop>()))
+            .Setup(mock => mock.PerformNonPrioritizedAction(Arg.IsAny<Tabletop>()))
             .Returns(Action.Pass);
 
         return mockStrategy;

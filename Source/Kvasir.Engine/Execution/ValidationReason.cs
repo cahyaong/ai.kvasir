@@ -30,6 +30,7 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Text;
 using nGratis.Cop.Olympus.Contract;
 
 public class ValidationReason
@@ -43,15 +44,15 @@ public class ValidationReason
         this.Message = DefinedText.Unknown;
     }
 
-    public int Id { get; init; }
+    public int Id { get; private init; }
 
-    public string Cause { get; init; }
+    public string Cause { get; private init; }
 
-    public string Reference { get; init; }
+    public string Reference { get; private init; }
 
-    public IEnumerable<string> RuleIds { get; init; }
+    public IEnumerable<string> RuleIds { get; private init; }
 
-    public string Message { get; init; }
+    public string Message { get; private init; }
 
     public static ValidationReason Create(string message, IEnumerable<string> ruleIds, Creature creature)
     {
@@ -88,5 +89,13 @@ public class ValidationReason
             RuleIds = ruleIds,
             Message = message
         };
+    }
+
+    public string CreateDetailedMessage()
+    {
+        return new StringBuilder(this.Message)
+            .Append($" Cause: [{this.Cause}].")
+            .Append($" Reference: [{this.Reference}].")
+            .ToString();
     }
 }

@@ -84,7 +84,11 @@ public static class TabletopExtensions
 
         if (playerModifier == PlayerModifier.Active)
         {
-            if (tabletop.Stack.IsEmpty)
+            var canPlayLand =
+                tabletop.Stack.IsEmpty &&
+                tabletop.PlayedLandCount <= 0;
+
+            if (canPlayLand)
             {
                 legalActions = legalActions.Concat(tabletop
                     .ActivePlayer.Hand
