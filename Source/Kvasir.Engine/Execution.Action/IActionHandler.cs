@@ -26,15 +26,17 @@
 // <creation_timestamp>Sunday, September 18, 2022 12:28:27 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
+using nGratis.AI.Kvasir.Engine.Execution;
+
 namespace nGratis.AI.Kvasir.Engine;
 
 public interface IActionHandler
 {
-    ActionKind Kind { get; }
+    ActionKind ActionKind { get; }
 
     bool IsSpecialAction { get; }
 
-    ValidationResult Validate(ITabletop tabletop, IAction action);
+    ValidationResult Validate(ITabletop tabletop, IAction action, IActionRequirement requirement);
 
-    void Resolve(ITabletop tabletop, IAction action);
+    void Resolve(ITabletop tabletop, IAction action, IActionRequirement requirement);
 }

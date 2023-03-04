@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine.Execution;
 
 public class RandomStrategy : IStrategy
 {
@@ -48,7 +49,12 @@ public class RandomStrategy : IStrategy
             .FindCreatures(PlayerModifier.Active, CreatureModifier.CanAttack)
             .Where(_ => this._randomGenerator.RollDice(20) <= 10)
             .Select(creature => creature.Permanent)
-            .ToImmutableList();
+            .ToImmutableArray();
+
+        if (!attackingPermanents.Any())
+        {
+            return AttackingDecision.None;
+        }
 
         return new AttackingDecision
         {
@@ -63,15 +69,15 @@ public class RandomStrategy : IStrategy
             .Select(creature => creature.Permanent)
             .ToList();
 
+        if (!blockingPermanents.Any())
+        {
+            return BlockingDecision.None;
+        }
+
         var combats = new List<Combat>();
 
         foreach (var attackingPermanent in tabletop.AttackingDecision.AttackingPermanents)
         {
-            if (!blockingPermanents.Any())
-            {
-                break;
-            }
-
             var shouldBlock = this._randomGenerator.RollDice(20) <= 10;
 
             if (!shouldBlock)
@@ -118,6 +124,19 @@ public class RandomStrategy : IStrategy
 
     public IAction PerformNonPrioritizedAction(ITabletop tabletop)
     {
+        return Action.Pass();
+    }
+
+    public IAction PerformRequiredAction(ITabletop tabletop, IActionRequirement requirement)
+    {
+        if (requirement.ActionKind == ActionKind.Discarding)
+        {
+            return Action.Discard(tabletop
+                .ActivePlayer.Hand
+                .FindManyFromTop(requirement.GetParameterValue<int>(ActionParameter.Quantity))
+                .ToArray());
+        }
+
         return Action.Pass();
     }
 }

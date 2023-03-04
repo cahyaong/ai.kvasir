@@ -29,7 +29,6 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 internal static class MagicConstant
-
 {
     public static class Hand
     {

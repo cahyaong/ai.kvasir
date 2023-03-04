@@ -29,14 +29,16 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using System.Collections.Generic;
+using System.Linq;
+using nGratis.AI.Kvasir.Engine.Execution;
 
-public class PlayingLandHandler : IActionHandler
+public class PlayingLandHandler : BaseActionHandler
 {
-    public ActionKind Kind => ActionKind.PlayingLand;
+    public override ActionKind ActionKind => ActionKind.PlayingLand;
 
-    public bool IsSpecialAction => true;
+    public override bool IsSpecialAction => true;
 
-    public ValidationResult Validate(ITabletop tabletop, IAction action)
+    protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action, IActionRequirement _)
     {
         var reasons = new List<ValidationReason>();
 
@@ -53,37 +55,37 @@ public class PlayingLandHandler : IActionHandler
         {
             reasons.Add(ValidationReason.Create(
                 "Stack is not empty when playing a land!",
-                new[] { "116.2a", "505.6b" },
+                new[] { "mtg-116.2a", "mtg-505.6b" },
                 action));
         }
 
-        if (action.Owner != tabletop.ActivePlayer)
+        if (action.Target.Player != tabletop.ActivePlayer)
         {
             reasons.Add(ValidationReason.Create(
                 "Non-active player is playing a land!",
-                new[] { "505.6b" },
+                new[] { "mtg-505.6b" },
                 action));
         }
         else if (tabletop.PlayedLandCount >= 1)
         {
             reasons.Add(ValidationReason.Create(
                 "Active player had played a land this turn!",
-                new[] { "116.2a", "505.6b" },
+                new[] { "mtg-116.2a", "mtg-505.6b" },
                 action));
         }
 
         return ValidationResult.Create(reasons);
     }
 
-    public void Resolve(ITabletop tabletop, IAction action)
+    protected override void ResolveCore(ITabletop tabletop, IAction action, IActionRequirement _)
     {
         // RX-116.2a — Playing a land is a special action. To play a land, a player puts that land onto the battlefield
         // from the zone it was in (usually that player’s hand)...
 
-        action.Owner.Hand.MoveToZone(
-            action.Source.Card,
+        action.Target.Player.Hand.MoveToZone(
+            action.Target.Cards.Single(),
             tabletop.Battlefield,
-            card => card.AsPermanent(action.Owner));
+            card => card.AsPermanent(action.Target.Player));
 
         tabletop.PlayedLandCount++;
     }

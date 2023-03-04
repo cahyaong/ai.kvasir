@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StubBuilder.cs" company="nGratis">
+// <copyright file="StubBuilder.Zone.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,74 +23,58 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, November 26, 2021 10:47:20 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, February 25, 2023 2:27:55 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Framework;
 
+using System.Collections.Generic;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 
 public static partial class StubBuilder
 {
-    public static IPlayer CreateDefaultPlayer(string name)
+    public static IZone<ICard> AddLandCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
     {
-        return StubBuilder.CreateDefaultPlayer(name, Strategy.Noop);
+        Enumerable
+            .Range(startingIndex, count)
+            .Select(index => StubBuilder.CreateLandCard($"[_MOCK_LAND__{nameInfix}_{index:D2}_]"))
+            .OrderByDescending(card => card.Name)
+            .ForEach(zone.AddToTop);
+
+        return zone;
     }
 
-    public static IPlayer CreateDefaultPlayer(string name, IStrategy strategy)
+    public static IZone<ICard> AddStubCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
     {
-        return new Player
-        {
-            Name = name,
-            Kind = PlayerKind.Testing,
-            Strategy = strategy,
-            Life = 20
-        };
+        Enumerable
+            .Range(startingIndex, count)
+            .Select(index => new Card
+            {
+                Name = $"[_MOCK_STUB__{nameInfix}_{index:D2}_]",
+                Kind = CardKind.Stub,
+            })
+            .OrderByDescending(card => card.Name)
+            .ForEach(zone.AddToTop);
+
+        return zone;
     }
 
-    public static ICard CreateStubCard(string name)
+    public static IZone<IPermanent> AddDefaultCreaturePermanent(
+        this IZone<IPermanent> zone,
+        string name,
+        IPlayer owner,
+        IPlayer controller,
+        bool isTapped)
     {
-        return new Card
-        {
-            Name = name,
-            Kind = CardKind.Stub
-        };
-    }
+        var permanent = StubBuilder.CreateCreaturePermanent(name, 1, 1);
+        permanent.Owner = owner;
+        permanent.Controller = controller;
+        permanent.IsTapped = isTapped;
 
-    public static ICard CreateLandCard(string name)
-    {
-        return new Card
-        {
-            Name = name,
-            Kind = CardKind.Land
-        };
-    }
+        zone.AddToTop(permanent);
 
-    public static IAction CreateStubAction(string name, IPlayer owner)
-    {
-        var card = new Card
-        {
-            Name = name,
-            Kind = CardKind.Stub
-        };
-
-        var action = Action.PlayStub(card);
-        action.Owner = owner;
-
-        return action;
-    }
-
-    private static IPermanent CreateCreaturePermanent(string name, int power, int toughness)
-    {
-        var card = new Card
-        {
-            Name = name,
-            Kind = CardKind.Creature,
-            Power = power,
-            Toughness = toughness
-        };
-
-        return card.AsPermanent();
+        return zone;
     }
 }

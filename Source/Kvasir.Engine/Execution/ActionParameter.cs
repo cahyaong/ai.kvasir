@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ActionSource.cs" company="nGratis">
+// <copyright file="ActionParameter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,21 +23,14 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, July 6, 2022 6:08:28 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, February 19, 2023 6:33:53 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-public class ActionSource : IActionSource
+public enum ActionParameter
 {
-    public ActionSource()
-    {
-        this.Card = Engine.Card.Unknown;
-    }
+    Unknown = 0,
 
-    public static IActionSource Unknown => UnknownActionSource.Instance;
-
-    public static IActionSource None => NoneActionSource.Instance;
-
-    public ICard Card { get; init; }
+    Quantity
 }

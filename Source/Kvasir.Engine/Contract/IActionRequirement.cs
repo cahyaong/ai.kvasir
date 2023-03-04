@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BlockingDecision.cs" company="nGratis">
+// <copyright file="IActionRequirement.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,24 +23,60 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 4:39:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, February 19, 2023 6:23:24 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
+
+using nGratis.AI.Kvasir.Engine.Execution;
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Generic;
-using System.Linq;
+using System;
 
-public class BlockingDecision : IBlockingDecision
+public interface IActionRequirement
 {
-    public BlockingDecision()
+    ActionKind ActionKind { get; }
+
+    TValue GetParameterValue<TValue>(ActionParameter actionParameter)
+        where TValue : struct;
+}
+
+public partial class ActionRequirement
+{
+    public static IActionRequirement Unknown => UnknownActionRequirement.Instance;
+
+    public static IActionRequirement None => NoneActionRequirement.Instance;
+}
+
+public class UnknownActionRequirement : IActionRequirement
+{
+    private UnknownActionRequirement()
     {
-        this.Combats = Enumerable.Empty<ICombat>();
     }
 
-    public static IBlockingDecision Unknown => UnknownBlockingDecision.Instance;
+    public static UnknownActionRequirement Instance { get; } = new();
 
-    public static IBlockingDecision None { get; } = new BlockingDecision();
+    public ActionKind ActionKind => ActionKind.Unknown;
 
-    public IEnumerable<ICombat> Combats { get; init; }
+    public TValue GetParameterValue<TValue>(ActionParameter actionParameter)
+        where TValue : struct
+    {
+        throw new NotSupportedException("Getting parameter value is not supported!");
+    }
+}
+
+public class NoneActionRequirement : IActionRequirement
+{
+    private NoneActionRequirement()
+    {
+    }
+
+    public static NoneActionRequirement Instance { get; } = new();
+
+    public ActionKind ActionKind => ActionKind.Unknown;
+
+    public TValue GetParameterValue<TValue>(ActionParameter actionParameter)
+        where TValue : struct
+    {
+        return default;
+    }
 }

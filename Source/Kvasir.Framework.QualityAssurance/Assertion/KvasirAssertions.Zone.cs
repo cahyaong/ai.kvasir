@@ -139,7 +139,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
                 deck.Cards
                     .Should().ContainEquivalentOf(
                         card,
-                        $"because {this.Identifier} should contain card defined by deck");
+                        $"because {this.Identifier} [{Subject.Kind}] should contain card defined by deck");
             }
         }
 
@@ -169,7 +169,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
                 .ForEach(anon => Execute
                     .Assertion
                     .FailWith(
-                        $"Expected {this.Identifier} to have unique card instance, " +
+                        $"Expected {this.Identifier} [{Subject.Kind}] to have unique card instance, " +
                         $"but found {anon.Count} [{anon.Name}] {anon.Unit} " +
                         $"with ID [{anon.Id}]."));
         }
@@ -185,7 +185,8 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(actualQuantity == quantity)
             .FailWith(
-                $"Expected {this.Identifier} to have {quantity} {"entity".ToCorrectPluralization(quantity)}, " +
+                $"Expected {this.Identifier} [{Subject.Kind}] " +
+                $"to have {quantity} {"entity".ToCorrectPluralization(quantity)}, " +
                 $"but found {actualQuantity}.");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
@@ -211,7 +212,8 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(actualQuantity == quantity)
             .FailWith(
-                $"Expected {this.Identifier} to have {quantity} [{name}] {"entity".ToCorrectPluralization(quantity)}, " +
+                $"Expected {this.Identifier} [{Subject.Kind}] " +
+                $"to have {quantity} [{name}] {"entity".ToCorrectPluralization(quantity)}, " +
                 $"but found {actualQuantity}.");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
@@ -238,7 +240,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(names.All(name => actualNames.Contains(name)))
             .FailWith(
-                $"Expected {this.Identifier} to contain ({names.ToPrettifiedText()}), " +
+                $"Expected {this.Identifier} [{Subject.Kind}] to contain ({names.ToPrettifiedText()}), " +
                 $"but found ({actualNames.ToPrettifiedText()})");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
@@ -265,7 +267,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(names.All(name => !actualNames.Contains(name)))
             .FailWith(
-                $"Expected {this.Identifier} to not contain ({names.ToPrettifiedText()}), " +
+                $"Expected {this.Identifier} [{Subject.Kind}] to not contain ({names.ToPrettifiedText()}), " +
                 $"but found ({actualNames.ToPrettifiedText()})");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);
@@ -294,7 +296,7 @@ public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, Zo
             .Assertion
             .ForCondition(actualNames.All(name => regex.IsMatch(name)))
             .FailWith(
-                $"Expected {this.Identifier} to contain pattern [{pattern}], " +
+                $"Expected {this.Identifier} [{Subject.Kind}] to contain pattern [{pattern}], " +
                 $"but found ({actualNames.ToPrettifiedText()})");
 
         return new AndConstraint<ZoneAssertion<TEntity>>(this);

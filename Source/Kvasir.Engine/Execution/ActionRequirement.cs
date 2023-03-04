@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="StubBuilder.cs" company="nGratis">
+// <copyright file="ActionRequirement.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,74 +23,52 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, November 26, 2021 10:47:20 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, February 19, 2023 6:42:48 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+namespace nGratis.AI.Kvasir.Engine;
 
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine;
+using nGratis.AI.Kvasir.Engine.Execution;
 
-public static partial class StubBuilder
+public partial class ActionRequirement : IActionRequirement
 {
-    public static IPlayer CreateDefaultPlayer(string name)
+    private readonly IReadOnlyDictionary<ActionParameter, object> _valueByActionParameterLookup;
+
+    private ActionRequirement(
+        ActionKind actionKind,
+        IReadOnlyDictionary<ActionParameter, object> valueByActionParameterLookup)
     {
-        return StubBuilder.CreateDefaultPlayer(name, Strategy.Noop);
+        this.ActionKind = actionKind;
+        this._valueByActionParameterLookup = valueByActionParameterLookup;
     }
 
-    public static IPlayer CreateDefaultPlayer(string name, IStrategy strategy)
+    public ActionKind ActionKind { get; }
+
+    public TValue GetParameterValue<TValue>(ActionParameter actionParameter)
+        where TValue : struct
     {
-        return new Player
+        if (!this._valueByActionParameterLookup.TryGetValue(actionParameter, out var value))
         {
-            Name = name,
-            Kind = PlayerKind.Testing,
-            Strategy = strategy,
-            Life = 20
-        };
+            throw new KvasirException(
+                "Action parameter is not defined!",
+                ("Action", this.ActionKind),
+                ("Parameter", actionParameter));
+        }
+
+        return (TValue)value;
     }
 
-    public static ICard CreateStubCard(string name)
+    public static ActionRequirement Create(
+        ActionKind actionKind,
+        params (ActionParameter Key, object Value)[] parameters)
     {
-        return new Card
-        {
-            Name = name,
-            Kind = CardKind.Stub
-        };
-    }
-
-    public static ICard CreateLandCard(string name)
-    {
-        return new Card
-        {
-            Name = name,
-            Kind = CardKind.Land
-        };
-    }
-
-    public static IAction CreateStubAction(string name, IPlayer owner)
-    {
-        var card = new Card
-        {
-            Name = name,
-            Kind = CardKind.Stub
-        };
-
-        var action = Action.PlayStub(card);
-        action.Owner = owner;
-
-        return action;
-    }
-
-    private static IPermanent CreateCreaturePermanent(string name, int power, int toughness)
-    {
-        var card = new Card
-        {
-            Name = name,
-            Kind = CardKind.Creature,
-            Power = power,
-            Toughness = toughness
-        };
-
-        return card.AsPermanent();
+        return new ActionRequirement(
+            actionKind,
+            parameters.ToImmutableDictionary(
+                parameter => parameter.Key,
+                parameter => parameter.Value));
     }
 }

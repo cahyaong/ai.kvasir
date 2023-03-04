@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BlockingDecision.cs" company="nGratis">
+// <copyright file="IActionTarget.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,24 +23,53 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 4:39:57 AM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, July 6, 2022 6:09:23 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
-public class BlockingDecision : IBlockingDecision
+public interface IActionTarget
 {
-    public BlockingDecision()
+    IPlayer Player { get; set; }
+
+    IReadOnlyCollection<ICard> Cards { get; }
+
+    // TODO (SHOULD): Implement ability as another kind of action source!
+}
+
+internal class UnknownActionTarget : IActionTarget
+{
+    private UnknownActionTarget()
     {
-        this.Combats = Enumerable.Empty<ICombat>();
     }
 
-    public static IBlockingDecision Unknown => UnknownBlockingDecision.Instance;
+    internal static UnknownActionTarget Instance { get; } = new();
 
-    public static IBlockingDecision None { get; } = new BlockingDecision();
+    public IPlayer Player
+    {
+        get => Engine.Player.Unknown;
+        set => throw new NotSupportedException("Setting player is not supported!");
+    }
 
-    public IEnumerable<ICombat> Combats { get; init; }
+    public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
+}
+
+internal class NoneActionTarget : IActionTarget
+{
+    private NoneActionTarget()
+    {
+    }
+
+    internal static NoneActionTarget Instance { get; } = new();
+
+    public IPlayer Player
+    {
+        get => Engine.Player.None;
+        set => throw new NotSupportedException("Setting player is not supported!");
+    }
+
+    public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
 }

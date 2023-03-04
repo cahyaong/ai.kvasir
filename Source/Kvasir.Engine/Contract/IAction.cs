@@ -29,13 +29,14 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
+using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 
 public interface IAction : IDiagnostic
 {
     ActionKind Kind { get; }
 
-    IActionSource Source { get; }
+    IActionTarget Target { get; }
 
     IPlayer Owner { get; set; }
 }
@@ -54,7 +55,7 @@ internal class UnknownAction : IAction
 
     public ActionKind Kind => ActionKind.Unknown;
 
-    public IActionSource Source => ActionSource.Unknown;
+    public IActionTarget Target => ActionTarget.Unknown;
 
     public IPlayer Owner
     {

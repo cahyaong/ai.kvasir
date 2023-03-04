@@ -83,6 +83,27 @@ public class Zone<TEntity> : IZone<TEntity>
         return this._entities.Last();
     }
 
+    public IEnumerable<TEntity> FindManyFromTop(int count)
+    {
+        Guard
+            .Require(count, nameof(count))
+            .Is.GreaterThan(0);
+
+        if (count > this.Quantity)
+        {
+            throw new KvasirException(
+                "Zone has not enough entities to find many!",
+                ("Zone Kind", this.Kind),
+                ("Quantity", this.Quantity),
+                ("Finding Count", count));
+        }
+
+        return this
+            ._entities
+            .Skip(this.Quantity - count)
+            .Reverse();
+    }
+
     public void RemoveFromTop()
     {
         if (this.Quantity <= 0)
@@ -113,27 +134,12 @@ public class Zone<TEntity> : IZone<TEntity>
         this._entities.RemoveRange(this.Quantity - count, count);
     }
 
-    public IEnumerable<TEntity> FindManyFromTop(int count)
-    {
-        Guard
-            .Require(count, nameof(count))
-            .Is.GreaterThan(0);
-
-        if (count > this.Quantity)
-        {
-            throw new KvasirException(
-                "Zone has not enough entities to find many!",
-                ("Zone Kind", this.Kind),
-                ("Quantity", this.Quantity),
-                ("Finding Count", count));
-        }
-
-        return this._entities.Skip(this.Quantity - count);
-    }
-
     public IEnumerable<TEntity> FindAll()
     {
-        return this._entities;
+        return this
+            ._entities
+            .AsEnumerable()
+            .Reverse();
     }
 
     public void RemoveAll()

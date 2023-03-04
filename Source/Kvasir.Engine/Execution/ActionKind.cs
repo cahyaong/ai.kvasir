@@ -26,12 +26,13 @@
 // <creation_timestamp>Wednesday, June 1, 2022 12:39:49 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Engine;
+namespace nGratis.AI.Kvasir.Engine.Execution;
 
 public enum ActionKind
 {
     Unknown = 0,
 
+    Discarding,
     Passing,
     PlayingLand,
 

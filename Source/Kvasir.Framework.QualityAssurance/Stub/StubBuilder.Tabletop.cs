@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
-using nGratis.Cop.Olympus.Contract;
 
 public static partial class StubBuilder
 {
@@ -91,37 +90,29 @@ public static partial class StubBuilder
         return tabletop;
     }
 
-    public static ITabletop WithLandCardInHand(this ITabletop tabletop, PlayerModifier playerModifier, int count)
+    public static IPermanent CreateActiveCreaturePermanent(
+        this ITabletop tabletop,
+        string name,
+        int power,
+        int toughness)
     {
-        Guard
-            .Require(playerModifier, nameof(playerModifier))
-            .Is.Not.Default();
+        var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
+        permanent.Owner = tabletop.ActivePlayer;
+        permanent.Controller = tabletop.ActivePlayer;
 
-        Guard
-            .Require(count, nameof(count))
-            .Is.GreaterThan(0);
+        return permanent;
+    }
 
-        if (playerModifier == PlayerModifier.Active)
-        {
-            Enumerable
-                .Range(1, count)
-                .ForEach(index =>
-                {
-                    tabletop.ActivePlayer.Hand
-                        .AddToTop(StubBuilder.CreateLandCard($"[_MOCK_LAND__ACTIVE_1{index + 1:D}_]"));
-                });
-        }
-        else if (playerModifier == PlayerModifier.NonActive)
-        {
-            Enumerable
-                .Range(1, count)
-                .ForEach(index =>
-                {
-                    tabletop.NonActivePlayer.Hand
-                        .AddToTop(StubBuilder.CreateLandCard($"[_MOCK_LAND__NONACTIVE_2{index + 1:D}_]"));
-                });
-        }
+    public static IPermanent CreateNonActiveCreaturePermanent(
+        this ITabletop tabletop,
+        string name,
+        int power,
+        int toughness)
+    {
+        var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
+        permanent.Owner = tabletop.NonActivePlayer;
+        permanent.Controller = tabletop.NonActivePlayer;
 
-        return tabletop;
+        return permanent;
     }
 }

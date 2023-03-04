@@ -43,17 +43,18 @@ public class PlayingLandHandlerTests
             // Arrange.
 
             var playingLandHandler = new PlayingLandHandler();
+            var tabletop = StubBuilder.CreateDefaultTabletop();
 
-            var tabletop = StubBuilder
-                .CreateDefaultTabletop()
-                .WithLandCardInHand(PlayerModifier.Active, 1);
+            tabletop
+                .ActivePlayer.Hand
+                .AddLandCard("ACTIVE", 0, 1);
 
             var playingLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
-            playingLandAction.Owner = tabletop.ActivePlayer;
+            playingLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction);
+            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction, ActionRequirement.None);
 
             // Assert.
 
@@ -68,21 +69,25 @@ public class PlayingLandHandlerTests
             // Arrange.
 
             var playingLandHandler = new PlayingLandHandler();
+            var tabletop = StubBuilder.CreateDefaultTabletop();
 
-            var tabletop = StubBuilder
-                .CreateDefaultTabletop()
-                .WithLandCardInHand(PlayerModifier.Active, 3);
+            tabletop
+                .ActivePlayer.Hand
+                .AddLandCard("ACTIVE", 0, 3);
 
             var playingFirstLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
-            playingFirstLandAction.Owner = tabletop.ActivePlayer;
-            playingLandHandler.Resolve(tabletop, playingFirstLandAction);
+            playingFirstLandAction.Target.Player = tabletop.ActivePlayer;
+            playingLandHandler.Resolve(tabletop, playingFirstLandAction, ActionRequirement.None);
 
             var playingSecondLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
-            playingSecondLandAction.Owner = tabletop.ActivePlayer;
+            playingSecondLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingSecondLandAction);
+            var validationResult = playingLandHandler.Validate(
+                tabletop,
+                playingSecondLandAction,
+                ActionRequirement.None);
 
             // Assert.
 
@@ -104,18 +109,22 @@ public class PlayingLandHandlerTests
             // Arrange.
 
             var playingLandHandler = new PlayingLandHandler();
+            var tabletop = StubBuilder.CreateDefaultTabletop();
 
-            var tabletop = StubBuilder
-                .CreateDefaultTabletop()
-                .WithLandCardInHand(PlayerModifier.Active, 1)
-                .WithLandCardInHand(PlayerModifier.NonActive, 1);
+            tabletop
+                .ActivePlayer.Hand
+                .AddLandCard("ACTIVE", 0, 1);
+
+            tabletop
+                .ActivePlayer.Hand
+                .AddLandCard("NONACTIVE", 0, 1);
 
             var playingLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
-            playingLandAction.Owner = tabletop.NonActivePlayer;
+            playingLandAction.Target.Player = tabletop.NonActivePlayer;
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction);
+            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction, ActionRequirement.None);
 
             // Assert.
 
@@ -140,10 +149,11 @@ public class PlayingLandHandlerTests
             // Arrange.
 
             var playingLandHandler = new PlayingLandHandler();
+            var tabletop = StubBuilder.CreateDefaultTabletop();
 
-            var tabletop = StubBuilder
-                .CreateDefaultTabletop()
-                .WithLandCardInHand(PlayerModifier.Active, 1);
+            tabletop
+                .ActivePlayer.Hand
+                .AddLandCard("ACTIVE", 0, 3);
 
             tabletop.Stack.AddToTop(StubBuilder.CreateStubAction(
                 "[_MOCK_STUB_11_]",
@@ -154,11 +164,11 @@ public class PlayingLandHandlerTests
                 tabletop.NonActivePlayer));
 
             var playingLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
-            playingLandAction.Owner = tabletop.ActivePlayer;
+            playingLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction);
+            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction, ActionRequirement.None);
 
             // Assert.
 

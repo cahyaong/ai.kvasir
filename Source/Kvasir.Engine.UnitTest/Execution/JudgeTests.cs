@@ -328,9 +328,16 @@ public class JudgeTests
 
             var mockFirstStrategy = MockBuilder
                 .CreateMock<IStrategy>()
-                .WithPerformingPrioritizedAction(tabletop => !tabletop.ActivePlayer.Hand.IsEmpty
-                    ? Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop())
-                    : Action.Pass())
+                .WithPerformingPrioritizedAction(tabletop =>
+                {
+                    var action = !tabletop.ActivePlayer.Hand.IsEmpty
+                        ? Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop())
+                        : Action.Pass();
+
+                    action.Target.Player = tabletop.ActivePlayer;
+
+                    return action;
+                })
                 .WithPerformingNonPrioritizedAction(_ => Action.Pass());
 
             var mockSecondStrategy = MockBuilder
@@ -367,7 +374,7 @@ public class JudgeTests
                 .And.Contain(
                     "Active player had played a land this turn! " +
                     "Cause: [Action_PlayingLand]. " +
-                    "Reference: [[_MOCK_LAND__ALPHA_01_]].");
+                    "References: ([[_MOCK_LAND__ALPHA_01_]]).");
 
             tabletop
                 .Battlefield

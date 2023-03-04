@@ -38,6 +38,8 @@ using Xunit;
 
 public class RoundSimulatorTests
 {
+    // TODO (SHOULD): Add tabletop snapshot based testing using larger deck and longer turn!
+
     [Fact]
     public void WhenGettingValidConfig_ShouldSimulateUntilCompletion()
     {

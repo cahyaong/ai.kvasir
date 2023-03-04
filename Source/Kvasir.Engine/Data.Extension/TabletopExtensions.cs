@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 
 public static class TabletopExtensions

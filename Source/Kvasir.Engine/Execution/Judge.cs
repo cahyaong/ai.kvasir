@@ -34,11 +34,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 
 public class Judge
 {
+    // TODO (MUST): Wire up the validation logic for executing combat phase!
+
     private readonly bool _shouldTerminateOnIllegalAction;
 
     private readonly ILogger _logger;
@@ -69,11 +72,11 @@ public class Judge
         this._actionHandlerByActionKindLookup = Assembly
             .GetExecutingAssembly()
             .GetTypes()
-            .Where(type => !type.IsInterface)
+            .Where(type => !type.IsInterface && !type.IsAbstract)
             .Where(type => type.IsAssignableTo(typeof(IActionHandler)))
             .Select(Activator.CreateInstance)
             .Cast<IActionHandler>()
-            .ToImmutableDictionary(handler => handler.Kind);
+            .ToImmutableDictionary(handler => handler.ActionKind);
     }
 
     public static Judge Unknown { get; } = new(VoidLogger.Instance);
@@ -199,14 +202,15 @@ public class Judge
 
                 performedAction.Owner = selectedPlayer;
 
-                if (!this._actionHandlerByActionKindLookup.TryGetValue(performedAction.Kind, out var actionHandler))
+                if (performedAction.Target != ActionTarget.None)
                 {
-                    throw new KvasirException(
-                        "Action has no handler associated to it!",
-                        ("Action Kind", performedAction.Kind));
+                    performedAction.Target.Player = selectedPlayer;
                 }
 
-                validationResult = actionHandler.Validate(tabletop, performedAction);
+                var actionHandler = this.FindActionHandler(performedAction);
+                validationResult = actionHandler.Validate(tabletop, performedAction, ActionRequirement.None);
+
+                // TODO (MUST): Treat invalid action as passing, and resolve valid actions already in stack!
 
                 if (validationResult.HasError)
                 {
@@ -217,7 +221,7 @@ public class Judge
                 {
                     if (actionHandler.IsSpecialAction)
                     {
-                        actionHandler.Resolve(tabletop, performedAction);
+                        actionHandler.Resolve(tabletop, performedAction, ActionRequirement.None);
                     }
                     else
                     {
@@ -410,11 +414,51 @@ public class Judge
     {
         this._logger.LogDiagnostic(tabletop);
 
-        // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).
+        var validationResult = ValidationResult.Successful;
 
-        tabletop.PrioritizedPlayer = Player.None;
+        // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).
+        // RX-513.1 — ...Once it begins, the active player gets priority...
+
+        tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
+
+        // RX-402.2. Each player has a maximum hand size, which is normally seven cards. A player may have any
+        // number of cards in their hand, but as part of their cleanup step, the player must discard excess cards
+        //
+        // down to the maximum hand size.
+
+        // RX-514.1. First, if the active player’s hand contains more cards than their maximum hand size (normally
+        // seven), they discard enough cards to reduce their hand size to that number. This turn-based action
+        // doesn’t use the stack.
+
+        if (tabletop.ActivePlayer.Hand.Quantity > MagicConstant.Hand.MaxCardCount)
+        {
+            var actionRequirement = ActionRequirement.Create(
+                ActionKind.Discarding,
+                (ActionParameter.Quantity, tabletop.ActivePlayer.Hand.Quantity - MagicConstant.Hand.MaxCardCount));
+
+            var action = tabletop.ActivePlayer.Strategy.PerformRequiredAction(tabletop, actionRequirement);
+            action.Owner = Player.None;
+            action.Target.Player = tabletop.ActivePlayer;
+
+            var actionHandler = this.FindActionHandler(action);
+            validationResult = actionHandler.Validate(tabletop, action, actionRequirement);
+            actionHandler.Resolve(tabletop, action, actionRequirement);
+        }
+
         tabletop.PlayedLandCount = 0;
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.Create(validationResult.Messages);
+    }
+
+    private IActionHandler FindActionHandler(IAction action)
+    {
+        if (!this._actionHandlerByActionKindLookup.TryGetValue(action.Kind, out var actionHandler))
+        {
+            throw new KvasirException(
+                "Action has no handler associated to it!",
+                ("Action Kind", action.Kind));
+        }
+
+        return actionHandler;
     }
 }

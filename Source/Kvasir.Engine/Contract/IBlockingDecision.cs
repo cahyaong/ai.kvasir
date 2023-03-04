@@ -28,12 +28,12 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public interface IBlockingDecision
 {
-    IReadOnlyCollection<ICombat> Combats { get; }
+    IEnumerable<ICombat> Combats { get; }
 }
 
 public class UnknownBlockingDecision : IBlockingDecision
@@ -44,5 +44,5 @@ public class UnknownBlockingDecision : IBlockingDecision
 
     internal static UnknownBlockingDecision Instance { get; } = new();
 
-    public IReadOnlyCollection<ICombat> Combats => Array.Empty<ICombat>();
+    public IEnumerable<ICombat> Combats => Enumerable.Empty<ICombat>();
 }

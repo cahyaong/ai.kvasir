@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Action.cs" company="nGratis">
+// <copyright file="BaseActionHandler.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,77 +23,56 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, June 1, 2022 12:37:45 AM UTC</creation_timestamp>
+// <creation_timestamp>Thursday, February 23, 2023 7:01:39 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System.Collections.Immutable;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine.Execution;
-using nGratis.Cop.Olympus.Contract;
 
-public class Action : IAction
+public abstract class BaseActionHandler : IActionHandler
 {
-    private Action()
+    public abstract ActionKind ActionKind { get; }
+
+    public virtual bool IsSpecialAction => false;
+
+    public ValidationResult Validate(ITabletop tabletop, IAction action, IActionRequirement requirement)
     {
-        this.Kind = ActionKind.Unknown;
-        this.Target = ActionTarget.Unknown;
-        this.Owner = Player.Unknown;
-    }
-
-    public static IAction Unknown => UnknownAction.Instance;
-
-    public int Id => this.GetHashCode();
-
-    public string Name => DefinedText.Default;
-
-    public ActionKind Kind { get; private init; }
-
-    public IActionTarget Target { get; private init; }
-
-    public IPlayer Owner { get; set; }
-
-    public static IAction Pass()
-    {
-        return new Action
+        if (action.Kind != this.ActionKind)
         {
-            Kind = ActionKind.Passing,
-            Target = ActionTarget.None
-        };
+            throw new KvasirException(
+                "Handler is expecting a correct action kind!",
+                ("Actual Kind", action.Kind),
+                ("Expected Kind", this.ActionKind));
+        }
+
+        var reasons = this
+            .ValidateCore(tabletop, action, requirement)
+            .Reasons
+            .ToImmutableList();
+
+        return ValidationResult.Create(reasons);
     }
 
-    public static IAction PlayLand(ICard card)
+    public void Resolve(ITabletop tabletop, IAction action, IActionRequirement requirement)
     {
-        return new Action
+        if (action.Kind != this.ActionKind)
         {
-            Kind = ActionKind.PlayingLand,
-            Target = new ActionTarget
-            {
-                Cards = new[] { card }
-            }
-        };
+            throw new KvasirException(
+                "Handler is expecting a correct action kind!",
+                ("Actual Kind", action.Kind),
+                ("Expected Kind", this.ActionKind));
+        }
+
+        this.ResolveCore(tabletop, action, requirement);
     }
 
-    public static IAction Discard(params ICard[] cards)
+    protected virtual ValidationResult ValidateCore(ITabletop tabletop, IAction action, IActionRequirement requirement)
     {
-        return new Action
-        {
-            Kind = ActionKind.Discarding,
-            Target = new ActionTarget
-            {
-                Cards = cards
-            }
-        };
+        return ValidationResult.Successful;
     }
 
-    internal static IAction PlayStub(ICard card)
-    {
-        return new Action
-        {
-            Kind = ActionKind.PlayingStub,
-            Target = new ActionTarget
-            {
-                Cards = new[] { card }
-            }
-        };
-    }
+    protected abstract void ResolveCore(ITabletop tabletop, IAction action, IActionRequirement requirement);
 }

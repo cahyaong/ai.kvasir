@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IActionSource.cs" company="nGratis">
+// <copyright file="ActionTarget.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,36 +23,27 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, July 6, 2022 6:09:23 PM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, July 6, 2022 6:08:28 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-public interface IActionSource
-{
-    ICard Card { get; }
+using System;
+using System.Collections.Generic;
 
-    // TODO (SHOULD): Implement ability as another kind of action source!
-}
-
-internal class UnknownActionSource : IActionSource
+public class ActionTarget : IActionTarget
 {
-    private UnknownActionSource()
+    public ActionTarget()
     {
+        this.Player = Engine.Player.Unknown;
+        this.Cards = Array.Empty<ICard>();
     }
 
-    internal static UnknownActionSource Instance { get; } = new();
+    public static IActionTarget Unknown => UnknownActionTarget.Instance;
 
-    public ICard Card => Engine.Card.Unknown;
-}
+    public static IActionTarget None => NoneActionTarget.Instance;
 
-internal class NoneActionSource : IActionSource
-{
-    private NoneActionSource()
-    {
-    }
+    public IPlayer Player { get; set; }
 
-    internal static NoneActionSource Instance { get; } = new();
-
-    public ICard Card => Engine.Card.Unknown;
+    public IReadOnlyCollection<ICard> Cards { get; init; }
 }

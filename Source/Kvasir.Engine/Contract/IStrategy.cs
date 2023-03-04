@@ -41,6 +41,8 @@ public interface IStrategy
     IAction PerformPrioritizedAction(ITabletop tabletop);
 
     IAction PerformNonPrioritizedAction(ITabletop tabletop);
+
+    IAction PerformRequiredAction(ITabletop tabletop, IActionRequirement requirement);
 }
 
 public static class Strategy
@@ -77,6 +79,11 @@ public class UnknownStrategy : IStrategy
     {
         throw new NotSupportedException("Performing non-prioritized action is not supported!");
     }
+
+    public IAction PerformRequiredAction(ITabletop tabletop, IActionRequirement requirement)
+    {
+        throw new NotSupportedException("Performing required action is not supported!");
+    }
 }
 
 public class NoopStrategy : IStrategy
@@ -103,6 +110,11 @@ public class NoopStrategy : IStrategy
     }
 
     public IAction PerformNonPrioritizedAction(ITabletop _)
+    {
+        return Action.Pass();
+    }
+
+    public IAction PerformRequiredAction(ITabletop tabletop, IActionRequirement requirement)
     {
         return Action.Pass();
     }

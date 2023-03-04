@@ -28,8 +28,10 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text;
 using nGratis.Cop.Olympus.Contract;
 
@@ -39,7 +41,7 @@ public class ValidationReason
     {
         this.Id = -42;
         this.Cause = DefinedText.Unknown;
-        this.Reference = DefinedText.Unknown;
+        this.References = Enumerable.Empty<string>();
         this.RuleIds = ImmutableList<string>.Empty;
         this.Message = DefinedText.Unknown;
     }
@@ -48,7 +50,7 @@ public class ValidationReason
 
     public string Cause { get; private init; }
 
-    public string Reference { get; private init; }
+    public IEnumerable<string> References { get; private init; }
 
     public IEnumerable<string> RuleIds { get; private init; }
 
@@ -69,7 +71,7 @@ public class ValidationReason
         {
             Id = permanent.Id,
             Cause = $"Permanent_{permanent.Card.Kind}",
-            Reference = permanent.Name,
+            References = new[] { permanent.Name },
             RuleIds = ruleIds,
             Message = message
         };
@@ -85,7 +87,9 @@ public class ValidationReason
         {
             Id = action.Id,
             Cause = $"Action_{action.Kind}",
-            Reference = action.Source.Card.Name,
+            References = action
+                .Target.Cards
+                .Select(card => card.Name),
             RuleIds = ruleIds,
             Message = message
         };
@@ -95,7 +99,7 @@ public class ValidationReason
     {
         return new StringBuilder(this.Message)
             .Append($" Cause: [{this.Cause}].")
-            .Append($" Reference: [{this.Reference}].")
+            .Append($" References: ({this.References.ToPrettifiedText()}).")
             .ToString();
     }
 }
