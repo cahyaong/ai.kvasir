@@ -42,7 +42,7 @@ public class RoundSimulator
 
     private readonly ILogger _logger;
 
-    private Judge _judge;
+    private RoundJudge _roundJudge;
 
     private ITabletop _tabletop;
 
@@ -52,14 +52,14 @@ public class RoundSimulator
         this._randomGenerator = randomGenerator;
         this._logger = logger;
 
-        this._judge = Judge.Unknown;
+        this._roundJudge = RoundJudge.Unknown;
         this._tabletop = Tabletop.Unknown;
     }
 
     public SimulationResult Simulate(SimulationConfig simulationConfig)
     {
         this
-            .SetupTabletop(simulationConfig.ShouldTerminateOnIllegalAction)
+            .SetupTabletop()
             .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
             .SetupPlayerZones(this._tabletop.ActivePlayer)
             .SetupPlayerZones(this._tabletop.NonActivePlayer);
@@ -68,7 +68,7 @@ public class RoundSimulator
 
         while (this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1)
         {
-            executionResults.Add(this._judge.ExecuteNextTurn(this._tabletop));
+            executionResults.Add(this._roundJudge.ExecuteNextTurn(this._tabletop));
         }
 
         return SimulationResult.Create(
@@ -79,9 +79,9 @@ public class RoundSimulator
         );
     }
 
-    private RoundSimulator SetupTabletop(bool shouldTerminateOnIllegalAction)
+    private RoundSimulator SetupTabletop()
     {
-        this._judge = new Judge(shouldTerminateOnIllegalAction, this._logger);
+        this._roundJudge = new RoundJudge(this._logger);
 
         this._tabletop = new Tabletop
         {

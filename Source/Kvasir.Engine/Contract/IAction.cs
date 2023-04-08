@@ -29,16 +29,17 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
-using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 
 public interface IAction : IDiagnostic
 {
     ActionKind Kind { get; }
 
+    IPlayer Owner { get; set; }
+
     IActionTarget Target { get; }
 
-    IPlayer Owner { get; set; }
+    IParameter Parameter { get; set; }
 }
 
 internal class UnknownAction : IAction
@@ -55,11 +56,17 @@ internal class UnknownAction : IAction
 
     public ActionKind Kind => ActionKind.Unknown;
 
-    public IActionTarget Target => ActionTarget.Unknown;
-
     public IPlayer Owner
     {
         get => Player.Unknown;
         set => throw new NotSupportedException("Setting owner is not supported!");
+    }
+
+    public IActionTarget Target => ActionTarget.Unknown;
+
+    public IParameter Parameter
+    {
+        get => Engine.Parameter.Unknown;
+        set => throw new NotSupportedException("Setting parameter is not supported!");
     }
 }

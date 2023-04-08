@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BaseActionHandler.cs" company="nGratis">
+// <copyright file="Parameter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,55 +23,70 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, February 23, 2023 7:01:39 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, March 18, 2023 11:57:24 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Immutable;
-using nGratis.AI.Kvasir.Contract;
-
-public abstract class BaseActionHandler : IActionHandler
+public class Parameter : IParameter
 {
-    public abstract ActionKind ActionKind { get; }
+    private readonly IDictionary<ParameterKey, object> _valueByKeyLookup;
 
-    public virtual bool IsSpecialAction => false;
-
-    public ValidationResult Validate(ITabletop tabletop, IAction action)
+    private Parameter()
     {
-        if (action.Kind != this.ActionKind)
+        this._valueByKeyLookup = new Dictionary<ParameterKey, object>();
+    }
+
+    public static IParameter Unknown => UnknownParameter.Instance;
+
+    public static IParameter None => NoneParameter.Instance;
+
+    public TValue FindValue<TValue>(ParameterKey key)
+    {
+        if (!this._valueByKeyLookup.TryGetValue(key, out var value))
         {
             throw new KvasirException(
-                "Handler is expecting a correct action kind!",
-                ("Actual Kind", action.Kind),
-                ("Expected Kind", this.ActionKind));
+                "Parameter value is not defined!",
+                ("Key", key));
         }
 
-        var reasons = this
-            .ValidateCore(tabletop, action)
-            .Reasons
-            .ToImmutableList();
-
-        return ValidationResult.Create(reasons);
+        return (TValue)value;
     }
 
-    public void Resolve(ITabletop tabletop, IAction action)
+    internal class Builder
     {
-        if (action.Kind != this.ActionKind)
+        private readonly Parameter _parameter;
+
+        private Builder()
         {
-            throw new KvasirException(
-                "Handler is expecting a correct action kind!",
-                ("Actual Kind", action.Kind),
-                ("Expected Kind", this.ActionKind));
+            this._parameter = new Parameter();
         }
 
-        this.ResolveCore(tabletop, action);
-    }
+        public static Builder Create()
+        {
+            return new Builder();
+        }
 
-    protected virtual ValidationResult ValidateCore(ITabletop tabletop, IAction action)
-    {
-        return ValidationResult.Successful;
-    }
+        internal Builder WithValue(ParameterKey key, object value)
+        {
+            if (this._parameter._valueByKeyLookup.ContainsKey(key))
+            {
+                throw new KvasirException(
+                    "Parameter value has been defined!",
+                    ("Key", key));
+            }
 
-    protected abstract void ResolveCore(ITabletop tabletop, IAction action);
+            this._parameter._valueByKeyLookup.Add(key, value);
+
+            return this;
+        }
+
+        public Parameter Build()
+        {
+            return this._parameter;
+        }
+    }
 }

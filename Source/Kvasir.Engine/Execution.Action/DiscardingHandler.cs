@@ -32,7 +32,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using nGratis.AI.Kvasir.Engine.Execution;
 
 public class DiscardingHandler : BaseActionHandler
 {
@@ -41,26 +40,26 @@ public class DiscardingHandler : BaseActionHandler
 
     public override ActionKind ActionKind => ActionKind.Discarding;
 
-    protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action, IActionRequirement requirement)
+    protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action)
     {
         var reasons = new List<ValidationReason>();
 
         var actualQuantity = action.Target.Cards.Count;
-        var expectedQuantity = requirement.GetParameterValue<int>(ActionParameter.Quantity);
+        var expectedQuantity = action.Parameter.FindValue<int>(ParameterKey.Amount);
 
         if (actualQuantity < expectedQuantity)
         {
             reasons.Add(ValidationReason.Create(
-                @"Discarding action expect an exact quantity, but found less cards to discard! " +
-                $"Actual Quantity: [{actualQuantity}]. Expected Quantity: [{expectedQuantity}]",
+                @"Discarding action expect an exact amount, but found less cards to discard! " +
+                $"Actual Amount: [{actualQuantity}]. Expected Amount: [{expectedQuantity}]",
                 new[] { "kvr-101" },
                 action));
         }
         else if (actualQuantity > expectedQuantity)
         {
             reasons.Add(ValidationReason.Create(
-                @"Discarding action expect an exact quantity, but found more cards to discard! " +
-                $"Actual Quantity: [{actualQuantity}]. Expected Quantity: [{expectedQuantity}]",
+                @"Discarding action expect an exact amount, but found more cards to discard! " +
+                $"Actual Amount: [{actualQuantity}]. Expected Amount: [{expectedQuantity}]",
                 new[] { "kvr-102" },
                 action));
         }
@@ -68,10 +67,10 @@ public class DiscardingHandler : BaseActionHandler
         return ValidationResult.Create(reasons);
     }
 
-    protected override void ResolveCore(ITabletop _, IAction action, IActionRequirement requirement)
+    protected override void ResolveCore(ITabletop _, IAction action)
     {
         var actualQuantity = action.Target.Cards.Count;
-        var expectedQuantity = requirement.GetParameterValue<int>(ActionParameter.Quantity);
+        var expectedQuantity = action.Parameter.FindValue<int>(ParameterKey.Amount);
 
         var discardedCards = Enumerable.Empty<ICard>();
 

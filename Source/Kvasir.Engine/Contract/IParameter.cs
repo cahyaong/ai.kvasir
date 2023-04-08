@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ActionRequirement.cs" company="nGratis">
+// <copyright file="IParameter.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,52 +23,42 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, February 19, 2023 6:42:48 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, March 19, 2023 12:14:20 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System;
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine.Execution;
-
-public partial class ActionRequirement : IActionRequirement
+public interface IParameter
 {
-    private readonly IReadOnlyDictionary<ActionParameter, object> _valueByActionParameterLookup;
+    TValue FindValue<TValue>(ParameterKey key);
+}
 
-    private ActionRequirement(
-        ActionKind actionKind,
-        IReadOnlyDictionary<ActionParameter, object> valueByActionParameterLookup)
+public sealed class UnknownParameter : IParameter
+{
+    private UnknownParameter()
     {
-        this.ActionKind = actionKind;
-        this._valueByActionParameterLookup = valueByActionParameterLookup;
     }
 
-    public ActionKind ActionKind { get; }
+    public static UnknownParameter Instance { get; } = new();
 
-    public TValue GetParameterValue<TValue>(ActionParameter actionParameter)
-        where TValue : struct
+    public TValue FindValue<TValue>(ParameterKey _)
     {
-        if (!this._valueByActionParameterLookup.TryGetValue(actionParameter, out var value))
-        {
-            throw new KvasirException(
-                "Action parameter is not defined!",
-                ("Action", this.ActionKind),
-                ("Parameter", actionParameter));
-        }
+        throw new NotSupportedException("Getting parameter value is not supported!");
+    }
+}
 
-        return (TValue)value;
+public sealed class NoneParameter : IParameter
+{
+    private NoneParameter()
+    {
     }
 
-    public static ActionRequirement Create(
-        ActionKind actionKind,
-        params (ActionParameter Key, object Value)[] parameters)
+    public static NoneParameter Instance { get; } = new();
+
+    public TValue FindValue<TValue>(ParameterKey _)
     {
-        return new ActionRequirement(
-            actionKind,
-            parameters.ToImmutableDictionary(
-                parameter => parameter.Key,
-                parameter => parameter.Value));
+        return default!;
     }
 }

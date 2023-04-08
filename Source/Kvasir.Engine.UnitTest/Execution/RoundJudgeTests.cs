@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="JudgeTests.cs" company="nGratis">
+// <copyright file="RoundJudgeTests.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -37,7 +37,7 @@ using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 using Xunit;
 
-public class JudgeTests
+public class RoundJudgeTests
 {
     public class ExecuteNextPhaseMethod_Beginning
     {
@@ -61,11 +61,11 @@ public class JudgeTests
 
             tabletop.WithDefaultLibrary();
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -109,11 +109,11 @@ public class JudgeTests
                 .AddDefaultCreaturePermanent("[_MOCK_CREATURE_11_]", firstPlayer, secondPlayer, false)
                 .AddDefaultCreaturePermanent("[_MOCK_CREATURE_12_]", firstPlayer, secondPlayer, true);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -162,11 +162,11 @@ public class JudgeTests
                 .AddDefaultCreaturePermanent("[_MOCK_CREATURE_11_]", secondPlayer, firstPlayer, false)
                 .AddDefaultCreaturePermanent("[_MOCK_CREATURE_12_]", secondPlayer, firstPlayer, true);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -225,11 +225,11 @@ public class JudgeTests
             secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
             secondPlayer.Hand.AddStubCard("OMEGA", 10, 3);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -283,11 +283,11 @@ public class JudgeTests
             secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
             secondPlayer.Hand.AddStubCard("OMEGA", 10, 3);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -356,11 +356,11 @@ public class JudgeTests
 
             firstPlayer.Hand.AddLandCard("ALPHA", 0, 3);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -423,11 +423,11 @@ public class JudgeTests
                 .Append(blockingPermanent)
                 .ForEach(tabletop.Battlefield.AddToTop);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -479,11 +479,11 @@ public class JudgeTests
                 tabletop.Battlefield.AddToTop(untappedPermanent);
             }
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -551,11 +551,11 @@ public class JudgeTests
                 .Append(blockingPermanents)
                 .ForEach(tabletop.Battlefield.AddToTop);
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 
@@ -607,11 +607,11 @@ public class JudgeTests
                 tabletop.Battlefield.AddToTop(untappedPermanent);
             }
 
-            var judge = new Judge(mockLogger.Object);
+            var roundJudge = new RoundJudge(mockLogger.Object);
 
             // Act.
 
-            var executionResult = judge.ExecuteNextPhase(tabletop);
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
 
             // Assert.
 

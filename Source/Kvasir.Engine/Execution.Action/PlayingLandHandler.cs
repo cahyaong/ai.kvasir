@@ -30,7 +30,6 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System.Collections.Generic;
 using System.Linq;
-using nGratis.AI.Kvasir.Engine.Execution;
 
 public class PlayingLandHandler : BaseActionHandler
 {
@@ -38,7 +37,7 @@ public class PlayingLandHandler : BaseActionHandler
 
     public override bool IsSpecialAction => true;
 
-    protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action, IActionRequirement _)
+    protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action)
     {
         var reasons = new List<ValidationReason>();
 
@@ -77,7 +76,7 @@ public class PlayingLandHandler : BaseActionHandler
         return ValidationResult.Create(reasons);
     }
 
-    protected override void ResolveCore(ITabletop tabletop, IAction action, IActionRequirement _)
+    protected override void ResolveCore(ITabletop tabletop, IAction action)
     {
         // RX-116.2a — Playing a land is a special action. To play a land, a player puts that land onto the battlefield
         // from the zone it was in (usually that player’s hand)...

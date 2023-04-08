@@ -104,6 +104,14 @@ public class Zone<TEntity> : IZone<TEntity>
             .Reverse();
     }
 
+    public IEnumerable<TEntity> FindAll()
+    {
+        return this
+            ._entities
+            .AsEnumerable()
+            .Reverse();
+    }
+
     public void RemoveFromTop()
     {
         if (this.Quantity <= 0)
@@ -132,14 +140,6 @@ public class Zone<TEntity> : IZone<TEntity>
         }
 
         this._entities.RemoveRange(this.Quantity - count, count);
-    }
-
-    public IEnumerable<TEntity> FindAll()
-    {
-        return this
-            ._entities
-            .AsEnumerable()
-            .Reverse();
     }
 
     public void RemoveAll()

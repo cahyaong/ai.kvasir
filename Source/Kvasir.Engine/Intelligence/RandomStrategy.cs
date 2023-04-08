@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine.Execution;
 
 public class RandomStrategy : IStrategy
 {
@@ -127,13 +126,13 @@ public class RandomStrategy : IStrategy
         return Action.Pass();
     }
 
-    public IAction PerformRequiredAction(ITabletop tabletop, IActionRequirement requirement)
+    public IAction PerformRequiredAction(ITabletop tabletop, ActionKind kind, IParameter requirement)
     {
-        if (requirement.ActionKind == ActionKind.Discarding)
+        if (kind == ActionKind.Discarding)
         {
             return Action.Discard(tabletop
                 .ActivePlayer.Hand
-                .FindManyFromTop(requirement.GetParameterValue<int>(ActionParameter.Quantity))
+                .FindManyFromTop(requirement.FindValue<int>(ParameterKey.Amount))
                 .ToArray());
         }
 

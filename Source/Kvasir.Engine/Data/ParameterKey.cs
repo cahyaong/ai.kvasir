@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IActionRequirement.cs" company="nGratis">
+// <copyright file="ParameterKey.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,60 +23,14 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, February 19, 2023 6:23:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Wednesday, March 8, 2023 2:25:24 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
-
-using nGratis.AI.Kvasir.Engine.Execution;
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
-
-public interface IActionRequirement
+public enum ParameterKey
 {
-    ActionKind ActionKind { get; }
+    Unknown = 0,
 
-    TValue GetParameterValue<TValue>(ActionParameter actionParameter)
-        where TValue : struct;
-}
-
-public partial class ActionRequirement
-{
-    public static IActionRequirement Unknown => UnknownActionRequirement.Instance;
-
-    public static IActionRequirement None => NoneActionRequirement.Instance;
-}
-
-public class UnknownActionRequirement : IActionRequirement
-{
-    private UnknownActionRequirement()
-    {
-    }
-
-    public static UnknownActionRequirement Instance { get; } = new();
-
-    public ActionKind ActionKind => ActionKind.Unknown;
-
-    public TValue GetParameterValue<TValue>(ActionParameter actionParameter)
-        where TValue : struct
-    {
-        throw new NotSupportedException("Getting parameter value is not supported!");
-    }
-}
-
-public class NoneActionRequirement : IActionRequirement
-{
-    private NoneActionRequirement()
-    {
-    }
-
-    public static NoneActionRequirement Instance { get; } = new();
-
-    public ActionKind ActionKind => ActionKind.Unknown;
-
-    public TValue GetParameterValue<TValue>(ActionParameter actionParameter)
-        where TValue : struct
-    {
-        return default;
-    }
+    Amount
 }

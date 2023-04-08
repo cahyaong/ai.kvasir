@@ -42,7 +42,7 @@ public class ValidationResult
 
     public bool HasError => this.Reasons.Any();
 
-    public IEnumerable<ValidationReason> Reasons { get; private init; }
+    public IEnumerable<ValidationReason> Reasons { get; protected init; }
 
     public IEnumerable<string> Messages => this
         .Reasons

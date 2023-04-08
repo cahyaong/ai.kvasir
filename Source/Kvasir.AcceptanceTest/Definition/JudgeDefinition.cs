@@ -53,7 +53,7 @@ public sealed class JudgeDefinition
             .WithFormatter();
     }
 
-    private Judge _judge;
+    private RoundJudge _roundJudge;
     private ITabletop _tabletop;
 
     private IPermanent _attackingPermanent;
@@ -79,7 +79,7 @@ public sealed class JudgeDefinition
             this._mockAttackingStrategy.Object,
             this._mockBlockingStrategy.Object);
 
-        this._judge = new Judge(mockLogger.Object);
+        this._roundJudge = new RoundJudge(mockLogger.Object);
 
         this._attackingPermanent = Permanent.Unknown;
         this._blockingPermanents = new List<IPermanent>();
@@ -136,7 +136,7 @@ public sealed class JudgeDefinition
             this._mockBlockingStrategy.WithBlockingDecision(this._attackingPermanent, this._blockingPermanents);
         }
 
-        this._judge
+        this._roundJudge
             .ExecuteNextTurn(this._tabletop)
             .HasError
             .Should().BeFalse("because executing turn should not fail");

@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 
 public static class TabletopExtensions
@@ -100,30 +99,5 @@ public static class TabletopExtensions
         }
 
         return legalActions;
-    }
-
-    internal static bool ShouldResolveStack(this ITabletop tabletop)
-    {
-        if (tabletop.Stack.Quantity < 2)
-        {
-            return false;
-        }
-
-        // RX-117.4 — If all players pass in succession (that is, if all players pass without taking any actions in
-        // between passing), the spell or ability on top of the stack resolves...
-
-        // RX-405.5 — When all players pass in succession, the top (last-added) spell or ability on the stack
-        // resolves...
-
-        return tabletop
-            .Stack
-            .FindManyFromTop(2)
-            .All(action => action.Kind == ActionKind.Passing);
-    }
-
-    internal static void ResolveStack(this ITabletop tabletop)
-    {
-        tabletop.Stack.RemoveManyFromTop(2);
-        tabletop.IsActionPerformed = !tabletop.Stack.IsEmpty;
     }
 }

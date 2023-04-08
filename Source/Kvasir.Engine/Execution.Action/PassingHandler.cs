@@ -26,15 +26,13 @@
 // <creation_timestamp>Sunday, September 18, 2022 6:09:11 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using nGratis.AI.Kvasir.Engine.Execution;
-
 namespace nGratis.AI.Kvasir.Engine;
 
 public class PassingHandler : BaseActionHandler
 {
     public override ActionKind ActionKind => ActionKind.Passing;
 
-    protected override void ResolveCore(ITabletop _, IAction __, IActionRequirement ___)
+    protected override void ResolveCore(ITabletop _, IAction __)
     {
     }
 }

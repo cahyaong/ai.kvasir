@@ -28,7 +28,6 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 
 public class Action : IAction
@@ -36,8 +35,9 @@ public class Action : IAction
     private Action()
     {
         this.Kind = ActionKind.Unknown;
-        this.Target = ActionTarget.Unknown;
         this.Owner = Player.Unknown;
+        this.Target = ActionTarget.Unknown;
+        this.Parameter = Engine.Parameter.Unknown;
     }
 
     public static IAction Unknown => UnknownAction.Instance;
@@ -48,16 +48,19 @@ public class Action : IAction
 
     public ActionKind Kind { get; private init; }
 
+    public IPlayer Owner { get; set; }
+
     public IActionTarget Target { get; private init; }
 
-    public IPlayer Owner { get; set; }
+    public IParameter Parameter { get; set; }
 
     public static IAction Pass()
     {
         return new Action
         {
             Kind = ActionKind.Passing,
-            Target = ActionTarget.None
+            Target = ActionTarget.None,
+            Parameter = Engine.Parameter.None
         };
     }
 
@@ -69,7 +72,8 @@ public class Action : IAction
             Target = new ActionTarget
             {
                 Cards = new[] { card }
-            }
+            },
+            Parameter = Engine.Parameter.None
         };
     }
 
@@ -93,7 +97,8 @@ public class Action : IAction
             Target = new ActionTarget
             {
                 Cards = new[] { card }
-            }
+            },
+            Parameter = Engine.Parameter.None
         };
     }
 }

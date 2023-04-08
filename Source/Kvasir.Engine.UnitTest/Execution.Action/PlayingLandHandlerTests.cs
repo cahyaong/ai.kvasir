@@ -54,7 +54,7 @@ public class PlayingLandHandlerTests
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction, ActionRequirement.None);
+            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction);
 
             // Assert.
 
@@ -77,17 +77,14 @@ public class PlayingLandHandlerTests
 
             var playingFirstLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
             playingFirstLandAction.Target.Player = tabletop.ActivePlayer;
-            playingLandHandler.Resolve(tabletop, playingFirstLandAction, ActionRequirement.None);
+            playingLandHandler.Resolve(tabletop, playingFirstLandAction);
 
             var playingSecondLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
             playingSecondLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(
-                tabletop,
-                playingSecondLandAction,
-                ActionRequirement.None);
+            var validationResult = playingLandHandler.Validate(tabletop, playingSecondLandAction);
 
             // Assert.
 
@@ -124,7 +121,7 @@ public class PlayingLandHandlerTests
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction, ActionRequirement.None);
+            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction);
 
             // Assert.
 
@@ -168,7 +165,7 @@ public class PlayingLandHandlerTests
 
             // Act.
 
-            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction, ActionRequirement.None);
+            var validationResult = playingLandHandler.Validate(tabletop, playingLandAction);
 
             // Assert.
 

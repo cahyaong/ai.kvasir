@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Judge.cs" company="nGratis">
+// <copyright file="RoundJudge.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -32,32 +32,28 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 
-public class Judge
+public class RoundJudge
 {
     // TODO (MUST): Wire up the validation logic for executing combat phase!
 
-    private readonly bool _shouldTerminateOnIllegalAction;
+    private readonly IActionJudge _actionJudge;
 
     private readonly ILogger _logger;
 
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
-    private readonly IReadOnlyDictionary<ActionKind, IActionHandler> _actionHandlerByActionKindLookup;
-
-    public Judge(ILogger logger)
-        : this(true, logger)
+    public RoundJudge(ILogger logger)
+        : this(new ActionJudge(), logger)
     {
     }
 
-    public Judge(bool shouldTerminateOnIllegalAction, ILogger logger)
+    public RoundJudge(IActionJudge actionJudge, ILogger logger)
     {
-        this._shouldTerminateOnIllegalAction = shouldTerminateOnIllegalAction;
+        this._actionJudge = actionJudge;
         this._logger = logger;
 
         this._phaseHandlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
@@ -68,18 +64,9 @@ public class Judge
             [Phase.PostcombatMain] = this.ExecuteMainPhase,
             [Phase.Ending] = this.ExecuteEndingPhase
         };
-
-        this._actionHandlerByActionKindLookup = Assembly
-            .GetExecutingAssembly()
-            .GetTypes()
-            .Where(type => !type.IsInterface && !type.IsAbstract)
-            .Where(type => type.IsAssignableTo(typeof(IActionHandler)))
-            .Select(Activator.CreateInstance)
-            .Cast<IActionHandler>()
-            .ToImmutableDictionary(handler => handler.ActionKind);
     }
 
-    public static Judge Unknown { get; } = new(VoidLogger.Instance);
+    public static RoundJudge Unknown { get; } = new(VoidLogger.Instance);
 
     public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
     {
@@ -181,14 +168,14 @@ public class Judge
             ? tabletop.NonActivePlayer
             : tabletop.ActivePlayer;
 
-        var validationResult = ValidationResult.Successful;
+        var messages = new List<string>();
 
         while (!shouldEndStep)
         {
-            var shouldResolveStack = false;
+            var shouldQueueAction = true;
             var actionIndex = 0;
 
-            while (!shouldResolveStack)
+            while (shouldQueueAction)
             {
                 var isPrioritizedAction = actionIndex % 2 == 0;
 
@@ -207,38 +194,16 @@ public class Judge
                     performedAction.Target.Player = selectedPlayer;
                 }
 
-                var actionHandler = this.FindActionHandler(performedAction);
-                validationResult = actionHandler.Validate(tabletop, performedAction, ActionRequirement.None);
+                var queueingResult = this._actionJudge.QueueAction(tabletop, performedAction);
+                messages.AddRange(queueingResult.Messages);
 
-                // TODO (MUST): Treat invalid action as passing, and resolve valid actions already in stack!
-
-                if (validationResult.HasError)
+                if (!queueingResult.IsSpecialActionPerformed)
                 {
-                    shouldResolveStack = true;
-                    shouldEndStep = true;
+                    actionIndex++;
                 }
-                else
-                {
-                    if (actionHandler.IsSpecialAction)
-                    {
-                        actionHandler.Resolve(tabletop, performedAction, ActionRequirement.None);
-                    }
-                    else
-                    {
-                        tabletop.Stack.AddToTop(performedAction);
-                        shouldResolveStack = tabletop.ShouldResolveStack();
 
-                        if (shouldResolveStack)
-                        {
-                            tabletop.ResolveStack();
-                            shouldEndStep = !tabletop.IsActionPerformed;
-                        }
-                        else
-                        {
-                            actionIndex++;
-                        }
-                    }
-                }
+                shouldQueueAction = !queueingResult.IsStackResolved;
+                shouldEndStep = !queueingResult.IsNormalActionPerformed;
             }
         }
 
@@ -247,7 +212,7 @@ public class Judge
         // RX-405.5 — ...If the stack is empty when all players pass, the current step or phase ends and the next
         // begins.
 
-        return ExecutionResult.Create(validationResult.Messages);
+        return ExecutionResult.Create(messages);
     }
 
     private ExecutionResult ExecuteCombatPhase(ITabletop tabletop)
@@ -414,7 +379,7 @@ public class Judge
     {
         this._logger.LogDiagnostic(tabletop);
 
-        var validationResult = ValidationResult.Successful;
+        var executionResult = ExecutionResult.Successful;
 
         // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).
         // RX-513.1 — ...Once it begins, the active player gets priority...
@@ -432,33 +397,24 @@ public class Judge
 
         if (tabletop.ActivePlayer.Hand.Quantity > MagicConstant.Hand.MaxCardCount)
         {
-            var actionRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, tabletop.ActivePlayer.Hand.Quantity - MagicConstant.Hand.MaxCardCount));
+            var parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, tabletop.ActivePlayer.Hand.Quantity - MagicConstant.Hand.MaxCardCount)
+                .Build();
 
-            var action = tabletop.ActivePlayer.Strategy.PerformRequiredAction(tabletop, actionRequirement);
+            var action = tabletop
+                .ActivePlayer.Strategy
+                .PerformRequiredAction(tabletop, ActionKind.Discarding, parameter);
+
             action.Owner = Player.None;
             action.Target.Player = tabletop.ActivePlayer;
+            action.Parameter = parameter;
 
-            var actionHandler = this.FindActionHandler(action);
-            validationResult = actionHandler.Validate(tabletop, action, actionRequirement);
-            actionHandler.Resolve(tabletop, action, actionRequirement);
+            executionResult = this._actionJudge.ExecuteAction(tabletop, action);
         }
 
         tabletop.PlayedLandCount = 0;
 
-        return ExecutionResult.Create(validationResult.Messages);
-    }
-
-    private IActionHandler FindActionHandler(IAction action)
-    {
-        if (!this._actionHandlerByActionKindLookup.TryGetValue(action.Kind, out var actionHandler))
-        {
-            throw new KvasirException(
-                "Action has no handler associated to it!",
-                ("Action Kind", action.Kind));
-        }
-
-        return actionHandler;
+        return executionResult;
     }
 }

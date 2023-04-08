@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ActionParameter.cs" company="nGratis">
+// <copyright file="IActionJudge.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,14 +23,16 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Sunday, February 19, 2023 6:33:53 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, April 8, 2023 1:05:12 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-public enum ActionParameter
-{
-    Unknown = 0,
+using nGratis.AI.Kvasir.Contract;
 
-    Quantity
+public interface IActionJudge
+{
+    QueueingResult QueueAction(ITabletop tabletop, IAction action);
+
+    ExecutionResult ExecuteAction(ITabletop tabletop, IAction action);
 }

@@ -31,7 +31,6 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using nGratis.AI.Kvasir.Engine.Execution;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 
@@ -52,13 +51,14 @@ public class DiscardingHandlerTests
                 .Select(index => StubBuilder.CreateStubCard($"[_MOCK_STUB_{index:D2}_]"))
                 .ToArray());
 
-            var discardingRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, 3));
+            discardingAction.Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, 3)
+                .Build();
 
             // Act.
 
-            var validationResult = discardingHandler.Validate(tabletop, discardingAction, discardingRequirement);
+            var validationResult = discardingHandler.Validate(tabletop, discardingAction);
 
             // Assert.
 
@@ -83,13 +83,14 @@ public class DiscardingHandlerTests
                 .Select(index => StubBuilder.CreateStubCard($"[_MOCK_STUB_{index:D2}_]"))
                 .ToArray());
 
-            var discardingRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, 5));
+            discardingAction.Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, 5)
+                .Build();
 
             // Act.
 
-            var validationResult = discardingHandler.Validate(tabletop, discardingAction, discardingRequirement);
+            var validationResult = discardingHandler.Validate(tabletop, discardingAction);
 
             // Assert.
 
@@ -123,13 +124,14 @@ public class DiscardingHandlerTests
                 .Select(index => StubBuilder.CreateStubCard($"[_MOCK_STUB_{index:D2}_]"))
                 .ToArray());
 
-            var discardingRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, 1));
+            discardingAction.Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, 1)
+                .Build();
 
             // Act.
 
-            var validationResult = discardingHandler.Validate(tabletop, discardingAction, discardingRequirement);
+            var validationResult = discardingHandler.Validate(tabletop, discardingAction);
 
             // Assert.
 
@@ -175,13 +177,14 @@ public class DiscardingHandlerTests
             discardingAction.Owner = Player.None;
             discardingAction.Target.Player = tabletop.ActivePlayer;
 
-            var discardingRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, 3));
+            discardingAction.Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, 3)
+                .Build();
 
             // Act.
 
-            discardingHandler.Resolve(tabletop, discardingAction, discardingRequirement);
+            discardingHandler.Resolve(tabletop, discardingAction);
 
             // Assert.
 
@@ -221,13 +224,14 @@ public class DiscardingHandlerTests
             discardingAction.Owner = Player.None;
             discardingAction.Target.Player = tabletop.ActivePlayer;
 
-            var discardingRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, 3));
+            discardingAction.Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, 3)
+                .Build();
 
             // Act.
 
-            discardingHandler.Resolve(tabletop, discardingAction, discardingRequirement);
+            discardingHandler.Resolve(tabletop, discardingAction);
 
             // Assert.
 
@@ -267,13 +271,14 @@ public class DiscardingHandlerTests
             discardingAction.Owner = Player.None;
             discardingAction.Target.Player = tabletop.ActivePlayer;
 
-            var discardingRequirement = ActionRequirement.Create(
-                ActionKind.Discarding,
-                (ActionParameter.Quantity, 3));
+            discardingAction.Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, 3)
+                .Build();
 
             // Act.
 
-            discardingHandler.Resolve(tabletop, discardingAction, discardingRequirement);
+            discardingHandler.Resolve(tabletop, discardingAction);
 
             // Assert.
 
