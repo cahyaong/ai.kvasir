@@ -48,6 +48,8 @@ public interface IPlayer
 
     IZone<ICard> Graveyard { get; }
 
+    IManaPool ManaPool { get; }
+
     int Life { get; set; }
 }
 
@@ -72,6 +74,8 @@ public sealed class UnknownPlayer : IPlayer
     public IZone<ICard> Hand => Zone<ICard>.Unknown;
 
     public IZone<ICard> Graveyard => Zone<ICard>.Unknown;
+
+    public IManaPool ManaPool => Engine.ManaPool.Unknown;
 
     public int Life
     {
@@ -101,6 +105,8 @@ internal sealed class NonePlayer : IPlayer
     public IZone<ICard> Hand => Zone<ICard>.Unknown;
 
     public IZone<ICard> Graveyard => Zone<ICard>.Unknown;
+
+    public IManaPool ManaPool => Engine.ManaPool.Unknown;
 
     public int Life
     {

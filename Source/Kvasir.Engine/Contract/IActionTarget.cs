@@ -51,7 +51,7 @@ internal class UnknownActionTarget : IActionTarget
     public IPlayer Player
     {
         get => Engine.Player.Unknown;
-        set => throw new NotSupportedException("Setting player is not supported!");
+        set => throw new NotSupportedException("Setting player is not allowed!");
     }
 
     public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
@@ -68,7 +68,7 @@ internal class NoneActionTarget : IActionTarget
     public IPlayer Player
     {
         get => Engine.Player.None;
-        set => throw new NotSupportedException("Setting player is not supported!");
+        set => throw new NotSupportedException("Setting player is not allowed!");
     }
 
     public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();

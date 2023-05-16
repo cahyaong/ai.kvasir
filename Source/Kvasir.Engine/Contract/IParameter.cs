@@ -45,7 +45,7 @@ public sealed class UnknownParameter : IParameter
 
     public TValue FindValue<TValue>(ParameterKey _)
     {
-        throw new NotSupportedException("Getting parameter value is not supported!");
+        throw new NotSupportedException("Getting parameter value is not allowed!");
     }
 }
 

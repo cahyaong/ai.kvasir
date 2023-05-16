@@ -62,6 +62,10 @@ public class Player : IPlayer
             Visibility = Visibility.Public
         };
 
+        this.ManaPool = ManaBlob.Builder
+            .Create()
+            .Build();
+
         this.Life = 0;
     }
 
@@ -82,6 +86,8 @@ public class Player : IPlayer
     public IZone<ICard> Hand { get; }
 
     public IZone<ICard> Graveyard { get; }
+
+    public IManaPool ManaPool { get; }
 
     public int Life { get; set; }
 }

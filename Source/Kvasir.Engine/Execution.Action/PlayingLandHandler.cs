@@ -37,6 +37,14 @@ public class PlayingLandHandler : BaseActionHandler
 
     public override bool IsSpecialAction => true;
 
+    public override ICost FindCost(IAction action)
+    {
+        return action
+            .Target.Cards
+            .Single()
+            .Cost;
+    }
+
     protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action)
     {
         var reasons = new List<ValidationReason>();

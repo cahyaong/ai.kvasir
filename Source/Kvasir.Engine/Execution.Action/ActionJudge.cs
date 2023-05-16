@@ -37,16 +37,31 @@ using nGratis.AI.Kvasir.Contract;
 
 public class ActionJudge : IActionJudge
 {
+    private static readonly ICostHandler DoingNothingHandler;
+
+    private static readonly IReadOnlyDictionary<CostKind, ICostHandler> CostHandlerByCostKindLookup;
+
     private static readonly IReadOnlyDictionary<ActionKind, IActionHandler> ActionHandlerByActionKindLookup;
 
     static ActionJudge()
     {
         // TODO (COULD): Inject handlers via DI container!
 
-        ActionJudge.ActionHandlerByActionKindLookup = Assembly
+        var processedTypes = Assembly
             .GetExecutingAssembly()
             .GetTypes()
             .Where(type => !type.IsInterface && !type.IsAbstract)
+            .ToImmutableArray();
+
+        ActionJudge.CostHandlerByCostKindLookup = processedTypes
+            .Where(type => type.IsAssignableTo(typeof(ICostHandler)))
+            .Select(Activator.CreateInstance)
+            .Cast<ICostHandler>()
+            .ToImmutableDictionary(handler => handler.CostKind);
+
+        ActionJudge.DoingNothingHandler = ActionJudge.CostHandlerByCostKindLookup[CostKind.None];
+
+        ActionJudge.ActionHandlerByActionKindLookup = processedTypes
             .Where(type => type.IsAssignableTo(typeof(IActionHandler)))
             .Select(Activator.CreateInstance)
             .Cast<IActionHandler>()
@@ -55,8 +70,12 @@ public class ActionJudge : IActionJudge
 
     public QueueingResult QueueAction(ITabletop tabletop, IAction action)
     {
+        var costHandler = ActionJudge.FindCostHandler(action.Cost);
         var actionHandler = ActionJudge.FindActionHandler(action);
-        var validationResult = actionHandler.Validate(tabletop, action);
+
+        var validationResult = ValidationResult.Create(
+            costHandler.Validate(tabletop, action.Cost),
+            actionHandler.Validate(tabletop, action));
 
         if (validationResult.HasError)
         {
@@ -64,14 +83,17 @@ public class ActionJudge : IActionJudge
 
             action = Action.Pass();
             action.Owner = owner;
+            costHandler = ActionJudge.DoingNothingHandler;
         }
         else if (actionHandler.IsSpecialAction)
         {
+            costHandler.Resolve(tabletop, action.Cost);
             actionHandler.Resolve(tabletop, action);
 
             return QueueingResult.CreateWhenSpecialActionPerformed(validationResult);
         }
 
+        costHandler.Resolve(tabletop, action.Cost);
         tabletop.Stack.AddToTop(action);
 
         var isActionPerformed = tabletop
@@ -132,13 +154,21 @@ public class ActionJudge : IActionJudge
         }
     }
 
+    private static ICostHandler FindCostHandler(ICost cost)
+    {
+        if (!ActionJudge.CostHandlerByCostKindLookup.TryGetValue(cost.Kind, out var costHandler))
+        {
+            throw new KvasirException("Cost must have a handler associated to it!", ("Cost Kind", cost.Kind));
+        }
+
+        return costHandler;
+    }
+
     private static IActionHandler FindActionHandler(IAction action)
     {
         if (!ActionJudge.ActionHandlerByActionKindLookup.TryGetValue(action.Kind, out var actionHandler))
         {
-            throw new KvasirException(
-                "Action has no handler associated to it!",
-                ("Action Kind", action.Kind));
+            throw new KvasirException("Action must have a handler associated to it!", ("Action Kind", action.Kind));
         }
 
         return actionHandler;

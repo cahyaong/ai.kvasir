@@ -37,6 +37,8 @@ public interface IAction : IDiagnostic
 
     IPlayer Owner { get; set; }
 
+    ICost Cost { get; }
+
     IActionTarget Target { get; }
 
     IParameter Parameter { get; set; }
@@ -59,14 +61,16 @@ internal class UnknownAction : IAction
     public IPlayer Owner
     {
         get => Player.Unknown;
-        set => throw new NotSupportedException("Setting owner is not supported!");
+        set => throw new NotSupportedException("Setting owner is not allowed!");
     }
+
+    public ICost Cost => Engine.Cost.Unknown;
 
     public IActionTarget Target => ActionTarget.Unknown;
 
     public IParameter Parameter
     {
         get => Engine.Parameter.Unknown;
-        set => throw new NotSupportedException("Setting parameter is not supported!");
+        set => throw new NotSupportedException("Setting parameter is not allowed!");
     }
 }

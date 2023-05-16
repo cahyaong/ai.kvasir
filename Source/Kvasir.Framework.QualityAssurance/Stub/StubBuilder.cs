@@ -63,7 +63,15 @@ public static partial class StubBuilder
         return new Card
         {
             Name = name,
-            Kind = CardKind.Land
+            Kind = CardKind.Land,
+            Cost = new Cost
+            {
+                Kind = CostKind.PayingMana,
+                Parameter = Parameter.Builder
+                    .Create()
+                    .WithValue(ParameterKey.Amount, ManaCost.Free)
+                    .Build()
+            }
         };
     }
 

@@ -119,7 +119,46 @@ public class MagicEntityFactory : IMagicEntityFactory
             SuperKind = definedCard.SuperKind,
             SubKinds = definedCard.SubKinds,
             Power = definedCard.Power,
-            Toughness = definedCard.Toughness
+            Toughness = definedCard.Toughness,
+            Cost = MagicEntityFactory.CreateCost(definedCard.Cost)
+        };
+    }
+
+    private static ICost CreateCost(DefinedBlob.Cost definedCost)
+    {
+        switch (definedCost.Kind)
+        {
+            case CostKind.PayingMana:
+                return MagicEntityFactory.ConvertCost((DefinedBlob.PayingManaCost)definedCost);
+
+            default:
+                return new Cost
+                {
+                    Kind = definedCost.Kind,
+                    Parameter = Parameter.None
+                };
+        }
+    }
+
+    private static ICost ConvertCost(DefinedBlob.PayingManaCost definedCost)
+    {
+        var manaCost = (IManaCost)ManaBlob.Builder
+            .Create()
+            .WithDefinedCost(definedCost)
+            .Build();
+
+        if (manaCost.TotalAmount <= 0)
+        {
+            manaCost = ManaCost.Free;
+        }
+
+        return new Cost
+        {
+            Kind = CostKind.PayingMana,
+            Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, manaCost)
+                .Build()
         };
     }
 }

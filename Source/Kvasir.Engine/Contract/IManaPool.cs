@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationResult.cs" company="nGratis">
+// <copyright file="IManaPool.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,46 +23,48 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, March 19, 2023 3:03:22 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
-public class ValidationResult
+public interface IManaPool
 {
-    private ValidationResult()
+    int TotalAmount { get; }
+
+    IEnumerable<Mana> AvailableManas { get; }
+
+    int FindAmount(Mana mana);
+
+    void AddAmount(Mana mana, int amount);
+
+    void RemoveAmount(Mana mana, int amount);
+}
+
+public sealed class UnknownManaPool : IManaPool
+{
+    private UnknownManaPool()
     {
-        this.Reasons = Enumerable.Empty<ValidationReason>();
     }
 
-    public static ValidationResult Successful { get; } = new();
+    public static UnknownManaPool Instance { get; } = new();
 
-    public bool HasError => this.Reasons.Any();
+    public int TotalAmount =>
+        throw new NotSupportedException("Getting total amount is not allowed!");
 
-    public IEnumerable<ValidationReason> Reasons { get; protected init; }
+    public IEnumerable<Mana> AvailableManas =>
+        throw new NotSupportedException("Getting available manas is not allowed!");
 
-    public IEnumerable<string> Messages => this
-        .Reasons
-        .Select(reason => reason.CreateDetailedMessage());
+    public int FindAmount(Mana _) =>
+        throw new NotSupportedException("Finding amount is not allowed!");
 
-    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
-    {
-        return reasons.Any()
-            ? new ValidationResult { Reasons = reasons }
-            : ValidationResult.Successful;
-    }
+    public void AddAmount(Mana _, int __) =>
+        throw new NotSupportedException("Adding amount is not allowed!");
 
-    public static ValidationResult Create(params ValidationResult[] results)
-    {
-        var reasons = results
-            .Where(result => result.HasError)
-            .SelectMany(result => result.Reasons)
-            .ToImmutableArray();
-
-        return ValidationResult.Create(reasons);
-    }
+    public void RemoveAmount(Mana _, int __) =>
+        throw new NotSupportedException("Removing amount is not allowed!");
 }

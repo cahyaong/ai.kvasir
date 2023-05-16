@@ -32,6 +32,8 @@ public enum CostKind
 {
     Unknown = 0,
 
-    Tapping,
-    PayingMana
+    None,
+
+    PayingMana,
+    Tapping
 }

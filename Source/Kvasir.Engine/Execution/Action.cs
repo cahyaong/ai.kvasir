@@ -36,6 +36,7 @@ public class Action : IAction
     {
         this.Kind = ActionKind.Unknown;
         this.Owner = Player.Unknown;
+        this.Cost = Engine.Cost.Unknown;
         this.Target = ActionTarget.Unknown;
         this.Parameter = Engine.Parameter.Unknown;
     }
@@ -44,11 +45,13 @@ public class Action : IAction
 
     public int Id => this.GetHashCode();
 
-    public string Name => DefinedText.Default;
+    public string Name => DefinedText.Unsupported;
 
     public ActionKind Kind { get; private init; }
 
     public IPlayer Owner { get; set; }
+
+    public ICost Cost { get; private init; }
 
     public IActionTarget Target { get; private init; }
 
@@ -59,6 +62,7 @@ public class Action : IAction
         return new Action
         {
             Kind = ActionKind.Passing,
+            Cost = Engine.Cost.None,
             Target = ActionTarget.None,
             Parameter = Engine.Parameter.None
         };
@@ -69,6 +73,7 @@ public class Action : IAction
         return new Action
         {
             Kind = ActionKind.PlayingLand,
+            Cost = card.Cost,
             Target = new ActionTarget
             {
                 Cards = new[] { card }
@@ -82,6 +87,7 @@ public class Action : IAction
         return new Action
         {
             Kind = ActionKind.Discarding,
+            Cost = Engine.Cost.None,
             Target = new ActionTarget
             {
                 Cards = cards
@@ -94,6 +100,7 @@ public class Action : IAction
         return new Action
         {
             Kind = ActionKind.PlayingStub,
+            Cost = card.Cost,
             Target = new ActionTarget
             {
                 Cards = new[] { card }

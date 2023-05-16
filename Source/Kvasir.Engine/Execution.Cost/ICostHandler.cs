@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationResult.cs" company="nGratis">
+// <copyright file="ICostHandler.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,46 +23,18 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, April 15, 2023 4:22:55 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
-public class ValidationResult
+public interface ICostHandler
 {
-    private ValidationResult()
-    {
-        this.Reasons = Enumerable.Empty<ValidationReason>();
-    }
+    CostKind CostKind { get; }
 
-    public static ValidationResult Successful { get; } = new();
+    ValidationResult Validate(ITabletop tabletop, ICost cost);
 
-    public bool HasError => this.Reasons.Any();
-
-    public IEnumerable<ValidationReason> Reasons { get; protected init; }
-
-    public IEnumerable<string> Messages => this
-        .Reasons
-        .Select(reason => reason.CreateDetailedMessage());
-
-    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
-    {
-        return reasons.Any()
-            ? new ValidationResult { Reasons = reasons }
-            : ValidationResult.Successful;
-    }
-
-    public static ValidationResult Create(params ValidationResult[] results)
-    {
-        var reasons = results
-            .Where(result => result.HasError)
-            .SelectMany(result => result.Reasons)
-            .ToImmutableArray();
-
-        return ValidationResult.Create(reasons);
-    }
+    void Resolve(ITabletop tabletop, ICost cost);
 }

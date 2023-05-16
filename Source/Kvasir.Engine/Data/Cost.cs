@@ -28,7 +28,29 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
+
 public class Cost : ICost
 {
+    public Cost()
+    {
+        this.Kind = CostKind.Unknown;
+        this.Target = CostTarget.Unknown;
+        this.Parameter = Engine.Parameter.Unknown;
+    }
+
     public static ICost Unknown => UnknownCost.Instance;
+
+    public static ICost None => NoneCost.Instance;
+
+    public int Id => this.GetHashCode();
+
+    public string Name => DefinedText.Unsupported;
+
+    public CostKind Kind { get; init; }
+
+    public ICostTarget Target { get; set; }
+
+    public IParameter Parameter { get; init; }
 }

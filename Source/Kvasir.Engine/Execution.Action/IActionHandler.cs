@@ -34,6 +34,8 @@ public interface IActionHandler
 
     bool IsSpecialAction { get; }
 
+    ICost FindCost(IAction action);
+
     ValidationResult Validate(ITabletop tabletop, IAction action);
 
     void Resolve(ITabletop tabletop, IAction action);

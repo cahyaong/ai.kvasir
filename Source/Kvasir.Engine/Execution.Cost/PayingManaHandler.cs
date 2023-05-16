@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BaseActionHandler.cs" company="nGratis">
+// <copyright file="PayingManaHandler.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,60 +23,57 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, February 23, 2023 7:01:39 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, April 15, 2023 4:39:17 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Immutable;
+using System;
+using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
 
-public abstract class BaseActionHandler : IActionHandler
+public class PayingManaHandler : BaseCostHandler
 {
-    public abstract ActionKind ActionKind { get; }
+    public override CostKind CostKind => CostKind.PayingMana;
 
-    public virtual bool IsSpecialAction => false;
-
-    public virtual ICost FindCost(IAction action)
+    protected override ValidationResult ValidateCore(ITabletop tabletop, ICost cost)
     {
-        return Cost.None;
-    }
+        var amount = cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount);
 
-    public ValidationResult Validate(ITabletop tabletop, IAction action)
-    {
-        if (action.Kind != this.ActionKind)
+        var canPay =
+            amount == ManaCost.Free ||
+            cost.Target.Player.ManaPool.CanPay(amount);
+
+        if (canPay)
         {
-            throw new KvasirException(
-                "Handler is expecting correct action kind!",
-                ("Actual Kind", action.Kind),
-                ("Expected Kind", this.ActionKind));
+            return ValidationResult.Successful;
         }
 
-        var reasons = this
-            .ValidateCore(tabletop, action)
-            .Reasons
-            .ToImmutableList();
+        // RX-202.1a — The mana cost of an object represents what a player must spend from their mana pool to cast
+        // that card. Unless an object’s mana cost includes Phyrexian mana symbols(see RX-107.4f),
+        // paying that mana cost requires matching the type of any colored or colorless mana symbols as
+        // well as paying the generic mana indicated in the cost.
+
+        var reasons = new List<ValidationReason>
+        {
+            ValidationReason.Create(
+                "Target player has not enough mana to pay the cost!",
+                new[] { "mtg-202.1a" },
+                cost)
+        };
 
         return ValidationResult.Create(reasons);
     }
 
-    public void Resolve(ITabletop tabletop, IAction action)
+    protected override void PayCore(ITabletop tabletop, ICost cost)
     {
-        if (action.Kind != this.ActionKind)
+        var amount = cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount);
+
+        if (amount == ManaCost.Free)
         {
-            throw new KvasirException(
-                "Handler is expecting correct action kind!",
-                ("Actual Kind", action.Kind),
-                ("Expected Kind", this.ActionKind));
+            return;
         }
 
-        this.ResolveCore(tabletop, action);
+        throw new NotImplementedException();
     }
-
-    protected virtual ValidationResult ValidateCore(ITabletop tabletop, IAction action)
-    {
-        return ValidationResult.Successful;
-    }
-
-    protected abstract void ResolveCore(ITabletop tabletop, IAction action);
 }

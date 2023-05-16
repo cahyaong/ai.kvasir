@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
 public class ValidationReason
@@ -72,6 +73,32 @@ public class ValidationReason
             Id = permanent.Id,
             Cause = $"Permanent_{permanent.Card.Kind}",
             References = new[] { permanent.Name },
+            RuleIds = ruleIds,
+            Message = message
+        };
+    }
+
+    public static ValidationReason Create(string message, IEnumerable<string> ruleIds, ICost cost)
+    {
+        Guard
+            .Require(message, nameof(message))
+            .Is.Not.Empty();
+
+        var references = new List<string>();
+
+        if (cost.Kind == CostKind.PayingMana)
+        {
+            references.Add(cost
+                .Parameter
+                .FindValue<IManaCost>(ParameterKey.Amount)
+                .PrintDiagnostic());
+        }
+
+        return new ValidationReason
+        {
+            Id = cost.Id,
+            Cause = $"Cost_{cost.Kind}",
+            References = references,
             RuleIds = ruleIds,
             Message = message
         };

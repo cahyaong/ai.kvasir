@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationResult.cs" company="nGratis">
+// <copyright file="DoingNothingHandler.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,46 +23,23 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Friday, May 12, 2023 5:51:53 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
-public class ValidationResult
+public class DoingNothingHandler : ICostHandler
 {
-    private ValidationResult()
+    public CostKind CostKind => CostKind.None;
+
+    public ValidationResult Validate(ITabletop tabletop, ICost cost)
     {
-        this.Reasons = Enumerable.Empty<ValidationReason>();
+        return ValidationResult.Successful;
     }
 
-    public static ValidationResult Successful { get; } = new();
-
-    public bool HasError => this.Reasons.Any();
-
-    public IEnumerable<ValidationReason> Reasons { get; protected init; }
-
-    public IEnumerable<string> Messages => this
-        .Reasons
-        .Select(reason => reason.CreateDetailedMessage());
-
-    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
+    public void Resolve(ITabletop tabletop, ICost cost)
     {
-        return reasons.Any()
-            ? new ValidationResult { Reasons = reasons }
-            : ValidationResult.Successful;
-    }
-
-    public static ValidationResult Create(params ValidationResult[] results)
-    {
-        var reasons = results
-            .Where(result => result.HasError)
-            .SelectMany(result => result.Reasons)
-            .ToImmutableArray();
-
-        return ValidationResult.Create(reasons);
     }
 }

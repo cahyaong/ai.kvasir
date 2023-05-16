@@ -62,27 +62,27 @@ public class UnknownStrategy : IStrategy
 
     public IAttackingDecision DeclareAttacker(ITabletop _)
     {
-        throw new NotSupportedException("Declaring attacker is not supported!");
+        throw new NotSupportedException("Declaring attacker is not allowed!");
     }
 
     public IBlockingDecision DeclareBlocker(ITabletop _)
     {
-        throw new NotSupportedException("Declaring blocker is not supported!");
+        throw new NotSupportedException("Declaring blocker is not allowed!");
     }
 
     public IAction PerformPrioritizedAction(ITabletop _)
     {
-        throw new NotSupportedException("Performing prioritized action is not supported!");
+        throw new NotSupportedException("Performing prioritized action is not allowed!");
     }
 
     public IAction PerformNonPrioritizedAction(ITabletop _)
     {
-        throw new NotSupportedException("Performing non-prioritized action is not supported!");
+        throw new NotSupportedException("Performing non-prioritized action is not allowed!");
     }
 
     public IAction PerformRequiredAction(ITabletop _, ActionKind __, IParameter ___)
     {
-        throw new NotSupportedException("Performing required action is not supported!");
+        throw new NotSupportedException("Performing required action is not allowed!");
     }
 }
 

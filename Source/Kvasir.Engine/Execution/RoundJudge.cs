@@ -189,6 +189,14 @@ public class RoundJudge
 
                 performedAction.Owner = selectedPlayer;
 
+                if (performedAction.Cost != Cost.None)
+                {
+                    performedAction.Cost.Target = new CostTarget
+                    {
+                        Player = selectedPlayer
+                    };
+                }
+
                 if (performedAction.Target != ActionTarget.None)
                 {
                     performedAction.Target.Player = selectedPlayer;

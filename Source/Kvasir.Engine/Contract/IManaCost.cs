@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationResult.cs" company="nGratis">
+// <copyright file="IManaCost.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,46 +23,54 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, March 19, 2023 1:00:52 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
-public class ValidationResult
+public interface IManaCost
 {
-    private ValidationResult()
+    int TotalAmount { get; }
+
+    IEnumerable<Mana> RequiredManas { get; }
+
+    int FindAmount(Mana mana);
+}
+
+public sealed class UnknownManaCost : IManaCost
+{
+    private UnknownManaCost()
     {
-        this.Reasons = Enumerable.Empty<ValidationReason>();
     }
 
-    public static ValidationResult Successful { get; } = new();
+    public static UnknownManaCost Instance { get; } = new();
 
-    public bool HasError => this.Reasons.Any();
+    public int TotalAmount =>
+        throw new NotSupportedException("Getting total amount is not allowed!");
 
-    public IEnumerable<ValidationReason> Reasons { get; protected init; }
+    public IEnumerable<Mana> RequiredManas =>
+        throw new NotSupportedException("Getting required manas is not allowed!");
 
-    public IEnumerable<string> Messages => this
-        .Reasons
-        .Select(reason => reason.CreateDetailedMessage());
+    public int FindAmount(Mana _) =>
+        throw new NotSupportedException("Finding amount is not allowed!");
+}
 
-    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
+public sealed class FreeManaCost : IManaCost
+{
+    private FreeManaCost()
     {
-        return reasons.Any()
-            ? new ValidationResult { Reasons = reasons }
-            : ValidationResult.Successful;
     }
 
-    public static ValidationResult Create(params ValidationResult[] results)
-    {
-        var reasons = results
-            .Where(result => result.HasError)
-            .SelectMany(result => result.Reasons)
-            .ToImmutableArray();
+    public static FreeManaCost Instance { get; } = new();
 
-        return ValidationResult.Create(reasons);
-    }
+    public int TotalAmount => 0;
+
+    public IEnumerable<Mana> RequiredManas => Enumerable.Empty<Mana>();
+
+    public int FindAmount(Mana _) => 0;
 }

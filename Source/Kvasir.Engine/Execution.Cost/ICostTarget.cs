@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ValidationResult.cs" company="nGratis">
+// <copyright file="ICostTarget.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -23,46 +23,44 @@
 //  SOFTWARE.
 // </copyright>
 // <author>Cahya Ong - cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, November 11, 2021 11:51:24 PM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, April 15, 2023 4:46:13 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
+
+using System;
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-
-public class ValidationResult
+public interface ICostTarget
 {
-    private ValidationResult()
+    IPlayer Player { get; set; }
+}
+
+internal sealed class UnknownCostTarget : ICostTarget
+{
+    private UnknownCostTarget()
     {
-        this.Reasons = Enumerable.Empty<ValidationReason>();
     }
 
-    public static ValidationResult Successful { get; } = new();
+    public static UnknownCostTarget Instance { get; } = new();
 
-    public bool HasError => this.Reasons.Any();
-
-    public IEnumerable<ValidationReason> Reasons { get; protected init; }
-
-    public IEnumerable<string> Messages => this
-        .Reasons
-        .Select(reason => reason.CreateDetailedMessage());
-
-    public static ValidationResult Create(IReadOnlyCollection<ValidationReason> reasons)
+    public IPlayer Player
     {
-        return reasons.Any()
-            ? new ValidationResult { Reasons = reasons }
-            : ValidationResult.Successful;
+        get => Engine.Player.Unknown;
+        set => throw new NotSupportedException("Setting player is not allowed!");
+    }
+}
+
+internal sealed class NoneCostTarget : ICostTarget
+{
+    private NoneCostTarget()
+    {
     }
 
-    public static ValidationResult Create(params ValidationResult[] results)
-    {
-        var reasons = results
-            .Where(result => result.HasError)
-            .SelectMany(result => result.Reasons)
-            .ToImmutableArray();
+    public static NoneCostTarget Instance { get; } = new();
 
-        return ValidationResult.Create(reasons);
+    public IPlayer Player
+    {
+        get => Engine.Player.None;
+        set => throw new NotSupportedException("Setting player is not allowed!");
     }
 }
