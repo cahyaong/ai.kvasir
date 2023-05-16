@@ -35,7 +35,7 @@ public interface IParameter
     TValue FindValue<TValue>(ParameterKey key);
 }
 
-public sealed class UnknownParameter : IParameter
+internal sealed class UnknownParameter : IParameter
 {
     private UnknownParameter()
     {
@@ -43,13 +43,11 @@ public sealed class UnknownParameter : IParameter
 
     public static UnknownParameter Instance { get; } = new();
 
-    public TValue FindValue<TValue>(ParameterKey _)
-    {
-        throw new NotSupportedException("Getting parameter value is not allowed!");
-    }
+    public TValue FindValue<TValue>(ParameterKey _) =>
+        throw new NotSupportedException("Finding value is not allowed!");
 }
 
-public sealed class NoneParameter : IParameter
+internal sealed class NoneParameter : IParameter
 {
     private NoneParameter()
     {
@@ -57,8 +55,5 @@ public sealed class NoneParameter : IParameter
 
     public static NoneParameter Instance { get; } = new();
 
-    public TValue FindValue<TValue>(ParameterKey _)
-    {
-        return default!;
-    }
+    public TValue FindValue<TValue>(ParameterKey _) => default!;
 }

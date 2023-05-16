@@ -53,7 +53,7 @@ public interface IPlayer
     int Life { get; set; }
 }
 
-public sealed class UnknownPlayer : IPlayer
+internal sealed class UnknownPlayer : IPlayer
 {
     private UnknownPlayer()
     {
@@ -79,7 +79,7 @@ public sealed class UnknownPlayer : IPlayer
 
     public int Life
     {
-        get => -42;
+        get => throw new NotSupportedException("Getting life is not allowed!");
         set => throw new NotSupportedException("Setting life is not allowed!");
     }
 }

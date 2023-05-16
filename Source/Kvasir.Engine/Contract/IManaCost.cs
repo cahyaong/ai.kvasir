@@ -42,7 +42,7 @@ public interface IManaCost
     int FindAmount(Mana mana);
 }
 
-public sealed class UnknownManaCost : IManaCost
+internal sealed class UnknownManaCost : IManaCost
 {
     private UnknownManaCost()
     {
@@ -60,7 +60,7 @@ public sealed class UnknownManaCost : IManaCost
         throw new NotSupportedException("Finding amount is not allowed!");
 }
 
-public sealed class FreeManaCost : IManaCost
+internal sealed class FreeManaCost : IManaCost
 {
     private FreeManaCost()
     {

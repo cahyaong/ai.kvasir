@@ -36,7 +36,7 @@ public interface IAttackingDecision
     IReadOnlyCollection<IPermanent> AttackingPermanents { get; }
 }
 
-public class UnknownAttackingDecision : IAttackingDecision
+internal sealed class UnknownAttackingDecision : IAttackingDecision
 {
     private UnknownAttackingDecision()
     {
@@ -44,5 +44,6 @@ public class UnknownAttackingDecision : IAttackingDecision
 
     internal static UnknownAttackingDecision Instance { get; } = new();
 
-    public IReadOnlyCollection<IPermanent> AttackingPermanents => Array.Empty<Permanent>();
+    public IReadOnlyCollection<IPermanent> AttackingPermanents =>
+        throw new NotSupportedException("Getting attacking permanents is not allowed!");
 }

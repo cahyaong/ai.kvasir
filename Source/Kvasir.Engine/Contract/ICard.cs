@@ -52,7 +52,7 @@ public interface ICard : IDiagnostic
     IReadOnlyCollection<IAbility> Abilities { get; }
 }
 
-public class UnknownCard : ICard
+internal sealed class UnknownCard : ICard
 {
     private UnknownCard()
     {
@@ -68,13 +68,17 @@ public class UnknownCard : ICard
 
     public CardSuperKind SuperKind => CardSuperKind.Unknown;
 
-    public IReadOnlyCollection<CardSubKind> SubKinds => Array.Empty<CardSubKind>();
+    public IReadOnlyCollection<CardSubKind> SubKinds =>
+        throw new NotSupportedException("Getting sub kinds is not allowed!");
 
     public ICost Cost => Engine.Cost.Unknown;
 
-    public int Power => -42;
+    public int Power =>
+        throw new NotSupportedException("Getting power is not allowed!");
 
-    public int Toughness => -42;
+    public int Toughness =>
+        throw new NotSupportedException("Getting toughness is not allowed!");
 
-    public IReadOnlyCollection<IAbility> Abilities => Array.Empty<IAbility>();
+    public IReadOnlyCollection<IAbility> Abilities =>
+        throw new NotSupportedException("Getting abilities is not allowed!");
 }

@@ -52,7 +52,7 @@ public static class Strategy
     public static IStrategy Noop => NoopStrategy.Instance;
 }
 
-public class UnknownStrategy : IStrategy
+internal sealed class UnknownStrategy : IStrategy
 {
     private UnknownStrategy()
     {
@@ -60,33 +60,23 @@ public class UnknownStrategy : IStrategy
 
     internal static UnknownStrategy Instance { get; } = new();
 
-    public IAttackingDecision DeclareAttacker(ITabletop _)
-    {
+    public IAttackingDecision DeclareAttacker(ITabletop _) =>
         throw new NotSupportedException("Declaring attacker is not allowed!");
-    }
 
-    public IBlockingDecision DeclareBlocker(ITabletop _)
-    {
+    public IBlockingDecision DeclareBlocker(ITabletop _) =>
         throw new NotSupportedException("Declaring blocker is not allowed!");
-    }
 
-    public IAction PerformPrioritizedAction(ITabletop _)
-    {
+    public IAction PerformPrioritizedAction(ITabletop _) =>
         throw new NotSupportedException("Performing prioritized action is not allowed!");
-    }
 
-    public IAction PerformNonPrioritizedAction(ITabletop _)
-    {
+    public IAction PerformNonPrioritizedAction(ITabletop _) =>
         throw new NotSupportedException("Performing non-prioritized action is not allowed!");
-    }
 
-    public IAction PerformRequiredAction(ITabletop _, ActionKind __, IParameter ___)
-    {
+    public IAction PerformRequiredAction(ITabletop _, ActionKind __, IParameter ___) =>
         throw new NotSupportedException("Performing required action is not allowed!");
-    }
 }
 
-public class NoopStrategy : IStrategy
+internal sealed class NoopStrategy : IStrategy
 {
     private NoopStrategy()
     {
@@ -94,28 +84,13 @@ public class NoopStrategy : IStrategy
 
     internal static NoopStrategy Instance { get; } = new();
 
-    public IAttackingDecision DeclareAttacker(ITabletop _)
-    {
-        return AttackingDecision.None;
-    }
+    public IAttackingDecision DeclareAttacker(ITabletop _) => AttackingDecision.None;
 
-    public IBlockingDecision DeclareBlocker(ITabletop _)
-    {
-        return BlockingDecision.None;
-    }
+    public IBlockingDecision DeclareBlocker(ITabletop _) => BlockingDecision.None;
 
-    public IAction PerformPrioritizedAction(ITabletop _)
-    {
-        return Action.Pass();
-    }
+    public IAction PerformPrioritizedAction(ITabletop _) => Action.Pass();
 
-    public IAction PerformNonPrioritizedAction(ITabletop _)
-    {
-        return Action.Pass();
-    }
+    public IAction PerformNonPrioritizedAction(ITabletop _) => Action.Pass();
 
-    public IAction PerformRequiredAction(ITabletop _, ActionKind __, IParameter ___)
-    {
-        return Action.Pass();
-    }
+    public IAction PerformRequiredAction(ITabletop _, ActionKind __, IParameter ___) => Action.Pass();
 }

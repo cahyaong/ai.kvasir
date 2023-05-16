@@ -41,7 +41,7 @@ public interface ICost : IDiagnostic
     IParameter Parameter { get; }
 }
 
-public sealed class UnknownCost : ICost
+internal sealed class UnknownCost : ICost
 {
     private UnknownCost()
     {
@@ -64,7 +64,7 @@ public sealed class UnknownCost : ICost
     public IParameter Parameter => Engine.Parameter.Unknown;
 }
 
-public sealed class NoneCost : ICost
+internal sealed class NoneCost : ICost
 {
     private NoneCost()
     {

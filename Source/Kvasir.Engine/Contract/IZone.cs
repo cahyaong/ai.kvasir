@@ -64,7 +64,7 @@ public interface IZone<TEntity>
     }
 }
 
-internal class UnknownZone<TEntity> : IZone<TEntity>
+internal sealed class UnknownZone<TEntity> : IZone<TEntity>
 {
     private UnknownZone()
     {
@@ -76,45 +76,30 @@ internal class UnknownZone<TEntity> : IZone<TEntity>
 
     public Visibility Visibility => Visibility.Unknown;
 
-    public int Quantity => -42;
+    public int Quantity =>
+        throw new NotSupportedException("Getting quantity is not allowed!");
 
-    public void AddToTop(TEntity _)
-    {
+    public void AddToTop(TEntity _) =>
         throw new NotSupportedException("Adding entity to top is not allowed!");
-    }
 
-    public TEntity FindFromTop()
-    {
+    public TEntity FindFromTop() =>
         throw new NotSupportedException("Finding entity from top is not allowed!");
-    }
 
-    public void RemoveFromTop()
-    {
+    public void RemoveFromTop() =>
         throw new NotSupportedException("Removing entity from top is not allowed!");
-    }
 
-    public void RemoveManyFromTop(int count)
-    {
+    public void RemoveManyFromTop(int _) =>
         throw new NotSupportedException("Removing many entities from top is not allowed!");
-    }
 
-    public IEnumerable<TEntity> FindManyFromTop(int count)
-    {
+    public IEnumerable<TEntity> FindManyFromTop(int _) =>
         throw new NotSupportedException("Finding many entities from top is not allowed!");
-    }
 
-    public IEnumerable<TEntity> FindAll()
-    {
+    public IEnumerable<TEntity> FindAll() =>
         throw new NotSupportedException("Finding all entities is not allowed!");
-    }
 
-    public void RemoveAll()
-    {
+    public void RemoveAll() =>
         throw new NotImplementedException("Removing all entities is not allowed!");
-    }
 
-    public void MoveToZone<TOtherEntity>(TEntity _, IZone<TOtherEntity> __, Func<TEntity, TOtherEntity> ___)
-    {
+    public void MoveToZone<TOtherEntity>(TEntity _, IZone<TOtherEntity> __, Func<TEntity, TOtherEntity> ___) =>
         throw new NotSupportedException("Moving entity to zone is not allowed!");
-    }
 }

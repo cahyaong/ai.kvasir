@@ -45,7 +45,7 @@ public interface IManaPool
     void RemoveAmount(Mana mana, int amount);
 }
 
-public sealed class UnknownManaPool : IManaPool
+internal sealed class UnknownManaPool : IManaPool
 {
     private UnknownManaPool()
     {

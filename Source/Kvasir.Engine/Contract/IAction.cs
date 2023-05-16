@@ -44,7 +44,7 @@ public interface IAction : IDiagnostic
     IParameter Parameter { get; set; }
 }
 
-internal class UnknownAction : IAction
+internal sealed class UnknownAction : IAction
 {
     private UnknownAction()
     {

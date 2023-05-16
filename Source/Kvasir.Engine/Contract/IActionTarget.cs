@@ -40,7 +40,7 @@ public interface IActionTarget
     // TODO (SHOULD): Implement ability as another kind of action source!
 }
 
-internal class UnknownActionTarget : IActionTarget
+internal sealed class UnknownActionTarget : IActionTarget
 {
     private UnknownActionTarget()
     {
@@ -54,10 +54,11 @@ internal class UnknownActionTarget : IActionTarget
         set => throw new NotSupportedException("Setting player is not allowed!");
     }
 
-    public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
+    public IReadOnlyCollection<ICard> Cards =>
+        throw new NotSupportedException("Getting cards is not allowed!");
 }
 
-internal class NoneActionTarget : IActionTarget
+internal sealed class NoneActionTarget : IActionTarget
 {
     private NoneActionTarget()
     {

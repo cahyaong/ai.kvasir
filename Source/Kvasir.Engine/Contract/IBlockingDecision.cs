@@ -28,15 +28,15 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public interface IBlockingDecision
 {
     IEnumerable<ICombat> Combats { get; }
 }
 
-public class UnknownBlockingDecision : IBlockingDecision
+internal sealed class UnknownBlockingDecision : IBlockingDecision
 {
     private UnknownBlockingDecision()
     {
@@ -44,5 +44,6 @@ public class UnknownBlockingDecision : IBlockingDecision
 
     internal static UnknownBlockingDecision Instance { get; } = new();
 
-    public IEnumerable<ICombat> Combats => Enumerable.Empty<ICombat>();
+    public IEnumerable<ICombat> Combats =>
+        throw new NotSupportedException("Getting combats is not allowed!");
 }

@@ -57,7 +57,7 @@ public interface ITabletop
     int PlayedLandCount { get; set; }
 }
 
-public class UnknownTabletop : ITabletop
+internal sealed class UnknownTabletop : ITabletop
 {
     private UnknownTabletop()
     {
@@ -73,7 +73,7 @@ public class UnknownTabletop : ITabletop
 
     public int TurnId
     {
-        get => -42;
+        get => throw new NotSupportedException("Getting turn ID is not allowed!");
         set => throw new NotSupportedException("Setting turn ID is not allowed!");
     }
 
@@ -113,11 +113,11 @@ public class UnknownTabletop : ITabletop
         set => throw new NotSupportedException("Setting blocking decision is not allowed!");
     }
 
-    public bool IsFirstTurn => true;
+    public bool IsFirstTurn => throw new NotSupportedException("Getting is first turn flag is not allowed");
 
     public int PlayedLandCount
     {
-        get => 0;
+        get => throw new NotSupportedException("Getting played land count is not allowed!");
         set => throw new NotSupportedException("Setting played land count is not allowed!");
     }
 }

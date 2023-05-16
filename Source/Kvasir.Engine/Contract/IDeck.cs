@@ -36,7 +36,7 @@ public interface IDeck
     IReadOnlyCollection<ICard> Cards { get; }
 }
 
-public class UnknownDeck : IDeck
+internal sealed class UnknownDeck : IDeck
 {
     private UnknownDeck()
     {
@@ -44,5 +44,6 @@ public class UnknownDeck : IDeck
 
     internal static UnknownDeck Instance { get; } = new();
 
-    public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
+    public IReadOnlyCollection<ICard> Cards =>
+        throw new NotSupportedException("Getting cards is not allowed!");
 }

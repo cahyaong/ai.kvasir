@@ -38,7 +38,7 @@ public interface ICombat
     IReadOnlyCollection<IPermanent> BlockingPermanents { get; }
 }
 
-public class UnknownCombat : ICombat
+internal sealed class UnknownCombat : ICombat
 {
     private UnknownCombat()
     {
@@ -48,5 +48,6 @@ public class UnknownCombat : ICombat
 
     public IPermanent AttackingPermanent => Permanent.Unknown;
 
-    public IReadOnlyCollection<IPermanent> BlockingPermanents => Array.Empty<Permanent>();
+    public IReadOnlyCollection<IPermanent> BlockingPermanents =>
+        throw new NotSupportedException("Getting blocking permanents is not allowed!");
 }

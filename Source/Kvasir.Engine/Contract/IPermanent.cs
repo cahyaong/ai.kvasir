@@ -48,7 +48,7 @@ public interface IPermanent : IDiagnostic
     TPart FindPart<TPart>() where TPart : IPart;
 }
 
-public class UnknownPermanent : IPermanent
+internal sealed class UnknownPermanent : IPermanent
 {
     private UnknownPermanent()
     {
@@ -76,23 +76,16 @@ public class UnknownPermanent : IPermanent
 
     public bool IsTapped
     {
-        get => false;
-        set => throw new NotSupportedException("Setting is tapped is not allowed!");
+        get => throw new NotSupportedException("Getting is tapped flag is not allowed!");
+        set => throw new NotSupportedException("Setting is tapped flag is not allowed!");
     }
 
-    public void AddPart(params IPart[] parts)
-    {
+    public void AddPart(params IPart[] _) =>
         throw new NotSupportedException("Adding part is not allowed!");
-    }
 
-    public void RemoveParts()
-    {
+    public void RemoveParts() =>
         throw new NotSupportedException("Removing parts is not allowed!");
-    }
 
-    public TPart FindPart<TPart>()
-        where TPart : IPart
-    {
+    public TPart FindPart<TPart>() where TPart : IPart =>
         throw new NotSupportedException("Finding part is not allowed!");
-    }
 }
