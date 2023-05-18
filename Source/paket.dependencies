@@ -9,7 +9,6 @@ nuget JetBrains.Annotations
 nuget J2N ~> 1.0.0-beta-0002
 nuget Lucene.Net ~> 4.8.0-beta00007
 nuget Lucene.Net.Analysis.Common ~> 4.8.0-beta00007
-nuget Microsoft.NETCore.Targets
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
@@ -28,12 +27,12 @@ group _UI
     source https://api.nuget.org/v3/index.json
 
     nuget Autofac
-    nuget Caliburn.Micro ~> 4.0.136-rc
+    nuget Caliburn.Micro
     nuget Humanizer.Core
     nuget MahApps.Metro
     nuget OxyPlot.Wpf
-    nuget ReactiveUI ~> 11.5.17.0
-    nuget ReactiveUI.WPF ~> 11.5.17.0
+    nuget ReactiveUI
+    nuget ReactiveUI.WPF
     nuget Splat ~> 9.0
     nuget System.Reactive ~> 4.4.1.0
 
@@ -54,11 +53,10 @@ group _Test
 
     nuget FluentAssertions
     nuget Microsoft.NET.Test.Sdk
-    nuget Microsoft.NETCore.Platforms
     nuget Moq
     nuget SpecFlow.Plus.LivingDocPlugin
     nuget SpecFlow.xUnit
-    nuget System.Drawing.Common ~> 4.7.0
-    nuget System.Windows.Extensions ~> 4.7.0
+    nuget System.Drawing.Common
+    nuget System.Windows.Extensions
     nuget xunit
     nuget xunit.runner.visualstudio
