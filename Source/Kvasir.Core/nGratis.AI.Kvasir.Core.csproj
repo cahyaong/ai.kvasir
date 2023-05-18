@@ -5,7 +5,7 @@
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="nGratis.AI.Kvasir.Core.Support.csproj.DotSettings" />
+    <None Remove="nGratis.AI.Kvasir.Core.csproj.DotSettings" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />

@@ -5,6 +5,9 @@
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.Engine.UnitTest.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Kvasir.Framework.QualityAssurance\nGratis.AI.Kvasir.Framework.QualityAssurance.csproj" />
   </ItemGroup>
   <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Testing.targets" />

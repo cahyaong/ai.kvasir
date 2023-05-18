@@ -1,4 +1,4 @@
-﻿Feature: Judge_CombatPhase
+﻿Feature: RoundJudge_CombatPhase
 
 Scenario: Resolving combat damage for a single attacker without any blocker
 	Given the attacker has power 3 and toughness 3

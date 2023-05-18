@@ -11,6 +11,7 @@
     <None Remove="Data\Raw_SCRYFALL.ngksession" />
     <None Remove="Data\Raw_WOTC.ngksession" />
     <None Remove="Data\Theory_FindingCreatures.ngkcard" />
+    <None Remove="nGratis.AI.Kvasir.Framework.QualityAssurance.csproj.DotSettings" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\Processed_POR.ngkset" />

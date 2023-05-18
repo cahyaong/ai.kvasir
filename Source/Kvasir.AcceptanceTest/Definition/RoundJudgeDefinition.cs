@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="JudgeDefinition.cs" company="nGratis">
+// <copyright file="RoundJudgeDefinition.cs" company="nGratis">
 //  The MIT License (MIT)
 //
 //  Copyright (c) 2014 - 2021 Cahya Ong
@@ -41,9 +41,9 @@ using nGratis.Cop.Olympus.Contract;
 using TechTalk.SpecFlow;
 
 [Binding]
-public sealed class JudgeDefinition
+public sealed class RoundJudgeDefinition
 {
-    static JudgeDefinition()
+    static RoundJudgeDefinition()
     {
         // NOTE: This is a temporary workaround! We can't use <Xunit.TestFramework> attribute
         // because SpecFlow is also using it, and it will cause a conflict if we try adding our own one!

@@ -5,6 +5,9 @@
     <Authors>Cahya Ong</Authors>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="nGratis.AI.Kvasir.IntegrationTest.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
