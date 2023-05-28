@@ -15,7 +15,6 @@ using Moq.AI.Kvasir;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
-using nGratis.Cop.Olympus.Contract;
 using Xunit;
 
 public class RoundSimulatorTests
@@ -47,18 +46,21 @@ public class RoundSimulatorTests
                 DefinedPlayers = definedPlayers
             };
 
-            var mockFactory = MockBuilder
+            var mockEntityFactory = MockBuilder
                 .CreateMock<IMagicEntityFactory>()
                 .WithDefaultPlayer();
 
-            var mockLogger = MockBuilder
-                .CreateMock<ILogger>();
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>();
 
-            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = simulator.Simulate(simulationConfig);
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
 
             // Assert.
 
@@ -124,18 +126,21 @@ public class RoundSimulatorTests
                 DefinedPlayers = definedPlayers
             };
 
-            var mockFactory = MockBuilder
+            var mockEntityFactory = MockBuilder
                 .CreateMock<IMagicEntityFactory>()
                 .WithDefaultPlayer();
 
-            var mockLogger = MockBuilder
-                .CreateMock<ILogger>();
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>();
 
-            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = simulator.Simulate(simulationConfig);
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
 
             // Assert.
 
@@ -162,7 +167,7 @@ public class RoundSimulatorTests
                     .And.HaveUniqueCardInstance()
                     .And.BeSubsetOfConstructedDeck(activeDeck);
 
-                var nonactiveDeck = simulationResult
+                var nonActiveDeck = simulationResult
                     .Tabletop
                     .NonActivePlayer.Deck;
 
@@ -171,9 +176,9 @@ public class RoundSimulatorTests
                     .Must().NotBeNull("because nonactive player should have library")
                     .And.BeLibrary()
                     .And.BeHidden()
-                    .And.HaveQuantity((ushort)(nonactiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
+                    .And.HaveQuantity((ushort)(nonActiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
                     .And.HaveUniqueCardInstance()
-                    .And.BeSubsetOfConstructedDeck(nonactiveDeck);
+                    .And.BeSubsetOfConstructedDeck(nonActiveDeck);
             }
         }
 
@@ -202,18 +207,21 @@ public class RoundSimulatorTests
                 DefinedPlayers = definedPlayers
             };
 
-            var mockFactory = MockBuilder
+            var mockEntityFactory = MockBuilder
                 .CreateMock<IMagicEntityFactory>()
                 .WithDefaultPlayer();
 
-            var mockLogger = MockBuilder
-                .CreateMock<ILogger>();
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>();
 
-            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = simulator.Simulate(simulationConfig);
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
 
             // Assert.
 
@@ -272,18 +280,21 @@ public class RoundSimulatorTests
                 DefinedPlayers = definedPlayers
             };
 
-            var mockFactory = MockBuilder
+            var mockEntityFactory = MockBuilder
                 .CreateMock<IMagicEntityFactory>()
                 .WithDefaultPlayer();
 
-            var mockLogger = MockBuilder
-                .CreateMock<ILogger>();
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>();
 
-            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = simulator.Simulate(simulationConfig);
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
 
             // Assert.
 
@@ -338,18 +349,21 @@ public class RoundSimulatorTests
                 DefinedPlayers = definedPlayers
             };
 
-            var mockFactory = MockBuilder
+            var mockEntityFactory = MockBuilder
                 .CreateMock<IMagicEntityFactory>()
                 .WithDefaultPlayer();
 
-            var mockLogger = MockBuilder
-                .CreateMock<ILogger>();
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>();
 
-            var simulator = new RoundSimulator(mockFactory.Object, RandomGenerator.Default, mockLogger.Object);
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = simulator.Simulate(simulationConfig);
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
 
             // Assert.
 

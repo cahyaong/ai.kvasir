@@ -1,4 +1,6 @@
-﻿JetBrains.Annotations
+﻿Autofac
+JetBrains.Annotations
+System.Diagnostics.DiagnosticSource
 
 group _Test
     FluentAssertions

@@ -12,6 +12,7 @@ namespace nGratis.AI.Kvasir.Engine;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
 public static class DecisionExtensions
 {
@@ -43,7 +44,7 @@ public static class DecisionExtensions
                 reasons.Add(ValidationReason.Create(
                     "Attacking creature has summoning sickness!",
                     new[] { "302.6", "508.1a" },
-                    attackingCreature));
+                    attackingCreature.Permanent));
             }
 
             if (attackingCreature.Permanent.IsTapped)
@@ -51,7 +52,7 @@ public static class DecisionExtensions
                 reasons.Add(ValidationReason.Create(
                     "Attacking creature is tapped!",
                     new[] { "508.1a" },
-                    attackingCreature));
+                    attackingCreature.Permanent));
             }
         }
 

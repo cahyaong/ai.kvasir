@@ -10,7 +10,6 @@
 namespace nGratis.AI.Kvasir.Framework;
 
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine;
 
 public static class KvasirAssertions
 {

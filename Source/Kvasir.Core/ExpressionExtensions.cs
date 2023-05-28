@@ -25,13 +25,8 @@ internal static class ExpressionExtensions
             unaryExpression?.Operand as MemberExpression ??
             expression.Body as MemberExpression;
 
-        var propertyInfo = memberExpression?.Member as PropertyInfo;
-
-        if (propertyInfo == null)
-        {
+        return
+            memberExpression?.Member as PropertyInfo ??
             throw new KvasirException("Binding expression must return <Property> value!");
-        }
-
-        return propertyInfo;
     }
 }

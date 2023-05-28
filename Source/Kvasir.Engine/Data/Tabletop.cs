@@ -9,6 +9,7 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using nGratis.AI.Kvasir.Contract;
 
 public class Tabletop : ITabletop
@@ -71,4 +72,69 @@ public class Tabletop : ITabletop
     public bool IsActionPerformed { get; set; }
 
     public int PlayedLandCount { get; set; }
+}
+
+internal sealed class UnknownTabletop : ITabletop
+{
+    private UnknownTabletop()
+    {
+    }
+
+    internal static UnknownTabletop Instance { get; } = new();
+
+    public IZone<IPermanent> Battlefield => Zone<IPermanent>.Unknown;
+
+    public IZone<IAction> Stack => Zone<IAction>.Unknown;
+
+    public IZone<ICard> Exile => Zone<ICard>.Unknown;
+
+    public int TurnId
+    {
+        get => throw new NotSupportedException("Getting turn ID is not allowed!");
+        set => throw new NotSupportedException("Setting turn ID is not allowed!");
+    }
+
+    public Phase Phase
+    {
+        get => Phase.Unknown;
+        set => throw new NotSupportedException("Setting phase is not allowed!");
+    }
+
+    public IPlayer ActivePlayer
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting active player is not allowed!");
+    }
+
+    public IPlayer NonActivePlayer
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting nonactive player is not allowed!");
+    }
+
+    public IPlayer PrioritizedPlayer
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting prioritized player is not allowed!");
+    }
+
+    public IAttackingDecision AttackingDecision
+    {
+        get => Engine.AttackingDecision.Unknown;
+        set => throw new NotSupportedException("Setting attacking decision is not allowed!");
+    }
+
+    public IBlockingDecision BlockingDecision
+    {
+        get => Engine.BlockingDecision.Unknown;
+        set => throw new NotSupportedException("Setting blocking decision is not allowed!");
+    }
+
+    public bool IsFirstTurn => throw new NotSupportedException("Getting is first turn flag is not allowed");
+
+    public int PlayedLandCount
+    {
+        get => throw new NotSupportedException("Getting played land count is not allowed!");
+        set => throw new NotSupportedException("Setting played land count is not allowed!");
+    }
 }

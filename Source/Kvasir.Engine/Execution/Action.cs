@@ -9,8 +9,12 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
+using System.Diagnostics;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
+[DebuggerDisplay("<Action> {this.Kind}")]
 public class Action : IAction
 {
     private Action()
@@ -18,7 +22,7 @@ public class Action : IAction
         this.Kind = ActionKind.Unknown;
         this.Owner = Player.Unknown;
         this.Cost = Engine.Cost.Unknown;
-        this.Target = ActionTarget.Unknown;
+        this.Target = Engine.Target.Unknown;
         this.Parameter = Engine.Parameter.Unknown;
     }
 
@@ -34,7 +38,7 @@ public class Action : IAction
 
     public ICost Cost { get; private init; }
 
-    public IActionTarget Target { get; private init; }
+    public ITarget Target { get; private init; }
 
     public IParameter Parameter { get; set; }
 
@@ -44,18 +48,20 @@ public class Action : IAction
         {
             Kind = ActionKind.Passing,
             Cost = Engine.Cost.None,
-            Target = ActionTarget.None,
+            Target = Engine.Target.None,
             Parameter = Engine.Parameter.None
         };
     }
 
-    public static IAction PlayLand(ICard card)
+    public static IAction PlayCard(ICard card)
     {
         return new Action
         {
-            Kind = ActionKind.PlayingLand,
+            Kind = card.Kind == CardKind.Land
+                ? ActionKind.PlayingLand
+                : ActionKind.PlayingNonLand,
             Cost = card.Cost,
-            Target = new ActionTarget
+            Target = new Target
             {
                 Cards = new[] { card }
             },
@@ -69,7 +75,7 @@ public class Action : IAction
         {
             Kind = ActionKind.Discarding,
             Cost = Engine.Cost.None,
-            Target = new ActionTarget
+            Target = new Target
             {
                 Cards = cards
             }
@@ -82,11 +88,42 @@ public class Action : IAction
         {
             Kind = ActionKind.PlayingStub,
             Cost = card.Cost,
-            Target = new ActionTarget
+            Target = new Target
             {
                 Cards = new[] { card }
             },
             Parameter = Engine.Parameter.None
         };
+    }
+}
+
+internal sealed class UnknownAction : IAction
+{
+    private UnknownAction()
+    {
+    }
+
+    internal static UnknownAction Instance { get; } = new();
+
+    public int Id => -42;
+
+    public string Name => DefinedText.Unknown;
+
+    public ActionKind Kind => ActionKind.Unknown;
+
+    public IPlayer Owner
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting owner is not allowed!");
+    }
+
+    public ICost Cost => Engine.Cost.Unknown;
+
+    public ITarget Target => Engine.Target.Unknown;
+
+    public IParameter Parameter
+    {
+        get => Engine.Parameter.Unknown;
+        set => throw new NotSupportedException("Setting parameter is not allowed!");
     }
 }

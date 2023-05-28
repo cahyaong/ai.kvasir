@@ -12,7 +12,7 @@ namespace nGratis.AI.Kvasir.Framework;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
-using nGratis.AI.Kvasir.Engine;
+using nGratis.AI.Kvasir.Contract;
 
 public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAssertion>
 {

@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj" />
     <ProjectReference Include="..\Kvasir.Framework.QualityAssurance\nGratis.AI.Kvasir.Framework.QualityAssurance.csproj" />
+    <ProjectReference Include="..\Kvasir.Glue\nGratis.AI.Kvasir.Glue.csproj" />
   </ItemGroup>
     <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Testing.targets" />
     <Import Project="..\.paket\Paket.Restore.targets" />

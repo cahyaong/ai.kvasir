@@ -15,25 +15,46 @@ using nGratis.AI.Kvasir.Contract;
 
 public class PayingManaHandler : BaseCostHandler
 {
+    private readonly IJudicialAssistant _judicialAssistant;
+
+    private readonly IActionJudge _actionJudge;
+
+    public PayingManaHandler(IJudicialAssistant judicialAssistant, IActionJudge actionJudge)
+    {
+        this._judicialAssistant = judicialAssistant;
+        this._actionJudge = actionJudge;
+    }
+
     public override CostKind CostKind => CostKind.PayingMana;
 
-    protected override ValidationResult ValidateCore(ITabletop tabletop, ICost cost)
+    protected override ValidationResult ValidateCore(ITabletop tabletop, ICost cost, ITarget target)
     {
         var amount = cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount);
 
+        // RX-202.1a — The mana cost of an object represents what a player must spend from their mana pool to cast
+        // that card. Unless an object’s mana cost includes Phyrexian mana symbols(see RX-107.4f),
+        // paying that mana cost requires matching the type of any colored or colorless mana symbols as
+        // well as paying the generic mana indicated in the cost.
+
         var canPay =
             amount == ManaCost.Free ||
-            cost.Target.Player.ManaPool.CanPay(amount);
+            target.Player.ManaPool.CanPay(amount);
 
         if (canPay)
         {
             return ValidationResult.Successful;
         }
 
-        // RX-202.1a — The mana cost of an object represents what a player must spend from their mana pool to cast
-        // that card. Unless an object’s mana cost includes Phyrexian mana symbols(see RX-107.4f),
-        // paying that mana cost requires matching the type of any colored or colorless mana symbols as
-        // well as paying the generic mana indicated in the cost.
+        var potentialManaPool = this._judicialAssistant.CalculatePotentialManaPool(
+            tabletop,
+            target.Player == tabletop.ActivePlayer ? PlayerModifier.Active : PlayerModifier.NonActive);
+
+        canPay = potentialManaPool.CanPay(amount);
+
+        if (canPay)
+        {
+            return ValidationResult.Successful;
+        }
 
         var reasons = new List<ValidationReason>
         {
@@ -46,7 +67,7 @@ public class PayingManaHandler : BaseCostHandler
         return ValidationResult.Create(reasons);
     }
 
-    protected override void PayCore(ITabletop tabletop, ICost cost)
+    protected override void ResolveCore(ITabletop tabletop, ICost cost, ITarget target)
     {
         var amount = cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount);
 
@@ -55,6 +76,6 @@ public class PayingManaHandler : BaseCostHandler
             return;
         }
 
-        throw new NotImplementedException();
+        throw new NotImplementedException("WIP: Implement paying mana when cost is not free!");
     }
 }

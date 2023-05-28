@@ -17,24 +17,22 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 
-public class RoundJudge
+public class RoundJudge : IRoundJudge
 {
     // TODO (MUST): Wire up the validation logic for executing combat phase!
 
     private readonly IActionJudge _actionJudge;
 
+    private readonly IJudicialAssistant _judicialAssistant;
+
     private readonly ILogger _logger;
 
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
-    public RoundJudge(ILogger logger)
-        : this(new ActionJudge(), logger)
-    {
-    }
-
-    public RoundJudge(IActionJudge actionJudge, ILogger logger)
+    public RoundJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant, ILogger logger)
     {
         this._actionJudge = actionJudge;
+        this._judicialAssistant = judicialAssistant;
         this._logger = logger;
 
         this._phaseHandlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
@@ -47,7 +45,10 @@ public class RoundJudge
         };
     }
 
-    public static RoundJudge Unknown { get; } = new(VoidLogger.Instance);
+    public static RoundJudge Unknown { get; } = new(
+        ActionJudge.Unknown,
+        JudicialAssistant.Unknown,
+        VoidLogger.Instance);
 
     public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
     {
@@ -98,8 +99,8 @@ public class RoundJudge
 
             // TODO (SHOULD): Implement untap action for other permanent types besides creature!
 
-            tabletop
-                .FindCreatures(PlayerModifier.Active, CreatureModifier.None)
+            this._judicialAssistant
+                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
                 .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
                 .ForEach(creature => creature.Permanent.IsTapped = false);
 
@@ -170,15 +171,7 @@ public class RoundJudge
 
                 performedAction.Owner = selectedPlayer;
 
-                if (performedAction.Cost != Cost.None)
-                {
-                    performedAction.Cost.Target = new CostTarget
-                    {
-                        Player = selectedPlayer
-                    };
-                }
-
-                if (performedAction.Target != ActionTarget.None)
+                if (performedAction.Target != Target.None)
                 {
                     performedAction.Target.Player = selectedPlayer;
                 }

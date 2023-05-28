@@ -70,6 +70,12 @@ public class Permanent : IPermanent
         this._partByTypeLookup.Clear();
     }
 
+    public bool HasPart<TPart>()
+        where TPart : IPart
+    {
+        return this._partByTypeLookup.ContainsKey(typeof(TPart));
+    }
+
     public TPart FindPart<TPart>()
         where TPart : IPart
     {
@@ -84,4 +90,49 @@ public class Permanent : IPermanent
 
         return (TPart)part;
     }
+}
+
+internal sealed class UnknownPermanent : IPermanent
+{
+    private UnknownPermanent()
+    {
+    }
+
+    internal static UnknownPermanent Instance { get; } = new();
+
+    public int Id => -42;
+
+    public string Name => DefinedText.Unknown;
+
+    public ICard Card => Engine.Card.Unknown;
+
+    public IPlayer Owner
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting owner is not allowed!");
+    }
+
+    public IPlayer Controller
+    {
+        get => Player.Unknown;
+        set => throw new NotSupportedException("Setting controller is not allowed!");
+    }
+
+    public bool IsTapped
+    {
+        get => throw new NotSupportedException("Getting is tapped flag is not allowed!");
+        set => throw new NotSupportedException("Setting is tapped flag is not allowed!");
+    }
+
+    public void AddPart(params IPart[] _) =>
+        throw new NotSupportedException("Adding part is not allowed!");
+
+    public void RemoveParts() =>
+        throw new NotSupportedException("Removing parts is not allowed!");
+
+    public bool HasPart<TPart>() where TPart : IPart =>
+        throw new NotSupportedException("Checking has part flag is not allowed!");
+
+    public TPart FindPart<TPart>() where TPart : IPart =>
+        throw new NotSupportedException("Finding part is not allowed!");
 }

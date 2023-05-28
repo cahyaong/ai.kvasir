@@ -8,6 +8,8 @@ NUGET
     Antlr4.CodeGenerator (4.6.6)
     Antlr4.Runtime (4.6.6)
       NETStandard.Library (>= 1.6)
+    Autofac (7.0.1)
+      System.Diagnostics.DiagnosticSource (>= 4.7.1)
     HtmlAgilityPack (1.11.42)
     Humanizer.Core (2.14.1)
     J2N (1.0.0-beta-0002)
@@ -30,7 +32,8 @@ NUGET
     SixLabors.ImageSharp (2.1)
       System.Runtime.CompilerServices.Unsafe (>= 5.0)
       System.Text.Encoding.CodePages (>= 5.0)
-    stateless (5.11)
+    System.Diagnostics.DiagnosticSource (6.0)
+      System.Runtime.CompilerServices.Unsafe (>= 6.0)
     System.Reactive (4.4.1)
     System.Reactive.Linq (4.4.1)
       System.Reactive (>= 4.4.1)
@@ -51,12 +54,7 @@ STORAGE: NONE
 RESTRICTION: == net6.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    Autofac (6.3)
-      System.Diagnostics.DiagnosticSource (>= 4.7.1)
     CommandLineParser (2.8)
-    System.Diagnostics.DiagnosticSource (6.0)
-      System.Runtime.CompilerServices.Unsafe (>= 6.0)
-    System.Runtime.CompilerServices.Unsafe (6.0)
 
 GROUP _Test
 STORAGE: NONE
@@ -578,8 +576,6 @@ STORAGE: NONE
 RESTRICTION: == net6.0-windows7.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
-    Autofac (6.3)
-      System.Diagnostics.DiagnosticSource (>= 4.7.1)
     Caliburn.Micro (4.0.173)
       Caliburn.Micro.Core (>= 4.0.173)
       Microsoft.Windows.Compatibility (>= 5.0)
@@ -692,8 +688,6 @@ NUGET
       Microsoft.Win32.Registry (>= 4.7)
       runtime.native.System.Data.SqlClient.sni (>= 4.7)
       System.Security.Principal.Windows (>= 4.7)
-    System.Diagnostics.DiagnosticSource (6.0)
-      System.Runtime.CompilerServices.Unsafe (>= 6.0)
     System.Diagnostics.EventLog (6.0)
     System.Diagnostics.PerformanceCounter (6.0)
       System.Configuration.ConfigurationManager (>= 6.0)

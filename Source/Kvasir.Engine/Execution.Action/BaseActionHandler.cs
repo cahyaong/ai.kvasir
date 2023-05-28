@@ -9,7 +9,9 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Immutable;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
 public abstract class BaseActionHandler : IActionHandler
@@ -18,9 +20,22 @@ public abstract class BaseActionHandler : IActionHandler
 
     public virtual bool IsSpecialAction => false;
 
-    public virtual ICost FindCost(IAction action)
+    public ICost FindCost(IAction action)
     {
-        return Cost.None;
+        if (action.Target == Target.None)
+        {
+            return Cost.None;
+        }
+
+        if (action.Target.Cards.Count == 1)
+        {
+            return action
+                .Target.Cards
+                .Single()
+                .Cost;
+        }
+
+        throw new NotSupportedException("Finding cost for multiple target cards is not allowed!");
     }
 
     public ValidationResult Validate(ITabletop tabletop, IAction action)

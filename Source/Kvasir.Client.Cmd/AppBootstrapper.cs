@@ -31,6 +31,7 @@ internal class AppBootstrapper : IDisposable
             .RegisterInfrastructure()
             .RegisterStorageManager()
             .RegisterRepository()
+            .RegisterJudge()
             .RegisterExecution()
             .RegisterSimulator()
             .Build();
@@ -144,14 +145,19 @@ internal static class AutofacExtensions
     public static ContainerBuilder RegisterSimulator(this ContainerBuilder containerBuilder)
     {
         containerBuilder
+            .RegisterType<MagicEntityFactory>()
+            .InstancePerLifetimeScope()
+            .As<IMagicEntityFactory>();
+
+        containerBuilder
             .Register(_ => RandomGenerator.Default)
             .InstancePerLifetimeScope()
             .As<IRandomGenerator>();
 
         containerBuilder
-            .RegisterType<MagicEntityFactory>()
+            .RegisterType<RoundSimulator>()
             .InstancePerLifetimeScope()
-            .As<IMagicEntityFactory>();
+            .As<IRoundSimulator>();
 
         return containerBuilder;
     }

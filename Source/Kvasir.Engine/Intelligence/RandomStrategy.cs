@@ -18,15 +18,19 @@ public class RandomStrategy : IStrategy
 {
     private readonly IRandomGenerator _randomGenerator;
 
-    public RandomStrategy(IRandomGenerator randomGenerator)
+    private readonly IJudicialAssistant _judicialAssistant;
+
+    public RandomStrategy(IRandomGenerator randomGenerator, IJudicialAssistant judicialAssistant)
     {
         this._randomGenerator = randomGenerator;
+        this._judicialAssistant = judicialAssistant;
     }
 
     public IAttackingDecision DeclareAttacker(ITabletop tabletop)
     {
-        var attackingPermanents = tabletop
-            .FindCreatures(PlayerModifier.Active, CreatureModifier.CanAttack)
+        var attackingPermanents = this
+            ._judicialAssistant
+            .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
             .Where(_ => this._randomGenerator.RollDice(20) <= 10)
             .Select(creature => creature.Permanent)
             .ToImmutableArray();
@@ -44,8 +48,9 @@ public class RandomStrategy : IStrategy
 
     public IBlockingDecision DeclareBlocker(ITabletop tabletop)
     {
-        var blockingPermanents = tabletop
-            .FindCreatures(PlayerModifier.NonActive, CreatureModifier.CanBlock)
+        var blockingPermanents = this
+            ._judicialAssistant
+            .FindCreatures(tabletop, PlayerModifier.NonActive, CreatureModifier.CanBlock)
             .Select(creature => creature.Permanent)
             .ToList();
 
@@ -84,8 +89,9 @@ public class RandomStrategy : IStrategy
 
     public IAction PerformPrioritizedAction(ITabletop tabletop)
     {
-        var legalActions = tabletop
-            .FindLegalActions(PlayerModifier.Active)
+        var legalActions = this
+            ._judicialAssistant
+            .FindLegalActions(tabletop, PlayerModifier.Active)
             .ToImmutableArray();
 
         if (!legalActions.Any())

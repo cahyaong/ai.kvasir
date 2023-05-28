@@ -7,6 +7,7 @@
 // <creation_timestamp>Saturday, March 18, 2023 11:57:24 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
 
@@ -70,4 +71,27 @@ public class Parameter : IParameter
             return this._parameter;
         }
     }
+}
+
+internal sealed class UnknownParameter : IParameter
+{
+    private UnknownParameter()
+    {
+    }
+
+    public static UnknownParameter Instance { get; } = new();
+
+    public TValue FindValue<TValue>(ParameterKey _) =>
+        throw new NotSupportedException("Finding value is not allowed!");
+}
+
+internal sealed class NoneParameter : IParameter
+{
+    private NoneParameter()
+    {
+    }
+
+    public static NoneParameter Instance { get; } = new();
+
+    public TValue FindValue<TValue>(ParameterKey _) => default!;
 }

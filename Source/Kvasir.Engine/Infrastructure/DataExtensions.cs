@@ -9,13 +9,12 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-using BuildParts = System.Func<ICard, System.Collections.Generic.IEnumerable<IPart>>;
+using BuildParts = System.Func<Contract.ICard, System.Collections.Generic.IEnumerable<Contract.IPart>>;
 
 public static class DataExtensions
 {
@@ -83,9 +82,17 @@ public static class DataExtensions
         return permanent;
     }
 
-    private static IEnumerable<IPart> CreateLandParts(ICard _)
+    private static IEnumerable<IPart> CreateLandParts(ICard card)
     {
-        return Array.Empty<IPart>();
+        if (card.Abilities.Any())
+        {
+            // TODO (SHOULD): Filter by ability kind!
+
+            yield return new CharacteristicPart
+            {
+                ActivatedAbilities = card.Abilities
+            };
+        }
     }
 
     private static IEnumerable<IPart> CreateCreatureParts(ICard card)

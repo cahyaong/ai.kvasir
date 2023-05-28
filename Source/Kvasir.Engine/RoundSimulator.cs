@@ -13,27 +13,23 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
-public class RoundSimulator
+public class RoundSimulator : IRoundSimulator
 {
     private readonly IMagicEntityFactory _entityFactory;
 
     private readonly IRandomGenerator _randomGenerator;
 
-    private readonly ILogger _logger;
-
-    private RoundJudge _roundJudge;
+    private readonly IRoundJudge _roundJudge;
 
     private ITabletop _tabletop;
 
-    public RoundSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, ILogger logger)
+    public RoundSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, IRoundJudge roundJudge)
     {
         this._entityFactory = entityFactory;
         this._randomGenerator = randomGenerator;
-        this._logger = logger;
+        this._roundJudge = roundJudge;
 
-        this._roundJudge = RoundJudge.Unknown;
         this._tabletop = Tabletop.Unknown;
     }
 
@@ -52,18 +48,15 @@ public class RoundSimulator
             executionResults.Add(this._roundJudge.ExecuteNextTurn(this._tabletop));
         }
 
-        return SimulationResult.Create(
+        return new SimulationResult(
             this._tabletop,
             executionResults
                 .SelectMany(result => result.Messages)
-                .ToImmutableArray()
-        );
+                .ToImmutableArray());
     }
 
     private RoundSimulator SetupTabletop()
     {
-        this._roundJudge = new RoundJudge(this._logger);
-
         this._tabletop = new Tabletop
         {
             Phase = Phase.Setup

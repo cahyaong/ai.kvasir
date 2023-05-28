@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Authors>Cahya Ong</Authors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Kvasir.Shared\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
+    <ProjectReference Include="..\Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj" />
+  </ItemGroup>
+  <Import Project="..\Kvasir.Shared\nGratis.AI.Kvasir.Production.targets" />
+  <Import Project="..\.paket\Paket.Restore.targets" />
+</Project>

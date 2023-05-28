@@ -11,20 +11,14 @@ namespace nGratis.AI.Kvasir.Client.Cmd;
 
 using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine;
-using nGratis.Cop.Olympus.Contract;
 
 public class PlayingGameExecution : IExecution
 {
-    private readonly IMagicEntityFactory _entityFactory;
-    private readonly IRandomGenerator _randomGenerator;
-    private readonly ILogger _logger;
+    private readonly IRoundSimulator _roundSimulator;
 
-    public PlayingGameExecution(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, ILogger logger)
+    public PlayingGameExecution(IRoundSimulator roundSimulator)
     {
-        this._entityFactory = entityFactory;
-        this._randomGenerator = randomGenerator;
-        this._logger = logger;
+        this._roundSimulator = roundSimulator;
     }
 
     public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
@@ -52,10 +46,8 @@ public class PlayingGameExecution : IExecution
             DefinedPlayers = definedPlayers
         };
 
-        var simulator = new RoundSimulator(this._entityFactory, this._randomGenerator, this._logger);
+        var simulationResult = this._roundSimulator.Simulate(simulationConfig);
 
-        simulator.Simulate(simulationConfig);
-
-        return await Task.FromResult(ExecutionResult.Successful);
+        return await Task.FromResult(simulationResult);
     }
 }

@@ -1,4 +1,6 @@
-﻿group _Test
+﻿Autofac
+
+group _Test
     FluentAssertions
     Microsoft.NET.Test.Sdk
     Moq

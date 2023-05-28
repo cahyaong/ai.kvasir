@@ -11,20 +11,13 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System.Collections.Generic;
 using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
 public class PlayingLandHandler : BaseActionHandler
 {
     public override ActionKind ActionKind => ActionKind.PlayingLand;
 
     public override bool IsSpecialAction => true;
-
-    public override ICost FindCost(IAction action)
-    {
-        return action
-            .Target.Cards
-            .Single()
-            .Cost;
-    }
 
     protected override ValidationResult ValidateCore(ITabletop tabletop, IAction action)
     {

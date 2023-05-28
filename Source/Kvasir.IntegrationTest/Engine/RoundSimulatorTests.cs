@@ -9,12 +9,11 @@
 
 namespace nGratis.AI.Kvasir.IntegrationTest;
 
+using Autofac;
 using FluentAssertions;
-using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
-using nGratis.Cop.Olympus.Contract;
 using Xunit;
 
 public class RoundSimulatorTests
@@ -26,12 +25,18 @@ public class RoundSimulatorTests
     {
         // Arrange.
 
-        var mockLogger = MockBuilder.CreateMock<ILogger>();
+        var container = new ContainerBuilder()
+            .RegisterTestingInfrastructure()
+            .RegisterJudge()
+            .Build();
+
         var stubProcessedRepository = new StubProcessedMagicRepository();
 
         var randomGenerator = new RandomGenerator(42);
-        var entityFactory = new MagicEntityFactory(stubProcessedRepository, randomGenerator);
-        var roundSimulator = new RoundSimulator(entityFactory, randomGenerator, mockLogger.Object);
+        var judicialAssistant = container.Resolve<IJudicialAssistant>();
+        var entityFactory = new MagicEntityFactory(stubProcessedRepository, randomGenerator, judicialAssistant);
+        var roundJudge = container.Resolve<IRoundJudge>();
+        var roundSimulator = new RoundSimulator(entityFactory, randomGenerator, roundJudge);
 
         var definedPlayers = new[]
         {

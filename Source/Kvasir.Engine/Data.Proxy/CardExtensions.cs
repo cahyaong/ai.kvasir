@@ -14,6 +14,15 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class CardExtensions
 {
+    public static Land ToProxyLand(this IPermanent permanent)
+    {
+        Guard
+            .Require(permanent.Card.Kind, $"{nameof(permanent)}.{nameof(IPermanent.Card.Kind)}")
+            .Is.EqualTo(CardKind.Land);
+
+        return new Land(permanent);
+    }
+
     public static Creature ToProxyCreature(this IPermanent permanent)
     {
         // TODO (COULD): Add `NameOf<...>` helper class to create field text with full namespace!

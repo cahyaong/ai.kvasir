@@ -12,6 +12,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 

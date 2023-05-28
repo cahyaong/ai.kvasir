@@ -3,6 +3,7 @@ framework: net6.0
 source https://api.nuget.org/v3/index.json
 
 nuget Antlr4
+nuget Autofac
 nuget HtmlAgilityPack
 nuget Humanizer.Core
 nuget JetBrains.Annotations
@@ -12,8 +13,8 @@ nuget Lucene.Net.Analysis.Common ~> 4.8.0-beta00007
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
-nuget SixLabors.ImageSharp
-nuget Stateless
+nuget SixLabors.ImageSharp ~> 2.1.0
+nuget System.Diagnostics.DiagnosticSource ~> 6.0.0.0
 nuget System.Reactive ~> 4.4.1.0
 nuget System.Reactive.Linq ~> 4.4.1.0
 nuget System.Runtime.InteropServices.WindowsRuntime ~> 4.3.0
@@ -26,13 +27,13 @@ group _UI
     framework: net6.0-windows
     source https://api.nuget.org/v3/index.json
 
-    nuget Autofac
-    nuget Caliburn.Micro
+    nuget Caliburn.Micro ~> 4.0.173.0
+    nuget Caliburn.Micro.Core ~> 4.0.173.0
     nuget Humanizer.Core
     nuget MahApps.Metro
     nuget OxyPlot.Wpf
-    nuget ReactiveUI
-    nuget ReactiveUI.WPF
+    nuget ReactiveUI ~> 11.5.17.0
+    nuget ReactiveUI.WPF ~> 11.5.17.0
     nuget Splat ~> 9.0
     nuget System.Reactive ~> 4.4.1.0
 
@@ -42,7 +43,6 @@ group _Console
     framework: net6.0
     source https://api.nuget.org/v3/index.json
 
-    nuget Autofac
     nuget CommandLineParser
 
 group _Test
@@ -56,6 +56,7 @@ group _Test
     nuget Moq
     nuget SpecFlow.Plus.LivingDocPlugin
     nuget SpecFlow.xUnit
+    nuget System.Diagnostics.DiagnosticSource ~> 6.0.0
     nuget System.Drawing.Common
     nuget System.Windows.Extensions
     nuget xunit

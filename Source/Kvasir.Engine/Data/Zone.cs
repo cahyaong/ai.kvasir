@@ -146,3 +146,43 @@ public class Zone<TEntity> : IZone<TEntity>
         this._entities.RemoveAt(matchedIndex);
     }
 }
+
+internal sealed class UnknownZone<TEntity> : IZone<TEntity>
+{
+    private UnknownZone()
+    {
+    }
+
+    internal static UnknownZone<TEntity> Instance { get; } = new();
+
+    public ZoneKind Kind => ZoneKind.Unknown;
+
+    public Visibility Visibility => Visibility.Unknown;
+
+    public int Quantity =>
+        throw new NotSupportedException("Getting quantity is not allowed!");
+
+    public void AddToTop(TEntity _) =>
+        throw new NotSupportedException("Adding entity to top is not allowed!");
+
+    public TEntity FindFromTop() =>
+        throw new NotSupportedException("Finding entity from top is not allowed!");
+
+    public void RemoveFromTop() =>
+        throw new NotSupportedException("Removing entity from top is not allowed!");
+
+    public void RemoveManyFromTop(int _) =>
+        throw new NotSupportedException("Removing many entities from top is not allowed!");
+
+    public IEnumerable<TEntity> FindManyFromTop(int _) =>
+        throw new NotSupportedException("Finding many entities from top is not allowed!");
+
+    public IEnumerable<TEntity> FindAll() =>
+        throw new NotSupportedException("Finding all entities is not allowed!");
+
+    public void RemoveAll() =>
+        throw new NotSupportedException("Removing all entities is not allowed!");
+
+    public void MoveToZone<TOtherEntity>(TEntity _, IZone<TOtherEntity> __, Func<TEntity, TOtherEntity> ___) =>
+        throw new NotSupportedException("Moving entity to zone is not allowed!");
+}

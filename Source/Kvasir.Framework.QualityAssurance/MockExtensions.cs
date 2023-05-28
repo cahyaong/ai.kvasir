@@ -10,6 +10,7 @@
 namespace nGratis.AI.Kvasir.Framework;
 
 using Moq;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 
 public static partial class MockExtensions
@@ -17,19 +18,19 @@ public static partial class MockExtensions
     public static Mock<IStrategy> WithDefault(this Mock<IStrategy> mockStrategy)
     {
         mockStrategy
-            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<Tabletop>()))
+            .Setup(mock => mock.DeclareAttacker(Arg.IsAny<ITabletop>()))
             .Returns(AttackingDecision.None);
 
         mockStrategy
-            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<Tabletop>()))
+            .Setup(mock => mock.DeclareBlocker(Arg.IsAny<ITabletop>()))
             .Returns(BlockingDecision.None);
 
         mockStrategy
-            .Setup(mock => mock.PerformPrioritizedAction(Arg.IsAny<Tabletop>()))
+            .Setup(mock => mock.PerformPrioritizedAction(Arg.IsAny<ITabletop>()))
             .Returns(Action.Pass);
 
         mockStrategy
-            .Setup(mock => mock.PerformNonPrioritizedAction(Arg.IsAny<Tabletop>()))
+            .Setup(mock => mock.PerformNonPrioritizedAction(Arg.IsAny<ITabletop>()))
             .Returns(Action.Pass);
 
         return mockStrategy;

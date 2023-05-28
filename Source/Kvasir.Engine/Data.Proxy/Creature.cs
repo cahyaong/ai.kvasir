@@ -10,6 +10,7 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
+using nGratis.AI.Kvasir.Contract;
 
 public class Creature
 {
@@ -17,7 +18,9 @@ public class Creature
 
     public Creature(IPermanent permanent)
     {
-        this._deferredCreaturePart = new Lazy<CreaturePart>(permanent.FindPart<CreaturePart>, false);
+        this._deferredCreaturePart = new Lazy<CreaturePart>(
+            permanent.FindPart<CreaturePart>,
+            false);
 
         this.Permanent = permanent;
     }

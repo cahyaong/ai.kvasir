@@ -12,6 +12,7 @@ namespace nGratis.AI.Kvasir.AcceptanceTest;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using Moq;
@@ -34,7 +35,7 @@ public sealed class RoundJudgeDefinition
             .WithFormatter();
     }
 
-    private RoundJudge _roundJudge;
+    private IRoundJudge _roundJudge;
     private ITabletop _tabletop;
 
     private IPermanent _attackingPermanent;
@@ -46,7 +47,10 @@ public sealed class RoundJudgeDefinition
     [BeforeScenario(Order = 0)]
     public void ExecutePreScenario()
     {
-        var mockLogger = MockBuilder.CreateMock<ILogger>();
+        var container = new ContainerBuilder()
+            .RegisterTestingInfrastructure()
+            .RegisterJudge()
+            .Build();
 
         this._mockAttackingStrategy = MockBuilder
             .CreateMock<IStrategy>()
@@ -60,7 +64,7 @@ public sealed class RoundJudgeDefinition
             this._mockAttackingStrategy.Object,
             this._mockBlockingStrategy.Object);
 
-        this._roundJudge = new RoundJudge(mockLogger.Object);
+        this._roundJudge = container.Resolve<IRoundJudge>();
 
         this._attackingPermanent = Permanent.Unknown;
         this._blockingPermanents = new List<IPermanent>();

@@ -9,6 +9,8 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using nGratis.AI.Kvasir.Contract;
+
 public class PassingHandler : BaseActionHandler
 {
     public override ActionKind ActionKind => ActionKind.Passing;

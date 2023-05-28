@@ -11,6 +11,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest;
 
 using FluentAssertions;
 using FluentAssertions.Execution;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 
@@ -30,7 +31,7 @@ public class PlayingLandHandlerTests
                 .ActivePlayer.Hand
                 .AddLandCard("ACTIVE", 0, 1);
 
-            var playingLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
+            var playingLandAction = Action.PlayCard(tabletop.ActivePlayer.Hand.FindFromTop());
             playingLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.
@@ -56,11 +57,11 @@ public class PlayingLandHandlerTests
                 .ActivePlayer.Hand
                 .AddLandCard("ACTIVE", 0, 3);
 
-            var playingFirstLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
+            var playingFirstLandAction = Action.PlayCard(tabletop.ActivePlayer.Hand.FindFromTop());
             playingFirstLandAction.Target.Player = tabletop.ActivePlayer;
             playingLandHandler.Resolve(tabletop, playingFirstLandAction);
 
-            var playingSecondLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
+            var playingSecondLandAction = Action.PlayCard(tabletop.ActivePlayer.Hand.FindFromTop());
             playingSecondLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.
@@ -97,7 +98,7 @@ public class PlayingLandHandlerTests
                 .ActivePlayer.Hand
                 .AddLandCard("NONACTIVE", 0, 1);
 
-            var playingLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
+            var playingLandAction = Action.PlayCard(tabletop.ActivePlayer.Hand.FindFromTop());
             playingLandAction.Target.Player = tabletop.NonActivePlayer;
 
             // Act.
@@ -141,7 +142,7 @@ public class PlayingLandHandlerTests
                 "[_MOCK_STUB_21_]",
                 tabletop.NonActivePlayer));
 
-            var playingLandAction = Action.PlayLand(tabletop.ActivePlayer.Hand.FindFromTop());
+            var playingLandAction = Action.PlayCard(tabletop.ActivePlayer.Hand.FindFromTop());
             playingLandAction.Target.Player = tabletop.ActivePlayer;
 
             // Act.

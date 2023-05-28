@@ -45,10 +45,16 @@ public class MagicEntityFactory : IMagicEntityFactory
 
     private readonly IRandomGenerator _randomGenerator;
 
-    public MagicEntityFactory(IProcessedMagicRepository processedRepository, IRandomGenerator randomGenerator)
+    private readonly IJudicialAssistant _judicialAssistant;
+
+    public MagicEntityFactory(
+        IProcessedMagicRepository processedRepository,
+        IRandomGenerator randomGenerator,
+        IJudicialAssistant judicialAssistant)
     {
         this._processedRepository = processedRepository;
         this._randomGenerator = randomGenerator;
+        this._judicialAssistant = judicialAssistant;
     }
 
     public IPlayer CreatePlayer(DefinedBlob.Player definedPlayer)
@@ -64,12 +70,14 @@ public class MagicEntityFactory : IMagicEntityFactory
         {
             Name = definedPlayer.Name,
             Deck = this.CreateDeck(definedDeck),
-            Strategy = new RandomStrategy(this._randomGenerator)
+            Strategy = new RandomStrategy(this._randomGenerator, this._judicialAssistant)
         };
     }
 
     private IDeck CreateDeck(DefinedBlob.Deck definedDeck)
     {
+        // TODO (SHOULD): Share instance for card with the same name and set!
+
         var cards = definedDeck
             .Entries
             .Select(definedEntry => new
@@ -82,7 +90,7 @@ public class MagicEntityFactory : IMagicEntityFactory
             })
             .SelectMany(anon => Enumerable
                 .Range(0, anon.Quantity)
-                .Select(_ => this.CreateCard(anon.DefinedCard)))
+                .Select(_ => MagicEntityFactory.CreateCard(anon.DefinedCard)))
             .ToImmutableArray();
 
         return new Deck
@@ -91,8 +99,18 @@ public class MagicEntityFactory : IMagicEntityFactory
         };
     }
 
-    private ICard CreateCard(DefinedBlob.Card definedCard)
+    private static ICard CreateCard(DefinedBlob.Card definedCard)
     {
+        var abilities = ImmutableArray<IAbility>.Empty;
+
+        if (definedCard.Abilities.Any())
+        {
+            abilities = definedCard
+                .Abilities
+                .Select(MagicEntityFactory.CreateAbility)
+                .ToImmutableArray();
+        }
+
         return new Card
         {
             Name = definedCard.Name,
@@ -101,31 +119,30 @@ public class MagicEntityFactory : IMagicEntityFactory
             SubKinds = definedCard.SubKinds,
             Power = definedCard.Power,
             Toughness = definedCard.Toughness,
-            Cost = MagicEntityFactory.CreateCost(definedCard.Cost)
+            Cost = MagicEntityFactory.CreateCost(definedCard.Cost),
+            Abilities = abilities
         };
     }
 
     private static ICost CreateCost(DefinedBlob.Cost definedCost)
     {
-        switch (definedCost.Kind)
+        return definedCost.Kind switch
         {
-            case CostKind.PayingMana:
-                return MagicEntityFactory.ConvertCost((DefinedBlob.PayingManaCost)definedCost);
+            CostKind.PayingMana => MagicEntityFactory.ConvertCost((DefinedBlob.PayingManaCost)definedCost),
 
-            default:
-                return new Cost
-                {
-                    Kind = definedCost.Kind,
-                    Parameter = Parameter.None
-                };
-        }
+            _ => new Cost
+            {
+                Kind = definedCost.Kind,
+                Parameter = Parameter.None
+            }
+        };
     }
 
     private static ICost ConvertCost(DefinedBlob.PayingManaCost definedCost)
     {
         var manaCost = (IManaCost)ManaBlob.Builder
             .Create()
-            .WithDefinedCost(definedCost)
+            .WithAmount(definedCost)
             .Build();
 
         if (manaCost.TotalAmount <= 0)
@@ -139,6 +156,59 @@ public class MagicEntityFactory : IMagicEntityFactory
             Parameter = Parameter.Builder
                 .Create()
                 .WithValue(ParameterKey.Amount, manaCost)
+                .Build()
+        };
+    }
+
+    private static IAbility CreateAbility(DefinedBlob.Ability definedAbility)
+    {
+        var costs = definedAbility
+            .Costs
+            .Select(MagicEntityFactory.CreateCost)
+            .ToImmutableArray();
+
+        var effects = definedAbility
+            .Effects
+            .Select(MagicEntityFactory.CreateEffect)
+            .ToImmutableArray();
+
+        var canProduceMana = effects
+            .Any(effect => effect.Kind == EffectKind.ProducingMana);
+
+        return new Ability
+        {
+            CanProduceMana = canProduceMana,
+            Costs = costs,
+            Effects = effects
+        };
+    }
+
+    private static IEffect CreateEffect(DefinedBlob.Effect definedEffect)
+    {
+        return definedEffect.Kind switch
+        {
+            EffectKind.ProducingMana => MagicEntityFactory.ConvertEffect(
+                (DefinedBlob.ProducingManaEffect)definedEffect),
+
+            _ => throw new KvasirException(
+                "Creating effect must be implemented explicitly!",
+                ("Kind", definedEffect.Kind))
+        };
+    }
+
+    private static IEffect ConvertEffect(DefinedBlob.ProducingManaEffect definedEffect)
+    {
+        var manaPool = (IManaPool)ManaBlob.Builder
+            .Create()
+            .WithAmount(definedEffect)
+            .Build();
+
+        return new Effect
+        {
+            Kind = EffectKind.ProducingMana,
+            Parameter = Parameter.Builder
+                .Create()
+                .WithValue(ParameterKey.Amount, manaPool)
                 .Build()
         };
     }

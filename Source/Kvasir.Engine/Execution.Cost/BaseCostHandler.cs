@@ -16,7 +16,7 @@ public abstract class BaseCostHandler : ICostHandler
 {
     public abstract CostKind CostKind { get; }
 
-    public ValidationResult Validate(ITabletop tabletop, ICost cost)
+    public ValidationResult Validate(ITabletop tabletop, ICost cost, ITarget target)
     {
         if (cost.Kind != this.CostKind)
         {
@@ -27,14 +27,14 @@ public abstract class BaseCostHandler : ICostHandler
         }
 
         var reasons = this
-            .ValidateCore(tabletop, cost)
+            .ValidateCore(tabletop, cost, target)
             .Reasons
             .ToImmutableList();
 
         return ValidationResult.Create(reasons);
     }
 
-    public void Resolve(ITabletop tabletop, ICost cost)
+    public void Resolve(ITabletop tabletop, ICost cost, ITarget target)
     {
         if (cost.Kind != this.CostKind)
         {
@@ -44,13 +44,13 @@ public abstract class BaseCostHandler : ICostHandler
                 ("Expected Kind", this.CostKind));
         }
 
-        this.PayCore(tabletop, cost);
+        this.ResolveCore(tabletop, cost, target);
     }
 
-    protected virtual ValidationResult ValidateCore(ITabletop tabletop, ICost cost)
+    protected virtual ValidationResult ValidateCore(ITabletop tabletop, ICost cost, ITarget target)
     {
         return ValidationResult.Successful;
     }
 
-    protected abstract void PayCore(ITabletop tabletop, ICost cost);
+    protected abstract void ResolveCore(ITabletop tabletop, ICost cost, ITarget target);
 }

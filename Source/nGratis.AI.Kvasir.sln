@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Contract"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Engine", "Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj", "{A471742A-AD16-433E-8FB6-D44076A0B8BD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Glue", "Kvasir.Glue\nGratis.AI.Kvasir.Glue.csproj", "{38D6FB43-DD4A-4ADB-8A8D-E556CA2CEB07}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Framework.QualityAssurance", "..\External\cop.olympus\Source\Olympus.Framework.QualityAssurance\nGratis.Cop.Olympus.Framework.QualityAssurance.csproj", "{ECC17F00-D6F9-4FAD-AFCE-E6967D48F0AC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.AI.Kvasir.Core", "Kvasir.Core\nGratis.AI.Kvasir.Core.csproj", "{5E54785F-703F-45FE-94A8-74B888246056}"
@@ -117,6 +119,10 @@ Global
 		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1257B76C-9124-4D02-891B-F68DCBAC1E03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38D6FB43-DD4A-4ADB-8A8D-E556CA2CEB07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38D6FB43-DD4A-4ADB-8A8D-E556CA2CEB07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38D6FB43-DD4A-4ADB-8A8D-E556CA2CEB07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38D6FB43-DD4A-4ADB-8A8D-E556CA2CEB07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -98,12 +98,31 @@ public class ManaBlob : IManaCost, IManaPool
             return this;
         }
 
-        public Builder WithDefinedCost(DefinedBlob.PayingManaCost definedCost)
+        public Builder WithAmount(DefinedBlob.PayingManaCost definedCost)
         {
             Enum.GetValues<Mana>()
                 .Where(mana => mana != Mana.Unknown)
                 .Where(mana => definedCost[mana] > 0)
                 .ForEach(mana => this.WithAmount(mana, definedCost[mana]));
+
+            return this;
+        }
+
+        public Builder WithAmount(DefinedBlob.ProducingManaEffect definedEffect)
+        {
+            Enum.GetValues<Mana>()
+                .Where(mana => mana != Mana.Unknown)
+                .Where(mana => definedEffect[mana] > 0)
+                .ForEach(mana => this.WithAmount(mana, definedEffect[mana]));
+
+            return this;
+        }
+
+        public Builder WithAmount(IManaPool manaPool)
+        {
+            manaPool
+                .AvailableManas
+                .ForEach(mana => manaPool.FindAmount(mana));
 
             return this;
         }
@@ -125,4 +144,61 @@ public static class ManaCost
 public static class ManaPool
 {
     public static IManaPool Unknown => UnknownManaPool.Instance;
+}
+
+internal sealed class UnknownManaCost : IManaCost
+{
+    private UnknownManaCost()
+    {
+    }
+
+    public static UnknownManaCost Instance { get; } = new();
+
+    public int TotalAmount =>
+        throw new NotSupportedException("Getting total amount is not allowed!");
+
+    public IEnumerable<Mana> RequiredManas =>
+        throw new NotSupportedException("Getting required manas is not allowed!");
+
+    public int FindAmount(Mana _) =>
+        throw new NotSupportedException("Finding amount is not allowed!");
+}
+
+internal sealed class FreeManaCost : IManaCost
+{
+    private FreeManaCost()
+    {
+    }
+
+    public static FreeManaCost Instance { get; } = new();
+
+    public int TotalAmount => 0;
+
+    public IEnumerable<Mana> RequiredManas => Enumerable.Empty<Mana>();
+
+    public int FindAmount(Mana _) => 0;
+}
+
+internal sealed class UnknownManaPool : IManaPool
+{
+    private UnknownManaPool()
+    {
+    }
+
+    public static UnknownManaPool Instance { get; } = new();
+
+    public int TotalAmount =>
+        throw new NotSupportedException("Getting total amount is not allowed!");
+
+    public IEnumerable<Mana> AvailableManas =>
+        throw new NotSupportedException("Getting available manas is not allowed!");
+
+    public int FindAmount(Mana _) =>
+        throw new NotSupportedException("Finding amount is not allowed!");
+
+    public void AddAmount(Mana _, int __) =>
+        throw new NotSupportedException("Adding amount is not allowed!");
+
+    public void RemoveAmount(Mana _, int __) =>
+        throw new NotSupportedException("Removing amount is not allowed!");
 }

@@ -19,7 +19,6 @@ using FluentAssertions.Execution;
 using FluentAssertions.Primitives;
 using JetBrains.Annotations;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 
 public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, ZoneAssertion<TEntity>>

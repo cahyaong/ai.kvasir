@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
 public class DiscardingHandler : BaseActionHandler
 {

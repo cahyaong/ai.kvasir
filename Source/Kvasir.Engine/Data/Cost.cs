@@ -17,7 +17,6 @@ public class Cost : ICost
     public Cost()
     {
         this.Kind = CostKind.Unknown;
-        this.Target = CostTarget.Unknown;
         this.Parameter = Engine.Parameter.Unknown;
     }
 
@@ -31,7 +30,39 @@ public class Cost : ICost
 
     public CostKind Kind { get; init; }
 
-    public ICostTarget Target { get; set; }
-
     public IParameter Parameter { get; init; }
+}
+
+internal sealed class UnknownCost : ICost
+{
+    private UnknownCost()
+    {
+    }
+
+    internal static UnknownCost Instance { get; } = new();
+
+    public int Id => -42;
+
+    public string Name => DefinedText.Unknown;
+
+    public CostKind Kind => CostKind.Unknown;
+
+    public IParameter Parameter => Engine.Parameter.Unknown;
+}
+
+internal sealed class NoneCost : ICost
+{
+    private NoneCost()
+    {
+    }
+
+    public static NoneCost Instance { get; } = new();
+
+    public int Id => -42;
+
+    public string Name => DefinedText.None;
+
+    public CostKind Kind => CostKind.DoingNothing;
+
+    public IParameter Parameter => Engine.Parameter.None;
 }

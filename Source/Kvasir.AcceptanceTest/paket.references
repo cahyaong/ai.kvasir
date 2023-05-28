@@ -1,4 +1,5 @@
-﻿Humanizer.Core
+﻿Autofac
+Humanizer.Core
 
 group _Test
     FluentAssertions

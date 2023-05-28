@@ -7,11 +7,11 @@
 // <creation_timestamp>Saturday, May 1, 2021 6:33:23 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
 
 public class Deck : IDeck
 {
@@ -23,4 +23,16 @@ public class Deck : IDeck
     public static IDeck Unknown => UnknownDeck.Instance;
 
     public IReadOnlyCollection<ICard> Cards { get; init; }
+}
+
+internal sealed class UnknownDeck : IDeck
+{
+    private UnknownDeck()
+    {
+    }
+
+    internal static UnknownDeck Instance { get; } = new();
+
+    public IReadOnlyCollection<ICard> Cards =>
+        throw new NotSupportedException("Getting cards is not allowed!");
 }

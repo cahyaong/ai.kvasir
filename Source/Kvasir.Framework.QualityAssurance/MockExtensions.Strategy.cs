@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Moq;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using Action = nGratis.AI.Kvasir.Engine.Action;
 

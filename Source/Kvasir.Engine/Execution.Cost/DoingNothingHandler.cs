@@ -13,14 +13,14 @@ using nGratis.AI.Kvasir.Contract;
 
 public class DoingNothingHandler : ICostHandler
 {
-    public CostKind CostKind => CostKind.None;
+    public CostKind CostKind => CostKind.DoingNothing;
 
-    public ValidationResult Validate(ITabletop tabletop, ICost cost)
+    public ValidationResult Validate(ITabletop _, ICost __, ITarget ___)
     {
         return ValidationResult.Successful;
     }
 
-    public void Resolve(ITabletop tabletop, ICost cost)
+    public void Resolve(ITabletop _, ICost __, ITarget ___)
     {
     }
 }

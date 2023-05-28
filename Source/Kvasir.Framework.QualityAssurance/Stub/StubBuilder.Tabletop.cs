@@ -31,7 +31,7 @@ public static partial class StubBuilder
             Life = 20
         };
 
-        var nonactivePlayer = new Player
+        var nonActivePlayer = new Player
         {
             Name = "[_MOCK_PLAYER__NONACTIVE_]",
             Kind = PlayerKind.Testing,
@@ -44,7 +44,7 @@ public static partial class StubBuilder
             TurnId = 0,
             Phase = Phase.Beginning,
             ActivePlayer = activePlayer,
-            NonActivePlayer = nonactivePlayer
+            NonActivePlayer = nonActivePlayer
         };
     }
 

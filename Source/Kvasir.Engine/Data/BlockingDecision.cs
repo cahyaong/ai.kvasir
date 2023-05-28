@@ -9,19 +9,32 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using nGratis.AI.Kvasir.Contract;
 
 public class BlockingDecision : IBlockingDecision
 {
     public BlockingDecision()
     {
-        this.Combats = Enumerable.Empty<ICombat>();
+        this.Combats = Array.Empty<ICombat>();
     }
 
     public static IBlockingDecision Unknown => UnknownBlockingDecision.Instance;
 
     public static IBlockingDecision None { get; } = new BlockingDecision();
 
-    public IEnumerable<ICombat> Combats { get; init; }
+    public IReadOnlyCollection<ICombat> Combats { get; init; }
+}
+
+internal sealed class UnknownBlockingDecision : IBlockingDecision
+{
+    private UnknownBlockingDecision()
+    {
+    }
+
+    internal static UnknownBlockingDecision Instance { get; } = new();
+
+    public IReadOnlyCollection<ICombat> Combats =>
+        throw new NotSupportedException("Getting combats is not allowed!");
 }

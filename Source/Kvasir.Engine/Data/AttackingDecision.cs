@@ -11,6 +11,7 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System;
 using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
 
 public class AttackingDecision : IAttackingDecision
 {
@@ -24,4 +25,16 @@ public class AttackingDecision : IAttackingDecision
     public static IAttackingDecision None { get; } = new AttackingDecision();
 
     public IReadOnlyCollection<IPermanent> AttackingPermanents { get; init; }
+}
+
+internal sealed class UnknownAttackingDecision : IAttackingDecision
+{
+    private UnknownAttackingDecision()
+    {
+    }
+
+    internal static UnknownAttackingDecision Instance { get; } = new();
+
+    public IReadOnlyCollection<IPermanent> AttackingPermanents =>
+        throw new NotSupportedException("Getting attacking permanents is not allowed!");
 }

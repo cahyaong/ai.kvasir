@@ -26,7 +26,6 @@ public class AppViewModel : Conductor<IScreen>.Collection.OneActive
             .Is.Not.Empty();
 
         var orderedScreens = screens
-            .Where(screen => screen != null)
             .Select(screen =>
             {
                 var definitionAttribute = screen
