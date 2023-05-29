@@ -576,6 +576,8 @@ STORAGE: NONE
 RESTRICTION: == net6.0-windows7.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
+    Autofac (7.0.1)
+      System.Diagnostics.DiagnosticSource (>= 4.7.1)
     Caliburn.Micro (4.0.173)
       Caliburn.Micro.Core (>= 4.0.173)
       Microsoft.Windows.Compatibility (>= 5.0)
@@ -688,6 +690,8 @@ NUGET
       Microsoft.Win32.Registry (>= 4.7)
       runtime.native.System.Data.SqlClient.sni (>= 4.7)
       System.Security.Principal.Windows (>= 4.7)
+    System.Diagnostics.DiagnosticSource (7.0.2)
+      System.Runtime.CompilerServices.Unsafe (>= 6.0)
     System.Diagnostics.EventLog (6.0)
     System.Diagnostics.PerformanceCounter (6.0)
       System.Configuration.ConfigurationManager (>= 6.0)

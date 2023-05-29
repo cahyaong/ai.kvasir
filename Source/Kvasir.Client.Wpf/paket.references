@@ -1,5 +1,4 @@
 ﻿Antlr4
-Autofac
 Humanizer.Core
 JetBrains.Annotations
 J2N
@@ -10,6 +9,7 @@ System.Reactive.Linq
 System.Runtime.InteropServices.WindowsRuntime
 
 group _UI
+    Autofac
     Caliburn.Micro
     MahApps.Metro
     OxyPlot.Wpf

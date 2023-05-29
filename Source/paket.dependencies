@@ -27,6 +27,7 @@ group _UI
     framework: net6.0-windows
     source https://api.nuget.org/v3/index.json
 
+    nuget Autofac
     nuget Caliburn.Micro ~> 4.0.173.0
     nuget Caliburn.Micro.Core ~> 4.0.173.0
     nuget Humanizer.Core
