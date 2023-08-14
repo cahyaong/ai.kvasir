@@ -7,17 +7,15 @@
 // <creation_timestamp>Friday, 23 November 2018 9:26:00 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable once CheckNamespace
-
-namespace Moq.AI.Kvasir;
+namespace nGratis.AI.Kvasir.Framework;
 
 using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-public partial class Arg : Moq.Arg
+public class Arg : Cop.Olympus.Framework.Arg
 {
-    public class UnparsedCardSet
+    public static class UnparsedCardSet
     {
         public static UnparsedBlob.CardSet Is(string code)
         {
@@ -29,7 +27,7 @@ public partial class Arg : Moq.Arg
         }
     }
 
-    public class DefinedPlayer
+    public static class DefinedPlayer
     {
         public static DefinedBlob.Player Is(string name)
         {

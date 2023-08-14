@@ -177,7 +177,7 @@ public class JudicialAssistantTests
             }
         }
 
-        public sealed class FindingCreaturesTheory : CopTheory
+        public sealed class FindingCreaturesTheory : OlympusTheory
         {
             private FindingCreaturesTheory()
             {

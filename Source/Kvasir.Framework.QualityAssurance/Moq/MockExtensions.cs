@@ -7,11 +7,13 @@
 // <creation_timestamp>Friday, April 22, 2022 2:53:41 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Framework;
+// ReSharper disable once CheckNamespace
 
-using Moq;
+namespace Moq;
+
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
+using nGratis.AI.Kvasir.Framework;
 
 public static partial class MockExtensions
 {

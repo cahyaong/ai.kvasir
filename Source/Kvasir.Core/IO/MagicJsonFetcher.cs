@@ -22,6 +22,7 @@ using HtmlAgilityPack;
 using Newtonsoft.Json.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
 
 public class MagicJsonFetcher : MagicHttpFetcherBase
 {

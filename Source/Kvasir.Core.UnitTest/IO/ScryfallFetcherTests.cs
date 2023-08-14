@@ -16,10 +16,11 @@ using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 using Xunit;
+
+using StubHttpMessageHandler = AI.Kvasir.Framework.StubHttpMessageHandler;
 
 // TODO (SHOULD): Add integration test that uses the actual Scryfall API!
 
@@ -195,7 +196,7 @@ public class ScryfallFetcherTests
             }
         }
 
-        public class FetchingCardsTheory : CopTheory
+        public class FetchingCardsTheory : OlympusTheory
         {
             private FetchingCardsTheory()
             {

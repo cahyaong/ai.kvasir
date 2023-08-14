@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="MockExtensions.MagicEntityFactory.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -9,15 +9,17 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir;
+namespace Moq;
 
 using System.Collections.Generic;
 using System.Linq;
-using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
+
+using Arg = nGratis.Cop.Olympus.Framework.Arg;
+using MockBuilder = nGratis.AI.Kvasir.Framework.MockBuilder;
 
 internal static partial class MockExtensions
 {

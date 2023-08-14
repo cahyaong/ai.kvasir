@@ -112,7 +112,7 @@ public class MagicCardParserTests
             }
         }
 
-        public sealed class ParsingAbilityTheory : CopTheory
+        public sealed class ParsingAbilityTheory : OlympusTheory
         {
             public string UnparsedAbility { get; private init; }
 
@@ -253,7 +253,7 @@ public class MagicCardParserTests
             }
         }
 
-        public sealed class ParsingCostTheory : CopTheory
+        public sealed class ParsingCostTheory : OlympusTheory
         {
             public string UnparsedCost { get; private init; }
 

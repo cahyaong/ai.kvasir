@@ -1,11 +1,23 @@
-﻿namespace nGratis.AI.Kvasir.Framework;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="MockExtensions.Strategy.cs" company="nGratis">
+//  The MIT License — Copyright (c) Cahya Ong
+//  See the LICENSE file in the project root for more information.
+// </copyright>
+// <author>Cahya Ong — cahya.ong@gmail.com</author>
+// <creation_timestamp>Monday, August 14, 2023 5:30:03 AM UTC</creation_timestamp>
+// --------------------------------------------------------------------------------------------------------------------
+
+// ReSharper disable once CheckNamespace
+
+namespace Moq;
 
 using System;
 using System.Collections.Generic;
-using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
+
 using Action = nGratis.AI.Kvasir.Engine.Action;
+using Arg = nGratis.Cop.Olympus.Framework.Arg;
 
 public static partial class MockExtensions
 {

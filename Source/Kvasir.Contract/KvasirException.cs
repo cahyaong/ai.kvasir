@@ -9,10 +9,9 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
-using System;
-using System.Linq;
+using nGratis.Cop.Olympus.Contract;
 
-public class KvasirException : Exception
+public class KvasirException : OlympusException
 {
     public KvasirException(string message)
         : base(message)
@@ -20,12 +19,12 @@ public class KvasirException : Exception
     }
 
     public KvasirException(string message, params string[] submessages)
-        : base(submessages.Aggregate(message, (blob, submessage) => $"{blob} {submessage}"))
+        : base(message, submessages)
     {
     }
 
     public KvasirException(string message, params (string Key, object Value)[] details)
-        : this(message, details.Select(detail => $"{detail.Key}: [{detail.Value}].").ToArray())
+        : base(message, details)
     {
     }
 }

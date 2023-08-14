@@ -9,21 +9,20 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir;
+namespace Moq;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Lucene.Net.Analysis.Core;
 using Lucene.Net.Index;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
-using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.AI.Kvasir.Core.UnitTest;
+using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 
 internal static partial class MockExtensions
@@ -248,37 +247,5 @@ internal static partial class MockExtensions
             .Verifiable();
 
         return mockFetcher;
-    }
-
-    public static Mock<IKeyCalculator> WithMapping(
-        this Mock<IKeyCalculator> mockCalculator,
-        string url,
-        string key)
-    {
-        Guard
-            .Require(mockCalculator, nameof(mockCalculator))
-            .Is.Not.Null();
-
-        Guard
-            .Require(url, nameof(url))
-            .Is.Not.Empty();
-
-        Guard
-            .Require(key, nameof(key))
-            .Is.Not.Empty();
-
-        var name = Path.GetFileNameWithoutExtension(key);
-        var extension = Path.GetExtension(key);
-
-        var mime = !string.IsNullOrEmpty(extension)
-            ? Mime.ParseByExtension(extension)
-            : Mime.Text;
-
-        mockCalculator
-            .Setup(mock => mock.Calculate(It.Is<Uri>(uri => uri.ToString() == url)))
-            .Returns(new DataSpec(name, mime))
-            .Verifiable();
-
-        return mockCalculator;
     }
 }

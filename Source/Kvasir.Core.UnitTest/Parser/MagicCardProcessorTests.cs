@@ -1026,7 +1026,7 @@ public class MagicCardProcessorTests
         }
     }
 
-    public abstract class ParsingTheory : CopTheory
+    public abstract class ParsingTheory : OlympusTheory
     {
         public string ExpectedMessage { get; protected set; }
 

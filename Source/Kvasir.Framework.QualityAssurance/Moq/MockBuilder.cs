@@ -7,16 +7,14 @@
 // <creation_timestamp>Monday, 5 November 2018 8:08:49 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-// ReSharper disable once CheckNamespace
-
-namespace Moq.AI.Kvasir;
+namespace nGratis.AI.Kvasir.Framework;
 
 using System;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-public class MockBuilder : Moq.MockBuilder
+public class MockBuilder : Cop.Olympus.Framework.MockBuilder
 {
     private MockBuilder()
     {

@@ -16,6 +16,8 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 
+using StubHttpMessageHandler = AI.Kvasir.Framework.StubHttpMessageHandler;
+
 public class MagicHttpFetcherBaseTests
 {
     public class Constructor

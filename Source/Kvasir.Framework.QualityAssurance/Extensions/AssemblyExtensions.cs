@@ -21,26 +21,6 @@ using YamlDotNet.Serialization;
 
 public static class AssemblyExtensions
 {
-    public static Stream FetchSessionStream(this string name)
-    {
-        Guard
-            .Require(name, nameof(name))
-            .Is.Not.Empty();
-
-        var dataStream = Assembly
-            .GetExecutingAssembly()
-            .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngksession");
-
-        if (dataStream == null)
-        {
-            throw new KvasirTestingException(
-                "Session data must be embedded!",
-                ("Name", name));
-        }
-
-        return dataStream;
-    }
-
     public static IEnumerable<StubCreature> FetchCreatures(this string name)
     {
         Guard
@@ -49,14 +29,7 @@ public static class AssemblyExtensions
 
         using var dataStream = Assembly
             .GetExecutingAssembly()
-            .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkcard");
-
-        if (dataStream == null)
-        {
-            throw new KvasirTestingException(
-                "Creatures data must be embedded!",
-                ("Name", name));
-        }
+            .FetchSessionStream(name, KvasirMime.Card);
 
         return dataStream
             .ReadText()
@@ -72,14 +45,7 @@ public static class AssemblyExtensions
 
         using var dataStream = Assembly
             .GetExecutingAssembly()
-            .GetManifestResourceStream($"nGratis.AI.Kvasir.Framework.Data.{name}.ngkset");
-
-        if (dataStream == null)
-        {
-            throw new KvasirTestingException(
-                "Cards data must be embedded!",
-                ("Name", name));
-        }
+            .FetchSessionStream(name, KvasirMime.Set);
 
         return dataStream
             .ReadText()

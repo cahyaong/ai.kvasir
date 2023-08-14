@@ -7,18 +7,18 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Data\Processed_POR.ngkset" />
-    <None Remove="Data\Raw_MTGJSON4.ngksession" />
-    <None Remove="Data\Raw_SCRYFALL.ngksession" />
-    <None Remove="Data\Raw_WOTC.ngksession" />
+    <None Remove="Data\Raw_MTGJSON4.ngosession" />
+    <None Remove="Data\Raw_SCRYFALL.ngosession" />
+    <None Remove="Data\Raw_WOTC.ngosession" />
     <None Remove="Data\Theory_FindingCreatures.ngkcard" />
     <None Remove="nGratis.AI.Kvasir.Framework.QualityAssurance.csproj.DotSettings" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\Processed_POR.ngkset" />
     <EmbeddedResource Include="Data\Theory_FindingCreatures.ngkcard" />
-    <EmbeddedResource Include="Data\Raw_MTGJSON4.ngksession" />
-    <EmbeddedResource Include="Data\Raw_SCRYFALL.ngksession" />
-    <EmbeddedResource Include="Data\Raw_WOTC.ngksession" />
+    <EmbeddedResource Include="Data\Raw_MTGJSON4.ngosession" />
+    <EmbeddedResource Include="Data\Raw_SCRYFALL.ngosession" />
+    <EmbeddedResource Include="Data\Raw_WOTC.ngosession" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />

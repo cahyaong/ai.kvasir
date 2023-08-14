@@ -288,7 +288,7 @@ amount:
     }
 }
 
-public sealed class SerializingCostTheory : CopTheory
+public sealed class SerializingCostTheory : OlympusTheory
 {
     public string SerializedBlob { get; private set; }
 
@@ -318,7 +318,7 @@ public sealed class SerializingCostTheory : CopTheory
     }
 }
 
-public sealed class SerializingEffectTheory : CopTheory
+public sealed class SerializingEffectTheory : OlympusTheory
 {
     public string SerializedBlob { get; private set; }
 

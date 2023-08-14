@@ -15,7 +15,9 @@ public static class KvasirMime
 {
     public static readonly Mime Blob = new("application/x-ng-kvasir-blob", "ngkblob");
 
-    public static readonly Mime Cache = new("application/x-ng-kvasir-cache", "ngkcache");
-
     public static readonly Mime Deck = new("application/x-ng-kvasir-deck", "ngkdeck");
+
+    public static readonly Mime Set = new("application/x-ng-kvasir-set", "ngkset");
+
+    public static readonly Mime Card = new("application/x-ng-kvasir-card", "ngkcard");
 }

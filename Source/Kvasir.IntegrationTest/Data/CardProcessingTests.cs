@@ -22,6 +22,8 @@ using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 using Xunit;
 
+using StubHttpMessageHandler = AI.Kvasir.Framework.StubHttpMessageHandler;
+
 public class CardProcessingTests
 {
     [Theory]
@@ -33,7 +35,7 @@ public class CardProcessingTests
 
         var stubHandler = StubHttpMessageHandler
             .Create()
-            .WithSuccessfulScryfallResponse("Raw_SCRYFALL");
+            .WithSuccessfulScryfallResponseInSession("Raw_SCRYFALL");
 
         var fetcher = new ScryfallFetcher(stubHandler);
         var cardProcessor = new MagicCardProcessor();
@@ -157,7 +159,7 @@ public class CardProcessingTests
         }
     }
 
-    public class ParsingCardTheory : CopTheory
+    public class ParsingCardTheory : OlympusTheory
     {
         private ParsingCardTheory()
         {

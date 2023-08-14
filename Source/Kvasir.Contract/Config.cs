@@ -15,7 +15,7 @@ using nGratis.Cop.Olympus.Contract;
 
 public static class Config
 {
-    public static DataSpec ProcessedContentSpec { get; } = new("Processed_KVASIR", KvasirMime.Cache);
+    public static DataSpec ProcessedContentSpec { get; } = new("Processed_KVASIR", OlympusMime.Cache);
 
     public static Uri FindDataFolderUri()
     {

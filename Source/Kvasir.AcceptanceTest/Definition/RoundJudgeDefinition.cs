@@ -22,6 +22,8 @@ using nGratis.AI.Kvasir.Framework;
 using nGratis.Cop.Olympus.Contract;
 using TechTalk.SpecFlow;
 
+using MockBuilder = AI.Kvasir.Framework.MockBuilder;
+
 [Binding]
 public sealed class RoundJudgeDefinition
 {

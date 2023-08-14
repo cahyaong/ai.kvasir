@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="StubMagicHttpFetcher.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -56,7 +56,8 @@ public class StubMagicHttpFetcher : MagicHttpFetcherBase
         return await Task.FromResult(new[] { cardSet });
     }
 
-    protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(UnparsedBlob.CardSet cardSet)
+    protected override async Task<IReadOnlyCollection<UnparsedBlob.Card>> FetchCardsCoreAsync(
+        UnparsedBlob.CardSet cardSet)
     {
         var card = new UnparsedBlob.Card
         {

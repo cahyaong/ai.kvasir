@@ -15,11 +15,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
-using Moq.AI.Kvasir;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.AI.Kvasir.Framework;
 using Xunit;
-using Arg = Moq.AI.Kvasir.Arg;
-using MockBuilder = Moq.AI.Kvasir.MockBuilder;
 
 public class UnprocessedMagicRepositoryTests
 {

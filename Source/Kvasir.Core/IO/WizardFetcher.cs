@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="WizardFetcher.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
 
 public class WizardFetcher : MagicHttpFetcherBase
 {

@@ -11,7 +11,7 @@ namespace nGratis.AI.Kvasir.Engine.UnitTest;
 
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Moq.AI.Kvasir;
+using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;

@@ -13,10 +13,11 @@ using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FluentAssertions.Execution;
-using Moq.AI.Kvasir;
+using Moq;
 using nGratis.AI.Kvasir.Contract;
 using Xunit;
-using MockBuilder = Moq.AI.Kvasir.MockBuilder;
+
+using MockBuilder = AI.Kvasir.Framework.MockBuilder;
 
 public class MagicRepositoryExtensions
 {

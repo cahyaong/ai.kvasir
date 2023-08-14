@@ -9,13 +9,12 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Moq.AI.Kvasir;
+namespace Moq;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;

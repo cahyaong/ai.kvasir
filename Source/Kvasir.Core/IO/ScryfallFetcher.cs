@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ScryfallFetcher.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -20,6 +20,7 @@ using System.Web;
 using Newtonsoft.Json.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
 
 public class ScryfallFetcher : MagicHttpFetcherBase
 {

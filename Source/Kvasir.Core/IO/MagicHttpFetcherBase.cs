@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using nGratis.Cop.Olympus.Framework;
 
 public abstract class MagicHttpFetcherBase : IMagicFetcher
 {
