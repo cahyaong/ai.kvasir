@@ -10,8 +10,8 @@
         <ResourceDictionary>
           <client:AppBootstrapper x:Key="Bootstrapper" />
         </ResourceDictionary>
-        <olympus:SharedResourceDictionary Source="/nGratis.Cop.Olympus.Wpf;component/Cop.Converter.xaml" />
-        <olympus:SharedResourceDictionary Source="/nGratis.Cop.Olympus.Wpf.Theme;component/Cop.Theme.Dark.xaml" />
+        <olympus:SharedResourceDictionary Source="/nGratis.Cop.Olympus.UI.Wpf;component/Cop.Converter.xaml" />
+        <olympus:SharedResourceDictionary Source="/nGratis.Cop.Olympus.UI.Wpf.Theme;component/Cop.Theme.Dark.xaml" />
         <olympus:SharedResourceDictionary Source="/nGratis.AI.Kvasir.Client.Wpf;component/Theme/AI.Theme.Generic.xaml" />
         <ResourceDictionary>
           <client:MagicTimestampToStringConverter x:Key="Kvasir.Converter.MagicTimestampToStringConverter" />
