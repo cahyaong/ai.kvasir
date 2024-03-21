@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
 
 public class ManaBlob : IManaCost, IManaPool
 {
@@ -34,6 +35,10 @@ public class ManaBlob : IManaCost, IManaPool
 
     public int FindAmount(Mana mana)
     {
+        Guard
+            .Require(mana, nameof(mana))
+            .Is.Not.Default();
+
         return this._amountByManaLookup.TryGetValue(mana, out var amount)
             ? amount
             : 0;
@@ -41,6 +46,14 @@ public class ManaBlob : IManaCost, IManaPool
 
     public void AddAmount(Mana mana, int amount)
     {
+        Guard
+            .Require(mana, nameof(mana))
+            .Is.Not.Default();
+
+        Guard
+            .Require(amount, nameof(amount))
+            .Is.Positive();
+
         if (this._amountByManaLookup.TryGetValue(mana, out var existingAmount))
         {
             this._amountByManaLookup[mana] = existingAmount + amount;
@@ -51,8 +64,23 @@ public class ManaBlob : IManaCost, IManaPool
         }
     }
 
+    public void AddManaPool(IManaPool manaPool)
+    {
+        manaPool
+            .AvailableManas
+            .ForEach(mana => this.AddAmount(mana, manaPool.FindAmount(mana)));
+    }
+
     public void RemoveAmount(Mana mana, int amount)
     {
+        Guard
+            .Require(mana, nameof(mana))
+            .Is.Not.Default();
+
+        Guard
+            .Require(amount, nameof(amount))
+            .Is.Positive();
+
         if (!this._amountByManaLookup.TryGetValue(mana, out var existingAmount))
         {
             throw new KvasirException("Mana must exist in blob!", ("Mana", mana));
@@ -66,7 +94,43 @@ public class ManaBlob : IManaCost, IManaPool
                 ("Existing Amount", existingAmount));
         }
 
-        this._amountByManaLookup[mana] = existingAmount - amount;
+        var updatedAmount = existingAmount - amount;
+
+        if (updatedAmount <= 0)
+        {
+            this._amountByManaLookup.Remove(mana);
+        }
+        else
+        {
+            this._amountByManaLookup[mana] = updatedAmount;
+        }
+    }
+
+    public void RemoveMana(Mana mana)
+    {
+        Guard
+            .Require(mana, nameof(mana))
+            .Is.Not.Default();
+
+        if (!this._amountByManaLookup.ContainsKey(mana))
+        {
+            throw new KvasirException("Mana must exist in blob!", ("Mana", mana));
+        }
+
+        this._amountByManaLookup.Remove(mana);
+    }
+
+    public void UpdateAmount(Mana mana, int amount)
+    {
+        Guard
+            .Require(mana, nameof(mana))
+            .Is.Not.Default();
+
+        Guard
+            .Require(amount, nameof(amount))
+            .Is.Positive();
+
+        this._amountByManaLookup[mana] = amount;
     }
 
     public class Builder
@@ -122,7 +186,7 @@ public class ManaBlob : IManaCost, IManaPool
         {
             manaPool
                 .AvailableManas
-                .ForEach(mana => manaPool.FindAmount(mana));
+                .ForEach(mana => this._manaBlob.AddAmount(mana, manaPool.FindAmount(mana)));
 
             return this;
         }
@@ -199,6 +263,15 @@ internal sealed class UnknownManaPool : IManaPool
     public void AddAmount(Mana _, int __) =>
         throw new NotSupportedException("Adding amount is not allowed!");
 
+    public void AddManaPool(IManaPool _) =>
+        throw new NotSupportedException("Adding mana pool is not allowed!");
+
     public void RemoveAmount(Mana _, int __) =>
         throw new NotSupportedException("Removing amount is not allowed!");
+
+    public void RemoveMana(Mana _) =>
+        throw new NotSupportedException("Removing mana is not allowed!");
+
+    public void UpdateAmount(Mana _, int __) =>
+        throw new NotSupportedException("Updating amount is not allowed!");
 }

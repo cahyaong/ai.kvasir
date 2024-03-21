@@ -15,7 +15,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 public class MagicCardProcessor : IMagicCardProcessor
 {

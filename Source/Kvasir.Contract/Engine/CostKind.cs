@@ -13,7 +13,8 @@ public enum CostKind
 {
     Unknown = 0,
 
-    DoingNothing,
+    MarkingNone,
+    MarkingComposite,
 
     PayingMana,
     Tapping

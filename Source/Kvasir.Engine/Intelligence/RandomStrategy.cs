@@ -70,15 +70,25 @@ public class RandomStrategy : IStrategy
                 continue;
             }
 
-            var blockingIndex = this._randomGenerator.RollDice(blockingPermanents.Count) - 1;
-
-            combats.Add(new Combat
+            if (blockingPermanents.Any())
             {
-                AttackingPermanent = attackingPermanent,
-                BlockingPermanents = new[] { blockingPermanents[blockingIndex] }
-            });
+                var blockingIndex = this._randomGenerator.RollDice(blockingPermanents.Count) - 1;
 
-            blockingPermanents.RemoveAt(blockingIndex);
+                combats.Add(new Combat
+                {
+                    AttackingPermanent = attackingPermanent,
+                    BlockingPermanents = new[] { blockingPermanents[blockingIndex] }
+                });
+
+                blockingPermanents.RemoveAt(blockingIndex);
+            }
+            else
+            {
+                combats.Add(new Combat
+                {
+                    AttackingPermanent = attackingPermanent
+                });
+            }
         }
 
         return new BlockingDecision
@@ -105,7 +115,7 @@ public class RandomStrategy : IStrategy
 
         return playingLandActions.Any()
             ? playingLandActions.First()
-            : legalActions[this._randomGenerator.RollDice(legalActions.Length)];
+            : legalActions[this._randomGenerator.RollDice(legalActions.Length) - 1];
     }
 
     public IAction PerformNonPrioritizedAction(ITabletop tabletop)

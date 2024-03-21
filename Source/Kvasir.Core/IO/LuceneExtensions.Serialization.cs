@@ -22,6 +22,7 @@ using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using DefinedText = nGratis.AI.Kvasir.Contract.DefinedText;
 
 internal static partial class LuceneExtensions
 {

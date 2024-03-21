@@ -9,8 +9,8 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
 public class PayingManaHandler : BaseCostHandler
@@ -45,6 +45,8 @@ public class PayingManaHandler : BaseCostHandler
             return ValidationResult.Successful;
         }
 
+        // TODO (MUST): Move the decision for tapping permanents for mana to strategy!
+
         var potentialManaPool = this._judicialAssistant.CalculatePotentialManaPool(
             tabletop,
             target.Player == tabletop.ActivePlayer ? PlayerModifier.Active : PlayerModifier.NonActive);
@@ -71,11 +73,24 @@ public class PayingManaHandler : BaseCostHandler
     {
         var amount = cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount);
 
-        if (amount == ManaCost.Free)
-        {
-            return;
-        }
+        tabletop
+            .Battlefield
+            .FindAll()
+            .Where(permanent => permanent.Controller == target.Player)
+            .Where(permanent => !permanent.IsTapped)
+            .Where(permanent => permanent.HasPart<CharacteristicPart>())
+            .Select(permanent => new
+            {
+                Permanent = permanent,
+                ManaAbility = permanent
+                    .FindPart<CharacteristicPart>()
+                    .ActivatedAbilities
+                    .Single(ability => ability.CanProduceMana)
+            })
+            .Take(amount.TotalAmount)
+            .Select(anon => Action.ActivateManaAbility(anon.Permanent, anon.ManaAbility))
+            .ForEach(action => this._actionJudge.ExecuteAction(tabletop, action));
 
-        throw new NotImplementedException("WIP: Implement paying mana when cost is not free!");
+        target.Player.ManaPool.Pay(amount);
     }
 }

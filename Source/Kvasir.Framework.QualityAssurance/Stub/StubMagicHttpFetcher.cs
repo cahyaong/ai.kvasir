@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;
+using DefinedText = nGratis.AI.Kvasir.Contract.DefinedText;
 
 public class StubMagicHttpFetcher : MagicHttpFetcherBase
 {

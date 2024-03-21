@@ -63,6 +63,19 @@ public class JudicialAssistant : IJudicialAssistant
         return filteredCreatures.ToImmutableList();
     }
 
+    public IEnumerable<Land> FindLands(ITabletop tabletop, PlayerModifier playerModifier)
+    {
+        var player = JudicialAssistant.FindPlayer(tabletop, playerModifier);
+
+        return tabletop
+            .Battlefield
+            .FindAll()
+            .Where(permanent => permanent.Card.Kind == CardKind.Land)
+            .Where(permanent => permanent.Controller == player)
+            .Select(permanent => permanent.ToProxyLand())
+            .ToImmutableArray();
+    }
+
     public IEnumerable<IAction> FindLegalActions(ITabletop tabletop, PlayerModifier playerModifier)
     {
         if (playerModifier == PlayerModifier.NonActive)
@@ -91,10 +104,18 @@ public class JudicialAssistant : IJudicialAssistant
 
         var potentialManaPool = this.CalculatePotentialManaPool(tabletop, playerModifier);
 
-        legalActions.AddRange(cards
-            .Where(card => card.Kind != CardKind.Land)
-            .Where(card => potentialManaPool.CanPay(card.Cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount)))
-            .Select(Action.PlayCard));
+        var canPlayNonLand = tabletop
+            .Stack
+            .FindAll()
+            .All(action => action.Owner != player);
+
+        if (canPlayNonLand)
+        {
+            legalActions.AddRange(cards
+                .Where(card => card.Kind != CardKind.Land)
+                .Where(card => potentialManaPool.CanPay(card.Cost.Parameter.FindValue<IManaCost>(ParameterKey.Amount)))
+                .Select(Action.PlayCard));
+        }
 
         return legalActions;
     }
@@ -116,19 +137,19 @@ public class JudicialAssistant : IJudicialAssistant
             .Battlefield
             .FindAll()
             .Where(permanent => permanent.Controller == player)
+            .Where(permanent => !permanent.IsTapped)
             .Where(permanent => permanent.HasPart<CharacteristicPart>())
             .SelectMany(permanent => permanent
                 .FindPart<CharacteristicPart>()
                 .ActivatedAbilities)
             .Where(ability => ability.CanProduceMana)
-            .Where(ability => ability
-                .Costs
-                .All(cost => this
+            .Where(ability => this
                     ._executionManager
-                    .FindCostHandler(cost)
-                    .Validate(tabletop, cost, target) == ValidationResult.Successful))
+                    .FindCostHandler(ability.Cost)
+                    .Validate(tabletop, ability.Cost, target) == ValidationResult.Successful)
             .ForEach(ability => ability
-                .Effects
+                .Effect
+                .Unroll()
                 .Where(effect => effect.Kind == EffectKind.ProducingMana)
                 .Select(effect => effect.Parameter.FindValue<IManaPool>(ParameterKey.Amount))
                 .ForEach(manaPool => manaBlobBuilder.WithAmount(manaPool)));
@@ -158,6 +179,9 @@ internal sealed class UnknownJudicialAssistant : IJudicialAssistant
 
     public IEnumerable<Creature> FindCreatures(ITabletop _, PlayerModifier __, CreatureModifier ___) =>
         throw new NotSupportedException("Finding creatures is not allowed!");
+
+    public IEnumerable<Land> FindLands(ITabletop _, PlayerModifier __) =>
+        throw new NotSupportedException("Finding lands is not allowed!");
 
     public IEnumerable<IAction> FindLegalActions(ITabletop _, PlayerModifier __) =>
         throw new NotSupportedException("Finding legal actions is not allowed!");

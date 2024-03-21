@@ -1,26 +1,24 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="DoingNothingHandler.cs" company="nGratis">
+// <copyright file="ProducingManaHandler.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
 // <author>Cahya Ong — cahya.ong@gmail.com</author>
-// <creation_timestamp>Friday, May 12, 2023 5:51:53 AM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, March 19, 2024 3:26:13 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Engine;
 
 using nGratis.AI.Kvasir.Contract;
 
-public class DoingNothingHandler : ICostHandler
+public class ProducingManaHandler : BaseEffectHandler
 {
-    public CostKind CostKind => CostKind.MarkingNone;
+    public override EffectKind EffectKind => EffectKind.ProducingMana;
 
-    public ValidationResult Validate(ITabletop _, ICost __, ITarget ___)
+    protected override void ResolveCore(ITabletop tabletop, IEffect effect, ITarget target)
     {
-        return ValidationResult.Successful;
-    }
+        var amount = effect.Parameter.FindValue<IManaPool>(ParameterKey.Amount);
 
-    public void Resolve(ITabletop _, ICost __, ITarget ___)
-    {
+        target.Player.ManaPool.AddManaPool(amount);
     }
 }

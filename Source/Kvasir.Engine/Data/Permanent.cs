@@ -15,7 +15,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 [DebuggerDisplay("<Permanent> {this.Name} ({this.Id})")]
 public class Permanent : IPermanent

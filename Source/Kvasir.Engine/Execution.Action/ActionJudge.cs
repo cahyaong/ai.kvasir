@@ -15,19 +15,19 @@ using nGratis.AI.Kvasir.Contract;
 
 public class ActionJudge : IActionJudge
 {
-    private readonly IExecutionManager executionManager;
+    private readonly IExecutionManager _executionManager;
 
     public ActionJudge(IExecutionManager executionManager)
     {
-        this.executionManager = executionManager;
+        this._executionManager = executionManager;
     }
 
     public static IActionJudge Unknown => UnknownActionJudge.Instance;
 
     public QueueingResult QueueAction(ITabletop tabletop, IAction action)
     {
-        var costHandler = this.executionManager.FindCostHandler(action.Cost);
-        var actionHandler = this.executionManager.FindActionHandler(action);
+        var costHandler = this._executionManager.FindCostHandler(action.Cost);
+        var actionHandler = this._executionManager.FindActionHandler(action);
 
         var validationResult = ValidationResult.Create(
             costHandler.Validate(tabletop, action.Cost, action.Target),
@@ -39,7 +39,7 @@ public class ActionJudge : IActionJudge
 
             action = Action.Pass();
             action.Owner = owner;
-            costHandler = this.executionManager.FindCostHandler(action.Cost);
+            costHandler = this._executionManager.FindCostHandler(action.Cost);
         }
         else if (actionHandler.IsSpecialAction)
         {
@@ -69,10 +69,22 @@ public class ActionJudge : IActionJudge
 
     public ExecutionResult ExecuteAction(ITabletop tabletop, IAction action)
     {
-        var actionHandler = this.executionManager.FindActionHandler(action);
-        var validationResult = actionHandler.Validate(tabletop, action);
+        var costHandler = this._executionManager.FindCostHandler(action.Cost);
+        var actionHandler = this._executionManager.FindActionHandler(action);
 
-        return ExecutionResult.Create(validationResult.Messages);
+        var validationResult = ValidationResult.Create(
+            costHandler.Validate(tabletop, action.Cost, action.Target),
+            actionHandler.Validate(tabletop, action));
+
+        if (validationResult.HasError)
+        {
+            return ExecutionResult.Create(validationResult.Messages);
+        }
+
+        costHandler.Resolve(tabletop, action.Cost, action.Target);
+        actionHandler.Resolve(tabletop, action);
+
+        return ExecutionResult.Successful;
     }
 
     private static bool ShouldResolveStack(ITabletop tabletop)
@@ -102,7 +114,7 @@ public class ActionJudge : IActionJudge
         {
             var action = tabletop.Stack.FindFromTop();
 
-            this.executionManager
+            this._executionManager
                 .FindActionHandler(action)
                 .Resolve(tabletop, action);
 

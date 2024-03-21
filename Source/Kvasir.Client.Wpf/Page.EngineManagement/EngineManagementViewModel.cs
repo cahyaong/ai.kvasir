@@ -14,8 +14,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Core;
-using nGratis.Cop.Olympus.Wpf;
-using nGratis.Cop.Olympus.Wpf.Glue;
+using nGratis.Cop.Olympus.UI.Wpf;
+using nGratis.Cop.Olympus.UI.Wpf.Glue;
 using ReactiveUI;
 
 [PageDefinition("Engine", Ordering = 2)]

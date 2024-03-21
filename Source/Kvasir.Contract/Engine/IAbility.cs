@@ -9,13 +9,11 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
-using System.Collections.Generic;
-
 public interface IAbility
 {
     bool CanProduceMana { get; }
 
-    IReadOnlyCollection<ICost> Costs { get; }
+    ICost Cost { get; }
 
-    IReadOnlyCollection<IEffect> Effects { get; }
+    IEffect Effect { get; }
 }

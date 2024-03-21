@@ -12,7 +12,6 @@ namespace nGratis.AI.Kvasir.Engine;
 using System;
 using System.Diagnostics;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 [DebuggerDisplay("<Action> {this.Kind}")]
 public class Action : IAction
@@ -64,6 +63,21 @@ public class Action : IAction
             Target = new Target
             {
                 Cards = new[] { card }
+            },
+            Parameter = Engine.Parameter.None
+        };
+    }
+
+    public static IAction ActivateManaAbility(IPermanent permanent, IAbility ability)
+    {
+        return new Action
+        {
+            Kind = ActionKind.ActivatingManaAbility,
+            Cost = ability.Cost,
+            Target = new Target
+            {
+                Player = permanent.Controller,
+                Permanents = new[] { permanent }
             },
             Parameter = Engine.Parameter.None
         };

@@ -17,7 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Shapes;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
-using nGratis.Cop.Olympus.Wpf;
+using nGratis.Cop.Olympus.UI.Wpf;
 
 [TemplatePart(Name = "PART_ContentPanel", Type = typeof(Panel))]
 internal class AwePayingManaCostViewer : Control

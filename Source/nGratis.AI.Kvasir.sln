@@ -19,11 +19,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{FB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Contract", "..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj", "{E727CA53-5288-4E7E-828C-011803B0BEDD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Wpf", "..\External\cop.olympus\Source\Olympus.Wpf\nGratis.Cop.Olympus.Wpf.csproj", "{199487EB-64E4-4D48-9E9A-3AFDDDADF041}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.UI.Wpf", "..\External\cop.olympus\Source\Olympus.UI.Wpf\nGratis.Cop.Olympus.UI.Wpf.csproj", "{199487EB-64E4-4D48-9E9A-3AFDDDADF041}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Wpf.Glue", "..\External\cop.olympus\Source\Olympus.Wpf.Glue\nGratis.Cop.Olympus.Wpf.Glue.csproj", "{56449032-076D-4889-BDE1-4D2C8AA442F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.UI.Wpf.Glue", "..\External\cop.olympus\Source\Olympus.UI.Wpf.Glue\nGratis.Cop.Olympus.UI.Wpf.Glue.csproj", "{56449032-076D-4889-BDE1-4D2C8AA442F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.Wpf.Theme", "..\External\cop.olympus\Source\Olympus.Wpf.Theme\nGratis.Cop.Olympus.Wpf.Theme.csproj", "{2B8DE19C-BE3D-4516-AECB-01FC709F8ED8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "nGratis.Cop.Olympus.UI.Wpf.Theme", "..\External\cop.olympus\Source\Olympus.UI.Wpf.Theme\nGratis.Cop.Olympus.UI.Wpf.Theme.csproj", "{2B8DE19C-BE3D-4516-AECB-01FC709F8ED8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{AE1E95AC-FD1F-404C-88DB-C1A633A580D6}"
 EndProject

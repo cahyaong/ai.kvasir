@@ -15,7 +15,7 @@ using System.Linq;
 using System.Reflection;
 using Caliburn.Micro;
 using nGratis.Cop.Olympus.Contract;
-using nGratis.Cop.Olympus.Wpf;
+using nGratis.Cop.Olympus.UI.Wpf;
 
 public class AppViewModel : Conductor<IScreen>.Collection.OneActive
 {

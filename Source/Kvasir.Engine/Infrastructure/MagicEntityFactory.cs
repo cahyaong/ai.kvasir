@@ -178,8 +178,8 @@ public class MagicEntityFactory : IMagicEntityFactory
         return new Ability
         {
             CanProduceMana = canProduceMana,
-            Costs = costs,
-            Effects = effects
+            Cost = costs.Roll(),
+            Effect = effects.Roll()
         };
     }
 

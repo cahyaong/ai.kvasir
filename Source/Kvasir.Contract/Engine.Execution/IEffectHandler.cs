@@ -1,21 +1,17 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ITarget.cs" company="nGratis">
+// <copyright file="IEffectHandler.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
 // <author>Cahya Ong — cahya.ong@gmail.com</author>
-// <creation_timestamp>Wednesday, July 6, 2022 6:09:23 PM UTC</creation_timestamp>
+// <creation_timestamp>Tuesday, March 19, 2024 3:20:51 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract;
 
-using System.Collections.Generic;
-
-public interface ITarget
+public interface IEffectHandler
 {
-    IPlayer Player { get; set; }
+    EffectKind EffectKind { get; }
 
-    IReadOnlyCollection<ICard> Cards { get; }
-
-    IReadOnlyCollection<IPermanent> Permanents { get; }
+    void Resolve(ITabletop tabletop, IEffect effect, ITarget target);
 }

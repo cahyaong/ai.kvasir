@@ -11,7 +11,6 @@ namespace nGratis.AI.Kvasir.Framework;
 
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
-using nGratis.Cop.Olympus.Contract;
 
 // NOTE: This <StubCreature> class will be used to represent the mocking data in `*.ngkcard` file!
 

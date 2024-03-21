@@ -10,7 +10,6 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 public class Effect : IEffect
 {

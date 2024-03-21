@@ -21,5 +21,11 @@ public interface IManaPool
 
     void AddAmount(Mana mana, int amount);
 
+    void AddManaPool(IManaPool manaPool);
+
     void RemoveAmount(Mana mana, int amount);
+
+    void RemoveMana(Mana mana);
+
+    void UpdateAmount(Mana mana, int amount);
 }

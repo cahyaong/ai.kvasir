@@ -19,6 +19,8 @@ public interface IJudicialAssistant
         PlayerModifier playerModifier,
         CreatureModifier creatureModifier);
 
+    IEnumerable<Land> FindLands(ITabletop tabletop, PlayerModifier playerModifier);
+
     IEnumerable<IAction> FindLegalActions(ITabletop tabletop, PlayerModifier playerModifier);
 
     IManaPool CalculatePotentialManaPool(ITabletop tabletop, PlayerModifier playerModifier);

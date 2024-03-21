@@ -19,6 +19,7 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.AI.Kvasir.Core.Parser;
 using nGratis.Cop.Olympus.Contract;
+using DefinedText = nGratis.AI.Kvasir.Contract.DefinedText;
 
 internal class ProcessingCardExecution : IExecution
 {

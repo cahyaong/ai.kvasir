@@ -10,6 +10,7 @@
 namespace nGratis.AI.Kvasir.Client.Cmd;
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommandLine;
 using nGratis.AI.Kvasir.Contract;
@@ -23,9 +24,12 @@ public class Program
             .WithParsed<ProcessingCardOption>(Program.ProcessCard)
             .WithParsed<PlayingGameOption>(Program.PlayGame);
 
-        Console.WriteLine();
-        Console.WriteLine("Press <ANY> key to continue...");
-        Console.ReadLine();
+        if (Debugger.IsAttached)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Press <ANY> key to continue...");
+            Console.ReadLine();
+        }
     }
 
     private static void ProcessCard(ProcessingCardOption option)

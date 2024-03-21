@@ -22,7 +22,7 @@ using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
-using nGratis.Cop.Olympus.Wpf;
+using nGratis.Cop.Olympus.UI.Wpf;
 
 [SuppressMessage(
     "Interoperability", "CA1416:Validate platform compatibility",
@@ -66,7 +66,7 @@ internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
         this._container = new ContainerBuilder()
             .RegisterInfrastructure()
             .RegisterRepository(dataFolderUri)
-            .RegisterViewModels()
+            .RegisterViewModel()
             .Build();
     }
 
@@ -168,7 +168,7 @@ internal static class AutofacExtensions
         return containerBuilder;
     }
 
-    public static ContainerBuilder RegisterViewModels(this ContainerBuilder containerBuilder)
+    public static ContainerBuilder RegisterViewModel(this ContainerBuilder containerBuilder)
     {
         containerBuilder
             .RegisterType<AppViewModel>()

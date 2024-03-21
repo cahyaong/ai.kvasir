@@ -17,8 +17,8 @@ using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.Cop.Olympus.Contract;
-using nGratis.Cop.Olympus.Wpf;
-using nGratis.Cop.Olympus.Wpf.Glue;
+using nGratis.Cop.Olympus.UI.Wpf;
+using nGratis.Cop.Olympus.UI.Wpf.Glue;
 using ReactiveUI;
 
 [PageDefinition("Rule", Ordering = 3)]

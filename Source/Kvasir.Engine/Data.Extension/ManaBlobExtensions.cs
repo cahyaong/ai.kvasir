@@ -11,6 +11,7 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
@@ -44,6 +45,99 @@ public static class ManaBlobExtensions
             .All(mana => manaPool.FindAmount(mana) >= manaCost.FindAmount(mana));
     }
 
+    public static void Pay(this IManaPool manaPool, IManaCost manaCost)
+    {
+        if (manaCost == ManaCost.Free)
+        {
+            return;
+        }
+
+        var canPay = manaPool.TotalAmount >= manaCost.TotalAmount;
+
+        if (!canPay)
+        {
+            throw new KvasirException(
+                "Mana pool must have enough amount to pay mana cost!",
+                ("Mana Pool", manaCost.PrintDiagnostic()),
+                ("Mana Cost", manaCost.PrintDiagnostic()));
+        }
+
+        var coloredManas = manaCost
+            .RequiredManas
+            .Where(mana => mana != Mana.Colorless)
+            .ToImmutableArray();
+
+        var plannedManaPool = ManaBlob.Builder
+            .Create()
+            .WithAmount(manaPool)
+            .Build();
+
+        var costAmount = 0;
+        var poolAmount = 0;
+        var paidAmount = 0;
+
+        foreach (var coloredMana in coloredManas)
+        {
+            costAmount = manaCost.FindAmount(coloredMana);
+            poolAmount = plannedManaPool.FindAmount(coloredMana);
+            paidAmount = Math.Min(costAmount, poolAmount);
+
+            if (paidAmount > 0)
+            {
+                plannedManaPool.RemoveAmount(coloredMana, paidAmount);
+            }
+        }
+
+        costAmount = manaCost.FindAmount(Mana.Colorless);
+        poolAmount = plannedManaPool.FindAmount(Mana.Colorless);
+        paidAmount = Math.Min(costAmount, poolAmount);
+
+        if (paidAmount > 0)
+        {
+            plannedManaPool.RemoveAmount(Mana.Colorless, paidAmount);
+        }
+
+        if (paidAmount < costAmount)
+        {
+            plannedManaPool
+                .AvailableManas
+                .ForEach(mana =>
+                {
+                    costAmount -= paidAmount;
+
+                    poolAmount = plannedManaPool.FindAmount(mana);
+                    paidAmount = Math.Min(costAmount, poolAmount);
+
+                    if (paidAmount > 0)
+                    {
+                        plannedManaPool.RemoveAmount(mana, paidAmount);
+                    }
+                });
+        }
+
+        canPay = plannedManaPool.TotalAmount <= manaPool.TotalAmount - manaCost.TotalAmount;
+
+        if (!canPay)
+        {
+            throw new KvasirException(
+                "Mana pool must have enough amount to pay mana cost!",
+                ("Mana Pool", manaCost.PrintDiagnostic()),
+                ("Mana Cost", manaCost.PrintDiagnostic()));
+        }
+
+        foreach (var mana in manaPool.AvailableManas)
+        {
+            if (plannedManaPool.AvailableManas.Contains(mana))
+            {
+                manaPool.UpdateAmount(mana, plannedManaPool.FindAmount(mana));
+            }
+            else
+            {
+                manaPool.RemoveMana(mana);
+            }
+        }
+    }
+
     public static string PrintDiagnostic(this IManaCost manaCost)
     {
         if (manaCost == ManaCost.Free)
@@ -54,7 +148,8 @@ public static class ManaBlobExtensions
         var tokens = Enum
             .GetValues<Mana>()
             .Where(mana => mana != Mana.Unknown)
-            .Select(manaCost.PrintDiagnostic);
+            .Select(manaCost.PrintDiagnostic)
+            .Where(token => !string.IsNullOrWhiteSpace(token));
 
         return string.Join(", ", tokens);
     }

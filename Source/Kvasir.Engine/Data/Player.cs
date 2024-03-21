@@ -12,7 +12,6 @@ namespace nGratis.AI.Kvasir.Engine;
 using System;
 using System.Diagnostics;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 // TODO: Use builder pattern to make most properties immutable after creation!
 

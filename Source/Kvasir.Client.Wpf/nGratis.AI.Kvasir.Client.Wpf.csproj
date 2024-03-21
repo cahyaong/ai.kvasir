@@ -21,9 +21,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Contract\nGratis.Cop.Olympus.Contract.csproj" />
     <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Framework\nGratis.Cop.Olympus.Framework.csproj" />
-    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Wpf.Glue\nGratis.Cop.Olympus.Wpf.Glue.csproj" />
-    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Wpf.Theme\nGratis.Cop.Olympus.Wpf.Theme.csproj" />
-    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.Wpf\nGratis.Cop.Olympus.Wpf.csproj" />
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.UI.Wpf.Glue\nGratis.Cop.Olympus.UI.Wpf.Glue.csproj" />
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.UI.Wpf.Theme\nGratis.Cop.Olympus.UI.Wpf.Theme.csproj" />
+    <ProjectReference Include="..\..\External\cop.olympus\Source\Olympus.UI.Wpf\nGratis.Cop.Olympus.UI.Wpf.csproj" />
     <ProjectReference Include="..\Kvasir.Contract\nGratis.AI.Kvasir.Contract.csproj" />
     <ProjectReference Include="..\Kvasir.Core\nGratis.AI.Kvasir.Core.csproj" />
     <ProjectReference Include="..\Kvasir.Engine\nGratis.AI.Kvasir.Engine.csproj" />

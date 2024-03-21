@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Ability.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -10,7 +10,6 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
-using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
 
 public class Ability : IAbility
@@ -18,17 +17,17 @@ public class Ability : IAbility
     public Ability()
     {
         this.CanProduceMana = false;
-        this.Costs = Array.Empty<ICost>();
-        this.Effects = Array.Empty<IEffect>();
+        this.Cost = Engine.Cost.Unknown;
+        this.Effect = Engine.Effect.Unknown;
     }
 
     public static IAbility Unknown => UnknownAbility.Instance;
 
     public bool CanProduceMana { get; init; }
 
-    public IReadOnlyCollection<ICost> Costs { get; init; }
+    public ICost Cost { get; init; }
 
-    public IReadOnlyCollection<IEffect> Effects { get; init; }
+    public IEffect Effect { get; init; }
 }
 
 internal sealed class UnknownAbility : IAbility
@@ -42,9 +41,9 @@ internal sealed class UnknownAbility : IAbility
     public bool CanProduceMana =>
         throw new NotSupportedException("Getting can produce mana flag is not allowed!");
 
-    public IReadOnlyCollection<ICost> Costs =>
-        throw new NotSupportedException("Getting costs is not allowed!");
+    public ICost Cost =>
+        throw new NotSupportedException("Getting cost is not allowed!");
 
-    public IReadOnlyCollection<IEffect> Effects =>
-        throw new NotSupportedException("Getting effects is not allowed!");
+    public IEffect Effect =>
+        throw new NotSupportedException("Getting effect is not allowed!");
 }

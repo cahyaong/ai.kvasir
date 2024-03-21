@@ -245,7 +245,7 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteDeclaringAttackerStep(ITabletop tabletop)
     {
-        // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
+        // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to strategy!
 
         var attackingDecision = tabletop
             .ActivePlayer.Strategy
@@ -269,7 +269,7 @@ public class RoundJudge : IRoundJudge
             return ExecutionResult.Successful;
         }
 
-        // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to to strategy!
+        // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to strategy!
 
         var blockingDecision = tabletop
             .NonActivePlayer.Strategy

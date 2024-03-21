@@ -19,6 +19,7 @@ public class Target : ITarget
     {
         this.Player = Engine.Player.Unknown;
         this.Cards = Array.Empty<ICard>();
+        this.Permanents = Array.Empty<IPermanent>();
     }
 
     public static ITarget Unknown => UnknownTarget.Instance;
@@ -28,6 +29,8 @@ public class Target : ITarget
     public IPlayer Player { get; set; }
 
     public IReadOnlyCollection<ICard> Cards { get; init; }
+
+    public IReadOnlyCollection<IPermanent> Permanents { get; init; }
 }
 
 internal sealed class UnknownTarget : ITarget
@@ -46,6 +49,9 @@ internal sealed class UnknownTarget : ITarget
 
     public IReadOnlyCollection<ICard> Cards =>
         throw new NotSupportedException("Getting cards is not allowed!");
+
+    public IReadOnlyCollection<IPermanent> Permanents =>
+        throw new NotSupportedException("Getting permanents is not allowed!");
 }
 
 internal sealed class NoneTarget : ITarget
@@ -63,4 +69,6 @@ internal sealed class NoneTarget : ITarget
     }
 
     public IReadOnlyCollection<ICard> Cards => Array.Empty<ICard>();
+
+    public IReadOnlyCollection<IPermanent> Permanents => Array.Empty<IPermanent>();
 }

@@ -10,7 +10,6 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 public class Cost : ICost
 {
@@ -62,7 +61,7 @@ internal sealed class NoneCost : ICost
 
     public string Name => DefinedText.None;
 
-    public CostKind Kind => CostKind.DoingNothing;
+    public CostKind Kind => CostKind.MarkingNone;
 
     public IParameter Parameter => Engine.Parameter.None;
 }

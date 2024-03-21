@@ -13,5 +13,7 @@ public enum EffectKind
 {
     Unknown = 0,
 
+    MarkingComposite,
+
     ProducingMana
 }

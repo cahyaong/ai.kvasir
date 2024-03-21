@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
 
 [DebuggerDisplay("<Card> {this.Name} ({this.Id})")]
 public class Card : ICard
