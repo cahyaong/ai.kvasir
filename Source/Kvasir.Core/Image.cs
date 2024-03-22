@@ -13,7 +13,6 @@ using System;
 using System.IO;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
-using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.Formats.Png;
 
 public static class Image
@@ -54,12 +53,7 @@ public class WritableImage : IImage
         }
 
         var dataStream = new MemoryStream();
-
-        var encoder = this
-            ._image
-            .GetConfiguration()
-            .ImageFormatsManager
-            .FindEncoder(PngFormat.Instance);
+        var encoder = this._image.Configuration.ImageFormatsManager.GetEncoder(PngFormat.Instance);
 
         this._image.Save(dataStream, encoder);
 

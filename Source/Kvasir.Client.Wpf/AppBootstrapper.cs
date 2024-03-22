@@ -100,7 +100,7 @@ internal sealed class AppBootstrapper : BootstrapperBase, IDisposable
             app.AdjustAccentColor(theme.PrimaryAccentColor);
         }
 
-        this.DisplayRootViewFor<AppViewModel>();
+        this.DisplayRootViewForAsync<AppViewModel>();
     }
 
     private void Dispose(bool isDisposing)

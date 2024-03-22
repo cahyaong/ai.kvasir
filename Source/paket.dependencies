@@ -13,10 +13,10 @@ nuget Lucene.Net.Analysis.Common ~> 4.8.0-beta00007
 nuget Newtonsoft.Json
 nuget NLog
 nuget Polly
-nuget SixLabors.ImageSharp ~> 2.1.0
-nuget System.Diagnostics.DiagnosticSource ~> 6.0.0.0
-nuget System.Reactive ~> 6.0
-nuget System.Reactive.Linq ~> 6.0
+nuget SixLabors.ImageSharp
+nuget System.Diagnostics.DiagnosticSource
+nuget System.Reactive
+nuget System.Reactive.Linq
 nuget System.Runtime.InteropServices.WindowsRuntime
 nuget System.Threading.Tasks.Extensions
 nuget YamlDotNet
@@ -28,14 +28,14 @@ group _UI
     source https://api.nuget.org/v3/index.json
 
     nuget Autofac
-    nuget Caliburn.Micro ~> 4.0.173.0
-    nuget Caliburn.Micro.Core ~> 4.0.173.0
+    nuget Caliburn.Micro
+    nuget Caliburn.Micro.Core
     nuget Humanizer.Core
     nuget MahApps.Metro
     nuget OxyPlot.Wpf
-    nuget ReactiveUI ~> 19.5.0
-    nuget ReactiveUI.WPF ~> 19.5.0
-    nuget Splat ~> 9.0
+    nuget ReactiveUI
+    nuget ReactiveUI.WPF
+    nuget Splat
     nuget System.Reactive
 
 group _Console
@@ -57,7 +57,7 @@ group _Test
     nuget Moq
     nuget SpecFlow.Plus.LivingDocPlugin
     nuget SpecFlow.xUnit
-    nuget System.Diagnostics.DiagnosticSource ~> 6.0.0.0
+    nuget System.Diagnostics.DiagnosticSource
     nuget System.Drawing.Common
     nuget System.Windows.Extensions
     nuget xunit
