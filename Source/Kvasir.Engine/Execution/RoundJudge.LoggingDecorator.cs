@@ -35,7 +35,11 @@ public partial class RoundJudge
 
         public ExecutionResult ExecuteNextPhase(ITabletop tabletop)
         {
-            return this._roundJudge.ExecuteNextPhase(tabletop);
+            var executionResult = this._roundJudge.ExecuteNextPhase(tabletop);
+
+            this._magicLogger.Log(tabletop);
+
+            return executionResult;
         }
     }
 }

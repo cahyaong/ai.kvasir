@@ -9,6 +9,7 @@
 
 namespace nGratis.AI.Kvasir.Client.Cmd;
 
+using System.Text;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 using Spectre.Console;
@@ -27,14 +28,24 @@ public class ConsoleMagicLogger : IMagicLogger
 
     public void Log(ITabletop tabletop)
     {
+        var statusRendering = new Markup(new StringBuilder()
+            .AppendLine($"Turn ID: {tabletop.TurnId}")
+            .AppendLine($"Phase: {tabletop.Phase}")
+            .AppendLine($"Active Player: {tabletop.ActivePlayer.Name}")
+            .ToString());
+
+        this._layout[LayoutId.Status]
+            .Update(statusRendering);
+
+        this.Redraw();
     }
 
     public void Log(Verbosity verbosity, string message)
     {
-        var content = new Markup(message, new Style().Foreground(Color.CornflowerBlue));
+        var notificationRendering = new Markup(message, new Style().Foreground(Color.CornflowerBlue));
 
         this._layout[LayoutId.Notification]
-            .Update(new Panel(content)
+            .Update(new Panel(notificationRendering)
                 .BorderColor(Color.CornflowerBlue)
                 .Expand());
 
@@ -43,13 +54,19 @@ public class ConsoleMagicLogger : IMagicLogger
 
     private static Layout CreateLayout()
     {
-        var layout = new Layout();
+        var tabletopLayout = new Layout(LayoutId.Tabletop)
+            .Ratio(9)
+            .SplitColumns(
+                new Layout(LayoutId.Status).Ratio(3),
+                new Layout(LayoutId.Battlefield).Ratio(7));
 
-        layout.SplitRows(
-            new Layout(LayoutId.Tabletop).Ratio(9),
-            new Layout(LayoutId.Notification).Ratio(1));
+        var notificationLayout = new Layout(LayoutId.Notification)
+            .Ratio(1);
 
-        return layout;
+        var mainLayout = new Layout()
+            .SplitRows(tabletopLayout, notificationLayout);
+
+        return mainLayout;
     }
 
     private void Redraw()
@@ -61,6 +78,9 @@ public class ConsoleMagicLogger : IMagicLogger
     private static class LayoutId
     {
         public const string Tabletop = "<tabletop>";
+        public const string Status = "<tabletop.status>";
+        public const string Battlefield = "<tabletop.battlefield>";
+
         public const string Notification = "<notification>";
     }
 }

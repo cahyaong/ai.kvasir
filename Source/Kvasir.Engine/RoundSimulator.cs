@@ -45,7 +45,7 @@ public class RoundSimulator : IRoundSimulator
 
         while (this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1)
         {
-            executionResults.Add(this._roundJudge.ExecuteNextTurn(this._tabletop));
+            executionResults.Add(this.SimulateNextTurn());
         }
 
         return new SimulationResult(
@@ -53,6 +53,19 @@ public class RoundSimulator : IRoundSimulator
             executionResults
                 .SelectMany(result => result.Messages)
                 .ToImmutableArray());
+    }
+
+    private ExecutionResult SimulateNextTurn()
+    {
+        var executionResults = new List<ExecutionResult>();
+
+        do
+        {
+            executionResults.Add(this._roundJudge.ExecuteNextPhase(this._tabletop));
+        }
+        while (this._tabletop.Phase != Phase.Ending);
+
+        return ExecutionResult.Create(executionResults);
     }
 
     private RoundSimulator SetupTabletop()
