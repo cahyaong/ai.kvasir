@@ -48,6 +48,11 @@ internal class AppBootstrapper : IDisposable
         return this._container.Resolve<T>();
     }
 
+    public IMagicLogger CreateMagicLogger()
+    {
+        return this._container.Resolve<IMagicLogger>();
+    }
+
     public void Dispose()
     {
         this.Dispose(true);
@@ -78,6 +83,11 @@ internal static class AutofacExtensions
             .Register(_ => new ConsoleLogger("Main"))
             .InstancePerLifetimeScope()
             .As<ILogger>();
+
+        containerBuilder
+            .RegisterType<ConsoleMagicLogger>()
+            .InstancePerLifetimeScope()
+            .As<IMagicLogger>();
 
         return containerBuilder;
     }
@@ -153,6 +163,9 @@ internal static class AutofacExtensions
             .Register(_ => RandomGenerator.Default)
             .InstancePerLifetimeScope()
             .As<IRandomGenerator>();
+
+        containerBuilder
+            .RegisterDecorator<RoundJudge.LoggingDecorator, IRoundJudge>();
 
         containerBuilder
             .RegisterType<RoundSimulator>()

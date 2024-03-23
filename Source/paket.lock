@@ -52,6 +52,11 @@ RESTRICTION: == net8.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
     CommandLineParser (2.9.1)
+    Spectre.Console (0.48)
+      System.Memory (>= 4.5.5)
+    Spectre.Console.Cli (0.48)
+      Spectre.Console (>= 0.48)
+    System.Memory (4.5.5)
 
 GROUP _Test
 STORAGE: NONE

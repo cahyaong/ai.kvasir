@@ -3,4 +3,6 @@ JetBrains.Annotations
 YamlDotNet
 
 group _Console
-	CommandLineParser
+    CommandLineParser
+    Spectre.Console
+    Spectre.Console.Cli

@@ -45,6 +45,8 @@ group _Console
     source https://api.nuget.org/v3/index.json
 
     nuget CommandLineParser
+    nuget Spectre.Console
+    nuget Spectre.Console.Cli
 
 group _Test
 

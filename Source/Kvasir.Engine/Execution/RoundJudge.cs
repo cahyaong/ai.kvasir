@@ -14,10 +14,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
-using nGratis.Cop.Olympus.Contract;
-using nGratis.Cop.Olympus.Framework;
 
-public class RoundJudge : IRoundJudge
+public partial class RoundJudge : IRoundJudge
 {
     // TODO (MUST): Wire up the validation logic for executing combat phase!
 
@@ -25,15 +23,12 @@ public class RoundJudge : IRoundJudge
 
     private readonly IJudicialAssistant _judicialAssistant;
 
-    private readonly ILogger _logger;
-
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
-    public RoundJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant, ILogger logger)
+    public RoundJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant)
     {
         this._actionJudge = actionJudge;
         this._judicialAssistant = judicialAssistant;
-        this._logger = logger;
 
         this._phaseHandlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
         {
@@ -45,10 +40,7 @@ public class RoundJudge : IRoundJudge
         };
     }
 
-    public static RoundJudge Unknown { get; } = new(
-        ActionJudge.Unknown,
-        JudicialAssistant.Unknown,
-        VoidLogger.Instance);
+    public static RoundJudge Unknown { get; } = new(ActionJudge.Unknown, JudicialAssistant.Unknown);
 
     public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
     {
@@ -104,8 +96,6 @@ public class RoundJudge : IRoundJudge
                 .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
                 .ForEach(creature => creature.Permanent.IsTapped = false);
 
-            this._logger.LogDiagnostic(tabletop);
-
             // RX-504.1 — First, the active player draws a card. This turn-based action doesn’t use the stack.
 
             tabletop.ActivePlayer.Library.MoveToZone(
@@ -122,8 +112,6 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteMainPhase(ITabletop tabletop)
     {
-        this._logger.LogDiagnostic(tabletop);
-
         var executionResults = new List<ExecutionResult>();
 
         tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
@@ -199,8 +187,6 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteCombatPhase(ITabletop tabletop)
     {
-        this._logger.LogDiagnostic(tabletop);
-
         var executionResult = ExecutionResult.Successful;
 
         tabletop.AttackingDecision = AttackingDecision.None;
@@ -359,8 +345,6 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteEndingPhase(ITabletop tabletop)
     {
-        this._logger.LogDiagnostic(tabletop);
-
         var executionResult = ExecutionResult.Successful;
 
         // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).

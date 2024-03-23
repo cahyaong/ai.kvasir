@@ -14,11 +14,17 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using CommandLine;
 using nGratis.AI.Kvasir.Contract;
+using nGratis.Cop.Olympus.Contract;
 
 public class Program
 {
+    private static readonly AppBootstrapper AppBootstrapper = new();
+
     private static void Main(string[] args)
     {
+        var magicLogger = AppBootstrapper.CreateMagicLogger();
+        magicLogger.Log(Verbosity.Info, "Executing...");
+
         Parser.Default
             .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingGameOption))
             .WithParsed<ProcessingCardOption>(Program.ProcessCard)
@@ -26,16 +32,14 @@ public class Program
 
         if (Debugger.IsAttached)
         {
-            Console.WriteLine();
-            Console.WriteLine("Press <ANY> key to continue...");
+            magicLogger.Log(Verbosity.Info, "Press <ANY> key to continue...");
             Console.ReadLine();
         }
     }
 
     private static void ProcessCard(ProcessingCardOption option)
     {
-        using var appBootstrapper = new AppBootstrapper();
-        var processingExecution = appBootstrapper.CreateExecution<ProcessingCardExecution>();
+        var processingExecution = Program.AppBootstrapper.CreateExecution<ProcessingCardExecution>();
 
         var processingParameter = ExecutionParameter.Builder
             .Create()
@@ -48,8 +52,7 @@ public class Program
 
     private static void PlayGame(PlayingGameOption option)
     {
-        using var appBootstrapper = new AppBootstrapper();
-        var playingExecution = appBootstrapper.CreateExecution<PlayingGameExecution>();
+        var playingExecution = Program.AppBootstrapper.CreateExecution<PlayingGameExecution>();
 
         Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None))
             .Wait();
