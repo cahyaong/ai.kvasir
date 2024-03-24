@@ -32,7 +32,7 @@ public class Program
 
         if (Debugger.IsAttached)
         {
-            magicLogger.Log(Verbosity.Info, "Press <ANY> key to continue...");
+            magicLogger.Log(Verbosity.Info, "Press <ENTER> key to continue...");
             Console.ReadLine();
         }
     }

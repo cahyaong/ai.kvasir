@@ -9,13 +9,23 @@
 
 namespace nGratis.AI.Kvasir.Client.Cmd;
 
+using System.Collections.Generic;
 using System.Text;
+using Humanizer;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 using Spectre.Console;
 
 public class ConsoleMagicLogger : IMagicLogger
 {
+    private static readonly IReadOnlyDictionary<Verbosity, Color> ColorByVerbosityLookup =
+        new Dictionary<Verbosity, Color>
+        {
+            [Verbosity.Error] = Color.IndianRed,
+            [Verbosity.Warning] = Color.DarkGoldenrod,
+            [Verbosity.Info] = Color.CornflowerBlue
+        };
+
     private readonly Layout _layout;
 
     public ConsoleMagicLogger()
@@ -30,23 +40,45 @@ public class ConsoleMagicLogger : IMagicLogger
     {
         var statusRendering = new Markup(new StringBuilder()
             .AppendLine($"Turn ID: {tabletop.TurnId}")
-            .AppendLine($"Phase: {tabletop.Phase}")
+            .AppendLine($"Phase: {tabletop.Phase.Humanize(LetterCasing.Title)}")
             .AppendLine($"Active Player: {tabletop.ActivePlayer.Name}")
             .ToString());
 
         this._layout[LayoutId.Status]
-            .Update(statusRendering);
+            .Update(new Panel(statusRendering)
+                .Header("< STATUS >")
+                .SquareBorder()
+                .Expand());
+
+        this._layout[LayoutId.PlayerOne]
+            .Update(new Panel(new Markup("..."))
+                .Header("< PLAYER 1 >")
+                .SquareBorder()
+                .Expand());
+
+        this._layout[LayoutId.PlayerTwo]
+            .Update(new Panel(new Markup("..."))
+                .Header("< PLAYER 2 >")
+                .SquareBorder()
+                .Expand());
 
         this.Redraw();
     }
 
     public void Log(Verbosity verbosity, string message)
     {
-        var notificationRendering = new Markup(message, new Style().Foreground(Color.CornflowerBlue));
+        if (!ConsoleMagicLogger.ColorByVerbosityLookup.TryGetValue(verbosity, out var color))
+        {
+            color = Color.HotPink;
+        }
+
+        var notificationRendering = new Markup(
+            message,
+            new Style().Foreground(color));
 
         this._layout[LayoutId.Notification]
             .Update(new Panel(notificationRendering)
-                .BorderColor(Color.CornflowerBlue)
+                .BorderColor(color)
                 .Expand());
 
         this.Redraw();
@@ -54,17 +86,21 @@ public class ConsoleMagicLogger : IMagicLogger
 
     private static Layout CreateLayout()
     {
-        var tabletopLayout = new Layout(LayoutId.Tabletop)
-            .Ratio(9)
-            .SplitColumns(
-                new Layout(LayoutId.Status).Ratio(3),
-                new Layout(LayoutId.Battlefield).Ratio(7));
+        var statusLayout = new Layout(LayoutId.Status);
 
-        var notificationLayout = new Layout(LayoutId.Notification)
-            .Ratio(1);
+        var playerLayout = new Layout().SplitColumns(
+            new Layout(LayoutId.PlayerOne),
+            new Layout(LayoutId.PlayerTwo));
 
-        var mainLayout = new Layout()
-            .SplitRows(tabletopLayout, notificationLayout);
+        var tabletopLayout = new Layout(LayoutId.Tabletop).SplitRows(
+            statusLayout.Ratio(2),
+            playerLayout.Ratio(8));
+
+        var notificationLayout = new Layout(LayoutId.Notification);
+
+        var mainLayout = new Layout().SplitRows(
+            tabletopLayout.Ratio(9),
+            notificationLayout.Ratio(1));
 
         return mainLayout;
     }
@@ -79,7 +115,8 @@ public class ConsoleMagicLogger : IMagicLogger
     {
         public const string Tabletop = "<tabletop>";
         public const string Status = "<tabletop.status>";
-        public const string Battlefield = "<tabletop.battlefield>";
+        public const string PlayerOne = "<tabletop.player-one>";
+        public const string PlayerTwo = "<tabletop.player-two>";
 
         public const string Notification = "<notification>";
     }

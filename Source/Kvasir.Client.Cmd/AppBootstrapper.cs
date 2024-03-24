@@ -168,6 +168,9 @@ internal static class AutofacExtensions
             .RegisterDecorator<RoundJudge.LoggingDecorator, IRoundJudge>();
 
         containerBuilder
+            .RegisterDecorator<RoundJudge.DebuggingDecorator, IRoundJudge>();
+
+        containerBuilder
             .RegisterType<RoundSimulator>()
             .InstancePerLifetimeScope()
             .As<IRoundSimulator>();
