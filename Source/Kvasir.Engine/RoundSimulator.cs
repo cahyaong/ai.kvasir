@@ -35,9 +35,19 @@ public class RoundSimulator : IRoundSimulator
 
     public SimulationResult Simulate(SimulationConfig simulationConfig)
     {
+        if (simulationConfig.DefinedPlayers.Count != 2)
+        {
+            throw new KvasirException("Currently supporting 1 vs. 1 match!");
+        }
+
+        var players = simulationConfig
+            .DefinedPlayers
+            .Select(this._entityFactory.CreatePlayer)
+            .ToImmutableArray();
+
         this
-            .SetupTabletop()
-            .SetupPlayers(simulationConfig.DefinedPlayers.ToImmutableArray())
+            .SetupTabletop(players)
+            .SetupPlayers(players)
             .SetupPlayerZones(this._tabletop.ActivePlayer)
             .SetupPlayerZones(this._tabletop.NonActivePlayer);
 
@@ -68,25 +78,21 @@ public class RoundSimulator : IRoundSimulator
         return ExecutionResult.Create(executionResults);
     }
 
-    private RoundSimulator SetupTabletop()
+    private RoundSimulator SetupTabletop(IReadOnlyCollection<IPlayer> players)
     {
         this._tabletop = new Tabletop
         {
+            Players = players,
             Phase = Phase.Setup
         };
 
         return this;
     }
 
-    private RoundSimulator SetupPlayers(ImmutableArray<DefinedBlob.Player> definedPlayers)
+    private RoundSimulator SetupPlayers(IReadOnlyCollection<IPlayer> players)
     {
-        if (definedPlayers.Length != 2)
-        {
-            throw new KvasirException("Currently supporting 1 vs. 1 match!");
-        }
-
-        var firstPlayer = this._entityFactory.CreatePlayer(definedPlayers[0]);
-        var secondPlayer = this._entityFactory.CreatePlayer(definedPlayers[1]);
+        var firstPlayer = players.First();
+        var secondPlayer = players.Last();
 
         var firstValue = 0;
         var secondValue = 0;
@@ -123,7 +129,7 @@ public class RoundSimulator : IRoundSimulator
                 .Skip(index)
                 .Take(1)
                 .Single())
-            .ForEach(card => player.Library.AddToTop(card));
+            .ForEach(player.Library.AddToTop);
 
         Enumerable
             .Range(0, MagicConstant.Hand.MaxCardCount)

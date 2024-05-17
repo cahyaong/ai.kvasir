@@ -9,12 +9,15 @@
 
 namespace nGratis.AI.Kvasir.Client.Cmd;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Humanizer;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 public class ConsoleMagicLogger : IMagicLogger
 {
@@ -38,27 +41,24 @@ public class ConsoleMagicLogger : IMagicLogger
 
     public void Log(ITabletop tabletop)
     {
-        var statusRendering = new Markup(new StringBuilder()
-            .AppendLine($"Turn ID: {tabletop.TurnId}")
-            .AppendLine($"Phase: {tabletop.Phase.Humanize(LetterCasing.Title)}")
-            .AppendLine($"Active Player: {tabletop.ActivePlayer.Name}")
-            .ToString());
-
         this._layout[LayoutId.Status]
-            .Update(new Panel(statusRendering)
+            .Update(new Panel(ConsoleMagicLogger.CreateStatusRendering(tabletop))
                 .Header("< STATUS >")
                 .SquareBorder()
                 .Expand());
 
+        var firstPlayer = tabletop.Players.First();
+        var secondPlayer = tabletop.Players.Last();
+
         this._layout[LayoutId.PlayerOne]
-            .Update(new Panel(new Markup("..."))
-                .Header("< PLAYER 1 >")
+            .Update(new Panel(ConsoleMagicLogger.CreatePlayerRendering(tabletop, firstPlayer))
+                .Header($"< PLAYER 1 — {firstPlayer.Name} >")
                 .SquareBorder()
                 .Expand());
 
         this._layout[LayoutId.PlayerTwo]
-            .Update(new Panel(new Markup("..."))
-                .Header("< PLAYER 2 >")
+            .Update(new Panel(ConsoleMagicLogger.CreatePlayerRendering(tabletop, secondPlayer))
+                .Header($"< PLAYER 2 — {secondPlayer.Name} >")
                 .SquareBorder()
                 .Expand());
 
@@ -84,40 +84,83 @@ public class ConsoleMagicLogger : IMagicLogger
         this.Redraw();
     }
 
-    private static Layout CreateLayout()
-    {
-        var statusLayout = new Layout(LayoutId.Status);
-
-        var playerLayout = new Layout().SplitColumns(
-            new Layout(LayoutId.PlayerOne),
-            new Layout(LayoutId.PlayerTwo));
-
-        var tabletopLayout = new Layout(LayoutId.Tabletop).SplitRows(
-            statusLayout.Ratio(2),
-            playerLayout.Ratio(8));
-
-        var notificationLayout = new Layout(LayoutId.Notification);
-
-        var mainLayout = new Layout().SplitRows(
-            tabletopLayout.Ratio(9),
-            notificationLayout.Ratio(1));
-
-        return mainLayout;
-    }
-
     private void Redraw()
     {
         AnsiConsole.Cursor.SetPosition(0, 0);
         AnsiConsole.Write(this._layout);
     }
 
+    private static Layout CreateLayout()
+    {
+        var statusLayout = new Layout(LayoutId.Status);
+
+        var tabletopLayout = new Layout(LayoutId.Tabletop).SplitColumns(
+            new Layout(LayoutId.PlayerOne).Ratio(1),
+            new Layout(LayoutId.PlayerTwo).Ratio(1),
+            new Layout(LayoutId.Stack).Ratio(1));
+
+        var notificationLayout = new Layout(LayoutId.Notification);
+
+        var mainLayout = new Layout().SplitRows(
+            statusLayout.Ratio(2),
+            tabletopLayout.Ratio(7),
+            notificationLayout.Ratio(1));
+
+        return mainLayout;
+    }
+
+    private static IRenderable CreateStatusRendering(ITabletop tabletop)
+    {
+        return ConsoleMagicLogger
+            .CreateSimpleTable()
+
+            .AddRow("Turn ID", tabletop.TurnId.ToString())
+            .AddRow("Phase", tabletop.Phase.Humanize(LetterCasing.Title));
+    }
+
+    private static IRenderable CreatePlayerRendering(ITabletop tabletop, IPlayer player)
+    {
+        return ConsoleMagicLogger
+            .CreateSimpleTable()
+            .Expand()
+            .AddRow("Life", player.Life.ToString())
+            .AddRow("Status", "Active")
+            .AddRow(
+                "Library",
+                new StringBuilder()
+                    .AppendLine(player.Library.Quantity.ToString())
+                    .Append(player.Library.FindFromTop().Name)
+                    .ToString())
+            .AddRow("Hand", player.Hand.Quantity.ToString())
+            .AddRow(
+                "Battlefield",
+                tabletop.Battlefield.FindAll().Count(permanent => permanent.Controller == player).ToString())
+            .AddRow("Graveyard", player.Graveyard.Quantity.ToString());
+    }
+
+    private static Table CreateSimpleTable()
+    {
+        return new Table()
+            .HideHeaders()
+            .SimpleBorder()
+            .ShowRowSeparators()
+            .BorderColor(Color.Grey)
+            .AddColumn(
+                string.Empty,
+                column => column.NoWrap().RightAligned().Width(12))
+            .AddColumn(
+                string.Empty,
+                column => column.NoWrap().LeftAligned().Width(18));
+    }
+
     private static class LayoutId
     {
         public const string Tabletop = "<tabletop>";
-        public const string Status = "<tabletop.status>";
         public const string PlayerOne = "<tabletop.player-one>";
         public const string PlayerTwo = "<tabletop.player-two>";
+        public const string Stack = "<tabletop.stack>";
 
+        public const string Status = "<status>";
         public const string Notification = "<notification>";
     }
 }

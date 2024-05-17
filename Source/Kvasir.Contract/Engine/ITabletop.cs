@@ -9,8 +9,12 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
+using System.Collections.Generic;
+
 public interface ITabletop
 {
+    IReadOnlyCollection<IPlayer> Players { get; }
+
     IZone<IPermanent> Battlefield { get; }
 
     IZone<IAction> Stack { get; }

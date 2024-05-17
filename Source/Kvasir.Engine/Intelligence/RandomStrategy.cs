@@ -54,7 +54,7 @@ public class RandomStrategy : IStrategy
             .Select(creature => creature.Permanent)
             .ToList();
 
-        if (!blockingPermanents.Any())
+        if (blockingPermanents.Count <= 0)
         {
             return BlockingDecision.None;
         }
@@ -70,14 +70,14 @@ public class RandomStrategy : IStrategy
                 continue;
             }
 
-            if (blockingPermanents.Any())
+            if (blockingPermanents.Count > 0)
             {
                 var blockingIndex = this._randomGenerator.RollDice(blockingPermanents.Count) - 1;
 
                 combats.Add(new Combat
                 {
                     AttackingPermanent = attackingPermanent,
-                    BlockingPermanents = new[] { blockingPermanents[blockingIndex] }
+                    BlockingPermanents = [blockingPermanents[blockingIndex]]
                 });
 
                 blockingPermanents.RemoveAt(blockingIndex);

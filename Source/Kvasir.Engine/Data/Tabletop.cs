@@ -10,12 +10,16 @@
 namespace nGratis.AI.Kvasir.Engine;
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using nGratis.AI.Kvasir.Contract;
 
 public class Tabletop : ITabletop
 {
     public Tabletop()
     {
+        this.Players = ImmutableArray<IPlayer>.Empty;
+
         this.Battlefield = new Zone<IPermanent>
         {
             Kind = ZoneKind.Battlefield,
@@ -46,6 +50,8 @@ public class Tabletop : ITabletop
     }
 
     public static ITabletop Unknown => UnknownTabletop.Instance;
+
+    public IReadOnlyCollection<IPlayer> Players { get; init; }
 
     public IZone<IPermanent> Battlefield { get; }
 
@@ -81,6 +87,8 @@ internal sealed class UnknownTabletop : ITabletop
     }
 
     internal static UnknownTabletop Instance { get; } = new();
+
+    public IReadOnlyCollection<IPlayer> Players => throw new NotSupportedException("Getting players is not allowed!");
 
     public IZone<IPermanent> Battlefield => Zone<IPermanent>.Unknown;
 
