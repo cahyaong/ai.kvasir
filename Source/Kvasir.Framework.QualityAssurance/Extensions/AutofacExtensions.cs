@@ -11,6 +11,7 @@
 
 namespace Autofac;
 
+using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 
@@ -22,6 +23,11 @@ public static class AutofacExtensions
             .Register(_ => VoidLogger.Instance)
             .InstancePerLifetimeScope()
             .As<ILogger>();
+
+        containerBuilder
+            .Register(_ => NoopObserver.Instance)
+            .InstancePerLifetimeScope()
+            .As<IObserver>();
 
         return containerBuilder;
     }

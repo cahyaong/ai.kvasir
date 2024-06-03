@@ -89,6 +89,11 @@ internal static class AutofacExtensions
             .InstancePerLifetimeScope()
             .As<IMagicLogger>();
 
+        containerBuilder
+            .RegisterType<DebuggingObserver>()
+            .InstancePerLifetimeScope()
+            .As<IObserver>();
+
         return containerBuilder;
     }
 
@@ -163,12 +168,6 @@ internal static class AutofacExtensions
             .Register(_ => RandomGenerator.Default)
             .InstancePerLifetimeScope()
             .As<IRandomGenerator>();
-
-        containerBuilder
-            .RegisterDecorator<RoundJudge.LoggingDecorator, IRoundJudge>();
-
-        containerBuilder
-            .RegisterDecorator<RoundJudge.DebuggingDecorator, IRoundJudge>();
 
         containerBuilder
             .RegisterType<RoundSimulator>()

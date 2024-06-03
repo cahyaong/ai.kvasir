@@ -9,7 +9,6 @@
 
 namespace nGratis.AI.Kvasir.Client.Cmd;
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -113,7 +112,6 @@ public class ConsoleMagicLogger : IMagicLogger
     {
         return ConsoleMagicLogger
             .CreateSimpleTable()
-
             .AddRow("Turn ID", tabletop.TurnId.ToString())
             .AddRow("Phase", tabletop.Phase.Humanize(LetterCasing.Title));
     }
@@ -124,7 +122,7 @@ public class ConsoleMagicLogger : IMagicLogger
             .CreateSimpleTable()
             .Expand()
             .AddRow("Life", player.Life.ToString())
-            .AddRow("Status", "Active")
+            .AddRow("Status", tabletop.ActivePlayer == player ? "Active" : "Non-Active")
             .AddRow(
                 "Library",
                 new StringBuilder()

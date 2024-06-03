@@ -15,7 +15,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
-public partial class RoundJudge : IRoundJudge
+public class RoundJudge : IRoundJudge
 {
     // TODO (MUST): Wire up the validation logic for executing combat phase!
 
@@ -23,12 +23,15 @@ public partial class RoundJudge : IRoundJudge
 
     private readonly IJudicialAssistant _judicialAssistant;
 
+    private readonly IObserver _observer;
+
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
-    public RoundJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant)
+    public RoundJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant, IObserver observer)
     {
         this._actionJudge = actionJudge;
         this._judicialAssistant = judicialAssistant;
+        this._observer = observer;
 
         this._phaseHandlerByPhaseLookup = new Dictionary<Phase, Func<ITabletop, ExecutionResult>>
         {
@@ -40,7 +43,10 @@ public partial class RoundJudge : IRoundJudge
         };
     }
 
-    public static RoundJudge Unknown { get; } = new(ActionJudge.Unknown, JudicialAssistant.Unknown);
+    public static RoundJudge Unknown { get; } = new(
+        ActionJudge.Unknown,
+        JudicialAssistant.Unknown,
+        NoopObserver.Instance);
 
     public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
     {
@@ -58,6 +64,7 @@ public partial class RoundJudge : IRoundJudge
     public ExecutionResult ExecuteNextPhase(ITabletop tabletop)
     {
         tabletop.Phase = tabletop.Phase.Next();
+        this._observer.OnPhaseChanged(tabletop);
 
         if (!this._phaseHandlerByPhaseLookup.TryGetValue(tabletop.Phase, out var handlePhase))
         {
