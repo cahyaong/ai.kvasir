@@ -196,8 +196,8 @@ public class RoundJudge : IRoundJudge
     {
         var executionResult = ExecutionResult.Successful;
 
-        tabletop.AttackingDecision = AttackingDecision.None;
-        tabletop.BlockingDecision = BlockingDecision.None;
+        tabletop.ActivePlayer.AttackingDecision = AttackingDecision.None;
+        tabletop.NonActivePlayer.BlockingDecision = BlockingDecision.None;
 
         executionResult = this.ExecuteDeclaringAttackerStep(tabletop);
 
@@ -210,13 +210,13 @@ public class RoundJudge : IRoundJudge
         // attacker isn’t a cost; attacking simply causes creatures to become tapped.
 
         tabletop
-            .AttackingDecision.AttackingPermanents
+            .ActivePlayer.AttackingDecision.AttackingPermanents
             .ForEach(attacker => attacker.IsTapped = true);
 
         // RX-508.8 — If no creatures are declared as attackers or put onto the battlefield attacking, skip the declare
         // blockers and combat damage steps.
 
-        if (tabletop.AttackingDecision != AttackingDecision.None)
+        if (tabletop.ActivePlayer.AttackingDecision != AttackingDecision.None)
         {
             executionResult = this.ExecuteDeclaringBlockersStep(tabletop);
 
@@ -248,7 +248,7 @@ public class RoundJudge : IRoundJudge
 
         // TODO (SHOULD): Remove all invalid attacking creatures, and continue with the valid ones!
 
-        tabletop.AttackingDecision = !validationResult.HasError
+        tabletop.ActivePlayer.AttackingDecision = !validationResult.HasError
             ? attackingDecision
             : AttackingDecision.None;
 
@@ -257,7 +257,7 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteDeclaringBlockersStep(ITabletop tabletop)
     {
-        if (tabletop.AttackingDecision == AttackingDecision.None)
+        if (tabletop.ActivePlayer.AttackingDecision == AttackingDecision.None)
         {
             return ExecutionResult.Successful;
         }
@@ -272,7 +272,7 @@ public class RoundJudge : IRoundJudge
 
         // TODO (SHOULD): Remove all invalid blocking creatures, and continue with the valid ones!
 
-        tabletop.BlockingDecision = !validationResult.HasError
+        tabletop.NonActivePlayer.BlockingDecision = !validationResult.HasError
             ? blockingDecision
             : BlockingDecision.None;
 
@@ -281,17 +281,19 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteResolvingCombatDamageStep(ITabletop tabletop)
     {
-        if (tabletop.AttackingDecision == AttackingDecision.None)
+        if (tabletop.ActivePlayer.AttackingDecision == AttackingDecision.None)
         {
             return ExecutionResult.Successful;
         }
 
         var combatByAttackingPermanentLookup = tabletop
-            .BlockingDecision.Combats
-            .Where(combat => tabletop.AttackingDecision.AttackingPermanents.Contains(combat.AttackingPermanent))
+            .NonActivePlayer.BlockingDecision.Combats
+            .Where(combat => tabletop
+                .ActivePlayer.AttackingDecision.AttackingPermanents
+                .Contains(combat.AttackingPermanent))
             .ToDictionary(combat => combat.AttackingPermanent);
 
-        foreach (var attackingPermanent in tabletop.AttackingDecision.AttackingPermanents)
+        foreach (var attackingPermanent in tabletop.ActivePlayer.AttackingDecision.AttackingPermanents)
         {
             var attackingCreature = attackingPermanent.ToProxyCreature();
 
@@ -361,7 +363,6 @@ public class RoundJudge : IRoundJudge
 
         // RX-402.2. Each player has a maximum hand size, which is normally seven cards. A player may have any
         // number of cards in their hand, but as part of their cleanup step, the player must discard excess cards
-        //
         // down to the maximum hand size.
 
         // RX-514.1. First, if the active player’s hand contains more cards than their maximum hand size (normally

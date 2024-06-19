@@ -31,10 +31,6 @@ public interface ITabletop
 
     IPlayer PrioritizedPlayer { get; set; }
 
-    IAttackingDecision AttackingDecision { get; set; }
-
-    IBlockingDecision BlockingDecision { get; set; }
-
     bool IsFirstTurn { get; }
 
     int PlayedLandCount { get; set; }

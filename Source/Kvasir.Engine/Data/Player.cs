@@ -48,6 +48,8 @@ public class Player : IPlayer
             .Build();
 
         this.Life = 0;
+        this.AttackingDecision = Engine.AttackingDecision.Unknown;
+        this.BlockingDecision = Engine.BlockingDecision.Unknown;
     }
 
     public static IPlayer Unknown => UnknownPlayer.Instance;
@@ -71,6 +73,10 @@ public class Player : IPlayer
     public IManaPool ManaPool { get; }
 
     public int Life { get; set; }
+
+    public IAttackingDecision AttackingDecision { get; set; }
+
+    public IBlockingDecision BlockingDecision { get; set; }
 }
 
 internal sealed class UnknownPlayer : IPlayer
@@ -102,6 +108,18 @@ internal sealed class UnknownPlayer : IPlayer
         get => throw new NotSupportedException("Getting life is not allowed!");
         set => throw new NotSupportedException("Setting life is not allowed!");
     }
+
+    public IAttackingDecision AttackingDecision
+    {
+        get => throw new NotSupportedException("Getting attacking decision is not allowed!");
+        set => throw new NotSupportedException("Setting attacking decision is not allowed!");
+    }
+
+    public IBlockingDecision BlockingDecision
+    {
+        get => throw new NotSupportedException("Getting blocking decision is not allowed!");
+        set => throw new NotSupportedException("Setting blocking decision is not allowed!");
+    }
 }
 
 internal sealed class NonePlayer : IPlayer
@@ -132,5 +150,17 @@ internal sealed class NonePlayer : IPlayer
     {
         get => -42;
         set => throw new NotSupportedException("Setting life is not allowed!");
+    }
+
+    public IAttackingDecision AttackingDecision
+    {
+        get => Engine.AttackingDecision.None;
+        set => throw new NotSupportedException("Setting attacking decision is not allowed!");
+    }
+
+    public IBlockingDecision BlockingDecision
+    {
+        get => Engine.BlockingDecision.None;
+        set => throw new NotSupportedException("Setting blocking decision is not allowed!");
     }
 }

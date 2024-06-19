@@ -28,4 +28,8 @@ public interface IPlayer
     IManaPool ManaPool { get; }
 
     int Life { get; set; }
+
+    IAttackingDecision AttackingDecision { get; set; }
+
+    IBlockingDecision BlockingDecision { get; set; }
 }

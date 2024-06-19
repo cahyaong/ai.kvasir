@@ -61,7 +61,7 @@ public class RandomStrategy : IStrategy
 
         var combats = new List<Combat>();
 
-        foreach (var attackingPermanent in tabletop.AttackingDecision.AttackingPermanents)
+        foreach (var attackingPermanent in tabletop.ActivePlayer.AttackingDecision.AttackingPermanents)
         {
             var shouldBlock = this._randomGenerator.RollDice(20) <= 10;
 
