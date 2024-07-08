@@ -13,7 +13,7 @@ public interface IAction : IDiagnostic
 {
     ActionKind Kind { get; }
 
-    IPlayer Owner { get; set; }
+    IPlayer OwningPlayer { get; set; }
 
     ICost Cost { get; }
 

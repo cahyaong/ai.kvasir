@@ -45,13 +45,13 @@ public static partial class StubBuilder
     public static IZone<IPermanent> AddDefaultCreaturePermanent(
         this IZone<IPermanent> zone,
         string name,
-        IPlayer owner,
-        IPlayer controller,
+        IPlayer owningPlayer,
+        IPlayer controllingPlayer,
         bool isTapped)
     {
         var permanent = StubBuilder.CreateCreaturePermanent(name, 1, 1);
-        permanent.Owner = owner;
-        permanent.Controller = controller;
+        permanent.OwningPlayer = owningPlayer;
+        permanent.ControllingPlayer = controllingPlayer;
         permanent.IsTapped = isTapped;
 
         zone.AddToTop(permanent);

@@ -9,8 +9,6 @@
 
 namespace nGratis.AI.Kvasir.Contract;
 
-using nGratis.Cop.Olympus.Contract;
-
 public static partial class DefinedBlob
 {
     public record Player

@@ -22,19 +22,7 @@ public class AttackingDecision : IAttackingDecision
 
     public static IAttackingDecision Unknown => UnknownAttackingDecision.Instance;
 
-    public static IAttackingDecision None { get; } = new AttackingDecision();
+    public static IAttackingDecision None => NoneAttackingDecision.Instance;
 
     public IReadOnlyCollection<IPermanent> AttackingPermanents { get; init; }
-}
-
-internal sealed class UnknownAttackingDecision : IAttackingDecision
-{
-    private UnknownAttackingDecision()
-    {
-    }
-
-    internal static UnknownAttackingDecision Instance { get; } = new();
-
-    public IReadOnlyCollection<IPermanent> AttackingPermanents =>
-        throw new NotSupportedException("Getting attacking permanents is not allowed!");
 }

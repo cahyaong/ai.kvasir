@@ -7,11 +7,10 @@
 // <creation_timestamp>Saturday, March 18, 2023 11:57:24 PM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
+namespace nGratis.AI.Kvasir.Engine;
+
 using System.Collections.Generic;
 using nGratis.AI.Kvasir.Contract;
-
-namespace nGratis.AI.Kvasir.Engine;
 
 public class Parameter : IParameter
 {
@@ -54,14 +53,12 @@ public class Parameter : IParameter
 
         internal Builder WithValue(ParameterKey key, object value)
         {
-            if (this._parameter._valueByKeyLookup.ContainsKey(key))
+            if (!this._parameter._valueByKeyLookup.TryAdd(key, value))
             {
                 throw new KvasirException(
                     "Parameter value has been defined!",
                     ("Key", key));
             }
-
-            this._parameter._valueByKeyLookup.Add(key, value);
 
             return this;
         }
@@ -71,27 +68,4 @@ public class Parameter : IParameter
             return this._parameter;
         }
     }
-}
-
-internal sealed class UnknownParameter : IParameter
-{
-    private UnknownParameter()
-    {
-    }
-
-    public static UnknownParameter Instance { get; } = new();
-
-    public TValue FindValue<TValue>(ParameterKey _) =>
-        throw new NotSupportedException("Finding value is not allowed!");
-}
-
-internal sealed class NoneParameter : IParameter
-{
-    private NoneParameter()
-    {
-    }
-
-    public static NoneParameter Instance { get; } = new();
-
-    public TValue FindValue<TValue>(ParameterKey _) => default!;
 }

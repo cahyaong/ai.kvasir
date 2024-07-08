@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ProcessingCardExecution.cs" company="nGratis">
+// <copyright file="ProcessingCardJob.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -21,7 +21,7 @@ using nGratis.AI.Kvasir.Core.Parser;
 using nGratis.Cop.Olympus.Contract;
 using DefinedText = nGratis.AI.Kvasir.Contract.DefinedText;
 
-internal class ProcessingCardExecution : IExecution
+internal class ProcessingCardJob : IJob
 {
     private readonly IUnprocessedMagicRepository _unprocessedRepository;
 
@@ -31,7 +31,7 @@ internal class ProcessingCardExecution : IExecution
 
     private readonly ILogger _logger;
 
-    public ProcessingCardExecution(
+    public ProcessingCardJob(
         IUnprocessedMagicRepository unprocessedRepository,
         IProcessedMagicRepository processedRepository,
         IMagicCardProcessor cardProcessor,
@@ -43,19 +43,19 @@ internal class ProcessingCardExecution : IExecution
         this._logger = logger;
     }
 
-    public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
+    public async Task<JobResult> PerformAsync(JobParameter parameter)
     {
         var unparsedCardSet = await this._unprocessedRepository.GetCardSetAsync(parameter.GetValue("CardSet.Name"));
         var unparsedCards = await this._unprocessedRepository.GetCardsAsync(unparsedCardSet);
 
         var processingResults = unparsedCards
-            .Select(unparsedCard => this._cardProcessor.Process(unparsedCard))
+            .Select(this._cardProcessor.Process)
             .ToArray();
 
         processingResults
             .Where(result => result.IsValid)
             .Select(result => result.GetValue<DefinedBlob.Card>())
-            .ForEachAsync(card => this._processedRepository.SaveCardAsync(card));
+            .ForEachAsync(this._processedRepository.SaveCardAsync);
 
         this._logger.LogInfo("Saved valid cards...");
 
@@ -81,7 +81,7 @@ internal class ProcessingCardExecution : IExecution
 
         this._logger.LogWarning($"Found invalid cards!{Environment.NewLine}{summaryContent}");
 
-        return ExecutionResult.Successful;
+        return JobResult.Successful;
     }
 
     internal sealed class SummaryPrinter : IDisposable

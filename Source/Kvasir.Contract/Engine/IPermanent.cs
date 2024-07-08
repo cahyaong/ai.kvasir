@@ -13,9 +13,9 @@ public interface IPermanent : IDiagnostic
 {
     ICard Card { get; }
 
-    IPlayer Owner { get; set; }
+    IPlayer OwningPlayer { get; set; }
 
-    IPlayer Controller { get; set; }
+    IPlayer ControllingPlayer { get; set; }
 
     public bool IsTapped { get; set; }
 

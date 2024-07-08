@@ -35,10 +35,10 @@ public class ActionJudge : IActionJudge
 
         if (validationResult.HasError)
         {
-            var owner = action.Owner;
+            var owningPlayer = action.OwningPlayer;
 
             action = Action.Pass();
-            action.Owner = owner;
+            action.OwningPlayer = owningPlayer;
             costHandler = this._executionManager.FindCostHandler(action.Cost);
         }
         else if (actionHandler.IsSpecialAction)
@@ -84,7 +84,7 @@ public class ActionJudge : IActionJudge
         costHandler.Resolve(tabletop, action.Cost, action.Target);
         actionHandler.Resolve(tabletop, action);
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.SuccessfulWithoutWinner;
     }
 
     private static bool ShouldResolveStack(ITabletop tabletop)

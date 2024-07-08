@@ -78,8 +78,8 @@ public static partial class StubBuilder
         int toughness)
     {
         var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
-        permanent.Owner = tabletop.ActivePlayer;
-        permanent.Controller = tabletop.ActivePlayer;
+        permanent.OwningPlayer = tabletop.ActivePlayer;
+        permanent.ControllingPlayer = tabletop.ActivePlayer;
 
         return permanent;
     }
@@ -91,8 +91,8 @@ public static partial class StubBuilder
         int toughness)
     {
         var permanent = StubBuilder.CreateCreaturePermanent(name, power, toughness);
-        permanent.Owner = tabletop.NonActivePlayer;
-        permanent.Controller = tabletop.NonActivePlayer;
+        permanent.OwningPlayer = tabletop.NonActivePlayer;
+        permanent.ControllingPlayer = tabletop.NonActivePlayer;
 
         return permanent;
     }

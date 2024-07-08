@@ -11,6 +11,7 @@ namespace nGratis.AI.Kvasir.Engine;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
@@ -29,9 +30,9 @@ public class ManaBlob : IManaCost, IManaPool
         .Values
         .Sum();
 
-    public IEnumerable<Mana> RequiredManas => this._amountByManaLookup.Keys;
+    public IReadOnlyCollection<Mana> RequiredManas => this._amountByManaLookup.Keys.ToImmutableArray();
 
-    public IEnumerable<Mana> AvailableManas => this._amountByManaLookup.Keys;
+    public IReadOnlyCollection<Mana> AvailableManas => this._amountByManaLookup.Keys.ToImmutableArray();
 
     public int FindAmount(Mana mana)
     {
@@ -208,70 +209,4 @@ public static class ManaCost
 public static class ManaPool
 {
     public static IManaPool Unknown => UnknownManaPool.Instance;
-}
-
-internal sealed class UnknownManaCost : IManaCost
-{
-    private UnknownManaCost()
-    {
-    }
-
-    public static UnknownManaCost Instance { get; } = new();
-
-    public int TotalAmount =>
-        throw new NotSupportedException("Getting total amount is not allowed!");
-
-    public IEnumerable<Mana> RequiredManas =>
-        throw new NotSupportedException("Getting required manas is not allowed!");
-
-    public int FindAmount(Mana _) =>
-        throw new NotSupportedException("Finding amount is not allowed!");
-}
-
-internal sealed class FreeManaCost : IManaCost
-{
-    private FreeManaCost()
-    {
-    }
-
-    public static FreeManaCost Instance { get; } = new();
-
-    public int TotalAmount => 0;
-
-    public IEnumerable<Mana> RequiredManas => Enumerable.Empty<Mana>();
-
-    public int FindAmount(Mana _) => 0;
-}
-
-internal sealed class UnknownManaPool : IManaPool
-{
-    private UnknownManaPool()
-    {
-    }
-
-    public static UnknownManaPool Instance { get; } = new();
-
-    public int TotalAmount =>
-        throw new NotSupportedException("Getting total amount is not allowed!");
-
-    public IEnumerable<Mana> AvailableManas =>
-        throw new NotSupportedException("Getting available manas is not allowed!");
-
-    public int FindAmount(Mana _) =>
-        throw new NotSupportedException("Finding amount is not allowed!");
-
-    public void AddAmount(Mana _, int __) =>
-        throw new NotSupportedException("Adding amount is not allowed!");
-
-    public void AddManaPool(IManaPool _) =>
-        throw new NotSupportedException("Adding mana pool is not allowed!");
-
-    public void RemoveAmount(Mana _, int __) =>
-        throw new NotSupportedException("Removing amount is not allowed!");
-
-    public void RemoveMana(Mana _) =>
-        throw new NotSupportedException("Removing mana is not allowed!");
-
-    public void UpdateAmount(Mana _, int __) =>
-        throw new NotSupportedException("Updating amount is not allowed!");
 }

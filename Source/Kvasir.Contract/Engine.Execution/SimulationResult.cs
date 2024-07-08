@@ -11,7 +11,7 @@ namespace nGratis.AI.Kvasir.Contract;
 
 using System.Collections.Generic;
 
-public class SimulationResult : ExecutionResult
+public class SimulationResult : KvasirResult
 {
     public SimulationResult(ITabletop tabletop, IEnumerable<string> messages)
         : base(messages)

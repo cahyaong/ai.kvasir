@@ -83,7 +83,7 @@ public sealed class InvalidProcessingResult : ProcessingResult
 public abstract class ProcessingResult
 {
     // TODO: Add category to messages, e.g. ability, kind, etc.!
-    // TODO: Refactor this class to extend from <ExecutionResult>!
+    // TODO: Refactor this class to extend from <KvasirResult>!
 
     private readonly List<string> _messages;
 

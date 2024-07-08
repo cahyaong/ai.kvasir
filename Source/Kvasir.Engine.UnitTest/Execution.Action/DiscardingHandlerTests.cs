@@ -156,7 +156,7 @@ public class DiscardingHandlerTests
                 .FindManyFromTop(3)
                 .ToArray());
 
-            discardingAction.Owner = Player.None;
+            discardingAction.OwningPlayer = Player.None;
             discardingAction.Target.Player = tabletop.ActivePlayer;
 
             discardingAction.Parameter = Parameter.Builder
@@ -203,7 +203,7 @@ public class DiscardingHandlerTests
                 .FindManyFromTop(1)
                 .ToArray());
 
-            discardingAction.Owner = Player.None;
+            discardingAction.OwningPlayer = Player.None;
             discardingAction.Target.Player = tabletop.ActivePlayer;
 
             discardingAction.Parameter = Parameter.Builder
@@ -250,7 +250,7 @@ public class DiscardingHandlerTests
                 .FindManyFromTop(5)
                 .ToArray());
 
-            discardingAction.Owner = Player.None;
+            discardingAction.OwningPlayer = Player.None;
             discardingAction.Target.Player = tabletop.ActivePlayer;
 
             discardingAction.Parameter = Parameter.Builder

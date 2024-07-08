@@ -31,37 +31,3 @@ public class Cost : ICost
 
     public IParameter Parameter { get; init; }
 }
-
-internal sealed class UnknownCost : ICost
-{
-    private UnknownCost()
-    {
-    }
-
-    internal static UnknownCost Instance { get; } = new();
-
-    public int Id => -42;
-
-    public string Name => DefinedText.Unknown;
-
-    public CostKind Kind => CostKind.Unknown;
-
-    public IParameter Parameter => Engine.Parameter.Unknown;
-}
-
-internal sealed class NoneCost : ICost
-{
-    private NoneCost()
-    {
-    }
-
-    public static NoneCost Instance { get; } = new();
-
-    public int Id => -42;
-
-    public string Name => DefinedText.None;
-
-    public CostKind Kind => CostKind.MarkingNone;
-
-    public IParameter Parameter => Engine.Parameter.None;
-}

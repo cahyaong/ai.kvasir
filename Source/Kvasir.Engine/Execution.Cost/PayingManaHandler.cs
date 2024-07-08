@@ -76,7 +76,7 @@ public class PayingManaHandler : BaseCostHandler
         tabletop
             .Battlefield
             .FindAll()
-            .Where(permanent => permanent.Controller == target.Player)
+            .Where(permanent => permanent.ControllingPlayer == target.Player)
             .Where(permanent => !permanent.IsTapped)
             .Where(permanent => permanent.HasPart<CharacteristicPart>())
             .Select(permanent => new

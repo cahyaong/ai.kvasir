@@ -13,7 +13,6 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using CommandLine;
-using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
 public class Program
@@ -39,22 +38,22 @@ public class Program
 
     private static void ProcessCard(ProcessingCardOption option)
     {
-        var processingExecution = Program.AppBootstrapper.CreateExecution<ProcessingCardExecution>();
+        var processingJob = Program.AppBootstrapper.CreateJob<ProcessingCardJob>();
 
-        var processingParameter = ExecutionParameter.Builder
+        var processingParameter = JobParameter.Builder
             .Create()
             .WithEntry("CardSet.Name", option.CardSetName)
             .Build();
 
-        Task.Run(async () => await processingExecution.ExecuteAsync(processingParameter))
+        Task.Run(async () => await processingJob.PerformAsync(processingParameter))
             .Wait();
     }
 
     private static void PlayGame(PlayingGameOption option)
     {
-        var playingExecution = Program.AppBootstrapper.CreateExecution<PlayingGameExecution>();
+        var playingJob = Program.AppBootstrapper.CreateJob<PlayingGameJob>();
 
-        Task.Run(async () => await playingExecution.ExecuteAsync(ExecutionParameter.None))
+        Task.Run(async () => await playingJob.PerformAsync(JobParameter.None))
             .Wait();
     }
 }

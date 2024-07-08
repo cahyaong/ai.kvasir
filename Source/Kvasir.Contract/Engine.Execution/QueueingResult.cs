@@ -11,7 +11,7 @@ namespace nGratis.AI.Kvasir.Contract;
 
 using System.Linq;
 
-public class QueueingResult : ExecutionResult
+public class QueueingResult : KvasirResult
 {
     private QueueingResult()
     {

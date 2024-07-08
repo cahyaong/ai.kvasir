@@ -42,8 +42,8 @@ internal class AppBootstrapper : IDisposable
         this.Dispose(false);
     }
 
-    public IExecution CreateExecution<T>()
-        where T : class, IExecution
+    public IJob CreateJob<T>()
+        where T : class, IJob
     {
         return this._container.Resolve<T>();
     }
@@ -151,7 +151,7 @@ internal static class AutofacExtensions
 
         containerBuilder
             .RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-            .Where(type => typeof(IExecution).IsAssignableFrom(type))
+            .Where(type => typeof(IJob).IsAssignableFrom(type))
             .InstancePerLifetimeScope();
 
         return containerBuilder;

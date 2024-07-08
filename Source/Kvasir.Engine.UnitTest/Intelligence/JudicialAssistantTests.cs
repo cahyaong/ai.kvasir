@@ -14,7 +14,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
-using Moq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Framework;
 using Xunit;
@@ -100,8 +99,8 @@ public class JudicialAssistantTests
                     Name = "[_MOCK_LAND_]",
                     Kind = CardKind.Land
                 },
-                Owner = tabletop.ActivePlayer,
-                Controller = tabletop.ActivePlayer
+                OwningPlayer = tabletop.ActivePlayer,
+                ControllingPlayer = tabletop.ActivePlayer
             });
 
             var mockExecutionManager = MockBuilder.CreateMock<IExecutionManager>();
@@ -221,8 +220,8 @@ public class JudicialAssistantTests
                     .FindAll()
                     .ForEach(card =>
                     {
-                        card.Owner = this.Tabletop.ActivePlayer;
-                        card.Controller = this.Tabletop.ActivePlayer;
+                        card.OwningPlayer = this.Tabletop.ActivePlayer;
+                        card.ControllingPlayer = this.Tabletop.ActivePlayer;
                     });
 
                 return this;
@@ -235,8 +234,8 @@ public class JudicialAssistantTests
                     .FindAll()
                     .ForEach(card =>
                     {
-                        card.Owner = this.Tabletop.NonActivePlayer;
-                        card.Controller = this.Tabletop.NonActivePlayer;
+                        card.OwningPlayer = this.Tabletop.NonActivePlayer;
+                        card.ControllingPlayer = this.Tabletop.NonActivePlayer;
                     });
 
                 return this;

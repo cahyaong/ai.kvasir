@@ -100,7 +100,7 @@ public class RoundJudge : IRoundJudge
 
             this._judicialAssistant
                 .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
-                .Where(creature => creature.Permanent.Controller == tabletop.ActivePlayer)
+                .Where(creature => creature.Permanent.ControllingPlayer == tabletop.ActivePlayer)
                 .ForEach(creature => creature.Permanent.IsTapped = false);
 
             // RX-504.1 — First, the active player draws a card. This turn-based action doesn’t use the stack.
@@ -114,7 +114,7 @@ public class RoundJudge : IRoundJudge
 
         tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.SuccessfulWithoutWinner;
     }
 
     private ExecutionResult ExecuteMainPhase(ITabletop tabletop)
@@ -164,7 +164,7 @@ public class RoundJudge : IRoundJudge
                     ? selectedPlayer.Strategy.PerformPrioritizedAction(tabletop)
                     : selectedPlayer.Strategy.PerformNonPrioritizedAction(tabletop);
 
-                performedAction.Owner = selectedPlayer;
+                performedAction.OwningPlayer = selectedPlayer;
 
                 if (performedAction.Target != Target.None)
                 {
@@ -194,7 +194,7 @@ public class RoundJudge : IRoundJudge
 
     private ExecutionResult ExecuteCombatPhase(ITabletop tabletop)
     {
-        var executionResult = ExecutionResult.Successful;
+        var executionResult = ExecutionResult.SuccessfulWithoutWinner;
 
         tabletop.ActivePlayer.AttackingDecision = AttackingDecision.None;
         tabletop.NonActivePlayer.BlockingDecision = BlockingDecision.None;
@@ -233,7 +233,7 @@ public class RoundJudge : IRoundJudge
             }
         }
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.SuccessfulWithoutWinner;
     }
 
     private ExecutionResult ExecuteDeclaringAttackerStep(ITabletop tabletop)
@@ -252,14 +252,14 @@ public class RoundJudge : IRoundJudge
             ? attackingDecision
             : AttackingDecision.None;
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.SuccessfulWithoutWinner;
     }
 
     private ExecutionResult ExecuteDeclaringBlockersStep(ITabletop tabletop)
     {
         if (tabletop.ActivePlayer.AttackingDecision == AttackingDecision.None)
         {
-            return ExecutionResult.Successful;
+            return ExecutionResult.SuccessfulWithoutWinner;
         }
 
         // TODO (SHOULD): Create a copy of tabletop with appropriate visibility when passing to strategy!
@@ -276,14 +276,14 @@ public class RoundJudge : IRoundJudge
             ? blockingDecision
             : BlockingDecision.None;
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.SuccessfulWithoutWinner;
     }
 
     private ExecutionResult ExecuteResolvingCombatDamageStep(ITabletop tabletop)
     {
         if (tabletop.ActivePlayer.AttackingDecision == AttackingDecision.None)
         {
-            return ExecutionResult.Successful;
+            return ExecutionResult.SuccessfulWithoutWinner;
         }
 
         var combatByAttackingPermanentLookup = tabletop
@@ -349,12 +349,12 @@ public class RoundJudge : IRoundJudge
                 blockingCreature.Damage = 0;
             });
 
-        return ExecutionResult.Successful;
+        return ExecutionResult.SuccessfulWithoutWinner;
     }
 
     private ExecutionResult ExecuteEndingPhase(ITabletop tabletop)
     {
-        var executionResult = ExecutionResult.Successful;
+        var executionResult = ExecutionResult.SuccessfulWithoutWinner;
 
         // RX-117.3a — ...Players usually don’t get priority during the cleanup step (see rule 514.3).
         // RX-513.1 — ...Once it begins, the active player gets priority...
@@ -380,7 +380,7 @@ public class RoundJudge : IRoundJudge
                 .ActivePlayer.Strategy
                 .PerformRequiredAction(tabletop, ActionKind.Discarding, parameter);
 
-            action.Owner = Player.None;
+            action.OwningPlayer = Player.None;
             action.Target.Player = tabletop.ActivePlayer;
             action.Parameter = parameter;
 

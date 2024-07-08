@@ -22,19 +22,7 @@ public class BlockingDecision : IBlockingDecision
 
     public static IBlockingDecision Unknown => UnknownBlockingDecision.Instance;
 
-    public static IBlockingDecision None { get; } = new BlockingDecision();
+    public static IBlockingDecision None => NoneBlockingDecision.Instance;
 
     public IReadOnlyCollection<ICombat> Combats { get; init; }
-}
-
-internal sealed class UnknownBlockingDecision : IBlockingDecision
-{
-    private UnknownBlockingDecision()
-    {
-    }
-
-    internal static UnknownBlockingDecision Instance { get; } = new();
-
-    public IReadOnlyCollection<ICombat> Combats =>
-        throw new NotSupportedException("Getting combats is not allowed!");
 }

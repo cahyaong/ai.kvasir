@@ -55,8 +55,8 @@ public static class DataExtensions
     public static IPermanent AsPermanent(this ICard card, IPlayer player)
     {
         var permanent = card.AsPermanent();
-        permanent.Owner = player;
-        permanent.Controller = player;
+        permanent.OwningPlayer = player;
+        permanent.ControllingPlayer = player;
 
         return permanent;
     }

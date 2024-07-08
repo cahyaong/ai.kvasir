@@ -14,7 +14,7 @@ using Antlr4.Runtime;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-public class ParsingResult : ExecutionResult
+public class ParsingResult : KvasirResult
 {
     protected ParsingResult(params string[] messages)
         : base(messages)

@@ -56,7 +56,7 @@ public static partial class StubBuilder
         };
     }
 
-    public static IAction CreateStubAction(string name, IPlayer owner)
+    public static IAction CreateStubAction(string name, IPlayer owningPlayer)
     {
         var card = new Card
         {
@@ -65,7 +65,7 @@ public static partial class StubBuilder
         };
 
         var action = Action.PlayStub(card);
-        action.Owner = owner;
+        action.OwningPlayer = owningPlayer;
 
         return action;
     }

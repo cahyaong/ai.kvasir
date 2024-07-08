@@ -9,7 +9,6 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using System.Diagnostics;
 using nGratis.AI.Kvasir.Contract;
 
@@ -19,7 +18,7 @@ public class Action : IAction
     private Action()
     {
         this.Kind = ActionKind.Unknown;
-        this.Owner = Player.Unknown;
+        this.OwningPlayer = Player.Unknown;
         this.Cost = Engine.Cost.Unknown;
         this.Target = Engine.Target.Unknown;
         this.Parameter = Engine.Parameter.Unknown;
@@ -33,7 +32,7 @@ public class Action : IAction
 
     public ActionKind Kind { get; private init; }
 
-    public IPlayer Owner { get; set; }
+    public IPlayer OwningPlayer { get; set; }
 
     public ICost Cost { get; private init; }
 
@@ -62,7 +61,7 @@ public class Action : IAction
             Cost = card.Cost,
             Target = new Target
             {
-                Cards = new[] { card }
+                Cards = [card]
             },
             Parameter = Engine.Parameter.None
         };
@@ -76,8 +75,8 @@ public class Action : IAction
             Cost = ability.Cost,
             Target = new Target
             {
-                Player = permanent.Controller,
-                Permanents = new[] { permanent }
+                Player = permanent.ControllingPlayer,
+                Permanents = [permanent]
             },
             Parameter = Engine.Parameter.None
         };
@@ -104,40 +103,9 @@ public class Action : IAction
             Cost = card.Cost,
             Target = new Target
             {
-                Cards = new[] { card }
+                Cards = [card]
             },
             Parameter = Engine.Parameter.None
         };
-    }
-}
-
-internal sealed class UnknownAction : IAction
-{
-    private UnknownAction()
-    {
-    }
-
-    internal static UnknownAction Instance { get; } = new();
-
-    public int Id => -42;
-
-    public string Name => DefinedText.Unknown;
-
-    public ActionKind Kind => ActionKind.Unknown;
-
-    public IPlayer Owner
-    {
-        get => Player.Unknown;
-        set => throw new NotSupportedException("Setting owner is not allowed!");
-    }
-
-    public ICost Cost => Engine.Cost.Unknown;
-
-    public ITarget Target => Engine.Target.Unknown;
-
-    public IParameter Parameter
-    {
-        get => Engine.Parameter.Unknown;
-        set => throw new NotSupportedException("Setting parameter is not allowed!");
     }
 }

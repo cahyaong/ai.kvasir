@@ -15,7 +15,7 @@ public interface IManaPool
 {
     int TotalAmount { get; }
 
-    IEnumerable<Mana> AvailableManas { get; }
+    IReadOnlyCollection<Mana> AvailableManas { get; }
 
     int FindAmount(Mana mana);
 

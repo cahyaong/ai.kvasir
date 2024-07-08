@@ -132,7 +132,7 @@ public class ConsoleMagicLogger : IMagicLogger
             .AddRow("Hand", player.Hand.Quantity.ToString())
             .AddRow(
                 "Battlefield",
-                tabletop.Battlefield.FindAll().Count(permanent => permanent.Controller == player).ToString())
+                tabletop.Battlefield.FindAll().Count(permanent => permanent.ControllingPlayer == player).ToString())
             .AddRow("Graveyard", player.Graveyard.Quantity.ToString());
     }
 

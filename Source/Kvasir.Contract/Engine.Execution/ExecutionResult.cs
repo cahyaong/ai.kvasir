@@ -4,7 +4,7 @@
 //  See the LICENSE file in the project root for more information.
 // </copyright>
 // <author>Cahya Ong — cahya.ong@gmail.com</author>
-// <creation_timestamp>Thursday, July 23, 2020 5:44:12 AM UTC</creation_timestamp>
+// <creation_timestamp>Saturday, June 29, 2024 6:16:57 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract;
@@ -13,48 +13,61 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
-public class ExecutionResult
+public class ExecutionResult : KvasirResult
 {
-    protected ExecutionResult()
+    private ExecutionResult()
     {
-        this.Messages = Enumerable.Empty<string>();
+        this.WinningPlayer = UnknownPlayer.Instance;
     }
 
-    protected ExecutionResult(IEnumerable<string> messages)
+    public static ExecutionResult SuccessfulWithoutWinner { get; } = new()
     {
-        this.Messages = messages;
+        WinningPlayer = NonePlayer.Instance
+    };
+
+    public bool IsTerminal =>
+        this.HasError ||
+        this.WinningPlayer.Kind != PlayerKind.None;
+
+    public IPlayer WinningPlayer { get; init; }
+
+    public static ExecutionResult Create(IPlayer winningPlayer)
+    {
+        return new ExecutionResult
+        {
+            WinningPlayer = winningPlayer,
+            Messages = []
+        };
     }
 
-    public static ExecutionResult Successful { get; } = new();
-
-    public bool HasError =>
-        this.Messages.Any() ||
-        this.HasErrorCore();
-
-    public IEnumerable<string> Messages { get; protected init; }
-
-    public static ExecutionResult Create(IEnumerable<string> messages)
+    public new static ExecutionResult Create(IEnumerable<string> messages)
     {
-        var validMessages = messages
-            .Where(message => !string.IsNullOrEmpty(message))
+        return new ExecutionResult
+        {
+            WinningPlayer = NonePlayer.Instance,
+            Messages = messages
+        };
+    }
+
+    public static ExecutionResult Create(IReadOnlyCollection<ExecutionResult> executionResults)
+    {
+        var winningPlayers = executionResults
+            .Select(executionResult => executionResult.WinningPlayer)
+            .Where(winningPlayer => winningPlayer != NonePlayer.Instance)
+            .Distinct()
             .ToImmutableArray();
 
-        return validMessages.Any()
-            ? new ExecutionResult(validMessages)
-            : ExecutionResult.Successful;
+        if (winningPlayers.Length > 1)
+        {
+            throw new KvasirException("Execution results must have at most single distinct winning player!");
+        }
+
+        return new ExecutionResult
+        {
+            WinningPlayer = winningPlayers
+                .SingleOrDefault() ?? NonePlayer.Instance,
+            Messages = executionResults
+                .SelectMany(executionResult => executionResult.Messages)
+        };
     }
-
-    public static ExecutionResult Create(IEnumerable<ExecutionResult> executionResults)
-    {
-        var validMessages = executionResults
-            .Where(result => result.HasError)
-            .SelectMany(result => result.Messages)
-            .ToImmutableArray();
-
-        return validMessages.Any()
-            ? new ExecutionResult(validMessages)
-            : ExecutionResult.Successful;
-    }
-
-    protected virtual bool HasErrorCore() => false;
 }

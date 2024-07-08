@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExecutionParameter.cs" company="nGratis">
+// <copyright file="JobParameter.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -7,22 +7,23 @@
 // <creation_timestamp>Tuesday, April 7, 2020 6:39:59 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace nGratis.AI.Kvasir.Contract;
+namespace nGratis.AI.Kvasir.Client.Cmd;
 
 using System;
 using System.Collections.Generic;
+using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
 
-public class ExecutionParameter
+public class JobParameter
 {
     private readonly Dictionary<string, object> _entries;
 
-    private ExecutionParameter()
+    private JobParameter()
     {
         this._entries = new Dictionary<string, object>();
     }
 
-    public static ExecutionParameter None { get; } = new();
+    public static JobParameter None { get; } = new();
 
     public string GetValue(string name)
     {
@@ -45,11 +46,11 @@ public class ExecutionParameter
 
     public class Builder
     {
-        private readonly ExecutionParameter _executionParameter;
+        private readonly JobParameter _jobParameter;
 
         private Builder()
         {
-            this._executionParameter = new ExecutionParameter();
+            this._jobParameter = new JobParameter();
         }
 
         public static Builder Create()
@@ -64,14 +65,14 @@ public class ExecutionParameter
                 .Require(name, nameof(name))
                 .Is.Not.Empty();
 
-            this._executionParameter._entries[name] = value;
+            this._jobParameter._entries[name] = value;
 
             return this;
         }
 
-        public ExecutionParameter Build()
+        public JobParameter Build()
         {
-            return this._executionParameter;
+            return this._jobParameter;
         }
     }
 }

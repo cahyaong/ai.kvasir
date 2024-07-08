@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayingGameExecution.cs" company="nGratis">
+// <copyright file="PlayingGameJob.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,16 +12,16 @@ namespace nGratis.AI.Kvasir.Client.Cmd;
 using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 
-public class PlayingGameExecution : IExecution
+public class PlayingGameJob : IJob
 {
     private readonly IRoundSimulator _roundSimulator;
 
-    public PlayingGameExecution(IRoundSimulator roundSimulator)
+    public PlayingGameJob(IRoundSimulator roundSimulator)
     {
         this._roundSimulator = roundSimulator;
     }
 
-    public async Task<ExecutionResult> ExecuteAsync(ExecutionParameter parameter)
+    public async Task<JobResult> PerformAsync(JobParameter parameter)
     {
         var definedPlayers = new[]
         {
@@ -48,6 +48,6 @@ public class PlayingGameExecution : IExecution
 
         var simulationResult = this._roundSimulator.Simulate(simulationConfig);
 
-        return await Task.FromResult(simulationResult);
+        return await Task.FromResult(JobResult.Create(simulationResult));
     }
 }

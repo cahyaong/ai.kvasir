@@ -49,12 +49,12 @@ public class JudicialAssistant : IJudicialAssistant
             CreatureModifier.None => filteredCreatures,
 
             CreatureModifier.CanAttack => filteredCreatures
-                .Where(creature => creature.Permanent.Controller == player)
+                .Where(creature => creature.Permanent.ControllingPlayer == player)
                 .Where(creature => !creature.Permanent.IsTapped)
                 .Where(creature => !creature.HasSummoningSickness),
 
             CreatureModifier.CanBlock => filteredCreatures
-                .Where(creature => creature.Permanent.Controller == player)
+                .Where(creature => creature.Permanent.ControllingPlayer == player)
                 .Where(creature => !creature.Permanent.IsTapped),
 
             _ => Enumerable.Empty<Creature>()
@@ -71,7 +71,7 @@ public class JudicialAssistant : IJudicialAssistant
             .Battlefield
             .FindAll()
             .Where(permanent => permanent.Card.Kind == CardKind.Land)
-            .Where(permanent => permanent.Controller == player)
+            .Where(permanent => permanent.ControllingPlayer == player)
             .Select(permanent => permanent.ToProxyLand())
             .ToImmutableArray();
     }
@@ -107,7 +107,7 @@ public class JudicialAssistant : IJudicialAssistant
         var canPlayNonLand = tabletop
             .Stack
             .FindAll()
-            .All(action => action.Owner != player);
+            .All(action => action.OwningPlayer != player);
 
         if (canPlayNonLand)
         {
@@ -136,7 +136,7 @@ public class JudicialAssistant : IJudicialAssistant
         tabletop
             .Battlefield
             .FindAll()
-            .Where(permanent => permanent.Controller == player)
+            .Where(permanent => permanent.ControllingPlayer == player)
             .Where(permanent => !permanent.IsTapped)
             .Where(permanent => permanent.HasPart<CharacteristicPart>())
             .SelectMany(permanent => permanent

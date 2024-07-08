@@ -9,7 +9,6 @@
 
 namespace nGratis.AI.Kvasir.Engine;
 
-using System;
 using nGratis.AI.Kvasir.Contract;
 
 public static class Strategy
@@ -19,37 +18,13 @@ public static class Strategy
     public static IStrategy Noop => NoopStrategy.Instance;
 }
 
-internal sealed class UnknownStrategy : IStrategy
-{
-    private UnknownStrategy()
-    {
-    }
-
-    internal static UnknownStrategy Instance { get; } = new();
-
-    public IAttackingDecision DeclareAttacker(ITabletop _) =>
-        throw new NotSupportedException("Declaring attacker is not allowed!");
-
-    public IBlockingDecision DeclareBlocker(ITabletop _) =>
-        throw new NotSupportedException("Declaring blocker is not allowed!");
-
-    public IAction PerformPrioritizedAction(ITabletop _) =>
-        throw new NotSupportedException("Performing prioritized action is not allowed!");
-
-    public IAction PerformNonPrioritizedAction(ITabletop _) =>
-        throw new NotSupportedException("Performing non-prioritized action is not allowed!");
-
-    public IAction PerformRequiredAction(ITabletop _, ActionKind __, IParameter ___) =>
-        throw new NotSupportedException("Performing required action is not allowed!");
-}
-
-internal sealed class NoopStrategy : IStrategy
+public sealed class NoopStrategy : IStrategy
 {
     private NoopStrategy()
     {
     }
 
-    internal static NoopStrategy Instance { get; } = new();
+    public static NoopStrategy Instance { get; } = new();
 
     public IAttackingDecision DeclareAttacker(ITabletop _) => AttackingDecision.None;
 
