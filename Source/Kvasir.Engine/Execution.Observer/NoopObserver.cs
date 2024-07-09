@@ -19,7 +19,7 @@ public class NoopObserver : IObserver
 
     public static IObserver Instance { get; } = new NoopObserver();
 
-    public void OnPhaseChanged(ITabletop _)
+    public void OnPhaseAndStepChanged(ITabletop _)
     {
     }
 }

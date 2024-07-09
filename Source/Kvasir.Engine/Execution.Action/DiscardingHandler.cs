@@ -75,7 +75,7 @@ public class DiscardingHandler : BaseActionHandler
                 .Append(additionalCards);
         }
 
-        // RX-404.1. A player’s graveyard is their discard pile. Any object that’s countered, discarded, destroyed, or
+        // RX-404.1 — A player’s graveyard is their discard pile. Any object that’s countered, discarded, destroyed, or
         // sacrificed is put on top of its owner’s graveyard, ...
 
         discardedCards

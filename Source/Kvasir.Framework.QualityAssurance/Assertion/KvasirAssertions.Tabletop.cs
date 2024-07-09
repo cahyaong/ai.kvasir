@@ -16,8 +16,8 @@ using nGratis.AI.Kvasir.Contract;
 
 public class TabletopAssertion : ReferenceTypeAssertions<ITabletop, TabletopAssertion>
 {
-    public TabletopAssertion(ITabletop tabletop)
-        : base(tabletop)
+    public TabletopAssertion(ITabletop subject)
+        : base(subject)
     {
     }
 

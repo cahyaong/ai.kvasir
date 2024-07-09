@@ -41,7 +41,7 @@ public class PlayingGameJob : IJob
 
         var simulationConfig = new SimulationConfig
         {
-            MaxTurnCount = 10,
+            MaxTurnCount = 25,
             ShouldTerminateOnIllegalAction = true,
             DefinedPlayers = definedPlayers
         };

@@ -38,4 +38,16 @@ public class Arg : Cop.Olympus.Framework.Arg
             return Match.Create<DefinedBlob.Player>(agent => agent.Name == name);
         }
     }
+
+    public static class Tabletop
+    {
+        public static ITabletop HasTurnWithId(int id)
+        {
+            Guard
+                .Require(id, nameof(id))
+                .Is.Positive();
+
+            return Match.Create<ITabletop>(tabletop => tabletop.TurnId == id);
+        }
+    }
 }

@@ -96,4 +96,18 @@ public static partial class StubBuilder
 
         return permanent;
     }
+
+    public static IPermanent WithoutSummoningSickness(this IPermanent permanent)
+    {
+        if (permanent.Card.Kind != CardKind.Creature)
+        {
+            return permanent;
+        }
+
+        permanent
+            .FindPart<CreaturePart>()
+            .HasSummoningSickness = false;
+
+        return permanent;
+    }
 }

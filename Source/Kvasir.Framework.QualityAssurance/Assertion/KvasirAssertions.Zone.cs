@@ -24,10 +24,10 @@ using nGratis.Cop.Olympus.Contract;
 public class ZoneAssertion<TEntity> : ReferenceTypeAssertions<IZone<TEntity>, ZoneAssertion<TEntity>>
     where TEntity : IDiagnostic
 {
-    public ZoneAssertion(IZone<TEntity> zone)
-        : base(zone)
+    public ZoneAssertion(IZone<TEntity> subject)
+        : base(subject)
     {
-        zone.Kind
+        subject.Kind
             .Should().NotBe(ZoneKind.Unknown);
     }
 

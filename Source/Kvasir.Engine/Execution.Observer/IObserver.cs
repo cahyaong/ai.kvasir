@@ -13,5 +13,5 @@ using nGratis.AI.Kvasir.Contract;
 
 public interface IObserver
 {
-    void OnPhaseChanged(ITabletop tabletop);
+    void OnPhaseAndStepChanged(ITabletop tabletop);
 }

@@ -23,4 +23,9 @@ public static class KvasirAssertions
     {
         return new TabletopAssertion(tabletop);
     }
+
+    public static ExecutionResultAssertion Must(this ExecutionResult executionResult)
+    {
+        return new ExecutionResultAssertion(executionResult);
+    }
 }

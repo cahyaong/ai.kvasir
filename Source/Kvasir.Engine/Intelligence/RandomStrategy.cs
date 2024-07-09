@@ -31,7 +31,7 @@ public class RandomStrategy : IStrategy
         var attackingPermanents = this
             ._judicialAssistant
             .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.CanAttack)
-            .Where(_ => this._randomGenerator.RollDice(20) <= 10)
+            .Where(_ => this._randomGenerator.RollDice(20) <= 15)
             .Select(creature => creature.Permanent)
             .ToImmutableArray();
 
@@ -63,7 +63,7 @@ public class RandomStrategy : IStrategy
 
         foreach (var attackingPermanent in tabletop.ActivePlayer.AttackingDecision.AttackingPermanents)
         {
-            var shouldBlock = this._randomGenerator.RollDice(20) <= 10;
+            var shouldBlock = this._randomGenerator.RollDice(20) <= 5;
 
             if (!shouldBlock)
             {

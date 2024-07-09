@@ -22,6 +22,83 @@ using Xunit;
 
 public class RoundJudgeTests
 {
+    public class ExecuteNextTurn
+    {
+        [Fact]
+        public void WhenGettingNonTerminalCondition_ShouldCompleteUntilEndingPhase()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var tabletop = StubBuilder.CreateDefaultTabletop(Strategy.Noop, Strategy.Noop);
+            tabletop.Phase = Phase.Beginning;
+            tabletop.TurnId = 42;
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextTurn(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithoutReachingTerminalCondition();
+
+            tabletop.Phase
+                .Should().Be(Phase.Ending, "because execution should complete without error or terminal condition");
+
+            tabletop.TurnId
+                .Should().Be(42, "because turn should reach ending phase");
+        }
+
+        [Fact]
+        public void WhenGettingTerminalCondition_ShouldCompleteUntilTerminatingPhase()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var judicialAssistant = container.Resolve<IJudicialAssistant>();
+            var attackingStrategy = new AllAttackingStrategy(judicialAssistant);
+
+            var tabletop = StubBuilder.CreateDefaultTabletop(attackingStrategy, Strategy.Noop);
+            tabletop.Phase = Phase.Beginning;
+            tabletop.TurnId = 42;
+            tabletop.NonActivePlayer.Life = 1;
+
+            var attackingCreature = tabletop
+                .CreateActiveCreaturePermanent("[_MOCK_ATTACKER_]", 1, 1)
+                .WithoutSummoningSickness();
+
+            tabletop.Battlefield.AddToTop(attackingCreature);
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextTurn(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithWinningPlayer(tabletop.ActivePlayer);
+
+            tabletop.Phase
+                .Should().Be(Phase.Combat, "because execution should complete with terminal condition");
+
+            tabletop.TurnId
+                .Should().Be(42, "because turn should reach terminating phase");
+        }
+    }
+
     public class ExecuteNextPhaseMethod_Beginning
     {
         [Fact]
@@ -56,8 +133,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             tabletop
                 .ActivePlayer
@@ -107,8 +183,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             using var _ = new AssertionScope();
 
@@ -163,8 +238,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             using var _ = new AssertionScope();
 
@@ -229,8 +303,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             tabletop
                 .ActivePlayer.Library
@@ -247,7 +320,7 @@ public class RoundJudgeTests
             tabletop
                 .NonActivePlayer.Library
                 .Must().HaveQuantity(5)
-                .And.ContainMatching("\\[_MOCK_STUB__ALPHA_0[0-4]_\\]");
+                .And.ContainMatching(@"\[_MOCK_STUB__ALPHA_0[0-4]_\]");
 
             tabletop
                 .NonActivePlayer.Hand
@@ -290,13 +363,12 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             tabletop
                 .ActivePlayer.Library
                 .Must().HaveQuantity(5)
-                .And.ContainMatching("\\[_MOCK_STUB__ALPHA_0[0-4]_\\]");
+                .And.ContainMatching(@"\[_MOCK_STUB__ALPHA_0[0-4]_\]");
 
             tabletop
                 .ActivePlayer.Hand
@@ -306,12 +378,12 @@ public class RoundJudgeTests
             tabletop
                 .NonActivePlayer.Library
                 .Must().HaveQuantity(10)
-                .And.ContainMatching("\\[_MOCK_STUB__OMEGA_0[0-9]_\\]");
+                .And.ContainMatching(@"\[_MOCK_STUB__OMEGA_0[0-9]_\]");
 
             tabletop
                 .NonActivePlayer.Hand
                 .Must().HaveQuantity(3)
-                .And.ContainMatching("\\[_MOCK_STUB__OMEGA_1[0-2]_\\]");
+                .And.ContainMatching(@"\[_MOCK_STUB__OMEGA_1[0-2]_\]");
         }
     }
 
@@ -366,8 +438,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeTrue("because execution should complete with error");
+                .Must().CompleteWithError();
 
             executionResult
                 .Messages
@@ -385,7 +456,7 @@ public class RoundJudgeTests
             tabletop
                 .ActivePlayer.Hand
                 .Must().HaveQuantity(2)
-                .And.ContainMatching("\\[_MOCK_LAND__ALPHA_0[1-2]_\\]");
+                .And.ContainMatching(@"\[_MOCK_LAND__ALPHA_0[1-2]_\]");
         }
     }
 
@@ -420,7 +491,7 @@ public class RoundJudgeTests
             var blockingPermanent = tabletop.CreateNonActiveCreaturePermanent("[_MOCK_BLOCKER_]", 0, 5);
 
             mockAttackingStrategy.WithAttackingDecision(attackingPermanents);
-            mockBlockingStrategy.WithBlockingDecision(attackingPermanents.First(), new[] { blockingPermanent });
+            mockBlockingStrategy.WithBlockingDecision(attackingPermanents.First(), [blockingPermanent]);
 
             Enumerable
                 .Empty<IPermanent>()
@@ -437,8 +508,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             using var _ = new AssertionScope();
 
@@ -496,8 +566,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             using var _ = new AssertionScope();
 
@@ -572,8 +641,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             using var _ = new AssertionScope();
 
@@ -631,8 +699,7 @@ public class RoundJudgeTests
             // Assert.
 
             executionResult
-                .HasError
-                .Should().BeFalse("because execution should complete without error");
+                .Must().CompleteWithoutReachingTerminalCondition();
 
             using var _ = new AssertionScope();
 
@@ -659,6 +726,41 @@ public class RoundJudgeTests
                         .Permanent.IsTapped
                         .Should().BeFalse($"because untapped creature [{creature.Permanent.Name}] should keep status");
                 });
+        }
+
+        [Fact]
+        public void WhenGivingLethalDamageToNonActivePlayer_ShouldTerminateWithWinningPlayer()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var judicialAssistant = container.Resolve<IJudicialAssistant>();
+            var attackingStrategy = new AllAttackingStrategy(judicialAssistant);
+
+            var tabletop = StubBuilder.CreateDefaultTabletop(attackingStrategy, Strategy.Noop);
+            tabletop.Phase = Phase.PrecombatMain;
+            tabletop.NonActivePlayer.Life = 1;
+
+            var attackingCreature = tabletop
+                .CreateActiveCreaturePermanent("[_MOCK_ATTACKER_]", 1, 1)
+                .WithoutSummoningSickness();
+
+            tabletop.Battlefield.AddToTop(attackingCreature);
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithWinningPlayer(tabletop.ActivePlayer);
         }
     }
 }

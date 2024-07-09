@@ -16,7 +16,6 @@ using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
-using nGratis.Cop.Olympus.Contract;
 
 using Arg = nGratis.Cop.Olympus.Framework.Arg;
 using MockBuilder = nGratis.AI.Kvasir.Framework.MockBuilder;
@@ -31,10 +30,6 @@ internal static partial class MockExtensions
 
     public static Mock<IMagicEntityFactory> WithDefaultPlayer(this Mock<IMagicEntityFactory> mockFactory)
     {
-        Guard
-            .Require(mockFactory, nameof(mockFactory))
-            .Is.Not.Null();
-
         mockFactory
             .Setup(mock => mock.CreatePlayer(Arg.IsAny<DefinedBlob.Player>()))
             .Returns<DefinedBlob.Player>(definedPlayer =>

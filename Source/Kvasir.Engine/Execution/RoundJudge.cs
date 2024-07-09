@@ -51,12 +51,17 @@ public class RoundJudge : IRoundJudge
     public ExecutionResult ExecuteNextTurn(ITabletop tabletop)
     {
         var executionResults = new List<ExecutionResult>();
+        var shouldContinue = true;
 
-        do
+        while (shouldContinue)
         {
-            executionResults.Add(this.ExecuteNextPhase(tabletop));
+            var executionResult = this.ExecuteNextPhase(tabletop);
+            executionResults.Add(executionResult);
+
+            shouldContinue =
+                !executionResult.IsTerminal
+                && tabletop.Phase != Phase.Ending;
         }
-        while (tabletop.Phase != Phase.Ending);
 
         return ExecutionResult.Create(executionResults);
     }
@@ -64,7 +69,7 @@ public class RoundJudge : IRoundJudge
     public ExecutionResult ExecuteNextPhase(ITabletop tabletop)
     {
         tabletop.Phase = tabletop.Phase.Next();
-        this._observer.OnPhaseChanged(tabletop);
+        this._observer.OnPhaseAndStepChanged(tabletop);
 
         if (!this._phaseHandlerByPhaseLookup.TryGetValue(tabletop.Phase, out var handlePhase))
         {
@@ -77,7 +82,10 @@ public class RoundJudge : IRoundJudge
 
         tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
 
-        return handlePhase(tabletop);
+        var executionResult = handlePhase(tabletop);
+        this._observer.OnPhaseAndStepChanged(tabletop);
+
+        return executionResult;
     }
 
     private ExecutionResult ExecuteBeginningPhase(ITabletop tabletop)
@@ -201,7 +209,7 @@ public class RoundJudge : IRoundJudge
 
         executionResult = this.ExecuteDeclaringAttackerStep(tabletop);
 
-        if (executionResult.HasError)
+        if (executionResult.IsTerminal)
         {
             return executionResult;
         }
@@ -220,14 +228,14 @@ public class RoundJudge : IRoundJudge
         {
             executionResult = this.ExecuteDeclaringBlockersStep(tabletop);
 
-            if (executionResult.HasError)
+            if (executionResult.IsTerminal)
             {
                 return executionResult;
             }
 
             executionResult = this.ExecuteResolvingCombatDamageStep(tabletop);
 
-            if (executionResult.HasError)
+            if (executionResult.IsTerminal)
             {
                 return executionResult;
             }
@@ -348,6 +356,13 @@ public class RoundJudge : IRoundJudge
 
                 blockingCreature.Damage = 0;
             });
+
+        // RX-119.6 — If a player has 0 or less life, that player loses the game as a state-based action. See rule 704.
+
+        if (tabletop.NonActivePlayer.Life <= 0)
+        {
+            return ExecutionResult.Create(tabletop.ActivePlayer);
+        }
 
         return ExecutionResult.SuccessfulWithoutWinner;
     }

@@ -52,10 +52,16 @@ public class RoundSimulator : IRoundSimulator
             .SetupPlayerZones(this._tabletop.NonActivePlayer);
 
         var executionResults = new List<ExecutionResult>();
+        var shouldContinue = true;
 
-        while (this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1)
+        while (shouldContinue)
         {
-            executionResults.Add(this._roundJudge.ExecuteNextTurn(this._tabletop));
+            var executionResult = this._roundJudge.ExecuteNextTurn(this._tabletop);
+            executionResults.Add(executionResult);
+
+            shouldContinue =
+                !executionResult.IsTerminal &&
+                this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1;
         }
 
         return new SimulationResult(

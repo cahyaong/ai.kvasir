@@ -51,7 +51,8 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>();
+                .CreateMock<IRoundJudge>()
+                .WithDefault();
 
             var roundSimulator = new RoundSimulator(
                 mockEntityFactory.Object,
@@ -65,8 +66,7 @@ public class RoundSimulatorTests
             // Assert.
 
             simulationResult
-                .Should().NotBeNull()
-                .And.BeOfType<SimulationResult>();
+                .Should().NotBeNull();
 
             simulationResult
                 .Tabletop
@@ -89,16 +89,15 @@ public class RoundSimulatorTests
                         "because nonactive player should be different from active player");
             }
 
-            using (new AssertionScope())
-            {
-                simulationResult
-                    .Tabletop.ActivePlayer.Life
-                    .Should().Be(20, "because active player should begin with full life");
+            using var _ = new AssertionScope();
 
-                simulationResult
-                    .Tabletop.NonActivePlayer.Life
-                    .Should().Be(20, "because nonactive player should begin with full life");
-            }
+            simulationResult
+                .Tabletop.ActivePlayer.Life
+                .Should().Be(20, "because active player should begin with full life");
+
+            simulationResult
+                .Tabletop.NonActivePlayer.Life
+                .Should().Be(20, "because nonactive player should begin with full life");
         }
 
         [Fact]
@@ -131,7 +130,8 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>();
+                .CreateMock<IRoundJudge>()
+                .WithDefault();
 
             var roundSimulator = new RoundSimulator(
                 mockEntityFactory.Object,
@@ -145,41 +145,39 @@ public class RoundSimulatorTests
             // Assert.
 
             simulationResult
-                .Should().NotBeNull()
-                .And.BeOfType<SimulationResult>();
+                .Should().NotBeNull();
 
             simulationResult
                 .Tabletop
                 .Must().HavePlayers();
 
-            using (new AssertionScope())
-            {
-                var activeDeck = simulationResult
+            using var _ = new AssertionScope();
+
+            var activeDeck = simulationResult
                     .Tabletop
                     .ActivePlayer.Deck;
 
-                simulationResult
-                    .Tabletop.ActivePlayer.Library
-                    .Must().NotBeNull("because active player should have library")
-                    .And.BeLibrary()
-                    .And.BeHidden()
-                    .And.HaveQuantity((ushort)(activeDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
-                    .And.HaveUniqueCardInstance()
-                    .And.BeSubsetOfConstructedDeck(activeDeck);
+            simulationResult
+                .Tabletop.ActivePlayer.Library
+                .Must().NotBeNull("because active player should have library")
+                .And.BeLibrary()
+                .And.BeHidden()
+                .And.HaveQuantity((ushort)(activeDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
+                .And.HaveUniqueCardInstance()
+                .And.BeSubsetOfConstructedDeck(activeDeck);
 
-                var nonActiveDeck = simulationResult
-                    .Tabletop
-                    .NonActivePlayer.Deck;
+            var nonActiveDeck = simulationResult
+                .Tabletop
+                .NonActivePlayer.Deck;
 
-                simulationResult
-                    .Tabletop.NonActivePlayer.Library
-                    .Must().NotBeNull("because nonactive player should have library")
-                    .And.BeLibrary()
-                    .And.BeHidden()
-                    .And.HaveQuantity((ushort)(nonActiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
-                    .And.HaveUniqueCardInstance()
-                    .And.BeSubsetOfConstructedDeck(nonActiveDeck);
-            }
+            simulationResult
+                .Tabletop.NonActivePlayer.Library
+                .Must().NotBeNull("because nonactive player should have library")
+                .And.BeLibrary()
+                .And.BeHidden()
+                .And.HaveQuantity((ushort)(nonActiveDeck.Cards.Count - MagicConstant.Hand.MaxCardCount))
+                .And.HaveUniqueCardInstance()
+                .And.BeSubsetOfConstructedDeck(nonActiveDeck);
         }
 
         [Fact]
@@ -212,7 +210,8 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>();
+                .CreateMock<IRoundJudge>()
+                .WithDefault();
 
             var roundSimulator = new RoundSimulator(
                 mockEntityFactory.Object,
@@ -226,33 +225,31 @@ public class RoundSimulatorTests
             // Assert.
 
             simulationResult
-                .Should().NotBeNull()
-                .And.BeOfType<SimulationResult>();
+                .Should().NotBeNull();
 
             simulationResult
                 .Tabletop
                 .Must().HavePlayers();
 
-            using (new AssertionScope())
-            {
-                simulationResult
-                    .Tabletop.ActivePlayer.Hand
-                    .Must().NotBeNull("because active player should have hand")
-                    .And.BeHand()
-                    .And.BeHidden()
-                    .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
-                    .And.HaveUniqueCardInstance()
-                    .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
+            using var _ = new AssertionScope();
 
-                simulationResult
-                    .Tabletop.NonActivePlayer.Hand
-                    .Must().NotBeNull("because nonactive player should have hand")
-                    .And.BeHand()
-                    .And.BeHidden()
-                    .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
-                    .And.HaveUniqueCardInstance()
-                    .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonActivePlayer.Deck);
-            }
+            simulationResult
+                .Tabletop.ActivePlayer.Hand
+                .Must().NotBeNull("because active player should have hand")
+                .And.BeHand()
+                .And.BeHidden()
+                .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
+                .And.HaveUniqueCardInstance()
+                .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
+
+            simulationResult
+                .Tabletop.NonActivePlayer.Hand
+                .Must().NotBeNull("because nonactive player should have hand")
+                .And.BeHand()
+                .And.BeHidden()
+                .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
+                .And.HaveUniqueCardInstance()
+                .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonActivePlayer.Deck);
         }
 
         [Fact]
@@ -285,7 +282,8 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>();
+                .CreateMock<IRoundJudge>()
+                .WithDefault();
 
             var roundSimulator = new RoundSimulator(
                 mockEntityFactory.Object,
@@ -299,29 +297,27 @@ public class RoundSimulatorTests
             // Assert.
 
             simulationResult
-                .Should().NotBeNull()
-                .And.BeOfType<SimulationResult>();
+                .Should().NotBeNull();
 
             simulationResult
                 .Tabletop
                 .Must().HavePlayers();
 
-            using (new AssertionScope())
-            {
-                simulationResult
-                    .Tabletop.ActivePlayer.Graveyard
-                    .Must().NotBeNull("because active player should have hand")
-                    .And.BeGraveyard()
-                    .And.BePublic()
-                    .And.HaveQuantity(0);
+            using var _ = new AssertionScope();
 
-                simulationResult
-                    .Tabletop.NonActivePlayer.Graveyard
-                    .Must().NotBeNull("because nonactive player should have hand")
-                    .And.BeGraveyard()
-                    .And.BePublic()
-                    .And.HaveQuantity(0);
-            }
+            simulationResult
+                .Tabletop.ActivePlayer.Graveyard
+                .Must().NotBeNull("because active player should have hand")
+                .And.BeGraveyard()
+                .And.BePublic()
+                .And.HaveQuantity(0);
+
+            simulationResult
+                .Tabletop.NonActivePlayer.Graveyard
+                .Must().NotBeNull("because nonactive player should have hand")
+                .And.BeGraveyard()
+                .And.BePublic()
+                .And.HaveQuantity(0);
         }
 
         [Fact]
@@ -354,7 +350,8 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>();
+                .CreateMock<IRoundJudge>()
+                .WithDefault();
 
             var roundSimulator = new RoundSimulator(
                 mockEntityFactory.Object,
@@ -368,33 +365,150 @@ public class RoundSimulatorTests
             // Assert.
 
             simulationResult
-                .Should().NotBeNull()
-                .And.BeOfType<SimulationResult>();
+                .Should().NotBeNull();
 
             simulationResult
                 .Tabletop
                 .Must().HavePlayers();
 
-            using (new AssertionScope())
+            using var _ = new AssertionScope();
+
+            simulationResult
+                .Tabletop.Battlefield
+                .Must().BeBattlefield()
+                .And.BePublic()
+                .And.HaveQuantity(0);
+
+            simulationResult
+                .Tabletop.Stack
+                .Must().BeStack()
+                .And.BePublic()
+                .And.HaveQuantity(0);
+
+            simulationResult
+                .Tabletop.Exile
+                .Must().BeExile()
+                .And.BePublic()
+                .And.HaveQuantity(0);
+        }
+
+        [Fact]
+        public void WhenGettingNonTerminalExecutionResult_shouldContinueUntilMaxTurn()
+        {
+            // Arrange.
+
+            var definedPlayers = new[]
             {
-                simulationResult
-                    .Tabletop.Battlefield
-                    .Must().BeBattlefield()
-                    .And.BePublic()
-                    .And.HaveQuantity(0);
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
+                }
+            };
 
-                simulationResult
-                    .Tabletop.Stack
-                    .Must().BeStack()
-                    .And.BePublic()
-                    .And.HaveQuantity(0);
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 10,
+                DefinedPlayers = definedPlayers
+            };
 
-                simulationResult
-                    .Tabletop.Exile
-                    .Must().BeExile()
-                    .And.BePublic()
-                    .And.HaveQuantity(0);
-            }
+            var mockEntityFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
+
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>()
+                .WithDefault();
+
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
+
+            // Act.
+
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
+
+            // Assert.
+
+            simulationResult
+                .Should().NotBeNull();
+
+            simulationResult.HasError
+                .Should().BeFalse("because simulation result should not contain error message");
+
+            simulationResult.Tabletop
+                .Should().NotBeNull();
+
+            using var _ = new AssertionScope();
+
+            simulationResult.Tabletop.TurnId
+                .Should().Be(9, "because simulation should not exceed maximum turn count");
+        }
+
+        [Fact]
+        public void WhenGettingTerminalExecutionResult_shouldNotContinueUntilMaxTurn()
+        {
+            // Arrange.
+
+            var definedPlayers = new[]
+            {
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_01_]",
+                    DeckCode = "[_MOCK_CODE_ELF_]"
+                },
+                new DefinedBlob.Player
+                {
+                    Name = "[_MOCK_PLAYER_02_]",
+                    DeckCode = "[_MOCK_CODE_GOBLIN_]"
+                }
+            };
+
+            var simulationConfig = new SimulationConfig
+            {
+                MaxTurnCount = 10,
+                DefinedPlayers = definedPlayers
+            };
+
+            var mockEntityFactory = MockBuilder
+                .CreateMock<IMagicEntityFactory>()
+                .WithDefaultPlayer();
+
+            var mockRoundJudge = MockBuilder
+                .CreateMock<IRoundJudge>()
+                .WithDefault()
+                .WithTerminalExecutionResult(3);
+
+            var roundSimulator = new RoundSimulator(
+                mockEntityFactory.Object,
+                RandomGenerator.Default,
+                mockRoundJudge.Object);
+
+            // Act.
+
+            var simulationResult = roundSimulator.Simulate(simulationConfig);
+
+            // Assert.
+
+            simulationResult
+                .Should().NotBeNull();
+
+            simulationResult.HasError
+                .Should().BeTrue("because simulation result should contain error message");
+
+            simulationResult.Tabletop
+                .Should().NotBeNull();
+
+            using var _ = new AssertionScope();
+
+            simulationResult.Tabletop.TurnId
+                .Should().Be(3, "because terminal execution result should be generated on this turn");
         }
     }
 }
