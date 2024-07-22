@@ -27,6 +27,17 @@ public static partial class StubBuilder
         return zone;
     }
 
+    public static IZone<ICard> AddCreatureCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
+    {
+        Enumerable
+            .Range(startingIndex, count)
+            .Select(index => StubBuilder.CreateCreatureCard($"[_MOCK_CREATURE__{nameInfix}_{index:D2}_]"))
+            .OrderByDescending(card => card.Name)
+            .ForEach(zone.AddToTop);
+
+        return zone;
+    }
+
     public static IZone<ICard> AddStubCard(this IZone<ICard> zone, string nameInfix, int startingIndex, int count)
     {
         Enumerable
@@ -42,20 +53,31 @@ public static partial class StubBuilder
         return zone;
     }
 
-    public static IZone<IPermanent> AddDefaultCreaturePermanent(
+    public static IZone<IPermanent> AddCreaturePermanent(
         this IZone<IPermanent> zone,
         string name,
         IPlayer owningPlayer,
         IPlayer controllingPlayer,
-        bool isTapped)
+        CreaturePermanentConfig config)
     {
         var permanent = StubBuilder.CreateCreaturePermanent(name, 1, 1);
         permanent.OwningPlayer = owningPlayer;
         permanent.ControllingPlayer = controllingPlayer;
-        permanent.IsTapped = isTapped;
+        permanent.IsTapped = config.IsTapped;
+
+        permanent
+            .ToProxyCreature()
+            .HasSummoningSickness = config.HasSummoningSickness;
 
         zone.AddToTop(permanent);
 
         return zone;
+    }
+
+    public record CreaturePermanentConfig
+    {
+        public bool IsTapped { get; init; }
+
+        public bool HasSummoningSickness { get; init; }
     }
 }

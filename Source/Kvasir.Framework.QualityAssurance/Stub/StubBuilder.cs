@@ -56,6 +56,23 @@ public static partial class StubBuilder
         };
     }
 
+    public static ICard CreateCreatureCard(string name)
+    {
+        return new Card
+        {
+            Name = name,
+            Kind = CardKind.Creature,
+            Cost = new Cost
+            {
+                Kind = CostKind.PayingMana,
+                Parameter = Parameter.Builder
+                    .Create()
+                    .WithValue(ParameterKey.Amount, ManaCost.Free)
+                    .Build()
+            }
+        };
+    }
+
     public static IAction CreateStubAction(string name, IPlayer owningPlayer)
     {
         var card = new Card

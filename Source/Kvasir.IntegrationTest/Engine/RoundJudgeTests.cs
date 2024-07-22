@@ -145,6 +145,161 @@ public class RoundJudgeTests
         }
 
         [Fact]
+        public void WhenEnteringUntapStep_ShouldRemoveSummoningSicknessFromCreatureControlledByActivePlayer()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                TurnId = 0,
+                Phase = Phase.Ending,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            tabletop.WithDefaultLibrary();
+
+            tabletop
+                .Battlefield
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_01_]",
+                    secondPlayer,
+                    secondPlayer,
+                    new() { HasSummoningSickness = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_02_]",
+                    secondPlayer,
+                    secondPlayer,
+                    new() { HasSummoningSickness = true })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_11_]",
+                    firstPlayer,
+                    secondPlayer,
+                    new() { HasSummoningSickness = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_12_]",
+                    firstPlayer,
+                    secondPlayer,
+                    new() { HasSummoningSickness = true });
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithoutReachingTerminalCondition();
+
+            using var _ = new AssertionScope();
+
+            tabletop
+                .Battlefield
+                .FindAll()
+                .Select(permanent => permanent.ToProxyCreature())
+                .ForEach(creature =>
+                {
+                    creature
+                        .HasSummoningSickness
+                        .Should().BeFalse($"because creature [{creature.Name}] should not have summoning sickness");
+                });
+        }
+
+        [Fact]
+        public void WhenEnteringUntapStep_ShouldKeepSummoningSicknessFromCreatureControlledByNonActivePlayer()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                TurnId = 0,
+                Phase = Phase.Ending,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            tabletop.WithDefaultLibrary();
+
+            tabletop
+                .Battlefield
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_01_]",
+                    firstPlayer,
+                    firstPlayer,
+                    new() { HasSummoningSickness = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_02_]",
+                    firstPlayer,
+                    firstPlayer,
+                    new() { HasSummoningSickness = true })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_11_]",
+                    secondPlayer,
+                    firstPlayer,
+                    new() { HasSummoningSickness = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_12_]",
+                    secondPlayer,
+                    firstPlayer,
+                    new() { HasSummoningSickness = true });
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithoutReachingTerminalCondition();
+
+            using var _ = new AssertionScope();
+
+            tabletop
+                .Battlefield
+                .FindAll()
+                .Where(permanent => permanent.Name.Contains("01") || permanent.Name.Contains("11"))
+                .Select(permanent => permanent.ToProxyCreature())
+                .ForEach(creature =>
+                {
+                    creature
+                        .HasSummoningSickness
+                        .Should().BeFalse($"because creature [{creature.Name}] should keep summoning sickness");
+                });
+
+            tabletop
+                .Battlefield
+                .FindAll()
+                .Where(permanent => permanent.Name.Contains("02") || permanent.Name.Contains("12"))
+                .Select(permanent => permanent.ToProxyCreature())
+                .ForEach(creature =>
+                {
+                    creature
+                        .HasSummoningSickness
+                        .Should().BeTrue($"because creature [{creature.Name}] should keep summoning sickness");
+                });
+        }
+
+        [Fact]
         public void WhenEnteringUntapStep_ShouldUntapCreatureControlledByActivePlayer()
         {
             // Arrange.
@@ -169,10 +324,26 @@ public class RoundJudgeTests
 
             tabletop
                 .Battlefield
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_01_]", secondPlayer, secondPlayer, false)
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_02_]", secondPlayer, secondPlayer, true)
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_11_]", firstPlayer, secondPlayer, false)
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_12_]", firstPlayer, secondPlayer, true);
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_01_]",
+                    secondPlayer,
+                    secondPlayer,
+                    new() { IsTapped = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_02_]",
+                    secondPlayer,
+                    secondPlayer,
+                    new() { IsTapped = true })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_11_]",
+                    firstPlayer,
+                    secondPlayer,
+                    new() { IsTapped = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_12_]",
+                    firstPlayer,
+                    secondPlayer,
+                    new() { IsTapped = true });
 
             var roundJudge = container.Resolve<IRoundJudge>();
 
@@ -194,8 +365,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeFalse($"because creature [{creature.Permanent.Name}] should be untapped");
+                        .IsTapped
+                        .Should().BeFalse($"because creature [{creature.Name}] should be untapped");
                 });
         }
 
@@ -224,10 +395,26 @@ public class RoundJudgeTests
 
             tabletop
                 .Battlefield
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_01_]", firstPlayer, firstPlayer, false)
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_02_]", firstPlayer, firstPlayer, true)
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_11_]", secondPlayer, firstPlayer, false)
-                .AddDefaultCreaturePermanent("[_MOCK_CREATURE_12_]", secondPlayer, firstPlayer, true);
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_01_]",
+                    firstPlayer,
+                    firstPlayer,
+                    new() { IsTapped = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_02_]",
+                    firstPlayer,
+                    firstPlayer,
+                    new() { IsTapped = true })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_11_]",
+                    secondPlayer,
+                    firstPlayer,
+                    new() { IsTapped = false })
+                .AddCreaturePermanent(
+                    "[_MOCK_CREATURE_12_]",
+                    secondPlayer,
+                    firstPlayer,
+                    new() { IsTapped = true });
 
             var roundJudge = container.Resolve<IRoundJudge>();
 
@@ -250,8 +437,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeFalse($"because creature [{creature.Permanent.Name}] should be keep status");
+                        .IsTapped
+                        .Should().BeFalse($"because creature [{creature.Name}] should keep status");
                 });
 
             tabletop
@@ -262,8 +449,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeTrue($"because creature [{creature.Permanent.Name}] should be keep status");
+                        .IsTapped
+                        .Should().BeTrue($"because creature [{creature.Name}] should keep status");
                 });
         }
 
@@ -520,8 +707,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeTrue($"because attacking creature [{creature.Permanent.Name}] should be tapped");
+                        .IsTapped
+                        .Should().BeTrue($"because attacking creature [{creature.Name}] should be tapped");
                 });
         }
 
@@ -578,8 +765,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeTrue($"because tapped creature [{creature.Permanent.Name}] should keep status");
+                        .IsTapped
+                        .Should().BeTrue($"because tapped creature [{creature.Name}] should keep status");
                 });
 
             tabletop
@@ -590,8 +777,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeFalse($"because untapped creature [{creature.Permanent.Name}] should keep status");
+                        .IsTapped
+                        .Should().BeFalse($"because untapped creature [{creature.Name}] should keep status");
                 });
         }
 
@@ -653,8 +840,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeFalse($"because blocking creature [{creature.Permanent.Name}] should not be tapped");
+                        .IsTapped
+                        .Should().BeFalse($"because blocking creature [{creature.Name}] should not be tapped");
                 });
         }
 
@@ -711,8 +898,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeTrue($"because tapped creature [{creature.Permanent.Name}] should keep status");
+                        .IsTapped
+                        .Should().BeTrue($"because tapped creature [{creature.Name}] should keep status");
                 });
 
             tabletop
@@ -723,8 +910,8 @@ public class RoundJudgeTests
                 .ForEach(creature =>
                 {
                     creature
-                        .Permanent.IsTapped
-                        .Should().BeFalse($"because untapped creature [{creature.Permanent.Name}] should keep status");
+                        .IsTapped
+                        .Should().BeFalse($"because untapped creature [{creature.Name}] should keep status");
                 });
         }
 

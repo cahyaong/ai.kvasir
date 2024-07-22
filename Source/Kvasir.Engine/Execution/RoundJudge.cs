@@ -100,6 +100,9 @@ public class RoundJudge : IRoundJudge
 
             tabletop.PrioritizedPlayer = Player.None;
 
+            // RX-302.6 — ...unless it has been under its controller’s control continuously since their most recent
+            // turn began. This rule is informally called the “summoning sickness” rule.
+
             // RX-502.3 — Third, the active player determines which permanents they control will untap. Then they untap
             // them all simultaneously. This turn-based action doesn’t use the stack. Normally, all of a player’s
             // permanents untap, but effects can keep one or more of a player’s permanents from untapping.
@@ -109,7 +112,11 @@ public class RoundJudge : IRoundJudge
             this._judicialAssistant
                 .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
                 .Where(creature => creature.Permanent.ControllingPlayer == tabletop.ActivePlayer)
-                .ForEach(creature => creature.Permanent.IsTapped = false);
+                .ForEach(creature =>
+                {
+                    creature.IsTapped = false;
+                    creature.HasSummoningSickness = false;
+                });
 
             // RX-504.1 — First, the active player draws a card. This turn-based action doesn’t use the stack.
 

@@ -27,6 +27,14 @@ public class Creature
 
     public IPermanent Permanent { get; }
 
+    public string Name => this.Permanent.Name;
+
+    public bool IsTapped
+    {
+        get => this.Permanent.IsTapped;
+        set => this.Permanent.IsTapped = value;
+    }
+
     public int Power => this._deferredCreaturePart.Value.Power;
 
     public int Toughness => this._deferredCreaturePart.Value.Toughness;
