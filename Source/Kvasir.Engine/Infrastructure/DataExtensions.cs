@@ -32,6 +32,7 @@ public static class DataExtensions
     private static readonly IReadOnlyDictionary<CardKind, BuildParts> PartsBuilderByCardKindLookup =
         new Dictionary<CardKind, BuildParts>
         {
+            [CardKind.Stub] = DataExtensions.CreateStubParts,
             [CardKind.Land] = DataExtensions.CreateLandParts,
             [CardKind.Creature] = DataExtensions.CreateCreatureParts
         };
@@ -104,5 +105,10 @@ public static class DataExtensions
             HasSummoningSickness = false,
             Damage = 0
         };
+    }
+
+    private static IEnumerable<IPart> CreateStubParts(ICard _)
+    {
+        return Enumerable.Empty<IPart>();
     }
 }

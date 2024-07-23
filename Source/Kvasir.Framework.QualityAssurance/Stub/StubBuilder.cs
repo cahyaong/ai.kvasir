@@ -99,4 +99,15 @@ public static partial class StubBuilder
 
         return card.AsPermanent();
     }
+
+    private static IPermanent CreateStubPermanent(string name)
+    {
+        var card = new Card
+        {
+            Name = name,
+            Kind = CardKind.Stub
+        };
+
+        return card.AsPermanent();
+    }
 }

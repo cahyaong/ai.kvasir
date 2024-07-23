@@ -300,7 +300,7 @@ public class RoundJudgeTests
         }
 
         [Fact]
-        public void WhenEnteringUntapStep_ShouldUntapCreatureControlledByActivePlayer()
+        public void WhenEnteringUntapStep_ShouldUntapPermanentControlledByActivePlayer()
         {
             // Arrange.
 
@@ -324,23 +324,23 @@ public class RoundJudgeTests
 
             tabletop
                 .Battlefield
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_01_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_01_]",
                     secondPlayer,
                     secondPlayer,
                     new() { IsTapped = false })
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_02_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_02_]",
                     secondPlayer,
                     secondPlayer,
                     new() { IsTapped = true })
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_11_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_11_]",
                     firstPlayer,
                     secondPlayer,
                     new() { IsTapped = false })
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_12_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_12_]",
                     firstPlayer,
                     secondPlayer,
                     new() { IsTapped = true });
@@ -361,17 +361,16 @@ public class RoundJudgeTests
             tabletop
                 .Battlefield
                 .FindAll()
-                .Select(permanent => permanent.ToProxyCreature())
-                .ForEach(creature =>
+                .ForEach(permanent =>
                 {
-                    creature
+                    permanent
                         .IsTapped
-                        .Should().BeFalse($"because creature [{creature.Name}] should be untapped");
+                        .Should().BeFalse($"because permanent [{permanent.Name}] should be untapped");
                 });
         }
 
         [Fact]
-        public void WhenEnteringUntapStep_ShouldKeepStatusForCreatureControlledByNonActivePlayer()
+        public void WhenEnteringUntapStep_ShouldKeepStatusForPermanentControlledByNonActivePlayer()
         {
             // Arrange.
 
@@ -395,23 +394,23 @@ public class RoundJudgeTests
 
             tabletop
                 .Battlefield
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_01_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_01_]",
                     firstPlayer,
                     firstPlayer,
                     new() { IsTapped = false })
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_02_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_02_]",
                     firstPlayer,
                     firstPlayer,
                     new() { IsTapped = true })
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_11_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_11_]",
                     secondPlayer,
                     firstPlayer,
                     new() { IsTapped = false })
-                .AddCreaturePermanent(
-                    "[_MOCK_CREATURE_12_]",
+                .AddStubPermanent(
+                    "[_MOCK_STUB_12_]",
                     secondPlayer,
                     firstPlayer,
                     new() { IsTapped = true });
@@ -433,24 +432,22 @@ public class RoundJudgeTests
                 .Battlefield
                 .FindAll()
                 .Where(permanent => permanent.Name.Contains("01") || permanent.Name.Contains("11"))
-                .Select(permanent => permanent.ToProxyCreature())
-                .ForEach(creature =>
+                .ForEach(permanent =>
                 {
-                    creature
+                    permanent
                         .IsTapped
-                        .Should().BeFalse($"because creature [{creature.Name}] should keep status");
+                        .Should().BeFalse($"because permanent [{permanent.Name}] should keep status");
                 });
 
             tabletop
                 .Battlefield
                 .FindAll()
                 .Where(permanent => permanent.Name.Contains("02") || permanent.Name.Contains("12"))
-                .Select(permanent => permanent.ToProxyCreature())
-                .ForEach(creature =>
+                .ForEach(permanent =>
                 {
-                    creature
+                    permanent
                         .IsTapped
-                        .Should().BeTrue($"because creature [{creature.Name}] should keep status");
+                        .Should().BeTrue($"because permanent [{permanent.Name}] should keep status");
                 });
         }
 

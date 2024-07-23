@@ -14,6 +14,8 @@ using nGratis.AI.Kvasir.Contract;
 
 public interface IJudicialAssistant
 {
+    IEnumerable<IPermanent> FindPermanents(ITabletop tabletop, PlayerModifier playerModifier);
+
     IEnumerable<Creature> FindCreatures(
         ITabletop tabletop,
         PlayerModifier playerModifier,

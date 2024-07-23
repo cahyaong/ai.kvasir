@@ -53,6 +53,23 @@ public static partial class StubBuilder
         return zone;
     }
 
+    public static IZone<IPermanent> AddStubPermanent(
+        this IZone<IPermanent> zone,
+        string name,
+        IPlayer owningPlayer,
+        IPlayer controllingPlayer,
+        CreaturePermanentConfig config)
+    {
+        var permanent = StubBuilder.CreateStubPermanent(name);
+        permanent.OwningPlayer = owningPlayer;
+        permanent.ControllingPlayer = controllingPlayer;
+        permanent.IsTapped = config.IsTapped;
+
+        zone.AddToTop(permanent);
+
+        return zone;
+    }
+
     public static IZone<IPermanent> AddCreaturePermanent(
         this IZone<IPermanent> zone,
         string name,

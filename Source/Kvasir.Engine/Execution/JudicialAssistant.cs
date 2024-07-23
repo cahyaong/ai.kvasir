@@ -27,6 +27,17 @@ public class JudicialAssistant : IJudicialAssistant
 
     public static IJudicialAssistant Unknown => UnknownJudicialAssistant.Instance;
 
+    public IEnumerable<IPermanent> FindPermanents(ITabletop tabletop, PlayerModifier playerModifier)
+    {
+        var player = JudicialAssistant.FindPlayer(tabletop, playerModifier);
+
+        return tabletop
+            .Battlefield
+            .FindAll()
+            .Where(permanent => permanent.ControllingPlayer == player)
+            .ToImmutableArray();
+    }
+
     public IEnumerable<Creature> FindCreatures(
         ITabletop tabletop,
         PlayerModifier playerModifier,
@@ -60,7 +71,7 @@ public class JudicialAssistant : IJudicialAssistant
             _ => Enumerable.Empty<Creature>()
         };
 
-        return filteredCreatures.ToImmutableList();
+        return filteredCreatures.ToImmutableArray();
     }
 
     public IEnumerable<Land> FindLands(ITabletop tabletop, PlayerModifier playerModifier)
@@ -176,6 +187,9 @@ internal sealed class UnknownJudicialAssistant : IJudicialAssistant
     }
 
     public static UnknownJudicialAssistant Instance { get; } = new();
+
+    public IEnumerable<IPermanent> FindPermanents(ITabletop _, PlayerModifier __) =>
+        throw new NotSupportedException("Finding permanents is not allowed!");
 
     public IEnumerable<Creature> FindCreatures(ITabletop _, PlayerModifier __, CreatureModifier ___) =>
         throw new NotSupportedException("Finding creatures is not allowed!");

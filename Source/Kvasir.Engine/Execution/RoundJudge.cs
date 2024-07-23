@@ -107,15 +107,18 @@ public class RoundJudge : IRoundJudge
             // them all simultaneously. This turn-based action doesn’t use the stack. Normally, all of a player’s
             // permanents untap, but effects can keep one or more of a player’s permanents from untapping.
 
-            // TODO (SHOULD): Implement untap action for other permanent types besides creature!
-
             this._judicialAssistant
-                .FindCreatures(tabletop, PlayerModifier.Active, CreatureModifier.None)
-                .Where(creature => creature.Permanent.ControllingPlayer == tabletop.ActivePlayer)
-                .ForEach(creature =>
+                .FindPermanents(tabletop, PlayerModifier.Active)
+                .ForEach(permanent =>
                 {
-                    creature.IsTapped = false;
-                    creature.HasSummoningSickness = false;
+                    permanent.IsTapped = false;
+
+                    if (permanent.Card.Kind == CardKind.Creature)
+                    {
+                        permanent
+                            .ToProxyCreature()
+                            .HasSummoningSickness = false;
+                    }
                 });
 
             // RX-504.1 — First, the active player draws a card. This turn-based action doesn’t use the stack.
