@@ -12,9 +12,9 @@ namespace nGratis.AI.Kvasir.Engine;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
-using nGratis.Cop.Olympus.Contract;
 
 public class MagicEntityFactory : IMagicEntityFactory
 {
