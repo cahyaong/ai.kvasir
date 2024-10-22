@@ -127,7 +127,9 @@ public class ConsoleMagicLogger : IMagicLogger
                 "Library",
                 new StringBuilder()
                     .AppendLine(player.Library.Quantity.ToString())
-                    .Append(player.Library.FindFromTop().Name)
+                    .Append(player.Library.IsEmpty 
+                        ? Contract.DefinedText.Empty
+                        : player.Library.FindFromTop().Name)
                     .ToString())
             .AddRow("Hand", player.Hand.Quantity.ToString())
             .AddRow(

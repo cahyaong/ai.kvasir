@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RoundJudge.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -68,8 +68,12 @@ public class RoundJudge : IRoundJudge
 
     public ExecutionResult ExecuteNextPhase(ITabletop tabletop)
     {
+        if (tabletop.Phase == Phase.Setup)
+        {
+            this._observer.OnPhaseAndStepChanged(tabletop);
+        }
+
         tabletop.Phase = tabletop.Phase.Next();
-        this._observer.OnPhaseAndStepChanged(tabletop);
 
         if (!this._phaseHandlerByPhaseLookup.TryGetValue(tabletop.Phase, out var handlePhase))
         {
