@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="RoundJudge.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -122,6 +122,16 @@ public class RoundJudge : IRoundJudge
                 });
 
             // RX-504.1 — First, the active player draws a card. This turn-based action doesn’t use the stack.
+
+            // RX-704.5b — If a player attempted to draw a card from a library with no cards in it since the last time
+            // state-based actions were checked, that player loses the game.
+
+            if (tabletop.ActivePlayer.Library.IsEmpty)
+            {
+                return ExecutionResult.Create(tabletop.NonActivePlayer);
+            }
+
+            // TODO (SHOULD): Generalize drawing card as a new action!
 
             tabletop.ActivePlayer.Library.MoveToZone(
                 tabletop.ActivePlayer.Library.FindFromTop(),

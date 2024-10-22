@@ -145,6 +145,150 @@ public class RoundJudgeTests
         }
 
         [Fact]
+        public void WhenEnteringBeginningPhase_ShouldNotLetActivePlayerDrawCard_IfFirstTurn()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                TurnId = -1,
+                Phase = Phase.Setup,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
+            secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithoutReachingTerminalCondition();
+
+            tabletop
+                .ActivePlayer.Hand
+                .Must().HaveQuantity(0);
+
+            tabletop
+                .ActivePlayer.Library
+                .Must().HaveQuantity(5)
+                .And.ContainMatching(@"\[_MOCK_STUB__ALPHA_0[0-4]_\]");
+
+            tabletop
+                .NonActivePlayer.Hand
+                .Must().HaveQuantity(0);
+
+            tabletop
+                .NonActivePlayer.Library
+                .Must().HaveQuantity(10)
+                .And.ContainMatching(@"\[_MOCK_STUB__OMEGA_0[0-9]_\]");
+        }
+
+        [Fact]
+        public void WhenEnteringBeginningPhase_ShouldLetActivePlayerDrawCard_IfNotFirstTurn()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                TurnId = 0,
+                Phase = Phase.Ending,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
+            secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithoutReachingTerminalCondition();
+
+            tabletop
+                .ActivePlayer.Hand
+                .Must().HaveQuantity(1)
+                .And.Contain("[_MOCK_STUB__OMEGA_00_]");
+
+            tabletop
+                .ActivePlayer.Library
+                .Must().HaveQuantity(9)
+                .And.NotContain("[_MOCK_STUB__OMEGA_00_]");
+
+            tabletop
+                .NonActivePlayer.Hand
+                .Must().HaveQuantity(0);
+
+            tabletop
+                .NonActivePlayer.Library
+                .Must().HaveQuantity(5);
+        }
+
+        [Fact]
+        public void WhenEnteringBeginningPhase_ShouldReachTerminalCondition_IfActivePlayerDrawCardFromEmptyLibrary()
+        {
+            // Arrange.
+
+            var container = new ContainerBuilder()
+                .RegisterTestingInfrastructure()
+                .RegisterJudge()
+                .Build();
+
+            var firstPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__ALPHA_]");
+            var secondPlayer = StubBuilder.CreateDefaultPlayer("[_MOCK_PLAYER__OMEGA_]");
+
+            var tabletop = new Tabletop
+            {
+                TurnId = 0,
+                Phase = Phase.Ending,
+                ActivePlayer = firstPlayer,
+                NonActivePlayer = secondPlayer
+            };
+
+            firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
+            secondPlayer.Library.RemoveAll();
+
+            var roundJudge = container.Resolve<IRoundJudge>();
+
+            // Act.
+
+            var executionResult = roundJudge.ExecuteNextPhase(tabletop);
+
+            // Assert.
+
+            executionResult
+                .Must().CompleteWithWinningPlayer(firstPlayer);
+        }
+
+        [Fact]
         public void WhenEnteringUntapStep_ShouldRemoveSummoningSicknessFromCreatureControlledByActivePlayer()
         {
             // Arrange.

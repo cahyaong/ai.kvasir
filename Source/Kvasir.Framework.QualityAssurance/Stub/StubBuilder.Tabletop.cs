@@ -57,7 +57,7 @@ public static partial class StubBuilder
                 Name = $"[_MOCK_STUB__ACTIVE_{index:D2}_]",
                 Kind = CardKind.Stub
             })
-            .ForEach(card => tabletop.ActivePlayer.Library.AddToTop(card));
+            .ForEach(tabletop.ActivePlayer.Library.AddToTop);
 
         Enumerable
             .Range(0, 10)
@@ -66,7 +66,7 @@ public static partial class StubBuilder
                 Name = $"[_MOCK_STUB__NONACTIVE_{index:D2}_]",
                 Kind = CardKind.Stub
             })
-            .ForEach(card => tabletop.NonActivePlayer.Library.AddToTop(card));
+            .ForEach(tabletop.NonActivePlayer.Library.AddToTop);
 
         return tabletop;
     }
