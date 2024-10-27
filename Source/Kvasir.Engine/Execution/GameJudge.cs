@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RoundJudge.cs" company="nGratis">
+// <copyright file="GameJudge.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -15,7 +15,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
-public class RoundJudge : IRoundJudge
+public class GameJudge : IGameJudge
 {
     // TODO (MUST): Wire up the validation logic for executing combat phase!
 
@@ -27,7 +27,7 @@ public class RoundJudge : IRoundJudge
 
     private readonly IReadOnlyDictionary<Phase, Func<ITabletop, ExecutionResult>> _phaseHandlerByPhaseLookup;
 
-    public RoundJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant, IObserver observer)
+    public GameJudge(IActionJudge actionJudge, IJudicialAssistant judicialAssistant, IObserver observer)
     {
         this._actionJudge = actionJudge;
         this._judicialAssistant = judicialAssistant;
@@ -43,7 +43,7 @@ public class RoundJudge : IRoundJudge
         };
     }
 
-    public static RoundJudge Unknown { get; } = new(
+    public static GameJudge Unknown { get; } = new(
         ActionJudge.Unknown,
         JudicialAssistant.Unknown,
         NoopObserver.Instance);
@@ -70,7 +70,7 @@ public class RoundJudge : IRoundJudge
     {
         if (tabletop.Phase == Phase.Setup)
         {
-            this._observer.OnPhaseAndStepChanged(tabletop);
+            this._observer.ObserveStateChanged(tabletop);
         }
 
         tabletop.Phase = tabletop.Phase.Next();
@@ -87,7 +87,7 @@ public class RoundJudge : IRoundJudge
         tabletop.PrioritizedPlayer = tabletop.ActivePlayer;
 
         var executionResult = handlePhase(tabletop);
-        this._observer.OnPhaseAndStepChanged(tabletop);
+        this._observer.ObserveStateChanged(tabletop);
 
         return executionResult;
     }

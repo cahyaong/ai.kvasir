@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RoundJudgeDefinition.cs" company="nGratis">
+// <copyright file="GameJudgeDefinition.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -25,9 +25,9 @@ using TechTalk.SpecFlow;
 using MockBuilder = AI.Kvasir.Framework.MockBuilder;
 
 [Binding]
-public sealed class RoundJudgeDefinition
+public sealed class GameJudgeDefinition
 {
-    static RoundJudgeDefinition()
+    static GameJudgeDefinition()
     {
         // NOTE: This is a temporary workaround! We can't use <Xunit.TestFramework> attribute
         // because SpecFlow is also using it, and it will cause a conflict if we try adding our own one!
@@ -37,7 +37,7 @@ public sealed class RoundJudgeDefinition
             .WithFormatter();
     }
 
-    private IRoundJudge _roundJudge;
+    private IGameJudge _gameJudge;
     private ITabletop _tabletop;
 
     private IPermanent _attackingPermanent;
@@ -66,10 +66,10 @@ public sealed class RoundJudgeDefinition
             this._mockAttackingStrategy.Object,
             this._mockBlockingStrategy.Object);
 
-        this._roundJudge = container.Resolve<IRoundJudge>();
+        this._gameJudge = container.Resolve<IGameJudge>();
 
         this._attackingPermanent = Permanent.Unknown;
-        this._blockingPermanents = new List<IPermanent>();
+        this._blockingPermanents = [];
     }
 
     [Given(@"the attacker has power (\d+) and toughness (\d+)")]
@@ -118,12 +118,12 @@ public sealed class RoundJudgeDefinition
     {
         this._mockAttackingStrategy.WithAttackingDecision(this._attackingPermanent);
 
-        if (this._blockingPermanents.Any())
+        if (this._blockingPermanents.Count > 0)
         {
             this._mockBlockingStrategy.WithBlockingDecision(this._attackingPermanent, this._blockingPermanents);
         }
 
-        this._roundJudge
+        this._gameJudge
             .ExecuteNextTurn(this._tabletop)
             .HasError
             .Should().BeFalse("because executing turn should not fail");

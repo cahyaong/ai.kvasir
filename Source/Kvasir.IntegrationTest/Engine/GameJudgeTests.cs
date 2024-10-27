@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RoundJudgeTests.cs" company="nGratis">
+// <copyright file="GameJudgeTests.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -20,7 +20,7 @@ using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 
-public class RoundJudgeTests
+public class GameJudgeTests
 {
     public class ExecuteNextTurn
     {
@@ -38,7 +38,7 @@ public class RoundJudgeTests
             tabletop.Phase = Phase.Beginning;
             tabletop.TurnId = 42;
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -80,7 +80,7 @@ public class RoundJudgeTests
 
             tabletop.Battlefield.AddToTop(attackingCreature);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -124,7 +124,7 @@ public class RoundJudgeTests
 
             tabletop.WithDefaultLibrary();
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -168,7 +168,7 @@ public class RoundJudgeTests
             firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
             secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -222,7 +222,7 @@ public class RoundJudgeTests
             firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
             secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -276,7 +276,7 @@ public class RoundJudgeTests
             firstPlayer.Library.AddStubCard("ALPHA", 0, 5);
             secondPlayer.Library.RemoveAll();
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -334,7 +334,7 @@ public class RoundJudgeTests
                     secondPlayer,
                     new() { HasSummoningSickness = true });
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -405,7 +405,7 @@ public class RoundJudgeTests
                     firstPlayer,
                     new() { HasSummoningSickness = true });
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -489,7 +489,7 @@ public class RoundJudgeTests
                     secondPlayer,
                     new() { IsTapped = true });
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -559,7 +559,7 @@ public class RoundJudgeTests
                     firstPlayer,
                     new() { IsTapped = true });
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -622,7 +622,7 @@ public class RoundJudgeTests
             secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
             secondPlayer.Hand.AddStubCard("OMEGA", 10, 3);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -682,7 +682,7 @@ public class RoundJudgeTests
             secondPlayer.Library.AddStubCard("OMEGA", 0, 10);
             secondPlayer.Hand.AddStubCard("OMEGA", 10, 3);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -757,7 +757,7 @@ public class RoundJudgeTests
 
             firstPlayer.Hand.AddLandCard("ALPHA", 0, 3);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -827,7 +827,7 @@ public class RoundJudgeTests
                 .Append(blockingPermanent)
                 .ForEach(tabletop.Battlefield.AddToTop);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -885,7 +885,7 @@ public class RoundJudgeTests
                 tabletop.Battlefield.AddToTop(untappedPermanent);
             }
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -960,7 +960,7 @@ public class RoundJudgeTests
                 .Append(blockingPermanents)
                 .ForEach(tabletop.Battlefield.AddToTop);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -1018,7 +1018,7 @@ public class RoundJudgeTests
                 tabletop.Battlefield.AddToTop(untappedPermanent);
             }
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 
@@ -1079,7 +1079,7 @@ public class RoundJudgeTests
 
             tabletop.Battlefield.AddToTop(attackingCreature);
 
-            var roundJudge = container.Resolve<IRoundJudge>();
+            var roundJudge = container.Resolve<IGameJudge>();
 
             // Act.
 

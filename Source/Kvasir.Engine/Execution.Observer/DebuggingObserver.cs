@@ -27,7 +27,7 @@ public class DebuggingObserver : IObserver
         this._shouldExecuteUntilNextPhase = true;
     }
 
-    public void OnPhaseAndStepChanged(ITabletop tabletop)
+    public void ObserveStateChanged(ITabletop tabletop)
     {
         this.HandleTabletopLogging(tabletop);
         this.HandleUserInput(tabletop);

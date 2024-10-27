@@ -58,9 +58,9 @@ public static class AutofacExtensions
             .As<IActionJudge>();
 
         containerBuilder
-            .RegisterType<RoundJudge>()
+            .RegisterType<GameJudge>()
             .SingleInstance()
-            .As<IRoundJudge>();
+            .As<IGameJudge>();
 
         return containerBuilder;
     }

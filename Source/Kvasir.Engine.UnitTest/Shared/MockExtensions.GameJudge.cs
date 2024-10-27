@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.RoundJudge.cs" company="nGratis">
+// <copyright file="MockExtensions.GameJudge.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -18,7 +18,7 @@ using Arg = nGratis.AI.Kvasir.Framework.Arg;
 
 internal static partial class MockExtensions
 {
-    public static Mock<IRoundJudge> WithDefault(this Mock<IRoundJudge> mockJudge)
+    public static Mock<IGameJudge> WithDefault(this Mock<IGameJudge> mockJudge)
     {
         mockJudge
             .Setup(mock => mock.ExecuteNextPhase(Arg.IsAny<ITabletop>()))
@@ -33,7 +33,7 @@ internal static partial class MockExtensions
         return mockJudge;
     }
 
-    public static Mock<IRoundJudge> WithTerminalExecutionResult(this Mock<IRoundJudge> mockJudge, int turnId)
+    public static Mock<IGameJudge> WithTerminalExecutionResult(this Mock<IGameJudge> mockJudge, int turnId)
     {
         Guard
             .Require(turnId, nameof(turnId))

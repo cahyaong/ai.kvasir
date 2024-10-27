@@ -14,7 +14,7 @@ using nGratis.AI.Kvasir.Contract;
 
 public class Parameter : IParameter
 {
-    private readonly IDictionary<ParameterKey, object> _valueByKeyLookup;
+    private readonly Dictionary<ParameterKey, object> _valueByKeyLookup;
 
     private Parameter()
     {

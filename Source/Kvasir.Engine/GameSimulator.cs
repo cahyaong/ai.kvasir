@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RoundSimulator" company="nGratis">
+// <copyright file="GameSimulator" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -14,21 +14,21 @@ using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
-public class RoundSimulator : IRoundSimulator
+public class GameSimulator : IGameSimulator
 {
     private readonly IMagicEntityFactory _entityFactory;
 
     private readonly IRandomGenerator _randomGenerator;
 
-    private readonly IRoundJudge _roundJudge;
+    private readonly IGameJudge _gameJudge;
 
     private ITabletop _tabletop;
 
-    public RoundSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, IRoundJudge roundJudge)
+    public GameSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, IGameJudge gameJudge)
     {
         this._entityFactory = entityFactory;
         this._randomGenerator = randomGenerator;
-        this._roundJudge = roundJudge;
+        this._gameJudge = gameJudge;
 
         this._tabletop = Tabletop.Unknown;
     }
@@ -56,7 +56,7 @@ public class RoundSimulator : IRoundSimulator
 
         while (shouldContinue)
         {
-            var executionResult = this._roundJudge.ExecuteNextTurn(this._tabletop);
+            var executionResult = this._gameJudge.ExecuteNextTurn(this._tabletop);
             executionResults.Add(executionResult);
 
             shouldContinue =
@@ -71,7 +71,7 @@ public class RoundSimulator : IRoundSimulator
                 .ToImmutableArray());
     }
 
-    private RoundSimulator SetupTabletop(IReadOnlyCollection<IPlayer> players)
+    private GameSimulator SetupTabletop(IReadOnlyCollection<IPlayer> players)
     {
         this._tabletop = new Tabletop
         {
@@ -82,7 +82,7 @@ public class RoundSimulator : IRoundSimulator
         return this;
     }
 
-    private RoundSimulator SetupPlayers(IReadOnlyCollection<IPlayer> players)
+    private GameSimulator SetupPlayers(IReadOnlyCollection<IPlayer> players)
     {
         var firstPlayer = players.First();
         var secondPlayer = players.Last();
@@ -113,7 +113,7 @@ public class RoundSimulator : IRoundSimulator
         return this;
     }
 
-    private RoundSimulator SetupPlayerZones(IPlayer player)
+    private GameSimulator SetupPlayerZones(IPlayer player)
     {
         this._randomGenerator
             .GenerateShufflingIndexes((ushort)player.Deck.Cards.Count)

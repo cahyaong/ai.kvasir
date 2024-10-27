@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RoundSimulatorTests.cs" company="nGratis">
+// <copyright file="GameSimulatorTests.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -17,7 +17,7 @@ using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 
-public class RoundSimulatorTests
+public class GameSimulatorTests
 {
     public class SimulateMethod
     {
@@ -51,10 +51,10 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
@@ -130,10 +130,10 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
@@ -210,10 +210,10 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
@@ -282,10 +282,10 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
@@ -350,10 +350,10 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
@@ -422,10 +422,10 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
@@ -481,11 +481,11 @@ public class RoundSimulatorTests
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
-                .CreateMock<IRoundJudge>()
+                .CreateMock<IGameJudge>()
                 .WithDefault()
                 .WithTerminalExecutionResult(3);
 
-            var roundSimulator = new RoundSimulator(
+            var roundSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);

@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RoundSimulatorTests.cs" company="nGratis">
+// <copyright file="GameSimulatorTests.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,7 +16,7 @@ using nGratis.AI.Kvasir.Engine;
 using nGratis.AI.Kvasir.Framework;
 using Xunit;
 
-public class RoundSimulatorTests
+public class GameSimulatorTests
 {
     // TODO (SHOULD): Add tabletop snapshot based testing using larger deck and longer turn!
 
@@ -35,8 +35,8 @@ public class RoundSimulatorTests
         var randomGenerator = new RandomGenerator(42);
         var judicialAssistant = container.Resolve<IJudicialAssistant>();
         var entityFactory = new MagicEntityFactory(stubProcessedRepository, randomGenerator, judicialAssistant);
-        var roundJudge = container.Resolve<IRoundJudge>();
-        var roundSimulator = new RoundSimulator(entityFactory, randomGenerator, roundJudge);
+        var roundJudge = container.Resolve<IGameJudge>();
+        var roundSimulator = new GameSimulator(entityFactory, randomGenerator, roundJudge);
 
         var definedPlayers = new[]
         {

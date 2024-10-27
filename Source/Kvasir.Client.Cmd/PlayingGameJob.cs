@@ -14,11 +14,11 @@ using nGratis.AI.Kvasir.Contract;
 
 public class PlayingGameJob : IJob
 {
-    private readonly IRoundSimulator _roundSimulator;
+    private readonly IGameSimulator _gameSimulator;
 
-    public PlayingGameJob(IRoundSimulator roundSimulator)
+    public PlayingGameJob(IGameSimulator gameSimulator)
     {
-        this._roundSimulator = roundSimulator;
+        this._gameSimulator = gameSimulator;
     }
 
     public async Task<JobResult> PerformAsync(JobParameter parameter)
@@ -46,7 +46,7 @@ public class PlayingGameJob : IJob
             DefinedPlayers = definedPlayers
         };
 
-        var simulationResult = this._roundSimulator.Simulate(simulationConfig);
+        var simulationResult = this._gameSimulator.Simulate(simulationConfig);
 
         return await Task.FromResult(JobResult.Create(simulationResult));
     }

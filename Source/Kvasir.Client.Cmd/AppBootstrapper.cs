@@ -170,9 +170,9 @@ internal static class AutofacExtensions
             .As<IRandomGenerator>();
 
         containerBuilder
-            .RegisterType<RoundSimulator>()
+            .RegisterType<GameSimulator>()
             .InstancePerLifetimeScope()
-            .As<IRoundSimulator>();
+            .As<IGameSimulator>();
 
         return containerBuilder;
     }
