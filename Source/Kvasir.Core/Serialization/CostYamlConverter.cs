@@ -43,7 +43,7 @@ public class CostYamlConverter : IYamlTypeConverter
 
     public bool Accepts(Type type) => typeof(DefinedBlob.Cost).IsAssignableFrom(type);
 
-    public object ReadYaml(IParser parser, Type type)
+    public object ReadYaml(IParser parser, Type _, ObjectDeserializer __)
     {
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
@@ -73,7 +73,7 @@ public class CostYamlConverter : IYamlTypeConverter
         return cost;
     }
 
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type _, ObjectSerializer __)
     {
         if (value is not DefinedBlob.Cost cost)
         {

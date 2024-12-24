@@ -44,7 +44,7 @@ public class DeckYamlConverter : IYamlTypeConverter
 
     public bool Accepts(Type type) => type == typeof(DefinedBlob.Deck);
 
-    public object ReadYaml(IParser parser, Type type)
+    public object ReadYaml(IParser parser, Type _, ObjectDeserializer __)
     {
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
@@ -74,7 +74,7 @@ public class DeckYamlConverter : IYamlTypeConverter
         return deckBuilder.Build();
     }
 
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type _, ObjectSerializer __)
     {
         if (value is not DefinedBlob.Deck deck)
         {

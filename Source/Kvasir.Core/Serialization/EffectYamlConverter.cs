@@ -41,7 +41,7 @@ public class EffectYamlConverter : IYamlTypeConverter
 
     public bool Accepts(Type type) => typeof(DefinedBlob.Effect).IsAssignableFrom(type);
 
-    public object ReadYaml(IParser parser, Type type)
+    public object ReadYaml(IParser parser, Type _, ObjectDeserializer __)
     {
         if (parser.Current?.GetType() != typeof(MappingStart))
         {
@@ -71,7 +71,7 @@ public class EffectYamlConverter : IYamlTypeConverter
         return effect;
     }
 
-    public void WriteYaml(IEmitter emitter, object? value, Type type)
+    public void WriteYaml(IEmitter emitter, object? value, Type _, ObjectSerializer __)
     {
         if (value is not DefinedBlob.Effect effect)
         {

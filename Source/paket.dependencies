@@ -1,5 +1,5 @@
 storage: none
-framework: net8.0
+framework: net9.0
 source https://api.nuget.org/v3/index.json
 
 nuget Antlr4
@@ -24,7 +24,7 @@ nuget YamlDotNet
 group _UI
 
     storage: none
-    framework: net8.0-windows
+    framework: net9.0-windows
     source https://api.nuget.org/v3/index.json
 
     nuget Autofac
@@ -41,7 +41,7 @@ group _UI
 group _Console
 
     storage: none
-    framework: net8.0
+    framework: net9.0
     source https://api.nuget.org/v3/index.json
 
     nuget CommandLineParser
@@ -51,7 +51,7 @@ group _Console
 group _Test
 
     storage: none
-    framework: net8.0
+    framework: net9.0
     source https://api.nuget.org/v3/index.json
 
     nuget FluentAssertions
