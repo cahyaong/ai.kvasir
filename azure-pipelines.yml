@@ -17,7 +17,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Set .NET Core SDK to 9.x'
   inputs:
-    version: 9.x
+    version: '9.x'
   
 - task: CmdLine@2
   displayName: 'Restore .NET tools'
@@ -29,7 +29,7 @@ steps:
   displayName: 'Restore packages'
   inputs:
     command: 'restore'
-    projects: Source/nGratis.AI.Kvasir.sln
+    projects: 'Source/nGratis.AI.Kvasir.sln'
 
 - task: VSBuild@1
   displayName: 'Build solution'
