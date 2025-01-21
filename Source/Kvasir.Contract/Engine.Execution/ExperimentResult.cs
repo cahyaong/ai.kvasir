@@ -1,15 +1,17 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="IGameSimulator.cs" company="nGratis">
+// <copyright file="ExperimentResult.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
 // <author>Cahya Ong — cahya.ong@gmail.com</author>
-// <creation_timestamp>Saturday, May 27, 2023 6:26:06 PM UTC</creation_timestamp>
+// <creation_timestamp>Sunday, December 29, 2024 1:39:59 AM UTC</creation_timestamp>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace nGratis.AI.Kvasir.Contract;
 
-public interface IGameSimulator
+using System.Collections.Generic;
+
+public class ExperimentResult : KvasirResult
 {
-    SimulationResult Simulate(SimulationConfig simulationConfig);
+    public required IEnumerable<GameSummary> GameSummaries { get; init; }
 }

@@ -14,17 +14,27 @@ using System.Collections.Generic;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.Cop.Olympus.Contract;
+using DefinedText = nGratis.Cop.Olympus.Contract.DefinedText;
 
 public class RandomGenerator : IRandomGenerator
 {
     private readonly Random _random;
 
-    public RandomGenerator(int seed)
+    public RandomGenerator(string id)
+        : this(id, (int)DateTime.UtcNow.Ticks)
     {
-        this._random = new Random(seed);
     }
 
-    public static RandomGenerator Default { get; } = new(Environment.TickCount);
+    public RandomGenerator(string id, int seed)
+    {
+        this._random = new Random(seed);
+
+        this.Id = id;
+    }
+
+    public static RandomGenerator Default { get; } = new(DefinedText.Default, Environment.TickCount);
+
+    public string Id { get; init; }
 
     public int RollDice(int sideCount)
     {

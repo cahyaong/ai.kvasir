@@ -18,7 +18,7 @@ internal class ProcessingCardOption
     public string CardSetName { get; set; } = string.Empty;
 }
 
-[Verb("playing-game")]
-internal class PlayingGameOption
+[Verb("performing-experiment")]
+internal class PerformingExperimentOption
 {
 }

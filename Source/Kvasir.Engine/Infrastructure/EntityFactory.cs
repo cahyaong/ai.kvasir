@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MagicEntityFactory.cs" company="nGratis">
+// <copyright file="EntityFactory.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 
-public class MagicEntityFactory : IMagicEntityFactory
+public class EntityFactory : IEntityFactory
 {
     private static readonly IReadOnlyDictionary<string, DefinedBlob.Deck> DefinedDeckByCodeLookup =
         new Dictionary<string, DefinedBlob.Deck>
@@ -47,7 +47,7 @@ public class MagicEntityFactory : IMagicEntityFactory
 
     private readonly IJudicialAssistant _judicialAssistant;
 
-    public MagicEntityFactory(
+    public EntityFactory(
         IProcessedMagicRepository processedRepository,
         IRandomGenerator randomGenerator,
         IJudicialAssistant judicialAssistant)
@@ -57,9 +57,11 @@ public class MagicEntityFactory : IMagicEntityFactory
         this._judicialAssistant = judicialAssistant;
     }
 
+    public IRandomGenerator CreateRandomGenerator(string id, int seed) => new RandomGenerator(id, seed);
+
     public IPlayer CreatePlayer(DefinedBlob.Player definedPlayer)
     {
-        if (!MagicEntityFactory.DefinedDeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
+        if (!EntityFactory.DefinedDeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
         {
             throw new KvasirException(
                 "No deck is defined with given code!",
@@ -90,7 +92,7 @@ public class MagicEntityFactory : IMagicEntityFactory
             })
             .SelectMany(anon => Enumerable
                 .Range(0, anon.Quantity)
-                .Select(_ => MagicEntityFactory.CreateCard(anon.DefinedCard)))
+                .Select(_ => EntityFactory.CreateCard(anon.DefinedCard)))
             .ToImmutableArray();
 
         return new Deck
@@ -107,7 +109,7 @@ public class MagicEntityFactory : IMagicEntityFactory
         {
             abilities = definedCard
                 .Abilities
-                .Select(MagicEntityFactory.CreateAbility)
+                .Select(EntityFactory.CreateAbility)
                 .ToImmutableArray();
         }
 
@@ -119,7 +121,7 @@ public class MagicEntityFactory : IMagicEntityFactory
             SubKinds = definedCard.SubKinds,
             Power = definedCard.Power,
             Toughness = definedCard.Toughness,
-            Cost = MagicEntityFactory.CreateCost(definedCard.Cost),
+            Cost = EntityFactory.CreateCost(definedCard.Cost),
             Abilities = abilities
         };
     }
@@ -128,7 +130,7 @@ public class MagicEntityFactory : IMagicEntityFactory
     {
         return definedCost.Kind switch
         {
-            CostKind.PayingMana => MagicEntityFactory.ConvertCost((DefinedBlob.PayingManaCost)definedCost),
+            CostKind.PayingMana => EntityFactory.ConvertCost((DefinedBlob.PayingManaCost)definedCost),
 
             _ => new Cost
             {
@@ -164,12 +166,12 @@ public class MagicEntityFactory : IMagicEntityFactory
     {
         var costs = definedAbility
             .Costs
-            .Select(MagicEntityFactory.CreateCost)
+            .Select(EntityFactory.CreateCost)
             .ToImmutableArray();
 
         var effects = definedAbility
             .Effects
-            .Select(MagicEntityFactory.CreateEffect)
+            .Select(EntityFactory.CreateEffect)
             .ToImmutableArray();
 
         var canProduceMana = effects
@@ -187,7 +189,7 @@ public class MagicEntityFactory : IMagicEntityFactory
     {
         return definedEffect.Kind switch
         {
-            EffectKind.ProducingMana => MagicEntityFactory.ConvertEffect(
+            EffectKind.ProducingMana => EntityFactory.ConvertEffect(
                 (DefinedBlob.ProducingManaEffect)definedEffect),
 
             _ => throw new KvasirException(

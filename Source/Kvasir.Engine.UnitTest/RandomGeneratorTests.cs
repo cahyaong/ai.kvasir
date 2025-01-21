@@ -23,7 +23,7 @@ public class RandomGeneratorTests
         {
             // Arrange.
 
-            var randomGenerator = new RandomGenerator(42);
+            var randomGenerator = new RandomGenerator("[_MOCK_ID_]", 42);
 
             // Act.
 

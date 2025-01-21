@@ -12,6 +12,7 @@ namespace nGratis.AI.Kvasir.Client.Cmd;
 using System;
 using System.Reflection;
 using Autofac;
+using Autofac.Core;
 using nGratis.AI.Kvasir.Contract;
 using nGratis.AI.Kvasir.Core;
 using nGratis.AI.Kvasir.Core.Parser;
@@ -19,7 +20,7 @@ using nGratis.AI.Kvasir.Engine;
 using nGratis.Cop.Olympus.Contract;
 using nGratis.Cop.Olympus.Framework;
 
-internal class AppBootstrapper : IDisposable
+internal class AppBootstrapper : IInfrastructureFactory, IDisposable
 {
     private readonly IContainer _container;
 
@@ -28,7 +29,7 @@ internal class AppBootstrapper : IDisposable
     public AppBootstrapper()
     {
         this._container = new ContainerBuilder()
-            .RegisterInfrastructure()
+            .RegisterInfrastructure(this)
             .RegisterStorageManager()
             .RegisterRepository()
             .RegisterJudge()
@@ -51,6 +52,13 @@ internal class AppBootstrapper : IDisposable
     public IMagicLogger CreateMagicLogger()
     {
         return this._container.Resolve<IMagicLogger>();
+    }
+
+    public ISimulator<GameConfig, GameResult> CreateGameSimulator(string id, int seed)
+    {
+        return this._container.Resolve<ISimulator<GameConfig, GameResult>>(new ResolvedParameter(
+            (parameterInfo, _) => parameterInfo.ParameterType == typeof(IRandomGenerator),
+            (_, _) => new RandomGenerator(id, seed)));
     }
 
     public void Dispose()
@@ -77,8 +85,13 @@ internal class AppBootstrapper : IDisposable
 
 internal static class AutofacExtensions
 {
-    public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder)
+    public static ContainerBuilder RegisterInfrastructure(this ContainerBuilder containerBuilder, IInfrastructureFactory infrastructureFactory)
     {
+        containerBuilder
+            .Register(_ => infrastructureFactory)
+            .SingleInstance()
+            .As<IInfrastructureFactory>();
+
         containerBuilder
             .Register(_ => new ConsoleLogger("Main"))
             .InstancePerLifetimeScope()
@@ -89,9 +102,11 @@ internal static class AutofacExtensions
             .InstancePerLifetimeScope()
             .As<IMagicLogger>();
 
+        // TODO (SHOULD): Implement flag to enable/disable debugging observer!
+
         containerBuilder
-            .RegisterType<DebuggingObserver>()
-            .InstancePerLifetimeScope()
+            .Register(_ => NoopObserver.Instance)
+            .SingleInstance()
             .As<IObserver>();
 
         return containerBuilder;
@@ -160,9 +175,9 @@ internal static class AutofacExtensions
     public static ContainerBuilder RegisterSimulator(this ContainerBuilder containerBuilder)
     {
         containerBuilder
-            .RegisterType<MagicEntityFactory>()
+            .RegisterType<EntityFactory>()
             .InstancePerLifetimeScope()
-            .As<IMagicEntityFactory>();
+            .As<IEntityFactory>();
 
         containerBuilder
             .Register(_ => RandomGenerator.Default)
@@ -171,8 +186,13 @@ internal static class AutofacExtensions
 
         containerBuilder
             .RegisterType<GameSimulator>()
-            .InstancePerLifetimeScope()
-            .As<IGameSimulator>();
+            .InstancePerDependency()
+            .As<ISimulator<GameConfig, GameResult>>();
+
+        containerBuilder
+            .RegisterType<ExperimentSimulator>()
+            .InstancePerDependency()
+            .As<ISimulator<ExperimentConfig, ExperimentResult>>();
 
         return containerBuilder;
     }

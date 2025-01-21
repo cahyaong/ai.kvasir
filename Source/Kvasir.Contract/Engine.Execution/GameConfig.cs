@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="SimulationConfig.cs" company="nGratis">
+// <copyright file="GameConfig.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,9 +12,9 @@ namespace nGratis.AI.Kvasir.Contract;
 using System;
 using System.Collections.Generic;
 
-public class SimulationConfig
+public class GameConfig
 {
-    public SimulationConfig()
+    public GameConfig()
     {
         this.MaxTurnCount = -42;
         this.ShouldTerminateOnIllegalAction = true;

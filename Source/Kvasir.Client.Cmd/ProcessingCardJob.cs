@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="ProcessingCardJob.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -29,18 +29,18 @@ internal class ProcessingCardJob : IJob
 
     private readonly IMagicCardProcessor _cardProcessor;
 
-    private readonly ILogger _logger;
+    private readonly IMagicLogger _magicLogger;
 
     public ProcessingCardJob(
         IUnprocessedMagicRepository unprocessedRepository,
         IProcessedMagicRepository processedRepository,
         IMagicCardProcessor cardProcessor,
-        ILogger logger)
+        IMagicLogger magicLogger)
     {
         this._unprocessedRepository = unprocessedRepository;
         this._processedRepository = processedRepository;
         this._cardProcessor = cardProcessor;
-        this._logger = logger;
+        this._magicLogger = magicLogger;
     }
 
     public async Task<JobResult> PerformAsync(JobParameter parameter)
@@ -57,29 +57,14 @@ internal class ProcessingCardJob : IJob
             .Select(result => result.GetValue<DefinedBlob.Card>())
             .ForEachAsync(this._processedRepository.SaveCardAsync);
 
-        this._logger.LogInfo("Saved valid cards...");
+        this._magicLogger.Log(Verbosity.Info, "Saved valid cards...");
 
-        using var summaryPrinter = SummaryPrinter.Create(2);
+        var invalidCount = processingResults.Count(result => !result.IsValid);
 
-        summaryPrinter
-            .Indent()
-            .WithCardSet(
-                unparsedCardSet.Name,
-                ("Parsed Cards", processingResults.Length),
-                ("Invalid Cards", processingResults.Count(result => !result.IsValid)));
-
-        processingResults
-            .Where(result => !result.IsValid)
-            .OrderBy(result => result.GetValue<DefinedBlob.Card>().Number)
-            .ForEach(result => summaryPrinter.WithInvalidCard(
-                result.GetValue<DefinedBlob.Card>(),
-                result.Messages.ToArray()));
-
-        var summaryContent = summaryPrinter
-            .Dedent()
-            .Print();
-
-        this._logger.LogWarning($"Found invalid cards!{Environment.NewLine}{summaryContent}");
+        if (invalidCount > 0)
+        {
+            this._magicLogger.Log(Verbosity.Warning, $"Found {invalidCount} invalid cards!");
+        }
 
         return JobResult.Successful;
     }

@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.MagicEntityFactory.cs" company="nGratis">
+// <copyright file="MockExtensions.EntityFactory.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -28,7 +28,7 @@ internal static partial class MockExtensions
         .Append(MockBuilder.CreateDefinedGoblinDeck())
         .ToDictionary(deck => deck.Code);
 
-    public static Mock<IMagicEntityFactory> WithDefaultPlayer(this Mock<IMagicEntityFactory> mockFactory)
+    public static Mock<IEntityFactory> WithDefaultPlayer(this Mock<IEntityFactory> mockFactory)
     {
         mockFactory
             .Setup(mock => mock.CreatePlayer(Arg.IsAny<DefinedBlob.Player>()))

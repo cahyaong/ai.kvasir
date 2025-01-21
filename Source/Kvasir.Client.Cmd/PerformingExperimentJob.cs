@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="PlayingGameJob.cs" company="nGratis">
+// <copyright file="PerformingExperimentJob.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -12,13 +12,13 @@ namespace nGratis.AI.Kvasir.Client.Cmd;
 using System.Threading.Tasks;
 using nGratis.AI.Kvasir.Contract;
 
-public class PlayingGameJob : IJob
+public class PerformingExperimentJob : IJob
 {
-    private readonly IGameSimulator _gameSimulator;
+    private readonly ISimulator<ExperimentConfig, ExperimentResult> _experimentSimulator;
 
-    public PlayingGameJob(IGameSimulator gameSimulator)
+    public PerformingExperimentJob(ISimulator<ExperimentConfig, ExperimentResult> experimentSimulator)
     {
-        this._gameSimulator = gameSimulator;
+        this._experimentSimulator = experimentSimulator;
     }
 
     public async Task<JobResult> PerformAsync(JobParameter parameter)
@@ -39,15 +39,21 @@ public class PlayingGameJob : IJob
             }
         };
 
-        var simulationConfig = new SimulationConfig
+        var gameConfig = new GameConfig
         {
-            MaxTurnCount = 25,
+            MaxTurnCount = 50,
             ShouldTerminateOnIllegalAction = true,
             DefinedPlayers = definedPlayers
         };
 
-        var simulationResult = this._gameSimulator.Simulate(simulationConfig);
+        var experimentConfig = new ExperimentConfig
+        {
+            GameCount = 100,
+            GameConfig = gameConfig
+        };
 
-        return await Task.FromResult(JobResult.Create(simulationResult));
+        var experimentResult = this._experimentSimulator.Simulate(experimentConfig);
+
+        return await Task.FromResult(JobResult.Create(experimentResult));
     }
 }

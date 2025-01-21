@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Program.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -21,13 +21,17 @@ public class Program
 
     private static void Main(string[] args)
     {
+        // TODO (SHOULD): Consolidate steps to run experiment from empty cache!
+
         var magicLogger = AppBootstrapper.CreateMagicLogger();
         magicLogger.Log(Verbosity.Info, "Executing...");
 
         Parser.Default
-            .ParseArguments(args, typeof(ProcessingCardOption), typeof(PlayingGameOption))
+            .ParseArguments<ProcessingCardOption, PerformingExperimentOption>(args)
             .WithParsed<ProcessingCardOption>(Program.ProcessCard)
-            .WithParsed<PlayingGameOption>(Program.PlayGame);
+            .WithParsed<PerformingExperimentOption>(Program.PerformExperiment);
+
+        Program.AppBootstrapper.Dispose();
 
         if (Debugger.IsAttached)
         {
@@ -36,24 +40,24 @@ public class Program
         }
     }
 
-    private static void ProcessCard(ProcessingCardOption option)
+    private static void ProcessCard(ProcessingCardOption processingOption)
     {
         var processingJob = Program.AppBootstrapper.CreateJob<ProcessingCardJob>();
 
         var processingParameter = JobParameter.Builder
             .Create()
-            .WithEntry("CardSet.Name", option.CardSetName)
+            .WithEntry("CardSet.Name", processingOption.CardSetName)
             .Build();
 
         Task.Run(async () => await processingJob.PerformAsync(processingParameter))
             .Wait();
     }
 
-    private static void PlayGame(PlayingGameOption option)
+    private static void PerformExperiment(PerformingExperimentOption performingOption)
     {
-        var playingJob = Program.AppBootstrapper.CreateJob<PlayingGameJob>();
+        var performingJob = Program.AppBootstrapper.CreateJob<PerformingExperimentJob>();
 
-        Task.Run(async () => await playingJob.PerformAsync(JobParameter.None))
+        Task.Run(async () => await performingJob.PerformAsync(JobParameter.None))
             .Wait();
     }
 }

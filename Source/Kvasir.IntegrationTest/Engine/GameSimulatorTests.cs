@@ -32,11 +32,11 @@ public class GameSimulatorTests
 
         var stubProcessedRepository = new StubProcessedMagicRepository();
 
-        var randomGenerator = new RandomGenerator(42);
+        var randomGenerator = new RandomGenerator("[_MOCK_ID_]", 42);
         var judicialAssistant = container.Resolve<IJudicialAssistant>();
-        var entityFactory = new MagicEntityFactory(stubProcessedRepository, randomGenerator, judicialAssistant);
+        var entityFactory = new EntityFactory(stubProcessedRepository, randomGenerator, judicialAssistant);
         var roundJudge = container.Resolve<IGameJudge>();
-        var roundSimulator = new GameSimulator(entityFactory, randomGenerator, roundJudge);
+        var gameSimulator = new GameSimulator(entityFactory, randomGenerator, roundJudge);
 
         var definedPlayers = new[]
         {
@@ -52,24 +52,28 @@ public class GameSimulatorTests
             }
         };
 
-        var simulationConfig = new SimulationConfig
+        var gameConfig = new GameConfig
         {
-            MaxTurnCount = 15,
+            MaxTurnCount = 50,
             DefinedPlayers = definedPlayers
         };
 
         // Act.
 
-        var executionResult = roundSimulator.Simulate(simulationConfig);
+        var gameResult = gameSimulator.Simulate(gameConfig);
 
         // Assert.
 
-        executionResult
+        gameResult
             .HasError
             .Should().BeFalse("because execution should complete without error");
 
-        executionResult
+        gameResult
             .Tabletop.TurnId
-            .Should().Be(14, "because turn should be executed up to max count");
+            .Should().BeLessThan(50, "because turn should be executed up to max count");
+
+        gameResult
+            .WinningPlayer.Life
+            .Should().BeGreaterThan(0, "because winning player should have positive life");
     }
 }

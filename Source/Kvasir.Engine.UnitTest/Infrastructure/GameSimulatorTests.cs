@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="GameSimulatorTests.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
@@ -40,41 +40,41 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 0,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
                 .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult
+            gameResult
                 .Tabletop
                 .Must().HavePlayers();
 
-            if (simulationResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
+            if (gameResult.Tabletop.ActivePlayer.Name == "[_MOCK_PLAYER_01_]")
             {
-                simulationResult
+                gameResult
                     .Tabletop.NonActivePlayer.Name
                     .Should().Be(
                         "[_MOCK_PLAYER_02_]",
@@ -82,7 +82,7 @@ public class GameSimulatorTests
             }
             else
             {
-                simulationResult
+                gameResult
                     .Tabletop.NonActivePlayer.Name
                     .Should().Be(
                         "[_MOCK_PLAYER_01_]",
@@ -91,11 +91,11 @@ public class GameSimulatorTests
 
             using var _ = new AssertionScope();
 
-            simulationResult
+            gameResult
                 .Tabletop.ActivePlayer.Life
                 .Should().Be(20, "because active player should begin with full life");
 
-            simulationResult
+            gameResult
                 .Tabletop.NonActivePlayer.Life
                 .Should().Be(20, "because nonactive player should begin with full life");
         }
@@ -119,45 +119,45 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 0,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
                 .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult
+            gameResult
                 .Tabletop
                 .Must().HavePlayers();
 
             using var _ = new AssertionScope();
 
-            var activeDeck = simulationResult
+            var activeDeck = gameResult
                     .Tabletop
                     .ActivePlayer.Deck;
 
-            simulationResult
+            gameResult
                 .Tabletop.ActivePlayer.Library
                 .Must().NotBeNull("because active player should have library")
                 .And.BeLibrary()
@@ -166,11 +166,11 @@ public class GameSimulatorTests
                 .And.HaveUniqueCardInstance()
                 .And.BeSubsetOfConstructedDeck(activeDeck);
 
-            var nonActiveDeck = simulationResult
+            var nonActiveDeck = gameResult
                 .Tabletop
                 .NonActivePlayer.Deck;
 
-            simulationResult
+            gameResult
                 .Tabletop.NonActivePlayer.Library
                 .Must().NotBeNull("because nonactive player should have library")
                 .And.BeLibrary()
@@ -199,57 +199,57 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 0,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
                 .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult
+            gameResult
                 .Tabletop
                 .Must().HavePlayers();
 
             using var _ = new AssertionScope();
 
-            simulationResult
+            gameResult
                 .Tabletop.ActivePlayer.Hand
                 .Must().NotBeNull("because active player should have hand")
                 .And.BeHand()
                 .And.BeHidden()
                 .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
                 .And.HaveUniqueCardInstance()
-                .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.ActivePlayer.Deck);
+                .And.BeSubsetOfConstructedDeck(gameResult.Tabletop.ActivePlayer.Deck);
 
-            simulationResult
+            gameResult
                 .Tabletop.NonActivePlayer.Hand
                 .Must().NotBeNull("because nonactive player should have hand")
                 .And.BeHand()
                 .And.BeHidden()
                 .And.HaveQuantity(MagicConstant.Hand.MaxCardCount)
                 .And.HaveUniqueCardInstance()
-                .And.BeSubsetOfConstructedDeck(simulationResult.Tabletop.NonActivePlayer.Deck);
+                .And.BeSubsetOfConstructedDeck(gameResult.Tabletop.NonActivePlayer.Deck);
         }
 
         [Fact]
@@ -271,48 +271,48 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 0,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
                 .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult
+            gameResult
                 .Tabletop
                 .Must().HavePlayers();
 
             using var _ = new AssertionScope();
 
-            simulationResult
+            gameResult
                 .Tabletop.ActivePlayer.Graveyard
                 .Must().NotBeNull("because active player should have hand")
                 .And.BeGraveyard()
                 .And.BePublic()
                 .And.HaveQuantity(0);
 
-            simulationResult
+            gameResult
                 .Tabletop.NonActivePlayer.Graveyard
                 .Must().NotBeNull("because nonactive player should have hand")
                 .And.BeGraveyard()
@@ -339,53 +339,53 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 0,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
                 .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult
+            gameResult
                 .Tabletop
                 .Must().HavePlayers();
 
             using var _ = new AssertionScope();
 
-            simulationResult
+            gameResult
                 .Tabletop.Battlefield
                 .Must().BeBattlefield()
                 .And.BePublic()
                 .And.HaveQuantity(0);
 
-            simulationResult
+            gameResult
                 .Tabletop.Stack
                 .Must().BeStack()
                 .And.BePublic()
                 .And.HaveQuantity(0);
 
-            simulationResult
+            gameResult
                 .Tabletop.Exile
                 .Must().BeExile()
                 .And.BePublic()
@@ -411,43 +411,43 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 10,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
                 .CreateMock<IGameJudge>()
                 .WithDefault();
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult.HasError
+            gameResult.HasError
                 .Should().BeFalse("because simulation result should not contain error message");
 
-            simulationResult.Tabletop
+            gameResult.Tabletop
                 .Should().NotBeNull();
 
             using var _ = new AssertionScope();
 
-            simulationResult.Tabletop.TurnId
+            gameResult.Tabletop.TurnId
                 .Should().Be(9, "because simulation should not exceed maximum turn count");
         }
 
@@ -470,14 +470,14 @@ public class GameSimulatorTests
                 }
             };
 
-            var simulationConfig = new SimulationConfig
+            var gameConfig = new GameConfig
             {
                 MaxTurnCount = 10,
                 DefinedPlayers = definedPlayers
             };
 
             var mockEntityFactory = MockBuilder
-                .CreateMock<IMagicEntityFactory>()
+                .CreateMock<IEntityFactory>()
                 .WithDefaultPlayer();
 
             var mockRoundJudge = MockBuilder
@@ -485,29 +485,29 @@ public class GameSimulatorTests
                 .WithDefault()
                 .WithTerminalExecutionResult(3);
 
-            var roundSimulator = new GameSimulator(
+            var gameSimulator = new GameSimulator(
                 mockEntityFactory.Object,
                 RandomGenerator.Default,
                 mockRoundJudge.Object);
 
             // Act.
 
-            var simulationResult = roundSimulator.Simulate(simulationConfig);
+            var gameResult = gameSimulator.Simulate(gameConfig);
 
             // Assert.
 
-            simulationResult
+            gameResult
                 .Should().NotBeNull();
 
-            simulationResult.HasError
+            gameResult.HasError
                 .Should().BeTrue("because simulation result should contain error message");
 
-            simulationResult.Tabletop
+            gameResult.Tabletop
                 .Should().NotBeNull();
 
             using var _ = new AssertionScope();
 
-            simulationResult.Tabletop.TurnId
+            gameResult.Tabletop.TurnId
                 .Should().Be(3, "because terminal execution result should be generated on this turn");
         }
     }

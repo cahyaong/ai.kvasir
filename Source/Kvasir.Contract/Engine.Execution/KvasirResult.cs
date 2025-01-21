@@ -28,6 +28,7 @@ public abstract class KvasirResult
         this.Messages.Any() ||
         this.HasErrorCore();
 
+    // TODO (SHOULD): Add `required` modifier!
     public IEnumerable<string> Messages { get; protected init; }
 
     protected virtual bool HasErrorCore() => false;

@@ -14,9 +14,9 @@ using System.Collections.Immutable;
 using System.Linq;
 using nGratis.AI.Kvasir.Contract;
 
-public class GameSimulator : IGameSimulator
+public class GameSimulator : ISimulator<GameConfig, GameResult>
 {
-    private readonly IMagicEntityFactory _entityFactory;
+    private readonly IEntityFactory _entityFactory;
 
     private readonly IRandomGenerator _randomGenerator;
 
@@ -24,7 +24,7 @@ public class GameSimulator : IGameSimulator
 
     private ITabletop _tabletop;
 
-    public GameSimulator(IMagicEntityFactory entityFactory, IRandomGenerator randomGenerator, IGameJudge gameJudge)
+    public GameSimulator(IEntityFactory entityFactory, IRandomGenerator randomGenerator, IGameJudge gameJudge)
     {
         this._entityFactory = entityFactory;
         this._randomGenerator = randomGenerator;
@@ -33,14 +33,14 @@ public class GameSimulator : IGameSimulator
         this._tabletop = Tabletop.Unknown;
     }
 
-    public SimulationResult Simulate(SimulationConfig simulationConfig)
+    public GameResult Simulate(GameConfig experimentConfig)
     {
-        if (simulationConfig.DefinedPlayers.Count != 2)
+        if (experimentConfig.DefinedPlayers.Count != 2)
         {
             throw new KvasirException("Currently supporting 1 vs. 1 match!");
         }
 
-        var players = simulationConfig
+        var players = experimentConfig
             .DefinedPlayers
             .Select(this._entityFactory.CreatePlayer)
             .ToImmutableArray();
@@ -61,14 +61,24 @@ public class GameSimulator : IGameSimulator
 
             shouldContinue =
                 !executionResult.IsTerminal &&
-                this._tabletop.TurnId < simulationConfig.MaxTurnCount - 1;
+                this._tabletop.TurnId < experimentConfig.MaxTurnCount - 1;
         }
 
-        return new SimulationResult(
-            this._tabletop,
-            executionResults
-                .SelectMany(result => result.Messages)
-                .ToImmutableArray());
+        var messages = executionResults
+            .SelectMany(result => result.Messages)
+            .ToImmutableArray();
+
+        var winningPlayer = executionResults.Count > 0
+            ? executionResults
+                .Last()
+                .WinningPlayer
+            : Player.Unknown;
+
+        return new GameResult(messages)
+        {
+            Tabletop = this._tabletop,
+            WinningPlayer = winningPlayer
+        };
     }
 
     private GameSimulator SetupTabletop(IReadOnlyCollection<IPlayer> players)
