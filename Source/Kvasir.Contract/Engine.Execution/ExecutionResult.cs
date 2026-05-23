@@ -40,7 +40,7 @@ public class ExecutionResult : KvasirResult
         };
     }
 
-    public new static ExecutionResult Create(IEnumerable<string> messages)
+    public static ExecutionResult Create(IEnumerable<string> messages)
     {
         return new ExecutionResult
         {
