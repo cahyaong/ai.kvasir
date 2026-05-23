@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.cs" company="nGratis">
+// <copyright file="KvasirMockExtensions.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -11,6 +11,6 @@
 
 namespace Moq;
 
-internal static partial class MockExtensions
+internal static partial class KvasirMockExtensions
 {
 }

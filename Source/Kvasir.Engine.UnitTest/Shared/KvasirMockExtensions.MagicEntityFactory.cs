@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.EntityFactory.cs" company="nGratis">
+// <copyright file="KvasirMockExtensions.EntityFactory.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -20,7 +20,7 @@ using nGratis.AI.Kvasir.Framework;
 using Arg = nGratis.Cop.Olympus.Framework.Arg;
 using MockBuilder = nGratis.AI.Kvasir.Framework.MockBuilder;
 
-internal static partial class MockExtensions
+internal static partial class KvasirMockExtensions
 {
     private static readonly IReadOnlyDictionary<string, DefinedBlob.Deck> DeckByCodeLookup = Enumerable
         .Empty<DefinedBlob.Deck>()
@@ -34,7 +34,7 @@ internal static partial class MockExtensions
             .Setup(mock => mock.CreatePlayer(Arg.IsAny<DefinedBlob.Player>()))
             .Returns<DefinedBlob.Player>(definedPlayer =>
             {
-                if (!MockExtensions.DeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
+                if (!KvasirMockExtensions.DeckByCodeLookup.TryGetValue(definedPlayer.DeckCode, out var definedDeck))
                 {
                     throw new KvasirTestingException(
                         "No lookup entry is defined for deck!",

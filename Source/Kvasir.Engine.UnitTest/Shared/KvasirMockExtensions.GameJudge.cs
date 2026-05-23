@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MockExtensions.GameJudge.cs" company="nGratis">
+// <copyright file="KvasirMockExtensions.GameJudge.cs" company="nGratis">
 //  The MIT License — Copyright (c) Cahya Ong
 //  See the LICENSE file in the project root for more information.
 // </copyright>
@@ -16,7 +16,7 @@ using nGratis.Cop.Olympus.Contract;
 
 using Arg = nGratis.AI.Kvasir.Framework.Arg;
 
-internal static partial class MockExtensions
+internal static partial class KvasirMockExtensions
 {
     public static Mock<IGameJudge> WithDefault(this Mock<IGameJudge> mockJudge)
     {
