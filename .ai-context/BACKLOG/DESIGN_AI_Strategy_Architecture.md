@@ -1,6 +1,6 @@
 # DESIGN: AI Strategy Architecture
 
-**Last Updated:** 2026-06-27
+**Last Updated:** July 11, 2026
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## 1. Overview
 
-Phase 4 layers AI strategy implementations on top of the rules-complete engine.
+Phase 6 layers AI strategy implementations on top of the rules-complete engine.
 Architecture follows the AlphaZero pattern: pluggable neural network prior
 combined with MCTS verification, trained via self-play.
 
@@ -101,14 +101,14 @@ Failure recovery: invalid index → mask + resample, or MCTS fallback.
 
 ## 6. Training Pipeline
 
-| Stage | Games | Purpose |
-|-------|-------|---------|
-| Random vs Random | 100K | Rules/transitions |
-| MCTS vs Random | 200K | Basic heuristics |
-| MCTS vs MCTS | 500K | Interaction patterns |
-| Annotated SFT | 500K | CoT from MCTS stats |
-| RL self-play | 1M+ | Beat MCTS baseline |
-| Model self-play | ∞ | Continuous flywheel |
+| Stage            | Games | Purpose              |
+|------------------|-------|----------------------|
+| Random vs Random | 100K  | Rules/transitions    |
+| MCTS vs Random   | 200K  | Basic heuristics     |
+| MCTS vs MCTS     | 500K  | Interaction patterns |
+| Annotated SFT    | 500K  | CoT from MCTS stats  |
+| RL self-play     | 1M+   | Beat MCTS baseline   |
+| Model self-play  | ∞     | Continuous flywheel  |
 
 Synthetic CoT: template-based generator converts MCTS visit statistics to
 reasoning text. LLM-enhanced rewriting in Stage 2.
@@ -126,7 +126,7 @@ Phase-dependent multipliers.
 
 ## 8. Dependencies
 
-- **Hard dependency:** Phase 2 (keywords, instants) + Phase 3 (spells, triggers)
+- **Hard dependency:** Phases 2-5 (keyword combat, the stack, targeting, triggered abilities, the full SBA checklist, and the stack-aware card pool)
 - **Rationale:** Vanilla creature combat produces trivially simple games with
   insufficient strategic depth for meaningful model training
 - **Prep work possible now:** `ISearchableGameState` interface, `StateEncoder`

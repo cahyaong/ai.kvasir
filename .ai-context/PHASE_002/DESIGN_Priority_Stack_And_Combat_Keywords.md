@@ -1,6 +1,6 @@
 # DESIGN: Priority, Stack, and Combat Keywords
 
-**Last Updated:** June 27, 2026
+**Last Updated:** July 12, 2026
 
 ---
 
@@ -28,8 +28,8 @@ This document specifies the implementation requirements for the priority system
 702). These three systems together create the majority of decision points an AI
 strategy must navigate.
 
-Priority is Phase 1 scope (TASK_0104). Keywords and the stack interactions with
-instants are Phase 2-3 scope. This document covers the full target architecture.
+Priority is Phase 1 scope (TASK_0104). Keywords span Phase 2 (thin slice) and Phase 5 (deferred); stack and
+instant interactions are Phase 3 scope. This document covers the full target architecture.
 
 ## 2. Priority System
 
@@ -71,17 +71,17 @@ THEN grant priority
 
 ### 2.3 Timing Restrictions
 
-| Card Type | When Castable |
-|-----------|---------------|
-| Instant | Any time you have priority |
-| Sorcery | Main phase, stack empty, your turn |
-| Creature | Main phase, stack empty, your turn |
-| Enchantment | Main phase, stack empty, your turn |
-| Artifact | Main phase, stack empty, your turn |
-| Planeswalker | Main phase, stack empty, your turn |
-| Activated ability | Any time you have priority (unless restricted) |
-| Mana ability | Anytime, even during spell casting (no stack) |
-| Special action | Varies (lands: main phase, stack empty, your turn) |
+| Card Type         | When Castable                                      |
+|-------------------|----------------------------------------------------|
+| Instant           | Any time you have priority                         |
+| Sorcery           | Main phase, stack empty, your turn                 |
+| Creature          | Main phase, stack empty, your turn                 |
+| Enchantment       | Main phase, stack empty, your turn                 |
+| Artifact          | Main phase, stack empty, your turn                 |
+| Planeswalker      | Main phase, stack empty, your turn                 |
+| Activated ability | Any time you have priority (unless restricted)     |
+| Mana ability      | Anytime, even during spell casting (no stack)      |
+| Special action    | Varies (lands: main phase, stack empty, your turn) |
 
 ## 3. Stack Implementation
 
@@ -168,34 +168,34 @@ Mitigations for MCTS:
 
 ### 6.1 Evasion Keywords (Restrict Blocking)
 
-| Keyword | Rule | Effect |
-|---------|------|--------|
-| Flying | 702.9 | Only blocked by flying or reach |
-| Menace | 702.111 | Must be blocked by 2+ creatures |
-| Skulk | 702.118 | Can't be blocked by creatures with greater power |
-| Shadow | 702.28 | Only blocked by shadow; can't block non-shadow |
+| Keyword | Rule    | Effect                                           |
+|---------|---------|--------------------------------------------------|
+| Flying  | 702.9   | Only blocked by flying or reach                  |
+| Menace  | 702.111 | Must be blocked by 2+ creatures                  |
+| Skulk   | 702.118 | Can't be blocked by creatures with greater power |
+| Shadow  | 702.28  | Only blocked by shadow; can't block non-shadow   |
 
 Evasion stacking: All restrictions are cumulative. Flying + menace = must be
 blocked by 2+ creatures that each have flying or reach.
 
 ### 6.2 Damage-Modifying Keywords
 
-| Keyword | Rule | Effect |
-|---------|------|--------|
-| First Strike | 702.7 | Deals damage only in first combat damage step |
-| Double Strike | 702.4 | Deals damage in both combat damage steps |
-| Deathtouch | 702.2 | Any nonzero damage = lethal for assignment purposes |
-| Trample | 702.19 | Excess over lethal assigned to defending player |
-| Lifelink | 702.15 | Controller gains life equal to damage dealt |
+| Keyword       | Rule   | Effect                                              |
+|---------------|--------|-----------------------------------------------------|
+| First Strike  | 702.7  | Deals damage only in first combat damage step       |
+| Double Strike | 702.4  | Deals damage in both combat damage steps            |
+| Deathtouch    | 702.2  | Any nonzero damage = lethal for assignment purposes |
+| Trample       | 702.19 | Excess over lethal assigned to defending player     |
+| Lifelink      | 702.15 | Controller gains life equal to damage dealt         |
 
 ### 6.3 State-Modifying Keywords
 
-| Keyword | Rule | Effect |
-|---------|------|--------|
-| Haste | 702.10 | No summoning sickness |
-| Vigilance | 702.20 | Doesn't tap to attack |
-| Reach | 702.17 | Can block flying |
-| Defender | 702.3 | Can't attack |
+| Keyword        | Rule   | Effect                                         |
+|----------------|--------|------------------------------------------------|
+| Haste          | 702.10 | No summoning sickness                          |
+| Vigilance      | 702.20 | Doesn't tap to attack                          |
+| Reach          | 702.17 | Can block flying                               |
+| Defender       | 702.3  | Can't attack                                   |
 | Indestructible | 702.12 | Can't be destroyed (ignores lethal damage SBA) |
 
 ## 7. Keyword Interaction Matrix
@@ -290,20 +290,20 @@ Key edge cases:
 
 ## 10. Implementation Order
 
-Phase 2 keyword priority (most -> least AI decision impact):
+Combat-keyword priority ranking, most -> least AI decision impact (implementation order spans Phases 2 and 5):
 
-| Priority | Keyword | Rationale |
-|----------|---------|-----------|
-| 1 | Flying + Reach | Most meaningful blocking decisions |
-| 2 | First Strike + Double Strike | Changes combat math fundamentally |
-| 3 | Trample | Adds damage-division decision |
-| 4 | Deathtouch | Changes lethal calculation, key interactions |
-| 5 | Lifelink | Affects race calculations |
-| 6 | Haste | Affects attack timing |
-| 7 | Vigilance | Affects attack/defense tradeoff |
-| 8 | Menace | Changes blocking constraints |
-| 9 | Defender | Simplest (restriction only) |
-| 10 | Indestructible | Changes trade evaluation |
+| Priority | Keyword                      | Rationale                                    |
+|----------|------------------------------|----------------------------------------------|
+| 1        | Flying + Reach               | Most meaningful blocking decisions           |
+| 2        | First Strike + Double Strike | Changes combat math fundamentally            |
+| 3        | Trample                      | Adds damage-division decision                |
+| 4        | Deathtouch                   | Changes lethal calculation, key interactions |
+| 5        | Lifelink                     | Affects race calculations                    |
+| 6        | Haste                        | Affects attack timing                        |
+| 7        | Vigilance                    | Affects attack/defense tradeoff              |
+| 8        | Menace                       | Changes blocking constraints                 |
+| 9        | Defender                     | Simplest (restriction only)                  |
+| 10       | Indestructible               | Changes trade evaluation                     |
 
 ## 11. AI Implications
 

@@ -1,6 +1,6 @@
 # DECISION: AI.Kvasir
 
-**Last Updated:** July 11, 2026
+**Last Updated:** July 12, 2026
 
 ---
 
@@ -17,6 +17,8 @@
 - [9. ADR-009: Unified ANTLR Oracle Text Parsing](#9-adr-009-unified-antlr-oracle-text-parsing)
 - [10. ADR-010: Thin-Slice Phase Resequencing](#10-adr-010-thin-slice-phase-resequencing)
 - [11. ADR-011: Task ID Stability and Renumbering](#11-adr-011-task-id-stability-and-renumbering)
+- [12. ADR-012: State-Based Action Seam Boundary](#12-adr-012-state-based-action-seam-boundary)
+- [13. ADR-013: Stack Phase Split and Renumber Cascade](#13-adr-013-stack-phase-split-and-renumber-cascade)
 
 ---
 
@@ -109,6 +111,7 @@
 - **Context:** The original plan built all 12 keywords across 13 Phase 2 tasks before touching the stack. But the rules gap analysis established that MCTS produces non-trivial play only after the stack and instants exist — vanilla creatures plus keywords have a near-deterministic decision tree. Most of the genuinely interesting AI decisions (holding up instants, responding on the stack, targeting) live in the stack phase.
 - **Rationale:** When a roadmap's real value is gated on a later phase, fully completing the intermediate phase first delays the payoff for low marginal value. The combat-math keywords (flying, first strike, double strike, trample, deathtouch) are the ones that make combat non-trivial; the rest (lifelink, haste, vigilance, menace, defender, indestructible) add little decision depth. Double strike is included because it is a near-free increment once first strike builds the two-step combat framework. Card pool expansion is more valuable once instants exist, so the capstone waits for a stack-aware pool.
 - **Consequences:** Phase 2 = TASK_0201-0206 (data model + 5 combat-math keywords). Phase 3 = priority/stack/instants (needs task breakdown). Phase 4 = deferred keywords + card pool capstone (TASK_0401-0407, renumbered from old 0207-0213). Phase 5 = AI strategies. TASK_0104 (priority loop) stays in Phase 1 as a correctness fix but is the direct Phase 3 foundation. Card pool follows a hybrid model: each slice keyword task adds its canonical test cards as real YAML now; the full capstone (TASK_0407) rounds out a stack-aware pool later.
+- **Superseded in part:** ADR-013 (Phase 3 split + renumber cascade) revised the phase→task mapping described above — the Phase 3/4/5 assignments and the capstone ID (now TASK_0507) are renumbered there. See ADR-013 for the current mapping; this ADR's thin-slice rationale still stands.
 
 ## 11. ADR-011: Task ID Stability and Renumbering
 
@@ -118,3 +121,21 @@
 - **Context:** The phase-offset numbering scheme (Phase N = N*100+1) was introduced to avoid cascading renumbers. This raised the question of whether IDs are immutable. The thin-slice resequencing (ADR-010) required renumbering not-started tasks 0207-0213 into Phase 4.
 - **Rationale:** The phase-offset scheme solves one narrow problem — inserting a new task into an *active* phase without shifting siblings. It does not forbid wholesale re-sequencing of planning artifacts that have not been actioned. An ID is load-bearing only when an external artifact points to it: a git branch (`feature/TASK_XXXX`), a CR or commit message, in-progress code comments, or cross-references from other committed artifacts. This is the same principle as git history: local unpushed commits are fair game to rebase; pushed/shared history is not.
 - **Consequences:** Renumbering not-started, internally-referenced-only tasks is a safe, single-commit operation (rename files, update internal IDs and cross-references atomically). Once a task is started or externally referenced, its ID freezes. This unblocks roadmap restructures like ADR-010 without contorting the folder structure to preserve stale numbers.
+
+## 12. ADR-012: State-Based Action Seam Boundary
+
+- **Date:** 2026-07-11
+- **Status:** Accepted
+- **Decision:** The priority loop (TASK_0104, Phase 1) owns the state-based-action *seam* (the `PROCESSING_SBAS` state and the Rule 117.5 pre-priority procedure) plus a *minimal SBA set* scoped to the current card pool. The Phase 4 SBA task (TASK_0402) owns only the *expansion* of the checklist — it never modifies the loop.
+- **Context:** SBAs (Rule 704) are a Phase 3/4 must-have, but Rule 117.5 makes an SBA check point part of the priority loop's definition: SBAs are checked repeatedly immediately before any player receives priority. This couples TASK_0104 (Phase 1 priority loop) to the SBA system. If TASK_0104 built a bare loop with no SBA hook, the Phase 4 SBA task would have to reach back and refactor the just-built state machine, and "TASK_0104 done" would be a fiction. Three options were considered: (A) seam + minimal set in 0104, (B) bare loop now / all SBAs + loop refactor in Phase 4, (C) seam interface only with a no-op stub.
+- **Rationale:** Option A chosen. ADR-001 is correctness-first — a priority loop that skips the 117.5 SBA check is knowingly wrong even for vanilla creatures, so the procedure is part of the loop, not a later feature. A avoids a Phase 4 rewrite of the freshly-built state machine and unifies "how things die" from Phase 1 on (combat death routes through the same checker). The minimal set is naturally bounded by the current pool (vanilla creatures + basic lands): only RX-704.5a (0 life → lose), RX-704.5c/f (0 toughness → graveyard), and RX-704.5g (lethal damage → destroy). This keeps TASK_0104 bounded (est. 4-6h → 6-8h) rather than pulling the full 704.5 checklist forward.
+- **Consequences:** TASK_0104 gains the SBA seam, the minimal set, and combat-death routing in its acceptance criteria. TASK_0102 (Combat Validation) no longer applies lethal-damage death inline — it defers to the SBA checker. Phase 4's TASK_0402 becomes "expand the 704.5 checklist behind the existing seam," a clean additive task rather than a build-plus-refactor. The seam boundary is fixed: the SBA checklist may grow, the priority loop structure does not.
+
+## 13. ADR-013: Stack Phase Split and Renumber Cascade
+
+- **Date:** 2026-07-11
+- **Status:** Accepted
+- **Decision:** Split the original Phase 3 (priority/stack/instants/targeting/triggers/SBAs, ~20h) into two phases sized to a ~1–1.5 week part-time budget (~8-12h each): Phase 3 — Stack & Targeting (TASK_0301-0305) and Phase 4 — Triggers & State-Based Actions (TASK_0401-0402). The former deferred-keywords phase renumbers to Phase 5 (TASK_0501-0507) and the AI-strategies phase to Phase 6.
+- **Context:** The Phase 3 task breakdown summed to roughly 20h — about 2.5 weeks part-time at ~8h/week — well over the target of a single 1–1.5 week phase. The work has a natural seam: the stack plus spell-speed casting and targeting form one shippable milestone (instants/sorceries + targeted removal work on the stack), while triggered abilities and the full SBA checklist form a second (the Rule 117.5 pre-priority procedure is complete).
+- **Rationale:** Sizing phases to a consistent part-time budget keeps each phase independently shippable and reviewable, and gives a clear "done" milestone per phase. Triggers & SBAs are placed *before* the deferred keywords because several deferred keywords depend on them (lifelink is damage-linked life gain, indestructible modifies the destroy SBA), so the interaction layer must exist first. The renumber is safe under ADR-011: all affected tasks are not-started and referenced only inside the atomically-edited `.ai-context/` folder.
+- **Consequences:** Phase 3 = Stack & Targeting (0301 stack, 0302 resolution, 0303 instant/sorcery types + timing, 0304 single-target, 0305 multi-target). Phase 4 = Triggers & SBAs (0401 triggered abilities + APNAP queue, 0402 SBA checklist expansion). Phase 5 = deferred keywords + card pool capstone (0501-0507, renumbered from 0401-0407). Phase 6 = AI strategies. TASK_0507's dependencies and its AI-phase reference were updated to the new numbers. Each Phase 3/4 task ships its own canonical test cards (hybrid card-pool model, ADR-010); the stack-aware pool capstone remains TASK_0507. Phase 2 (~13h) and Phase 5 (~13h) sit slightly over the budget and may be split later if desired.
