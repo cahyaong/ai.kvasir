@@ -1,6 +1,6 @@
 # INDEX: AI.Kvasir
 
-**Last Updated:** July 5, 2026
+**Last Updated:** July 11, 2026
 
 ---
 
@@ -42,12 +42,15 @@ Clients (WPF visual debugger, CLI runner)
 
 ## 3. Roadmap
 
-| Phase | Name              | Goal                                                          | Status  |
-|-------|-------------------|---------------------------------------------------------------|---------|
-| 1     | Engine Correctness | Rules-compliant simulation for current card pool             | Active  |
-| 2     | Keyword Abilities | Expand mechanics + card pool organically                      | Planned |
-| 3     | Spells & Triggers | Non-creature spells, triggered/static abilities               | Planned |
-| 4     | AI Strategies     | ISMCTS, WorldModel (AgentWorld), Hybrid (AlphaZero pattern)   | Planned |
+| Phase | Name | Goal | Status |
+|-------|------|------|--------|
+| 1 | Engine Correctness | Rules-compliant simulation for current card pool | Active |
+| 2 | Keyword Combat Slice | Data model + 5 combat-math keywords (flying, first/double strike, trample, deathtouch) | Planned |
+| 3 | Priority, Stack, Instants | Priority loop, stack, instants/sorceries, targeting, triggered abilities — the real AI decision depth | Planned |
+| 4 | Deferred Keywords + Card Pool | Lifelink, haste, vigilance, menace, defender, indestructible + stack-aware card pool capstone | Planned |
+| 5 | AI Strategies | ISMCTS, WorldModel (AgentWorld), Hybrid (AlphaZero pattern) | Planned |
+
+Sequencing note (ADR-010): Phase 2 is a thin slice of only the combat-math keywords; the remaining keywords are deferred to Phase 4 because the genuine AI decision depth is gated on Phase 3 (the stack). TASK_0104 (priority loop) sits in Phase 1 as a correctness fix but is the direct Phase 3 foundation.
 
 ## 4. Current Sprint
 
@@ -62,7 +65,7 @@ Clients (WPF visual debugger, CLI runner)
 
 **Execution order:** TASK_0101 → TASK_0102 → TASK_0103 → TASK_0104
 
-**Phase 2 — Keyword Abilities**
+**Phase 2 — Keyword Combat Slice**
 
 | Task | Title | Status | Assignee |
 |------|-------|--------|----------|
@@ -72,20 +75,29 @@ Clients (WPF visual debugger, CLI runner)
 | TASK_0204 | Double Strike | Not Started | Cahya |
 | TASK_0205 | Trample | Not Started | Cahya |
 | TASK_0206 | Deathtouch | Not Started | Cahya |
-| TASK_0207 | Lifelink | Not Started | Cahya |
-| TASK_0208 | Haste | Not Started | Cahya |
-| TASK_0209 | Vigilance | Not Started | Cahya |
-| TASK_0210 | Menace | Not Started | Cahya |
-| TASK_0211 | Defender | Not Started | Cahya |
-| TASK_0212 | Indestructible | Not Started | Cahya |
-| TASK_0213 | Card Pool Expansion (Keyword Creatures) | Not Started | Cahya |
 
-**Execution order:** TASK_0201 → TASK_0202 → TASK_0203 → TASK_0204 → TASK_0205 → TASK_0206 → TASK_0207 → TASK_0208 → TASK_0209 → TASK_0210 → TASK_0211 → TASK_0212 → TASK_0213
+**Execution order:** TASK_0201 → TASK_0202 → TASK_0203 → TASK_0204 → TASK_0205 → TASK_0206
+
+**Phase 3 — Priority, Stack, Instants** (needs task breakdown; see `PHASE_002/DESIGN_Priority_Stack_And_Combat_Keywords.md` for priority/stack design)
+
+**Phase 4 — Deferred Keywords + Card Pool**
+
+| Task | Title | Status | Assignee |
+|------|-------|--------|----------|
+| TASK_0401 | Lifelink | Not Started | Cahya |
+| TASK_0402 | Haste | Not Started | Cahya |
+| TASK_0403 | Vigilance | Not Started | Cahya |
+| TASK_0404 | Menace | Not Started | Cahya |
+| TASK_0405 | Defender | Not Started | Cahya |
+| TASK_0406 | Indestructible | Not Started | Cahya |
+| TASK_0407 | Card Pool Capstone (Stack-Aware Pool) | Not Started | Cahya |
 
 ## 5. Phase Index
 
 | Phase | Folder | Documents |
 |-------|--------|-----------|
 | 1 | `PHASE_001/` | TASK_0101–TASK_0104 |
-| 2 | `PHASE_002/` | DESIGN_Priority_Stack_And_Combat_Keywords, TASK_0201–TASK_0213 |
-| Backlog | `BACKLOG/` | DESIGN_AI_Strategy_Architecture |
+| 2 | `PHASE_002/` | DESIGN_Priority_Stack_And_Combat_Keywords, TASK_0201–TASK_0206 |
+| 3 | `PHASE_003/` | (pending task breakdown) |
+| 4 | `PHASE_004/` | TASK_0401–TASK_0407 |
+| Backlog | `BACKLOG/` | DESIGN_AI_Strategy_Architecture (Phase 5 spec) |

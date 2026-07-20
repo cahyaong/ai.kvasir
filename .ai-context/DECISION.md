@@ -15,6 +15,8 @@
 - [7. ADR-007: Model Output Format](#7-adr-007-model-output-format)
 - [8. ADR-008: Training Pipeline Architecture](#8-adr-008-training-pipeline-architecture)
 - [9. ADR-009: Unified ANTLR Oracle Text Parsing](#9-adr-009-unified-antlr-oracle-text-parsing)
+- [10. ADR-010: Thin-Slice Phase Resequencing](#10-adr-010-thin-slice-phase-resequencing)
+- [11. ADR-011: Task ID Stability and Renumbering](#11-adr-011-task-id-stability-and-renumbering)
 
 ---
 
@@ -98,3 +100,21 @@
 - **Context:** ADR-002 originally split parsing: regex for keywords, ANTLR for structured abilities. Revisiting this before Phase 2 implementation, keywords are static abilities under Rule 702 — they belong to the same parsing domain as activated and triggered abilities, not a separate flag-detection concern.
 - **Rationale:** A single grammar-based code path is more maintainable than two parallel parsers (regex + ANTLR) for one concern. Keywords are not always simple flags: they appear in comma-separated lists ("First strike, trample"), alongside reminder text ("Flying (This creature can't be blocked except by creatures with flying or reach.)"), and in parameterized forms ("Protection from red", "Hexproof from black", "Ward {2}") that will require grammar rules regardless. Starting keyword recognition in ANTLR makes the later extension to parameterized keywords natural rather than a rewrite. The grammar file (`MagicCardKeyword.g4`) already exists and only needs keyword tokens plus a keyword-line rule added.
 - **Consequences:** TASK_0201 extends `MagicCardKeyword.g4` with keyword lexer tokens and a grammar rule matching keyword lines, rather than adding a regex layer in the processor. Parameterized keywords (protection, ward, hexproof-from) become a grammar extension in a later phase, not a separate parsing mechanism. ADR-002's regex approach is abandoned.
+
+## 10. ADR-010: Thin-Slice Phase Resequencing
+
+- **Date:** 2026-07-11
+- **Status:** Accepted
+- **Decision:** Build only a thin slice of combat-math keywords in Phase 2, then jump to the stack/instants phase (now Phase 3), deferring the remaining keywords and the card pool capstone to Phase 4. AI strategies move from Phase 4 to Phase 5.
+- **Context:** The original plan built all 12 keywords across 13 Phase 2 tasks before touching the stack. But the rules gap analysis established that MCTS produces non-trivial play only after the stack and instants exist — vanilla creatures plus keywords have a near-deterministic decision tree. Most of the genuinely interesting AI decisions (holding up instants, responding on the stack, targeting) live in the stack phase.
+- **Rationale:** When a roadmap's real value is gated on a later phase, fully completing the intermediate phase first delays the payoff for low marginal value. The combat-math keywords (flying, first strike, double strike, trample, deathtouch) are the ones that make combat non-trivial; the rest (lifelink, haste, vigilance, menace, defender, indestructible) add little decision depth. Double strike is included because it is a near-free increment once first strike builds the two-step combat framework. Card pool expansion is more valuable once instants exist, so the capstone waits for a stack-aware pool.
+- **Consequences:** Phase 2 = TASK_0201-0206 (data model + 5 combat-math keywords). Phase 3 = priority/stack/instants (needs task breakdown). Phase 4 = deferred keywords + card pool capstone (TASK_0401-0407, renumbered from old 0207-0213). Phase 5 = AI strategies. TASK_0104 (priority loop) stays in Phase 1 as a correctness fix but is the direct Phase 3 foundation. Card pool follows a hybrid model: each slice keyword task adds its canonical test cards as real YAML now; the full capstone (TASK_0407) rounds out a stack-aware pool later.
+
+## 11. ADR-011: Task ID Stability and Renumbering
+
+- **Date:** 2026-07-11
+- **Status:** Accepted
+- **Decision:** Task IDs are freely renumberable while a task is not-started and referenced only inside the atomically-edited `.ai-context/` folder. An ID becomes stable ("load-bearing") only once something external references it.
+- **Context:** The phase-offset numbering scheme (Phase N = N*100+1) was introduced to avoid cascading renumbers. This raised the question of whether IDs are immutable. The thin-slice resequencing (ADR-010) required renumbering not-started tasks 0207-0213 into Phase 4.
+- **Rationale:** The phase-offset scheme solves one narrow problem — inserting a new task into an *active* phase without shifting siblings. It does not forbid wholesale re-sequencing of planning artifacts that have not been actioned. An ID is load-bearing only when an external artifact points to it: a git branch (`feature/TASK_XXXX`), a CR or commit message, in-progress code comments, or cross-references from other committed artifacts. This is the same principle as git history: local unpushed commits are fair game to rebase; pushed/shared history is not.
+- **Consequences:** Renumbering not-started, internally-referenced-only tasks is a safe, single-commit operation (rename files, update internal IDs and cross-references atomically). Once a task is started or externally referenced, its ID freezes. This unblocks roadmap restructures like ADR-010 without contorting the folder structure to preserve stale numbers.
