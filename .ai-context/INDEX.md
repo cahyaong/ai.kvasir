@@ -1,6 +1,6 @@
 # INDEX: AI.Kvasir
 
-**Last Updated:** July 12, 2026
+**Last Updated:** July 18, 2026
 
 ---
 
@@ -49,9 +49,11 @@ Clients (WPF visual debugger, CLI runner)
 | 3     | Stack & Targeting              | Stack, instants/sorceries + timing, single- and multi-target spells                           | Planned |
 | 4     | Triggers & State-Based Actions | Triggered abilities (APNAP), full 704.5 SBA checklist — completes the 117.5 procedure         | Planned |
 | 5     | Deferred Keywords + Card Pool  | Lifelink, haste, vigilance, menace, defender, indestructible + stack-aware card pool capstone | Planned |
-| 6     | AI Strategies                  | ISMCTS, WorldModel (AgentWorld), Hybrid (AlphaZero pattern)                                   | Planned |
+| 6     | Determinism & Observability    | Reproducible master seed + split RNG streams; typed event trace (JSONL) as the canonical log  | Planned |
+| 7     | Replay & Cloning               | Seed + decision-log replay with validation hash; deep-clone seam for lookahead search         | Planned |
+| 8     | AI Strategies                  | ISMCTS, WorldModel (AgentWorld), Hybrid (AlphaZero pattern)                                   | Planned |
 
-Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-math keywords; the remaining keywords are deferred to Phase 5 because the genuine AI decision depth is gated on the stack and interaction layer (Phases 3-4). The original single stack phase was split into Phase 3 (Stack & Targeting) and Phase 4 (Triggers & SBAs) to fit a ~1–1.5 week part-time budget per phase. TASK_0104 (priority loop) sits in Phase 1 as a correctness fix but is the direct foundation for Phase 3; per ADR-012 it also owns the SBA seam plus a minimal SBA set, which Phase 4 (TASK_0402) later expands. Replacement effects (Rule 614/615) and the layer system (Rule 613) are deferred past the Phase 6 AI milestone (ADR-014); Phase 4 adds only a transparent event-interception seam (TASK_0403) so the later replacement phase does not force an engine-wide refactor.
+Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-math keywords; the remaining keywords are deferred to Phase 5 because the genuine AI decision depth is gated on the stack and interaction layer (Phases 3-4). The original single stack phase was split into Phase 3 (Stack & Targeting) and Phase 4 (Triggers & SBAs) to fit a ~1–1.5 week part-time budget per phase. TASK_0104 (priority loop) sits in Phase 1 as a correctness fix but is the direct foundation for Phase 3; per ADR-012 it also owns the SBA seam plus a minimal SBA set, which Phase 4 (TASK_0402) later expands. Replacement effects (Rule 614/615) and the layer system (Rule 613) are deferred past the Phase 8 AI milestone (ADR-014); Phase 4 adds only a transparent event-interception seam (TASK_0403) so the later replacement phase does not force an engine-wide refactor. Two execution-infrastructure phases sit between the rules work and the AI work: Phase 6 (Determinism & Observability) and Phase 7 (Replay & Cloning) establish reproducible seeds, a canonical event trace, replay, and a state-clone seam before a smarter strategy is layered on (ADR-016, ADR-017, ADR-018). Escape hatch: reproducibility for debugging the stack/trigger phases is already covered by TASK_0101 (Phase 1 seed fix); the event-trace plumbing (the observer seam plus JSONL sink, core of TASK_0603) may be pulled forward into Phase 3 if stack/trigger debugging becomes painful, in which case Phases 3-4 emit their events into it. The split-stream RNG, replay, and clone tasks stay in Phases 6-7 — they serve the AI phase, not rules debugging.
 
 ## 4. Current Sprint
 
@@ -116,6 +118,26 @@ Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-m
 
 **Execution order:** TASK_0501 → TASK_0502 → TASK_0503 → TASK_0504 → TASK_0505 → TASK_0506 → TASK_0507
 
+**Phase 6 — Determinism & Observability**
+
+| Task      | Title                            | Status      |
+|-----------|----------------------------------|-------------|
+| TASK_0601 | Master Seed + Split RNG Streams  | Not Started |
+| TASK_0602 | Game Event Taxonomy              | Not Started |
+| TASK_0603 | Observer Redesign + JSONL Sink   | Not Started |
+
+**Execution order:** TASK_0601 → TASK_0602 → TASK_0603
+
+**Phase 7 — Replay & Cloning**
+
+| Task      | Title                            | Status      |
+|-----------|----------------------------------|-------------|
+| TASK_0701 | Seed Replay + Validation Hash    | Not Started |
+| TASK_0702 | Decision Log Replay + Branching  | Not Started |
+| TASK_0703 | Tabletop Deep Clone Seam         | Not Started |
+
+**Execution order:** TASK_0701 → TASK_0702 → TASK_0703
+
 ## 5. Phase Index
 
 | Phase   | Folder       | Documents                                                      |
@@ -125,4 +147,6 @@ Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-m
 | 3       | `PHASE_003/` | TASK_0301–TASK_0305                                            |
 | 4       | `PHASE_004/` | TASK_0401–TASK_0404                                            |
 | 5       | `PHASE_005/` | TASK_0501–TASK_0507                                            |
-| Backlog | `BACKLOG/`   | DESIGN_AI_Strategy_Architecture (Phase 6 spec)                 |
+| 6       | `PHASE_006/` | TASK_0601–TASK_0603                                            |
+| 7       | `PHASE_007/` | TASK_0701–TASK_0703                                            |
+| Backlog | `BACKLOG/`   | DESIGN_AI_Strategy_Architecture (Phase 8 spec)                 |

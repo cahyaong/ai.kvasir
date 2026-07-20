@@ -1,6 +1,6 @@
 # DECISION: AI.Kvasir
 
-**Last Updated:** July 12, 2026
+**Last Updated:** July 16, 2026
 
 ---
 
@@ -21,6 +21,9 @@
 - [13. ADR-013: Stack Phase Split and Renumber Cascade](#13-adr-013-stack-phase-split-and-renumber-cascade)
 - [14. ADR-014: Replacement Effects Deferred with Interception Seam](#14-adr-014-replacement-effects-deferred-with-interception-seam)
 - [15. ADR-015: Priority Encoded by Phase and Task Numbering](#15-adr-015-priority-encoded-by-phase-and-task-numbering)
+- [16. ADR-016: Deterministic Master Seed and Split RNG Streams](#16-adr-016-deterministic-master-seed-and-split-rng-streams)
+- [17. ADR-017: Canonical Event Trace and Replay Model](#17-adr-017-canonical-event-trace-and-replay-model)
+- [18. ADR-018: State Cloning Seam for Lookahead AI](#18-adr-018-state-cloning-seam-for-lookahead-ai)
 
 ---
 
@@ -142,6 +145,7 @@
 - **Rationale:** Sizing phases to a consistent part-time budget keeps each phase independently shippable and reviewable, and gives a clear "done" milestone per phase. Triggers & SBAs are placed *before* the deferred keywords because several deferred keywords depend on them (lifelink is damage-linked life gain, indestructible modifies the destroy SBA), so the interaction layer must exist first. The renumber is safe under ADR-011: all affected tasks are not-started and referenced only inside the atomically-edited `.ai-context/` folder.
 - **Consequences:** Phase 3 = Stack & Targeting (0301 stack, 0302 resolution, 0303 instant/sorcery types + timing, 0304 single-target, 0305 multi-target). Phase 4 = Triggers & SBAs (0401 triggered abilities + APNAP queue, 0402 SBA checklist expansion). Phase 5 = deferred keywords + card pool capstone (0501-0507, renumbered from 0401-0407). Phase 6 = AI strategies. TASK_0507's dependencies and its AI-phase reference were updated to the new numbers. Each Phase 3/4 task ships its own canonical test cards (hybrid card-pool model, ADR-010); the stack-aware pool capstone remains TASK_0507. Phase 2 (~13h) and Phase 5 (~13h) sit slightly over the budget and may be split later if desired.
 - **Correction (2026-07-12):** The ~13h Phase 5 figure predates the granular per-task estimates, which sum to ~6.5-8.5h (six 30-45 minute keyword tasks plus the card-pool capstone). Phase 5 is a deliberately light phase and will not be split; the budget is a reviewability ceiling, not a quota. TASK_0507 is bumped to 3-4h to reflect authoring 20-30 cards plus a full integration test. The Phase 2 figure is unaffected by this note.
+- **Superseded in part (2026-07-16):** Two execution-infrastructure phases were inserted before the AI work — Phase 6 (Determinism & Observability) and Phase 7 (Replay & Cloning) — so AI Strategies renumbered from Phase 6 to Phase 8. The "Phase 6 = AI strategies" mapping stated above is now Phase 8. See ADR-016, ADR-017, and ADR-018. This ADR's stack-split rationale is unaffected.
 
 ## 14. ADR-014: Replacement Effects Deferred with Interception Seam
 
@@ -162,3 +166,32 @@
 - **Rationale:** A single source of truth — the task number — is less error-prone than a parallel Priority field that must be kept consistent by hand. Encoding priority in the number also removes the RULE_Document §1.2 exemption, tightening compliance. Phase 5 was the only phase whose numeric order did not already match its execution order, so its keyword tasks were renumbered so that number equals priority. `Estimate` and `Status` remain — they are not priority signals.
 - **Consequences:** The `Priority` row was removed from all 26 TASK files (the `Priority` column in `DESIGN_Priority_Stack_And_Combat_Keywords.md` is a content ranking table, not a metadata field, and is unaffected). Phase 5 renumber: defender → 0501, vigilance → 0502, haste → 0503, lifelink → 0504, menace → 0505 (indestructible 0506 and capstone 0507 unchanged). INDEX's Phase 5 sprint table and execution order were updated to plain ascending order. The stored `.ai-context` convention (previously "TASK files may carry status/priority") is updated to drop priority. The renumber is safe under ADR-011 — all tasks are not-started and referenced only inside the planning folder; local unpushed commit 7f5a5dc cites the old lifelink number 0501 in its message, which is cosmetic.
 - **Relation:** Tightens RULE_Document §1.2 compliance; extends ADR-011 (renumber safety).
+
+## 16. ADR-016: Deterministic Master Seed and Split RNG Streams
+
+- **Date:** 2026-07-16
+- **Status:** Accepted
+- **Decision:** A single master seed lives in `GameConfig` (auto-generated once and always recorded when unset). It is deterministically split into independent sub-streams via a SplitMix64-style derivation: one engine stream (shuffle plus dice) and one per-player strategy stream (seed derived from master and player index). `IRandomGenerator` is created per stream by the infrastructure factory rather than shared as a singleton. Only the master seed is persisted.
+- **Context:** The pre-work audit found three wall-clock seed sources (`RandomGenerator` default constructor, the `Default` static, and `ExperimentSimulator`) and a single shared `IRandomGenerator` drawn by both the engine and every strategy. Runs are unreproducible, and engine and strategy randomness are coupled — adding an engine draw shifts every later strategy draw. No parallelism or other nondeterminism sources were found; the simulation loop is single-threaded.
+- **Rationale:** Reproducibility is the foundation for replay (ADR-017) and for the "same board, different AI" experiments the AI phase needs. A single stored integer keeps artifacts tiny, while stream splitting isolates concerns so an engine change or a smarter strategy perturbs only its own stream. SplitMix64 is a standard, cheap splittable generator. Storing separate explicit per-stream seeds was rejected as strictly dominated — derivation gives the same independence from one number.
+- **Consequences:** TASK_0101 (Phase 1) puts the master seed on `ExperimentConfig` and derives a unique per-game seed, removing the `DateTime.UtcNow.Ticks` source. TASK_0601 threads that per-game seed onto `GameConfig` (so a single game is self-describing), splits it into independent per-stream sub-streams via the derivation, and removes or gates the wall-clock constructor and `Default` paths. The infrastructure factory mints per-stream generators and `EntityFactory` wires each strategy its own stream. A recording (tee) `IRandomGenerator` decorator logs each draw into the event stream (opt-in) — this is the draw-capture mechanism for decision-log replay (ADR-017, TASK_0702). Per-rollout RNG for search (ADR-018) reuses the same derivation.
+
+## 17. ADR-017: Canonical Event Trace and Replay Model
+
+- **Date:** 2026-07-16
+- **Status:** Accepted
+- **Decision:** Execution is traced as a stream of typed semantic domain events, append-only, serialized as JSONL, serving as the single canonical trace. The observer seam changes from `ObserveStateChanged(ITabletop)` to observing a game event; the flat `ExecutionResult.Messages` strings are removed and human-readable messages are derived from events. Replay is seed-primary with a decision-log superset: a replay artifact holds schema version, engine version (git sha), master seed, `GameConfig`, and the event-stream JSONL. Default reproduction re-runs from seed plus config; the recorded decision events enable decision-log replay and branching. A validation hash compares the regenerated event stream against the stored one on seed-replay, acting as a determinism and regression canary. Decisions are recorded by stable identity (player, action, target IDs), never menu index, and each carries a request key so decision-log replay asserts on mismatch.
+- **Context:** The only trace was `ExecutionResult.Messages` — flat strings, neither structured nor queryable — and the observer seam was a coarse per-phase whole-board pull defaulting to a no-op. Both fine-grained debugging (Phase 3-4 stack and trigger ordering) and replay need an ordered, inspectable event record.
+- **Rationale:** One typed event stream serves observability, replay, and future AI training-data capture. Seed-replay is the cheap reproduction workhorse (needs only ADR-016 determinism); the decision log — nearly free once events are recorded — is the robust branching and inspection layer and survives strategy nondeterminism. The validation hash converts every replay into a continuous determinism test. Recording decisions by stable identity plus request key prevents the classic decision-log desync (request-order change, decision-shape change, menu-index instability). Full-state snapshots per step were rejected as heavy and lossy of intra-phase micro-changes; a state-snapshot event preserves the coarse whole-board view for the console and WPF debugger.
+- **Consequences:** Delivered across TASK_0602 (event taxonomy), TASK_0603 (observer redesign, JSONL sink, message removal), TASK_0701 (seed-replay and validation hash), and TASK_0702 (decision-log replay and branching). Seed and config are always persisted; full JSONL is opt-in (debug flag or on assertion or crash) to control storage at experiment scale. Cross-engine-version decision-log replay is best-effort; the git-sha stamp, seed, and validation hash are the within-version guarantee.
+- **Relation:** Builds on ADR-016 (determinism). The event trace is also the debugging substrate for the Phase 3-4 stack and trigger work, not only the AI phase.
+
+## 18. ADR-018: State Cloning Seam for Lookahead AI
+
+- **Date:** 2026-07-16
+- **Status:** Accepted
+- **Decision:** A correct deep-clone seam is added to the tabletop now, as execution infrastructure. Mutable state (players, zones, permanents, mana blob, per-turn decisions, scalars) is deep-copied; immutable data (cards, abilities, costs, effects, deck definitions) is shared by reference. Permanent owner and controller back-references are remapped by identity (clone players first, then remap). Each rollout draws from its own derived RNG stream (ADR-016 derivation, keyed by node path), never the live game stream. Performance optimization (copy-on-write or journal-undo) is deferred to the AI phase, to be chosen after profiling real search load.
+- **Context:** Information Set Monte Carlo Tree Search runs thousands of rollouts per decision, each requiring an independent mutable copy of the current position. The audit found no existing clone or copy infrastructure, a clean ownership tree (tabletop to players to zones to entities), and two complications: permanent back-references to player, and the mana blob dictionary. Cards and abilities are already immutable.
+- **Rationale:** Deep clone is the correctness baseline and is enough to unblock a first search implementation; choosing a copy-on-write or journal design before profiling risks premature optimization. The seam is general engine infrastructure — the existing `GameJudge` TODO to pass a visibility-limited tabletop copy to strategies, and a WPF "fork this position" debugger feature, both use it — so it belongs in the infrastructure phase rather than the AI phase. Isolating rollout RNG from the live stream keeps the live game reproducible.
+- **Consequences:** Delivered by TASK_0703 (deep-clone seam) with the per-rollout RNG reusing TASK_0601's derivation. The AI phase (now Phase 8) owns any clone performance tuning as a profiled follow-up. The visibility-copy TODO in `GameJudge` combat steps can be satisfied by this seam.
+- **Relation:** Applies the seam-not-implementation principle of ADR-012 and ADR-014 to state cloning; reuses ADR-016's RNG derivation.

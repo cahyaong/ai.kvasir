@@ -1,6 +1,6 @@
 # DESIGN: AI Strategy Architecture
 
-**Last Updated:** July 11, 2026
+**Last Updated:** July 16, 2026
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## 1. Overview
 
-Phase 6 layers AI strategy implementations on top of the rules-complete engine.
+Phase 8 layers AI strategy implementations on top of the rules-complete engine.
 Architecture follows the AlphaZero pattern: pluggable neural network prior
 combined with MCTS verification, trained via self-play.
 
