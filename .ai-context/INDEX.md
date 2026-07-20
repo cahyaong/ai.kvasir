@@ -1,6 +1,6 @@
 # INDEX: AI.Kvasir
 
-**Last Updated:** July 11, 2026
+**Last Updated:** July 12, 2026
 
 ---
 
@@ -106,13 +106,15 @@ Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-m
 
 | Task      | Title                                 | Status      |
 |-----------|---------------------------------------|-------------|
-| TASK_0501 | Lifelink                              | Not Started |
-| TASK_0502 | Haste                                 | Not Started |
-| TASK_0503 | Vigilance                             | Not Started |
-| TASK_0504 | Menace                                | Not Started |
-| TASK_0505 | Defender                              | Not Started |
+| TASK_0501 | Defender                              | Not Started |
+| TASK_0502 | Vigilance                             | Not Started |
+| TASK_0503 | Haste                                 | Not Started |
+| TASK_0504 | Lifelink                              | Not Started |
+| TASK_0505 | Menace                                | Not Started |
 | TASK_0506 | Indestructible                        | Not Started |
 | TASK_0507 | Card Pool Capstone (Stack-Aware Pool) | Not Started |
+
+**Execution order:** TASK_0501 → TASK_0502 → TASK_0503 → TASK_0504 → TASK_0505 → TASK_0506 → TASK_0507
 
 ## 5. Phase Index
 
