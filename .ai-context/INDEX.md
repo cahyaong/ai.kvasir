@@ -51,7 +51,7 @@ Clients (WPF visual debugger, CLI runner)
 | 5     | Deferred Keywords + Card Pool  | Lifelink, haste, vigilance, menace, defender, indestructible + stack-aware card pool capstone | Planned |
 | 6     | AI Strategies                  | ISMCTS, WorldModel (AgentWorld), Hybrid (AlphaZero pattern)                                   | Planned |
 
-Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-math keywords; the remaining keywords are deferred to Phase 5 because the genuine AI decision depth is gated on the stack and interaction layer (Phases 3-4). The original single stack phase was split into Phase 3 (Stack & Targeting) and Phase 4 (Triggers & SBAs) to fit a ~1–1.5 week part-time budget per phase. TASK_0104 (priority loop) sits in Phase 1 as a correctness fix but is the direct foundation for Phase 3; per ADR-012 it also owns the SBA seam plus a minimal SBA set, which Phase 4 (TASK_0402) later expands.
+Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-math keywords; the remaining keywords are deferred to Phase 5 because the genuine AI decision depth is gated on the stack and interaction layer (Phases 3-4). The original single stack phase was split into Phase 3 (Stack & Targeting) and Phase 4 (Triggers & SBAs) to fit a ~1–1.5 week part-time budget per phase. TASK_0104 (priority loop) sits in Phase 1 as a correctness fix but is the direct foundation for Phase 3; per ADR-012 it also owns the SBA seam plus a minimal SBA set, which Phase 4 (TASK_0402) later expands. Replacement effects (Rule 614/615) and the layer system (Rule 613) are deferred past the Phase 6 AI milestone (ADR-014); Phase 4 adds only a transparent event-interception seam (TASK_0403) so the later replacement phase does not force an engine-wide refactor.
 
 ## 4. Current Sprint
 
@@ -97,8 +97,10 @@ Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-m
 |-----------|-----------------------------------|-------------|
 | TASK_0401 | Triggered Abilities + APNAP Queue | Not Started |
 | TASK_0402 | SBA Checklist Expansion (704.5)   | Not Started |
+| TASK_0403 | Event-Application Seam            | Not Started |
+| TASK_0404 | Optional (May) Triggers           | Not Started |
 
-**Execution order:** TASK_0401 → TASK_0402
+**Execution order:** TASK_0401 → TASK_0402 → TASK_0403 → TASK_0404
 
 **Phase 5 — Deferred Keywords + Card Pool**
 
@@ -119,6 +121,6 @@ Sequencing note (ADR-010, ADR-013): Phase 2 is a thin slice of only the combat-m
 | 1       | `PHASE_001/` | TASK_0101–TASK_0104                                            |
 | 2       | `PHASE_002/` | DESIGN_Priority_Stack_And_Combat_Keywords, TASK_0201–TASK_0206 |
 | 3       | `PHASE_003/` | TASK_0301–TASK_0305                                            |
-| 4       | `PHASE_004/` | TASK_0401–TASK_0402                                            |
+| 4       | `PHASE_004/` | TASK_0401–TASK_0404                                            |
 | 5       | `PHASE_005/` | TASK_0501–TASK_0507                                            |
 | Backlog | `BACKLOG/`   | DESIGN_AI_Strategy_Architecture (Phase 6 spec)                 |
