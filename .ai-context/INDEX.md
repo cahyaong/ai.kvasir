@@ -1,6 +1,6 @@
 # INDEX: AI.Kvasir
 
-**Last Updated:** July 18, 2026
+**Last Updated:** August 17, 2026
 
 ---
 
@@ -42,17 +42,17 @@ Clients (WPF visual debugger, CLI runner)
 
 ## 3. Roadmap
 
-| Phase | Name                           | Goal                                                                                          | Status  |
-|-------|--------------------------------|-----------------------------------------------------------------------------------------------|---------|
-| 1     | Engine Correctness             | A legal 2-player game of the current vanilla pool runs start-to-finish deterministically      | Active  |
-| 2     | Keyword Combat Slice           | Data model + 5 combat-math keywords (flying, first/double strike, trample, deathtouch)        | Planned |
-| 3     | Stack & Targeting              | Stack, instants/sorceries + timing, single- and multi-target spells                           | Planned |
-| 4     | Triggers & State-Based Actions | Triggered abilities (APNAP), full 704.5 SBA checklist — completes the 117.5 procedure         | Planned |
-| 5     | Card Pool Completion           | A curated stack-aware pool plays legally with all combat keywords (capstone-led)              | Planned |
+| Phase | Name                           | Goal                                                                                             | Status  |
+|-------|--------------------------------|--------------------------------------------------------------------------------------------------|---------|
+| 1     | Engine Correctness             | A legal 2-player game of the current vanilla pool runs start-to-finish deterministically         | Active  |
+| 2     | Keyword Combat Slice           | Data model + 5 combat-math keywords (flying, first/double strike, trample, deathtouch)           | Planned |
+| 3     | Stack & Targeting              | Stack, instants/sorceries + timing, single- and multi-target spells                              | Planned |
+| 4     | Triggers & State-Based Actions | Triggered abilities (APNAP), full 704.5 SBA checklist — completes the 117.5 procedure            | Planned |
+| 5     | Card Pool Completion           | A curated stack-aware pool plays legally with all combat keywords (capstone-led)                 | Planned |
 | 6     | AI Enablement                  | Reproducible master seed + split RNG streams and a masked deep-clone seam (the ISMCTS substrate) | Planned |
-| 7     | First Agent (ISMCTS)           | An ISMCTS agent plays legal games and beats RandomStrategy on the current pool                | Planned |
-| 8     | Observability & Replay         | Typed event trace (JSONL) plus seed and decision-log replay with a validation hash            | Planned |
-| 9     | Advanced Agents                | WorldModel (AgentWorld) then Hybrid (AlphaZero pattern) agents                                 | Planned |
+| 7     | First Agent (ISMCTS)           | An ISMCTS agent plays legal games and beats RandomStrategy on the current pool                   | Planned |
+| 8     | Observability & Replay         | Typed event trace (JSONL) plus seed and decision-log replay with a validation hash               | Planned |
+| 9     | Advanced Agents                | WorldModel (AgentWorld) then Hybrid (AlphaZero pattern) agents                                   | Planned |
 
 Sequencing note (ADR-010, ADR-013, ADR-021): Phase 2 is a thin slice of only the combat-math keywords; the remaining keywords are deferred to Phase 5 (Card Pool Completion) because the genuine AI decision depth is gated on the stack and interaction layer (Phases 3-4). The original single stack phase was split into Phase 3 (Stack & Targeting) and Phase 4 (Triggers & SBAs) to fit a ~1-1.5 week part-time budget per phase. TASK_0104 (priority loop) sits in Phase 1 as a correctness fix but is the direct foundation for Phase 3; per ADR-012 it also owns the SBA seam plus a minimal SBA set, which Phase 4 (TASK_0402) later expands. Replacement effects (Rule 614/615) and the layer system (Rule 613) are deferred past the AI milestone (ADR-014); Phase 4 adds only a transparent event-interception seam (TASK_0403) so the later replacement phase does not force an engine-wide refactor.
 
@@ -132,34 +132,43 @@ Execution infrastructure and AI are thin-sliced the same way (ADR-021): rather t
 
 **Phase 7 — First Agent (ISMCTS)**
 
-Task breakdown pending — see `BACKLOG/DESIGN_AI_Strategy_Architecture.md` (ISMCTS section).
+Design: `PHASE_007/DESIGN_AI_SearchStrategy.md`.
+
+| Task      | Title                                         | Status      |
+|-----------|-----------------------------------------------|-------------|
+| TASK_0701 | ISMCTS Agent — Perfect-Information Thin Slice | Not Started |
+| TASK_0702 | Determinized Clone Integration (hidden info)  | Not Started |
+| TASK_0703 | Combat Nodes (attack/block subsets)           | Not Started |
+| TASK_0704 | Self-Play Tuning Harness (TurnCap + weights)  | Not Started |
+
+**Execution order:** TASK_0701 → TASK_0702 → TASK_0703 → TASK_0704
 
 **Phase 8 — Observability & Replay**
 
-| Task      | Title                            | Status      |
-|-----------|----------------------------------|-------------|
-| TASK_0801 | Game Event Taxonomy              | Not Started |
-| TASK_0802 | Observer Redesign + JSONL Sink   | Not Started |
-| TASK_0803 | Seed Replay + Validation Hash    | Not Started |
-| TASK_0804 | Decision Log Replay + Branching  | Not Started |
+| Task      | Title                           | Status      |
+|-----------|---------------------------------|-------------|
+| TASK_0801 | Game Event Taxonomy             | Not Started |
+| TASK_0802 | Observer Redesign + JSONL Sink  | Not Started |
+| TASK_0803 | Seed Replay + Validation Hash   | Not Started |
+| TASK_0804 | Decision Log Replay + Branching | Not Started |
 
 **Execution order:** TASK_0801 → TASK_0802 → TASK_0803 → TASK_0804
 
 **Phase 9 — Advanced Agents**
 
-Task breakdown pending — see `BACKLOG/DESIGN_AI_Strategy_Architecture.md` (WorldModel and Hybrid sections).
+Task breakdown pending — see `BACKLOG/DESIGN_AI_AdvancedAgent.md` (WorldModel and Hybrid sections).
 
 ## 5. Phase Index
 
-| Phase   | Folder       | Documents                                                      |
-|---------|--------------|----------------------------------------------------------------|
-| 1       | `PHASE_001/` | TASK_0101–TASK_0104                                            |
-| 2       | `PHASE_002/` | DESIGN_Priority_Stack_And_Combat_Keywords, TASK_0201–TASK_0206 |
-| 3       | `PHASE_003/` | TASK_0301–TASK_0305                                            |
-| 4       | `PHASE_004/` | TASK_0401–TASK_0404                                            |
-| 5       | `PHASE_005/` | TASK_0501–TASK_0507                                            |
-| 6       | `PHASE_006/` | TASK_0601–TASK_0602                                            |
-| 7       | `PHASE_007/` | (task breakdown pending)                                       |
-| 8       | `PHASE_008/` | TASK_0801–TASK_0804                                            |
-| 9       | `PHASE_009/` | (task breakdown pending)                                       |
-| Backlog | `BACKLOG/`   | DESIGN_AI_Strategy_Architecture (Phase 7 + 9 spec)             |
+| Phase   | Folder       | Documents                                               |
+|---------|--------------|---------------------------------------------------------|
+| 1       | `PHASE_001/` | TASK_0101–TASK_0104                                     |
+| 2       | `PHASE_002/` | DESIGN_Engine_InteractionLayer, TASK_0201–TASK_0206     |
+| 3       | `PHASE_003/` | TASK_0301–TASK_0305                                     |
+| 4       | `PHASE_004/` | TASK_0401–TASK_0404                                     |
+| 5       | `PHASE_005/` | TASK_0501–TASK_0507                                     |
+| 6       | `PHASE_006/` | TASK_0601–TASK_0602                                     |
+| 7       | `PHASE_007/` | DESIGN_AI_SearchStrategy, TASK_0701 (0702–0704 pending) |
+| 8       | `PHASE_008/` | TASK_0801–TASK_0804                                     |
+| 9       | `PHASE_009/` | (task breakdown pending)                                |
+| Backlog | `BACKLOG/`   | DESIGN_AI_AdvancedAgent (Phase 9 spec)                  |
